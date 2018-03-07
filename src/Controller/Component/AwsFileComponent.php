@@ -7,8 +7,16 @@ use Aws\S3\S3Client;
 use Aws\Exception\AwsException;
 class AwsFileComponent extends Component
 {
-    function credential($awsAccessKey,$awsSecretAccessKey)
-	{ 
+	function initialize(array $config) 
+	{
+		parent::initialize($config);
+		$this->AwsFiles = TableRegistry::get('AwsFiles');
+		$AwsFiles=$this->AwsFiles->get(1);
+		$bucketName=$AwsFiles->bucket_name;  // Bucket Name
+		$awsAccessKey=$AwsFiles->access_key; // Access Key
+		$awsSecretAccessKey=$AwsFiles->secret_access_key;  // Secret Access key
+		
+		/*     Connect to AWS S3   */
 		$config = [
 					'region'  => 'ap-south-1',
 					'version' => 'latest',
@@ -24,9 +32,11 @@ class AwsFileComponent extends Component
 					]
 				]; 
 
-		return $s3Client = new S3Client($config);
+		$s3Client = new S3Client($config);
 	}
-	function putObjectFile($s3Client,$bucketName,$keyname,$sourceFile,$contentType)
+	
+	/*  Store Image on s3             */
+	function putObjectFile($keyname,$sourceFile,$contentType)
 	{				
 		$s3Client->putObject(array(
 			'Bucket' => $bucketName,
@@ -38,7 +48,9 @@ class AwsFileComponent extends Component
 			'StorageClass' => 'REDUCED_REDUNDANCY'
 		));
 	}
-	function putObjectPdf($s3Client,$bucketName,$keyname,$body,$contentType)
+	
+	/*  Store PDF on s3             */
+	function putObjectPdf($keyname,$body,$contentType)
 	{				
 		$s3Client->putObject(array(
 			'Bucket' => $bucketName,
@@ -50,14 +62,18 @@ class AwsFileComponent extends Component
 			'StorageClass' => 'REDUCED_REDUNDANCY'
 		));
 	}
-	function deleteObjectFile($s3Client,$bucketName,$keyname)
+	
+	/*  Store any file on s3             */
+	function deleteObjectFile($keyname)
 	{				
 		$s3Client->deleteObject(array(
 			'Bucket' => $bucketName,
 			'Key'    => $keyname
 		));
 	}
-	function getObjectFile($s3Client,$bucketName,$keyname)
+	
+	/*  Get object of image/pdf etc. from s3             */
+	function getObjectFile($keyname)
 	{				
 		 $result = $s3Client->getObject(array(
 			'Bucket' => $bucketName,
@@ -65,7 +81,9 @@ class AwsFileComponent extends Component
 		));
 		return $result;
 	}
-	function doesObjectExistFile($s3Client,$bucketName,$keyname)
+	
+	/*  File exist or not on s3             */
+	function doesObjectExistFile($keyname)
 	{
 		$result = $s3Client->doesObjectExist($bucketName, $keyname);
 		return $result;

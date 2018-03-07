@@ -102,14 +102,6 @@ class AppController extends Controller
 		$sidebar_menu=$this->SidebarMenu->getMenu();
 		//////////////////////////
 		
-		$this->loadModel('AwsFiles');
-		$AwsFiles=$this->AwsFiles->get(1);
-		$this->bucketName=$AwsFiles->bucket_name;
-		$this->awsAccessKey=$AwsFiles->access_key;
-		$this->awsSecretAccessKey=$AwsFiles->secret_access_key;
-		$awsAccessKey=$this->awsAccessKey;
-		$awsSecretAccessKey=$this->awsSecretAccessKey;
-		$bucketName=$this->bucketName;
 		$this->set(compact('awsAccessKey','awsSecretAccessKey','bucketName','sidebar_menu'));
 	}
 }
