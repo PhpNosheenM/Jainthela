@@ -20,6 +20,7 @@
         <thead>
             <tr>
                 <th scope="col"><?= $this->Paginator->sort('id') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('city_id') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('longname') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('shortname') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('unit_name') ?></th>
@@ -33,6 +34,7 @@
             <?php foreach ($units as $unit): ?>
             <tr>
                 <td><?= $this->Number->format($unit->id) ?></td>
+                <td><?= $this->Number->format($unit->city_id) ?></td>
                 <td><?= h($unit->longname) ?></td>
                 <td><?= h($unit->shortname) ?></td>
                 <td><?= h($unit->unit_name) ?></td>

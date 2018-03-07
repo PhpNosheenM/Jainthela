@@ -18,6 +18,7 @@ class UnitsFixture extends TestFixture
     // @codingStandardsIgnoreStart
     public $fields = [
         'id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'autoIncrement' => true, 'precision' => null],
+        'city_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'longname' => ['type' => 'string', 'length' => 100, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'shortname' => ['type' => 'string', 'length' => 50, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'unit_name' => ['type' => 'string', 'length' => 50, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
@@ -42,11 +43,12 @@ class UnitsFixture extends TestFixture
     public $records = [
         [
             'id' => 1,
+            'city_id' => 1,
             'longname' => 'Lorem ipsum dolor sit amet',
             'shortname' => 'Lorem ipsum dolor sit amet',
             'unit_name' => 'Lorem ipsum dolor sit amet',
             'created_by' => 1,
-            'created_on' => 1520403413,
+            'created_on' => 1520404341,
             'status' => 1
         ],
     ];

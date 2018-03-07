@@ -9,6 +9,7 @@ use Cake\Validation\Validator;
 /**
  * Units Model
  *
+ * @property |\Cake\ORM\Association\BelongsTo $Cities
  * @property \App\Model\Table\ComboOfferDetailsTable|\Cake\ORM\Association\HasMany $ComboOfferDetails
  * @property \App\Model\Table\ItemVariationsTable|\Cake\ORM\Association\HasMany $ItemVariations
  *
@@ -37,6 +38,10 @@ class UnitsTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
+        $this->belongsTo('Cities', [
+            'foreignKey' => 'city_id',
+            'joinType' => 'INNER'
+        ]);
         $this->hasMany('ComboOfferDetails', [
             'foreignKey' => 'unit_id'
         ]);
@@ -90,5 +95,19 @@ class UnitsTable extends Table
             ->notEmpty('status');
 
         return $validator;
+    }
+
+    /**
+     * Returns a rules checker object that will be used for validating
+     * application integrity.
+     *
+     * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
+     * @return \Cake\ORM\RulesChecker
+     */
+    public function buildRules(RulesChecker $rules)
+    {
+        $rules->add($rules->existsIn(['city_id'], 'Cities'));
+
+        return $rules;
     }
 }

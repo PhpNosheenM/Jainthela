@@ -7,6 +7,7 @@ use Cake\ORM\Entity;
  * Unit Entity
  *
  * @property int $id
+ * @property int $city_id
  * @property string $longname
  * @property string $shortname
  * @property string $unit_name
@@ -30,6 +31,7 @@ class Unit extends Entity
      * @var array
      */
     protected $_accessible = [
+        'city_id' => true,
         'longname' => true,
         'shortname' => true,
         'unit_name' => true,

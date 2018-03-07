@@ -37,6 +37,10 @@
             <td><?= $this->Number->format($unit->id) ?></td>
         </tr>
         <tr>
+            <th scope="row"><?= __('City Id') ?></th>
+            <td><?= $this->Number->format($unit->city_id) ?></td>
+        </tr>
+        <tr>
             <th scope="row"><?= __('Created By') ?></th>
             <td><?= $this->Number->format($unit->created_by) ?></td>
         </tr>

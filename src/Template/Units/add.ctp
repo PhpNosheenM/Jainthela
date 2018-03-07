@@ -19,6 +19,7 @@
     <fieldset>
         <legend><?= __('Add Unit') ?></legend>
         <?php
+            echo $this->Form->control('city_id');
             echo $this->Form->control('longname');
             echo $this->Form->control('shortname');
             echo $this->Form->control('unit_name');
