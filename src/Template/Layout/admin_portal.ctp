@@ -97,7 +97,10 @@
 		<?= $this->Html->script('plugins.js') ?>  
 		<?= $this->Html->script('actions.js') ?>       
         <!-- END TEMPLATE -->
-
+		
+		
+		<?=$this->fetch('jsValidate') ?>
+		<?=$this->fetch('jsDataTables') ?>
     <!-- END SCRIPTS -->         
     </body>
 </html>

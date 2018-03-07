@@ -21,25 +21,20 @@ class UnitsController extends AppController
     public function index()
     {  
 		$this->viewBuilder()->layout('admin_portal');
-        $units = $this->paginate($this->Units);
+        $units = $this->Units->find();
 		
 		$this->set(compact('units'));
-		
-		@$unit = $this->Units->newEntity();
-		if ($this->request->is(['patch', 'post', 'put'])) {
-			
-			if ($this->request->is('post')) {
-				$unit = $this->Units->patchEntity($unit, $this->request->getData());
-				if ($this->Units->save($unit)) {
-					$this->Flash->success(__('The unit has been saved.'));
+		 $unit = $this->Units->newEntity();
+        if ($this->request->is('post')) {
+            $unit = $this->Units->patchEntity($unit, $this->request->getData());
+            if ($this->Units->save($unit)) {
+                $this->Flash->success(__('The unit has been saved.'));
 
-					return $this->redirect(['action' => 'index']);
-				}
-				//pr($unit); exit;
-				$this->Flash->error(__('The unit could not be saved. Please, try again.'));
-			}
-		}
-		$this->set(compact('unit'));
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The unit could not be saved. Please, try again.'));
+        }
+        $this->set(compact('unit'));
     }
 
     /**
