@@ -1,6 +1,6 @@
 <ul class="x-navigation x-navigation-custom">
 	<li class="xn-logo">
-		<?= $this->Html->link('ATLANT',array('controller'=>'Admins','action'=>'index'),['escape'=>false]) ?>
+		<?= $this->Html->link('JainThela',array('controller'=>'Admins','action'=>'index'),['escape'=>false]) ?>
 		<a href="#" class="x-navigation-control"></a>
 	</li>
 	<?php

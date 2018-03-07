@@ -79,7 +79,7 @@ class UnitsTable extends Table
             ->maxLength('unit_name', 50)
             ->requirePresence('unit_name', 'create')
             ->notEmpty('unit_name');
-
+		/*
         $validator
             ->integer('created_by')
             ->requirePresence('created_by', 'create')
@@ -93,7 +93,7 @@ class UnitsTable extends Table
         $validator
             ->requirePresence('status', 'create')
             ->notEmpty('status');
-
+		*/
         return $validator;
     }
 
@@ -106,7 +106,7 @@ class UnitsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['city_id'], 'Cities'));
+       // $rules->add($rules->existsIn(['city_id'], 'Cities'));
 
         return $rules;
     }
