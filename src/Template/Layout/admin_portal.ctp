@@ -89,7 +89,7 @@
         <!-- START THIS PAGE PLUGINS-->        
 		<?= $this->Html->script('plugins/icheck/icheck.min.js') ?>  
 		<?= $this->Html->script('plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js') ?>  
-		<?= $this->fetch('jsSelect') ?>
+		
 		<?= $this->fetch('jsValidate') ?>
         <!-- END THIS PAGE PLUGINS-->        
 
