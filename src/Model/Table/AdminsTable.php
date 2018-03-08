@@ -137,7 +137,13 @@ class AdminsTable extends Table
 
         return $validator;
     }
+	public function findAuth(\Cake\ORM\Query $query, array $options)
+	{
+		$query
+			->where(['Admins.status' => 1]);
 
+		return $query;
+	}
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.
