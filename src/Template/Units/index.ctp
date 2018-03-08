@@ -23,8 +23,8 @@
 	<!-- START CONTENT FRAME LEFT -->
 	<div class="content-frame-left">
 		<div class="panel panel-default">
-			<div class="panel-body">
-				<?= $this->Form->create($unit,['id'=>"jvalidate"]) ?>
+			<?= $this->Form->create($unit,['id'=>"jvalidate"]) ?>
+				<div class="panel-body">
 					<div class="form-group">
 						<label>Unit Name</label>
 						<?= $this->Form->control('unit_name',['class'=>'form-control','placeholder'=>'Unit Name','label'=>false]) ?>
@@ -38,14 +38,13 @@
 						<label>Short Name</label>
 						<?= $this->Form->control('shortname',['class'=>'form-control','placeholder'=>'Short Name','label'=>false]) ?>
 					</div>
-					
-			</div>
-			<div class="panel-footer">
-				<div class="col-md-offset-3 col-md-4">
-				<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
-				<?= $this->Form->end() ?>
 				</div>
-			</div>
+				<div class="panel-footer">
+					<div class="col-md-offset-3 col-md-4">
+						<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
+					</div>
+				</div>
+			<?= $this->Form->end() ?>
 		</div>
 	</div>
 	<!-- END CONTENT FRAME LEFT -->

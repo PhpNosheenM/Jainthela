@@ -23,9 +23,7 @@ class UnitsController extends AppController
 		$city_id=$this->Auth->User('city_id'); 
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('admin_portal');
-        $units = $this->paginate($this->Units->find());
-		$this->set(compact('units'));
-		
+       
 		$unit = $this->Units->newEntity();
         if ($this->request->is('post')) {
             $unit = $this->Units->patchEntity($unit, $this->request->getData());
@@ -38,7 +36,10 @@ class UnitsController extends AppController
             }
             $this->Flash->error(__('The unit could not be saved. Please, try again.'));
         }
-        $this->set(compact('unit'));
+		
+		$units = $this->paginate($this->Units->find()->where(['city_id'=>$city_id]));
+		
+        $this->set(compact('unit','units'));
     }
 
     /**
