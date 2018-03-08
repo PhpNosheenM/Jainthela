@@ -38,6 +38,12 @@
 						<label>Short Name</label>
 						<?= $this->Form->control('shortname',['class'=>'form-control','placeholder'=>'Short Name','label'=>false]) ?>
 					</div>
+					<div class="form-group">
+						<label>Status</label>
+						<?php $options[1] = 'Continoue'; ?>
+						<?php $options[0] = 'Discontinoue'; ?>
+						<?= $this->Form->control('status',['class'=>'form-control select','options'=>$options, 'placeholder'=>'Select...','label'=>false,'value'=>1]) ?>
+					</div>
 				</div>
 				<div class="panel-footer">
 					<div class="col-md-offset-3 col-md-4">
@@ -100,6 +106,7 @@
 	<!-- END CONTENT FRAME BODY -->
 </div>
 <!-- END CONTENT FRAME -->
+<?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
 <?php
    $js='var jvalidate = $("#jvalidate").validate({
