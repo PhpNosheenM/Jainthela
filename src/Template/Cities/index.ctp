@@ -75,7 +75,7 @@
 							<td><?= h($city->name) ?></td>
 							<td><?= h($city->status) ?></td>
 							<td class="actions">
-								<?= $this->Form->button(__('<span class="fa fa-pencil"></span>'),['class'=>'btn btn-primary  btn-condensed btn-sm']) ?>
+								<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $city->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
 								<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $city->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete ?', $city->id),'escape'=>false]) ?>
 							</td>
 						</tr>
