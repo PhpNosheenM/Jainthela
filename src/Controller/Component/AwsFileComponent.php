@@ -2,6 +2,7 @@
 namespace App\Controller\Component;
 use App\Controller\AppController;
 use Cake\Controller\Component;
+use Cake\ORM\TableRegistry;
 require_once(ROOT . DS  .'vendor' . DS  .  'autoload.php');
 use Aws\S3\S3Client;
 use Aws\Exception\AwsException;
@@ -32,7 +33,7 @@ class AwsFileComponent extends Component
 					]
 				]; 
 
-		$s3Client = new S3Client($config);
+		//$s3Client = new S3Client($config);
 	}
 	
 	/*  Store Image on s3             */
