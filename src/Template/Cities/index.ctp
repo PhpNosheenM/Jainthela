@@ -27,7 +27,8 @@
 				<div class="panel-body">
 					<div class="form-group">
 						<label>State</label>
-						<?= $this->Form->control('state_id',['class'=>'form-control select','data-live-search'=>true,'options'=>$states,'label'=>false]) ?>
+						
+						<?= $this->Form->control('state_id',['class'=>'form-control select','options'=>$states,'label'=>false]) ?>
 						<span class="help-block"></span>
 					</div>
 					<div class="form-group">
