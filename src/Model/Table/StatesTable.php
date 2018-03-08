@@ -53,26 +53,6 @@ class StatesTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
-        $validator
-            ->scalar('name')
-            ->maxLength('name', 30)
-            ->requirePresence('name', 'create')
-            ->notEmpty('name');
-
-        $validator
-            ->dateTime('created_on')
-            ->requirePresence('created_on', 'create')
-            ->notEmpty('created_on');
-
-        $validator
-            ->integer('created_by')
-            ->requirePresence('created_by', 'create')
-            ->notEmpty('created_by');
-
-        $validator
-            ->requirePresence('status', 'create')
-            ->notEmpty('status');
-
-        return $validator;
+       return $validator;
     }
 }

@@ -20,13 +20,13 @@ class StatesController extends AppController
      */
     public function index()
     {
-		$city_id=$this->Auth->User('city_id'); 
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('admin_portal');
         
 		$state = $this->States->newEntity();
         if ($this->request->is('post')) {
             $state = $this->States->patchEntity($state, $this->request->getData());
+			$state->created_by=$user_id;
             if ($this->States->save($state)) {
                 $this->Flash->success(__('The state has been saved.'));
 

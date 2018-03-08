@@ -45,7 +45,6 @@
 	<div class="content-frame-body">
 		<div class="panel panel-default">
 			<div class="panel-body">
-				<?php $page_no=$this->Paginator->current('States'); $page_no=($page_no-1)*20; ?>
 				<div class="table-responsive">
 				<table class="table table-bordered">
 					<thead>
@@ -63,7 +62,7 @@
 							<td><?= h($state->name) ?></td>
 							<td class="actions">
 								<?= $this->Form->button(__('<span class="fa fa-pencil"></span>'),['class'=>'btn btn-primary  btn-condensed btn-sm']) ?>
-								<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $unit->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete # {0}?', $state->id),'escape'=>false]) ?>
+								<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $state->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete ?', $state->id),'escape'=>false]) ?>
 							</td>
 						</tr>
 						<?php endforeach; ?>
