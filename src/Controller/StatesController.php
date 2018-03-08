@@ -18,20 +18,33 @@ class StatesController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    public function index($id = null)
     {
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('admin_portal');
-        
-		$state = $this->States->newEntity();
-        if ($this->request->is('post')) {
+        if($id)
+		{
+		    $state = $this->States->get($id);
+		}
+		else
+		{
+			$state = $this->States->newEntity();
+		}
+		
+        if ($this->request->is(['post','put'])) {
+			
             $state = $this->States->patchEntity($state, $this->request->getData());
 			$state->created_by=$user_id;
+			if($id)
+			{
+				$state->id=$id;
+			}
             if ($this->States->save($state)) {
                 $this->Flash->success(__('The state has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
             }
+			//pr($state); exit;
             $this->Flash->error(__('The state could not be saved. Please, try again.'));
         }
         $this->paginate= [
@@ -41,66 +54,7 @@ class StatesController extends AppController
 		$this->set(compact('states','state'));
     }
 
-    /**
-     * View method
-     *
-     * @param string|null $id State id.
-     * @return \Cake\Http\Response|void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-		
-        $state = $this->States->get($id, [
-            'contain' => ['Cities']
-        ]);
-
-        $this->set('state', $state);
-    }
-
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
-     */
-    public function add()
-    {
-        $state = $this->States->newEntity();
-        if ($this->request->is('post')) {
-            $state = $this->States->patchEntity($state, $this->request->getData());
-            if ($this->States->save($state)) {
-                $this->Flash->success(__('The state has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The state could not be saved. Please, try again.'));
-        }
-        $this->set(compact('state'));
-    }
-
-    /**
-     * Edit method
-     *
-     * @param string|null $id State id.
-     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
-     */
-    public function edit($id = null)
-    {
-        $state = $this->States->get($id, [
-            'contain' => []
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $state = $this->States->patchEntity($state, $this->request->getData());
-            if ($this->States->save($state)) {
-                $this->Flash->success(__('The state has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The state could not be saved. Please, try again.'));
-        }
-        $this->set(compact('state'));
-    }
+    
 
     /**
      * Delete method
