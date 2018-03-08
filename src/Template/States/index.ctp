@@ -1,55 +1,103 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\State[]|\Cake\Collection\CollectionInterface $states
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('New State'), ['action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Cities'), ['controller' => 'Cities', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New City'), ['controller' => 'Cities', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="states index large-9 medium-8 columns content">
-    <h3><?= __('States') ?></h3>
-    <table cellpadding="0" cellspacing="0">
-        <thead>
-            <tr>
-                <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('name') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('created_on') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('created_by') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('status') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($states as $state): ?>
-            <tr>
-                <td><?= $this->Number->format($state->id) ?></td>
-                <td><?= h($state->name) ?></td>
-                <td><?= h($state->created_on) ?></td>
-                <td><?= $this->Number->format($state->created_by) ?></td>
-                <td><?= $this->Number->format($state->status) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['action' => 'view', $state->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $state->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $state->id], ['confirm' => __('Are you sure you want to delete # {0}?', $state->id)]) ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
-    </div>
+<style>
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    border-color: transparent;
+    padding: 8px 8px !important; 
+    background: #F0F4F9;
+    color: #656C78;
+    font-size: 13px;
+}
+</style>
+<div class="content-frame">
+	
+	<!-- START CONTENT FRAME TOP -->
+	<div class="content-frame-top">                        
+		<div class="page-title">                    
+			<h2><span class="fa fa-arrow-circle-o-left"></span> States</h2>
+		</div>                                      
+		<div class="pull-right">
+			<button class="btn btn-default content-frame-left-toggle"><span class="fa fa-bars"></span></button>
+		</div>                        
+	</div>
+	<!-- END CONTENT FRAME TOP -->
+	
+	<!-- START CONTENT FRAME LEFT -->
+	<div class="content-frame-left">
+		<div class="panel panel-default">
+			<?= $this->Form->create($state,['id'=>"jvalidate"]) ?>
+				<div class="panel-body">
+					<div class="form-group">
+						<label>State Name</label>
+						<?= $this->Form->control('name',['class'=>'form-control','placeholder'=>'State Name','label'=>false]) ?>
+						<span class="help-block"></span>
+					</div>
+				</div>
+				<div class="panel-footer">
+					<div class="col-md-offset-3 col-md-4">
+						<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
+					</div>
+				</div>
+			<?= $this->Form->end() ?>
+		</div>
+	</div>
+	<!-- END CONTENT FRAME LEFT -->
+	
+	<!-- START CONTENT FRAME BODY -->
+	<div class="content-frame-body">
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<?php $page_no=$this->Paginator->current('States'); $page_no=($page_no-1)*20; ?>
+				<div class="table-responsive">
+				<table class="table table-bordered">
+					<thead>
+						<tr>
+							<th><?= ('SN.') ?></th>
+							<th><?= ('State') ?></th>
+							
+							<th scope="col" class="actions"><?= __('Actions') ?></th>
+						</tr>
+					</thead>
+					<tbody>                                            
+						<?php $i=0; foreach ($states as $state): ?>
+						<tr>
+							<td><?= $this->Number->format(++$i) ?></td>
+							<td><?= h($state->name) ?></td>
+							<td class="actions">
+								<?= $this->Form->button(__('<span class="fa fa-pencil"></span>'),['class'=>'btn btn-primary  btn-condensed btn-sm']) ?>
+								<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $unit->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete # {0}?', $state->id),'escape'=>false]) ?>
+							</td>
+						</tr>
+						<?php endforeach; ?>
+					</tbody>
+				</table>
+				</div>
+			</div>
+			<div class="panel-footer">
+				<div class="paginator pull-right">
+					<ul class="pagination">
+						<?= $this->Paginator->first('<< ' . __('first')) ?>
+						<?= $this->Paginator->prev('< ' . __('previous')) ?>
+						<?= $this->Paginator->numbers() ?>
+						<?= $this->Paginator->next(__('next') . ' >') ?>
+						<?= $this->Paginator->last(__('last') . ' >>') ?>
+					</ul>
+					<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- END CONTENT FRAME BODY -->
 </div>
+<!-- END CONTENT FRAME -->
+<?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
+<?php
+   $js='var jvalidate = $("#jvalidate").validate({
+		ignore: [],
+		rules: {                                            
+				name: {
+						required: true,
+				},
+				
+			}                                        
+		});';  
+echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		
+?>

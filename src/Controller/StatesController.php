@@ -20,9 +20,25 @@ class StatesController extends AppController
      */
     public function index()
     {
-        $states = $this->paginate($this->States);
+		$city_id=$this->Auth->User('city_id'); 
+		$user_id=$this->Auth->User('id');
+		$this->viewBuilder()->layout('admin_portal');
+        
+		$state = $this->States->newEntity();
+        if ($this->request->is('post')) {
+            $state = $this->States->patchEntity($state, $this->request->getData());
+            if ($this->States->save($state)) {
+                $this->Flash->success(__('The state has been saved.'));
 
-        $this->set(compact('states'));
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The state could not be saved. Please, try again.'));
+        }
+        $this->paginate= [
+					'limit'=>20
+		];
+		$states = $this->paginate($this->States);
+		$this->set(compact('states','state'));
     }
 
     /**
@@ -34,6 +50,7 @@ class StatesController extends AppController
      */
     public function view($id = null)
     {
+		
         $state = $this->States->get($id, [
             'contain' => ['Cities']
         ]);
