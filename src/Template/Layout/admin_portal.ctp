@@ -89,6 +89,8 @@
         <!-- START THIS PAGE PLUGINS-->        
 		<?= $this->Html->script('plugins/icheck/icheck.min.js') ?>  
 		<?= $this->Html->script('plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js') ?>  
+		<?= $this->fetch('jsValidate') ?>
+		<?= $this->fetch('jsDataTables') ?>
         <!-- END THIS PAGE PLUGINS-->        
 
         <!-- START TEMPLATE -->
@@ -97,10 +99,7 @@
 		<?= $this->Html->script('plugins.js') ?>  
 		<?= $this->Html->script('actions.js') ?>       
         <!-- END TEMPLATE -->
-		
-		
-		<?=$this->fetch('jsValidate') ?>
-		<?=$this->fetch('jsDataTables') ?>
+		<?= $this->fetch('scriptBottom') ?>
     <!-- END SCRIPTS -->         
     </body>
 </html>

@@ -101,25 +101,22 @@
 	<!-- END CONTENT FRAME BODY -->
 </div>
 <!-- END CONTENT FRAME -->
+<?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
 <?php
-echo $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']);
+   $js='var jvalidate = $("#jvalidate").validate({
+		ignore: [],
+		rules: {                                            
+				unit_name: {
+						required: true,
+				},
+				longname: {
+						required: true,
+				},
+				shortname: {
+						required: true,
+				},
+			   
+			}                                        
+		});';  
+echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		
 ?>
-
-<script type="text/javascript">
-     alert();         var jvalidate = $("#jvalidate").validate({
-                ignore: [],
-                rules: {                                            
-                        unit_name: {
-                                required: true,
-                        },
-                        longname: {
-                                required: true,
-                        },
-						shortname: {
-                                required: true,
-                        },
-                       
-                    }                                        
-                });                                    
-
-        </script>
