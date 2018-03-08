@@ -18,30 +18,40 @@ class RolesController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    public function index($id = null)
     {
+		$user_id=$this->Auth->User('id');
+		$this->viewBuilder()->layout('admin_portal');
+        if($id)
+		{
+		    $role = $this->Roles->get($id);
+		}
+		else
+		{
+			$role = $this->Roles->newEntity();
+		}
+		
+        if ($this->request->is(['post','put'])) {
+			$role = $this->Roles->patchEntity($role, $this->request->getData());
+			$role->created_by=$user_id;
+			if($id)
+			{
+				$role->id=$id;
+			}
+            if ($this->Roles->save($role)) {
+                $this->Flash->success(__('The role has been saved.'));
+				return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The role could not be saved. Please, try again.'));
+        }
+      
         $this->paginate = [
             'contain' => ['Cities']
         ];
         $roles = $this->paginate($this->Roles);
-
-        $this->set(compact('roles'));
-    }
-
-    /**
-     * View method
-     *
-     * @param string|null $id Role id.
-     * @return \Cake\Http\Response|void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $role = $this->Roles->get($id, [
-            'contain' => ['Cities', 'Admins']
-        ]);
-
-        $this->set('role', $role);
+		 
+		$cities = $this->Roles->Cities->find('list');
+		$this->set(compact('roles','role', 'cities'));
     }
 
     /**
