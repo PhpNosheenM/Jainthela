@@ -20,12 +20,29 @@ class CitiesController extends AppController
      */
     public function index()
     {
+		$user_id=$this->Auth->User('id');
+		$this->viewBuilder()->layout('admin_portal');
+        
+        $city = $this->Cities->newEntity();
+        if ($this->request->is('post')) {
+			pr($this->request->getData());
+			exit;
+            $city = $this->Cities->patchEntity($city, $this->request->getData());
+			$city->created_by=$user_id;
+            if ($this->Cities->save($city)) {
+                $this->Flash->success(__('The city has been saved.'));
+				return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The city could not be saved. Please, try again.'));
+        }
+		
         $this->paginate = [
-            'contain' => ['States']
+            'contain' => ['States'],
+			'limit' =>20
         ];
         $cities = $this->paginate($this->Cities);
-
-        $this->set(compact('cities'));
+		$states = $this->Cities->States->find('list');
+        $this->set(compact('cities','city','states'));
     }
 
     /**

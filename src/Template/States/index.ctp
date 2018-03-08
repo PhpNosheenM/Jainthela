@@ -30,6 +30,12 @@
 						<?= $this->Form->control('name',['class'=>'form-control','placeholder'=>'State Name','label'=>false]) ?>
 						<span class="help-block"></span>
 					</div>
+					<div class="form-group">
+						<label>Status</label>
+						<?php $options['Active'] = 'Active'; ?>
+						<?php $options['Deactive'] = 'Deactive'; ?>
+						<?= $this->Form->control('status',['class'=>'form-control select','options'=>$options, 'placeholder'=>'Select...','label'=>false]) ?>
+					</div>
 				</div>
 				<div class="panel-footer">
 					<div class="col-md-offset-3 col-md-4">
@@ -51,7 +57,7 @@
 						<tr>
 							<th><?= ('SN.') ?></th>
 							<th><?= ('State') ?></th>
-							
+							<th><?= ('Status') ?></th>
 							<th scope="col" class="actions"><?= __('Actions') ?></th>
 						</tr>
 					</thead>
@@ -60,6 +66,7 @@
 						<tr>
 							<td><?= $this->Number->format(++$i) ?></td>
 							<td><?= h($state->name) ?></td>
+							<td><?= h($state->status) ?></td>
 							<td class="actions">
 								<?= $this->Form->button(__('<span class="fa fa-pencil"></span>'),['class'=>'btn btn-primary  btn-condensed btn-sm']) ?>
 								<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $state->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete ?', $state->id),'escape'=>false]) ?>
@@ -87,6 +94,8 @@
 	<!-- END CONTENT FRAME BODY -->
 </div>
 <!-- END CONTENT FRAME -->
+
+<?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
 <?php
    $js='var jvalidate = $("#jvalidate").validate({
