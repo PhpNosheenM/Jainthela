@@ -40,9 +40,9 @@
 					</div>
 					<div class="form-group">
 						<label>Status</label>
-						<?php $options[1] = 'Continoue'; ?>
-						<?php $options[0] = 'Discontinoue'; ?>
-						<?= $this->Form->control('status',['class'=>'form-control select','options'=>$options, 'placeholder'=>'Select...','label'=>false,'value'=>1]) ?>
+						<?php $options['Active'] = 'Active'; ?>
+						<?php $options['Deactive'] = 'Deactive'; ?>
+						<?= $this->Form->control('status',['class'=>'form-control select','options'=>$options, 'placeholder'=>'Select...','label'=>false]) ?>
 					</div>
 				</div>
 				<div class="panel-footer">
@@ -68,6 +68,7 @@
 							<th><?= ('Unit Name') ?></th>
 							<th><?= ('Long Name') ?></th>
 							<th><?= ('Short Name') ?></th>
+							<th><?= ('Status') ?></th>
 							
 							<th scope="col" class="actions"><?= __('Actions') ?></th>
 						</tr>
@@ -79,8 +80,9 @@
 							<td><?= h($unit->unit_name) ?></td>
 							<td><?= h($unit->longname) ?></td>
 							<td><?= h($unit->shortname) ?></td>
+							<td><?= h($unit->status) ?></td>
 							<td class="actions">
-								<?= $this->Form->button(__('<span class="fa fa-pencil"></span>'),['class'=>'btn btn-primary  btn-condensed btn-sm']) ?>
+								<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $unit->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
 								<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $unit->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $unit->id),'escape'=>false]) ?>
 							</td>
 						</tr>

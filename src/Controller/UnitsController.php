@@ -18,17 +18,27 @@ class UnitsController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    public function index($id = null)
     {  
 		$city_id=$this->Auth->User('city_id'); 
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('admin_portal');
-       
-		$unit = $this->Units->newEntity();
-        if ($this->request->is('post')) {
+		if($id)
+		{
+		   $unit = $this->Units->get($id);
+		}
+		else
+		{
+			$unit = $this->Units->newEntity();
+		}
+        if ($this->request->is(['post','put'])) {
             $unit = $this->Units->patchEntity($unit, $this->request->getData());
 			$unit->city_id=$city_id;
 			$unit->created_by=$user_id;
+			if($id)
+			{
+				$unit->id=$id;
+			}
             if ($this->Units->save($unit)) {
                 $this->Flash->success(__('The unit has been saved.'));
 
