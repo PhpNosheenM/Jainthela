@@ -27,8 +27,7 @@
 				<div class="panel-body">
 					<div class="form-group">
 						<label>State</label>
-						
-						<?= $this->Form->control('state_id',['class'=>'form-control select','options'=>$states,'label'=>false]) ?>
+						<?= $this->Form->select('state_id',$states->toArray(),['class'=>'form-control select', 'data-live-search'=>true, 'label'=>false]) ?>
 						<span class="help-block"></span>
 					</div>
 					<div class="form-group">
@@ -40,7 +39,7 @@
 						<label>Status</label>
 						<?php $options['Active'] = 'Active'; ?>
 						<?php $options['Deactive'] = 'Deactive'; ?>
-						<?= $this->Form->control('status',['class'=>'form-control select','options'=>$options, 'placeholder'=>'Select...','label'=>false]) ?>
+						<?= $this->Form->select('status',$options,['class'=>'form-control select','placeholder'=>'Select...','label'=>false]) ?>
 					</div>
 				</div>
 				<div class="panel-footer">
