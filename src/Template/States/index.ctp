@@ -34,7 +34,7 @@
 						<label>Status</label>
 						<?php $options['Active'] = 'Active'; ?>
 						<?php $options['Deactive'] = 'Deactive'; ?>
-						<?= $this->Form->control('status',['class'=>'form-control select','options'=>$options, 'placeholder'=>'Select...','label'=>false]) ?>
+						<?= $this->Form->select('status',$options,['class'=>'form-control select', 'label'=>false]) ?>
 					</div>
 				</div>
 				<div class="panel-footer">
