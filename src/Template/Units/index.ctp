@@ -38,10 +38,12 @@
 						<label>Short Name</label>
 						<?= $this->Form->control('shortname',['class'=>'form-control','placeholder'=>'Short Name','label'=>false]) ?>
 					</div>
+					
 			</div>
 			<div class="panel-footer">
 				<div class="col-md-offset-3 col-md-4">
 				<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
+				<?= $this->Form->end() ?>
 				</div>
 			</div>
 		</div>
@@ -52,7 +54,9 @@
 	<div class="content-frame-body">
 		<div class="panel panel-default">
 			<div class="panel-body">
-				<table class="table datatable">
+				<?php $page_no=$this->Paginator->current('Units'); $page_no=($page_no-1)*20; ?>
+				<div class="table-responsive">
+				<table class="table table-bordered">
 					<thead>
 						<tr>
 							<th><?= ('SN.') ?></th>
@@ -78,6 +82,19 @@
 						<?php endforeach; ?>
 					</tbody>
 				</table>
+				</div>
+			</div>
+			<div class="panel-footer">
+				<div class="paginator pull-right">
+					<ul class="pagination">
+						<?= $this->Paginator->first('<< ' . __('first')) ?>
+						<?= $this->Paginator->prev('< ' . __('previous')) ?>
+						<?= $this->Paginator->numbers() ?>
+						<?= $this->Paginator->next(__('next') . ' >') ?>
+						<?= $this->Paginator->last(__('last') . ' >>') ?>
+					</ul>
+					<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -85,19 +102,20 @@
 </div>
 <!-- END CONTENT FRAME -->
 <?php
-
-$this->Html->script('plugins/jquery-validation/jquery.validate.js',['block' =>'jsValidate']); 
-$this->Html->script('plugins/datatables/jquery.dataTables.min.js',['block' =>'jsDataTables']);
+echo $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']);
 ?>
- <script type="text/javascript" src="plugins/datatables/jquery.dataTables.min.js"></script>
+
 <script type="text/javascript">
-            var jvalidate = $("#jvalidate").validate({
+     alert();         var jvalidate = $("#jvalidate").validate({
                 ignore: [],
                 rules: {                                            
                         unit_name: {
                                 required: true,
                         },
                         longname: {
+                                required: true,
+                        },
+						shortname: {
                                 required: true,
                         },
                        
