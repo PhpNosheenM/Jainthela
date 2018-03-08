@@ -36,7 +36,9 @@ class UnitsController extends AppController
             }
             $this->Flash->error(__('The unit could not be saved. Please, try again.'));
         }
-		
+		$this->paginate =[
+				'limit' => 20
+		];
 		$units = $this->paginate($this->Units->find()->where(['city_id'=>$city_id]));
 		
         $this->set(compact('unit','units'));

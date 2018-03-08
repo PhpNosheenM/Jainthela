@@ -75,7 +75,7 @@
 							<td><?= h($unit->shortname) ?></td>
 							<td class="actions">
 								<?= $this->Form->button(__('<span class="fa fa-pencil"></span>'),['class'=>'btn btn-primary  btn-condensed btn-sm']) ?>
-								<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $unit->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete # {0}?', $unit->id),'escape'=>false]) ?>
+								<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $unit->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $unit->id),'escape'=>false]) ?>
 							</td>
 						</tr>
 						<?php endforeach; ?>
