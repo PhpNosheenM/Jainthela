@@ -22,6 +22,10 @@ class StatesController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('admin_portal');
+		$this->paginate= [
+					'limit'=>20
+		];
+		$states=$this->States->find();
         if($id)
 		{
 		    $state = $this->States->get($id);
@@ -47,11 +51,19 @@ class StatesController extends AppController
 			//pr($state); exit;
             $this->Flash->error(__('The state could not be saved. Please, try again.'));
         }
-        $this->paginate= [
-					'limit'=>20
-		];
-		$states = $this->paginate($this->States);
-		$this->set(compact('states','state'));
+		else if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$states->where([
+							'OR' => [
+									'States.name LIKE' => $search.'%',
+									'States.status LIKE' => $search.'%'
+							]
+			]);
+		}
+		
+		$states = $this->paginate($states);
+        $paginate_limit=$this->paginate['limit'];
+		$this->set(compact('states','state','paginate_limit'));
     }
 
     

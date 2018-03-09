@@ -23,6 +23,11 @@ class CategoriesController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$this->viewBuilder()->layout('admin_portal');
+		$this->paginate = [
+            'contain' => ['ParentCategories'],
+			'limit' => 20
+        ];
+		$categories = $this->Categories->find()->where(['Categories.city_id'=>$city_id]);
 		if($id)
 		{
 			$category = $this->Categories->get($id);
@@ -45,15 +50,22 @@ class CategoriesController extends AppController
             }
             $this->Flash->error(__('The category could not be saved. Please, try again.'));
         }
-        $parentCategories = $this->Categories->ParentCategories->find('list');
+		else if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$categories->where([
+							'OR' => [
+									'Categories.name LIKE' => $search.'%',
+									'Categories.status LIKE' => $search.'%',
+									'ParentCategories.name LIKE' => $search.'%'
+							]
+			]);
+		}
 		
-        $this->paginate = [
-            'contain' => ['ParentCategories'],
-			'limit' => 20
-        ];
-        $categories = $this->paginate($this->Categories);
-		//pr( $categories ); exit;
-        $this->set(compact('categories','category', 'parentCategories'));
+        $parentCategories = $this->Categories->ParentCategories->find('list')->where(['ParentCategories.city_id'=>$city_id]);
+        $categories = $this->paginate($categories);
+		
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('categories','category', 'parentCategories','paginate_limit'));
     }
 
    
