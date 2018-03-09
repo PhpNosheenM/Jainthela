@@ -31,8 +31,6 @@ use Cake\ORM\Entity;
  * @property string $status
  *
  * @property \App\Model\Entity\City $city
- * @property \App\Model\Entity\FirmState $firm_state
- * @property \App\Model\Entity\FirmCity $firm_city
  * @property \App\Model\Entity\Item[] $items
  * @property \App\Model\Entity\SellerItem[] $seller_items
  * @property \App\Model\Entity\SellerRating[] $seller_ratings
@@ -73,8 +71,6 @@ class Seller extends Entity
         'created_by' => true,
         'status' => true,
         'city' => true,
-        'firm_state' => true,
-        'firm_city' => true,
         'items' => true,
         'seller_items' => true,
         'seller_ratings' => true

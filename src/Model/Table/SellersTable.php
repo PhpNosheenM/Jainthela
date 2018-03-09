@@ -65,18 +65,20 @@ class SellersTable extends Table
         $validator
             ->integer('id')
             ->allowEmpty('id', 'create');
-
+		
+		
         $validator
             ->scalar('name')
             ->maxLength('name', 50)
             ->requirePresence('name', 'create')
             ->notEmpty('name');
 
-        $validator
+         $validator
             ->scalar('username')
             ->maxLength('username', 100)
             ->requirePresence('username', 'create')
-            ->notEmpty('username');
+            ->notEmpty('username')
+            ->add('username', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
         $validator
             ->scalar('password')
@@ -87,8 +89,9 @@ class SellersTable extends Table
         $validator
             ->email('email')
             ->requirePresence('email', 'create')
-            ->notEmpty('email');
-
+            ->notEmpty('email')
+            ->add('email', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
+		/*
         $validator
             ->scalar('mobile_no')
             ->maxLength('mobile_no', 20)
@@ -138,48 +141,15 @@ class SellersTable extends Table
         $validator
             ->date('registration_date')
             ->requirePresence('registration_date', 'create')
-            ->notEmpty('registration_date');
+            ->allowEmpty('registration_date');
 
-        $validator
-            ->date('termination_date')
-            ->requirePresence('termination_date', 'create')
-            ->notEmpty('termination_date');
-
-        $validator
-            ->scalar('termination_reason')
-            ->requirePresence('termination_reason', 'create')
-            ->notEmpty('termination_reason');
-
+        
         $validator
             ->scalar('breif_decription')
             ->requirePresence('breif_decription', 'create')
-            ->notEmpty('breif_decription');
+            ->allowEmpty('breif_decription');
 
-        $validator
-            ->scalar('passkey')
-            ->requirePresence('passkey', 'create')
-            ->notEmpty('passkey');
-
-        $validator
-            ->requirePresence('timeout', 'create')
-            ->notEmpty('timeout');
-
-        $validator
-            ->dateTime('created_on')
-            ->requirePresence('created_on', 'create')
-            ->notEmpty('created_on');
-
-        $validator
-            ->integer('created_by')
-            ->requirePresence('created_by', 'create')
-            ->notEmpty('created_by');
-
-        $validator
-            ->scalar('status')
-            ->maxLength('status', 10)
-            ->requirePresence('status', 'create')
-            ->notEmpty('status');
-
+        */
         return $validator;
     }
 

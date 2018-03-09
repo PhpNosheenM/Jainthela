@@ -21,7 +21,7 @@ class SellersController extends AppController
     public function index()
     {
         $this->paginate = [
-            'contain' => ['Cities', 'FirmStates', 'FirmCities']
+            'contain' => ['Cities']
         ];
         $sellers = $this->paginate($this->Sellers);
 
@@ -38,7 +38,7 @@ class SellersController extends AppController
     public function view($id = null)
     {
         $seller = $this->Sellers->get($id, [
-            'contain' => ['Cities', 'FirmStates', 'FirmCities', 'Items', 'SellerItems', 'SellerRatings']
+            'contain' => ['Cities','Items', 'SellerItems', 'SellerRatings']
         ]);
 
         $this->set('seller', $seller);
@@ -51,20 +51,25 @@ class SellersController extends AppController
      */
     public function add()
     {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$this->viewBuilder()->layout('admin_portal');
         $seller = $this->Sellers->newEntity();
         if ($this->request->is('post')) {
+			
             $seller = $this->Sellers->patchEntity($seller, $this->request->getData());
+			$seller->city_id=$city_id;
+			$seller->created_by=$user_id;
             if ($this->Sellers->save($seller)) {
                 $this->Flash->success(__('The seller has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
             }
+			//pr($seller); exit;
             $this->Flash->error(__('The seller could not be saved. Please, try again.'));
         }
-        $cities = $this->Sellers->Cities->find('list', ['limit' => 200]);
-        $firmStates = $this->Sellers->FirmStates->find('list', ['limit' => 200]);
-        $firmCities = $this->Sellers->FirmCities->find('list', ['limit' => 200]);
-        $this->set(compact('seller', 'cities', 'firmStates', 'firmCities'));
+        
+        $this->set(compact('seller'));
     }
 
     /**
@@ -88,10 +93,8 @@ class SellersController extends AppController
             }
             $this->Flash->error(__('The seller could not be saved. Please, try again.'));
         }
-        $cities = $this->Sellers->Cities->find('list', ['limit' => 200]);
-        $firmStates = $this->Sellers->FirmStates->find('list', ['limit' => 200]);
-        $firmCities = $this->Sellers->FirmCities->find('list', ['limit' => 200]);
-        $this->set(compact('seller', 'cities', 'firmStates', 'firmCities'));
+     
+        $this->set(compact('seller'));
     }
 
     /**

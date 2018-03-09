@@ -70,8 +70,6 @@ class SellersTableTest extends TestCase
         'app.sales_vouchers',
         'app.suppliers',
         'app.supplier_areas',
-        'app.firm_states',
-        'app.firm_cities',
         'app.seller_ratings'
     ];
 
