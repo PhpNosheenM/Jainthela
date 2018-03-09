@@ -33,7 +33,7 @@ class AwsFileComponent extends Component
 					]
 				]; 
 
-		//$s3Client = new S3Client($config);
+		$s3Client = new S3Client($config);
 	}
 	
 	/*  Store Image on s3             */
