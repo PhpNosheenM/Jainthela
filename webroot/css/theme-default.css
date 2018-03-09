@@ -3,14 +3,14 @@
 @import "jquery/jquery-ui.min.css";
 @import "bootstrap/bootstrap.min.css";
 @import "fontawesome/font-awesome.min.css";
-@import "summernote/summernote.css";
-@import "codemirror/codemirror.css";
-@import "nvd3/nv.d3.css";
-@import "mcustomscrollbar/jquery.mCustomScrollbar.css";
-@import "fullcalendar/fullcalendar.css";
-@import "blueimp/blueimp-gallery.min.css";
-@import "rickshaw/rickshaw.css";
-@import "dropzone/dropzone.css";
+/* @import "summernote/summernote.css"; */
+/* @import "codemirror/codemirror.css";
+@import "nvd3/nv.d3.css"; */
+/* @import "mcustomscrollbar/jquery.mCustomScrollbar.css"; */
+/* @import "fullcalendar/fullcalendar.css"; */
+/* @import "blueimp/blueimp-gallery.min.css"; */
+/* @import "rickshaw/rickshaw.css"; */
+/* @import "dropzone/dropzone.css"; */
 @import "introjs/introjs.min.css";
 @import "animate/animate.min.css";
 
@@ -2607,7 +2607,7 @@ body.page-container-boxed.wall_10 {
   color: #FFF;
   font-size: 13px;
   font-weight: 400;
-  padding: 15px 10px 15px 15px;
+  padding: 10px 10px 10px 20px;
   text-decoration: none;
   border-bottom: 1px solid #2f3c48;
   vertical-align: text-bottom;

@@ -1,4 +1,4 @@
-var site_settings = '<div class="ts-button">'
+var site_settings = '';/* '<div class="ts-button">'
         +'<span class="fa fa-cog"></span>'
     +'</div>'
     +'<div class="ts-body">'
@@ -58,12 +58,12 @@ var site_settings = '<div class="ts-button">'
                 +'<a href="#" data-wall="wall_10"><img src="img/backgrounds/wall_10.jpg"/></a>'    
             +'</div>'
         +'</div>'
-    +'</div>';
+    +'</div>'; */
     
-var settings_block = document.createElement('div');
-    settings_block.className = "theme-settings";
+//var settings_block = document.createElement('div');
+   // settings_block.className = "theme-settings";
    // settings_block.innerHTML = site_settings;
-    document.body.appendChild(settings_block);
+   // document.body.appendChild(settings_block);
 
 $(document).ready(function(){
 /*
@@ -87,59 +87,6 @@ $(document).ready(function(){
     
     $(".theme-settings input").on("ifClicked",function(){
         
-        var input   = $(this);
-
-        if(input.attr("name") != 'st_layout_boxed'){
-                
-            if(!input.prop("checked")){
-                theme_settings[input.attr("name")] = input.val();
-            }else{            
-                theme_settings[input.attr("name")] = 0;
-            }
-            
-        }else{
-            theme_settings[input.attr("name")] = input.val();
-        }
-
-        /* Rules */
-        if(input.attr("name") === 'st_sb_fixed'){
-            if(theme_settings.st_sb_fixed == 1){
-                theme_settings.st_sb_scroll = 1;
-            }else{
-                theme_settings.st_sb_scroll = 0;
-            }
-        }
-        
-        if(input.attr("name") === 'st_sb_scroll'){
-            if(theme_settings.st_sb_scroll == 1 && theme_settings.st_layout_boxed == 0){
-                theme_settings.st_sb_fixed = 1;
-            }else if(theme_settings.st_sb_scroll == 1 && theme_settings.st_layout_boxed == 1){
-                theme_settings.st_sb_fixed = -1;
-            }else if(theme_settings.st_sb_scroll == 0 && theme_settings.st_layout_boxed == 1){
-                theme_settings.st_sb_fixed = -1;
-            }else{
-                theme_settings.st_sb_fixed = 0;
-            }
-        }
-        
-        if(input.attr("name") === 'st_layout_boxed'){
-            if(theme_settings.st_layout_boxed == 1){                
-                theme_settings.st_head_fixed    = -1;
-                theme_settings.st_sb_fixed      = -1;
-                theme_settings.st_sb_scroll     = 1;
-                
-                $("#ts-wallpapers").show();
-            }else{
-                theme_settings.st_head_fixed    = 0;
-                theme_settings.st_sb_fixed      = 1;
-                theme_settings.st_sb_scroll     = 1;
-                
-                $("#ts-wallpapers").hide();
-            }
-        }
-        /* End Rules */
-        
-        set_settings(theme_settings,input.attr("name"));
         
     });
     

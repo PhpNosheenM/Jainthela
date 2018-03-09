@@ -6,10 +6,15 @@
 	<?php
 	
 	foreach($sidebar_menu as $menu):
+		$class='';
 		if(empty($menu->parent_id) && empty($menu->children))
 		{
+			if($this->request->params['controller']==$menu->controller && $this->request->params['action']==$menu->action)
+			{
+				$class='active';
+			}
 			?>
-			<li>
+			<li class="<?= $class ?>">
 				<?= $this->Html->link('<span class="'.$menu->icon.'"></span> <span class="xn-text">'.$menu->name.'</span>',array('controller'=>$menu->controller,'action'=>$menu->action),['escape'=>false]) ?>
 			</li> 
 			<?php

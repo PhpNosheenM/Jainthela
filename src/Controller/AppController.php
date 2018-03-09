@@ -96,13 +96,10 @@ class AppController extends Controller
 	public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-		$role_id=$this->Auth->User('role_id');
-		$this->set('role_id',$role_id);
 		
-		/////    Get Menu    //////
+		/*   Get Menu    */
 		$sidebar_menu=$this->SidebarMenu->getMenu();
-		//////////////////////////
 		
-		$this->set(compact('awsAccessKey','awsSecretAccessKey','bucketName','sidebar_menu'));
+		$this->set(compact('sidebar_menu'));
 	}
 }

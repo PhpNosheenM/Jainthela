@@ -7,6 +7,7 @@
     font-size: 13px;
 }
 </style>
+<?php $this->set('title', 'Unit'); ?>
 <div class="content-frame">
 	
 	<!-- START CONTENT FRAME TOP -->
