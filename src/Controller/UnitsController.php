@@ -12,8 +12,7 @@ use App\Controller\AppController;
  */
 class UnitsController extends AppController
 {
-
-    /**
+	/**
      * Index method
      *
      * @return \Cake\Http\Response|void
@@ -52,66 +51,6 @@ class UnitsController extends AppController
 		$units = $this->paginate($this->Units->find()->where(['city_id'=>$city_id]));
 		
         $this->set(compact('unit','units'));
-    }
-
-    /**
-     * View method
-     *
-     * @param string|null $id Unit id.
-     * @return \Cake\Http\Response|void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $unit = $this->Units->get($id, [
-            'contain' => ['ComboOfferDetails', 'ItemVariations']
-        ]);
-
-        $this->set('unit', $unit);
-    }
-
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
-     */
-    public function add()
-    {
-        $unit = $this->Units->newEntity();
-        if ($this->request->is('post')) {
-            $unit = $this->Units->patchEntity($unit, $this->request->getData());
-            if ($this->Units->save($unit)) {
-                $this->Flash->success(__('The unit has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The unit could not be saved. Please, try again.'));
-        }
-        $this->set(compact('unit'));
-    }
-
-    /**
-     * Edit method
-     *
-     * @param string|null $id Unit id.
-     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
-     */
-    public function edit($id = null)
-    {
-        $unit = $this->Units->get($id, [
-            'contain' => []
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $unit = $this->Units->patchEntity($unit, $this->request->getData());
-            if ($this->Units->save($unit)) {
-                $this->Flash->success(__('The unit has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The unit could not be saved. Please, try again.'));
-        }
-        $this->set(compact('unit'));
     }
 
     /**

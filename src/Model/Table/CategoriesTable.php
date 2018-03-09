@@ -86,9 +86,7 @@ class CategoriesTable extends Table
             ->requirePresence('name', 'create')
             ->notEmpty('name');
 
-       
-
-        return $validator;
+		return $validator;
     }
 
     /**
