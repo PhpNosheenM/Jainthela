@@ -22,6 +22,11 @@ class UnitsController extends AppController
 		$city_id=$this->Auth->User('city_id'); 
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('admin_portal');
+		$this->paginate =[
+				'limit' => 20
+		];
+		$units = $this->Units->find()->where(['city_id'=>$city_id]);
+		
 		if($id)
 		{
 		   $unit = $this->Units->get($id);
@@ -30,27 +35,38 @@ class UnitsController extends AppController
 		{
 			$unit = $this->Units->newEntity();
 		}
-        if ($this->request->is(['post','put'])) {
-            $unit = $this->Units->patchEntity($unit, $this->request->getData());
+        if ($this->request->is(['post','put'])) { 
+		
+			$unit = $this->Units->patchEntity($unit, $this->request->getData());
 			$unit->city_id=$city_id;
 			$unit->created_by=$user_id;
 			if($id)
 			{
 				$unit->id=$id;
 			}
-            if ($this->Units->save($unit)) {
-                $this->Flash->success(__('The unit has been saved.'));
+			if ($this->Units->save($unit)) {
+				$this->Flash->success(__('The unit has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The unit could not be saved. Please, try again.'));
+				return $this->redirect(['action' => 'index']);
+			}
+			$this->Flash->error(__('The unit could not be saved. Please, try again.'));
+            
         }
-		$this->paginate =[
-				'limit' => 20
-		];
-		$units = $this->paginate($this->Units->find()->where(['city_id'=>$city_id]));
+		else if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$units->where([
+							'OR' => [
+									'unit_name LIKE' => $search.'%',
+									'longname LIKE' => $search.'%',
+									'shortname LIKE' => $search.'%',
+									'status LIKE' => $search.'%'
+							]
+			]);
+		}
 		
-        $this->set(compact('unit','units'));
+		$units=$this->paginate($units);
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('unit','units','paginate_limit'));
     }
 
     /**

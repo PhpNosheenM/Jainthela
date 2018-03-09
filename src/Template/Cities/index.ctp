@@ -15,8 +15,26 @@
 			<h2><span class="fa fa-arrow-circle-o-left"></span> Cities</h2>
 		</div>                                      
 		<div class="pull-right">
-			<button class="btn btn-default content-frame-left-toggle"><span class="fa fa-bars"></span></button>
-		</div>                        
+			<div class="pull-left">
+				<?= $this->Form->create('Search',['type'=>'GET']) ?>
+					<div class="form-group">
+						<div class="input-group">
+							<div class="input-group-addon">
+								<span class="fa fa-search"></span>
+							</div>
+							<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
+							<div class="input-group-btn">
+								<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
+							</div>
+						</div>
+					</div>
+				<?= $this->Form->end() ?>
+			</div> 
+			<div class="pull-right">
+				<button class="btn btn-default content-frame-left-toggle"><span class="fa fa-bars"></span></button>           
+			</div>  
+			                       
+		</div>                    
 	</div>
 	<!-- END CONTENT FRAME TOP -->
 	
@@ -68,7 +86,8 @@
 						</tr>
 					</thead>
 					<tbody>                                            
-						<?php $i=0; foreach ($cities as $city): ?>
+						<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1);
+						foreach ($cities as $city): ?>
 						<tr>
 							<td><?= $this->Number->format(++$i) ?></td>
 							<td><?= h($city->state->name) ?></td>
@@ -87,11 +106,11 @@
 			<div class="panel-footer">
 				<div class="paginator pull-right">
 					<ul class="pagination">
-						<?= $this->Paginator->first('<< ' . __('first')) ?>
-						<?= $this->Paginator->prev('< ' . __('previous')) ?>
+						<?= $this->Paginator->first(__('First')) ?>
+						<?= $this->Paginator->prev(__('Previous')) ?>
 						<?= $this->Paginator->numbers() ?>
-						<?= $this->Paginator->next(__('next') . ' >') ?>
-						<?= $this->Paginator->last(__('last') . ' >>') ?>
+						<?= $this->Paginator->next(__('Next')) ?>
+						<?= $this->Paginator->last(__('Last')) ?>
 					</ul>
 					<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
 				</div>

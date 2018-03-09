@@ -22,6 +22,11 @@ class CitiesController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('admin_portal');
+		 $this->paginate = [
+            'contain' => ['States'],
+			'limit' =>20
+        ];
+		$cities = $this->Cities->find();
         if($id)
 		{
 		    $city = $this->Cities->get($id);
@@ -44,14 +49,21 @@ class CitiesController extends AppController
             }
             $this->Flash->error(__('The city could not be saved. Please, try again.'));
         }
-		
-        $this->paginate = [
-            'contain' => ['States'],
-			'limit' =>20
-        ];
-        $cities = $this->paginate($this->Cities);
+		else if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$cities->where([
+							'OR' => [
+									'States.name LIKE' => $search.'%',
+									'Cities.name LIKE' => $search.'%',
+									'Cities.status LIKE' => $search.'%'
+							]
+			]);
+		}
+       
+        $cities = $this->paginate($cities);
 		$states = $this->Cities->States->find('list');
-        $this->set(compact('cities','city','states'));
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('cities','city','states','paginate_limit'));
     }
 
 
