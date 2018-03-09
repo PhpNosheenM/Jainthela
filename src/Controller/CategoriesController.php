@@ -18,14 +18,42 @@ class CategoriesController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    public function index($id = null)
     {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$this->viewBuilder()->layout('admin_portal');
+		if($id)
+		{
+			$category = $this->Categories->get($id);
+		}
+		else{
+			$category = $this->Categories->newEntity();
+		}
+        if ($this->request->is(['post','put'])) {
+            $category = $this->Categories->patchEntity($category, $this->request->getData());
+			$category->city_id=$city_id;
+			if ($this->request->is('post')){
+				$category->created_by=$user_id;
+			}else{
+				$category->edited_by=$user_id;
+			}
+            if ($this->Categories->save($category)) {
+                $this->Flash->success(__('The category has been saved.'));
+
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The category could not be saved. Please, try again.'));
+        }
+        $parentCategories = $this->Categories->ParentCategories->find('list');
+		
         $this->paginate = [
-            'contain' => ['ParentCategories', 'Cities']
+            'contain' => ['ParentCategories'],
+			'limit' => 20
         ];
         $categories = $this->paginate($this->Categories);
-
-        $this->set(compact('categories'));
+		//pr( $categories ); exit;
+        $this->set(compact('categories','category', 'parentCategories'));
     }
 
     /**

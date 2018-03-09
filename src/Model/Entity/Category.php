@@ -16,11 +16,11 @@ use Cake\ORM\Entity;
  * @property int $created_by
  * @property \Cake\I18n\FrozenTime $edited_on
  * @property int $edited_by
- * @property int $status
+ * @property string $status
  *
- * @property \App\Model\Entity\ParentCategory $parent_category
+ * @property \App\Model\Entity\Category $parent_category
  * @property \App\Model\Entity\City $city
- * @property \App\Model\Entity\ChildCategory[] $child_categories
+ * @property \App\Model\Entity\Category[] $child_categories
  * @property \App\Model\Entity\Item[] $items
  * @property \App\Model\Entity\PromotionDetail[] $promotion_details
  * @property \App\Model\Entity\SellerItem[] $seller_items

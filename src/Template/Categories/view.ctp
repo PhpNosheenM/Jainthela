@@ -41,6 +41,10 @@
             <td><?= $category->has('city') ? $this->Html->link($category->city->name, ['controller' => 'Cities', 'action' => 'view', $category->city->id]) : '' ?></td>
         </tr>
         <tr>
+            <th scope="row"><?= __('Status') ?></th>
+            <td><?= h($category->status) ?></td>
+        </tr>
+        <tr>
             <th scope="row"><?= __('Id') ?></th>
             <td><?= $this->Number->format($category->id) ?></td>
         </tr>
@@ -59,10 +63,6 @@
         <tr>
             <th scope="row"><?= __('Edited By') ?></th>
             <td><?= $this->Number->format($category->edited_by) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Status') ?></th>
-            <td><?= $this->Number->format($category->status) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Created On') ?></th>

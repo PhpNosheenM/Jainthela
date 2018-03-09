@@ -27,7 +27,7 @@ class CategoriesFixture extends TestFixture
         'created_by' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'edited_on' => ['type' => 'timestamp', 'length' => null, 'null' => false, 'default' => '0000-00-00 00:00:00', 'comment' => '', 'precision' => null],
         'edited_by' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
-        'status' => ['type' => 'tinyinteger', 'length' => 2, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '1 for continoue and 0 for delete', 'precision' => null],
+        'status' => ['type' => 'string', 'length' => 10, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '1 for continoue and 0 for delete', 'precision' => null, 'fixed' => null],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
         ],
@@ -51,11 +51,11 @@ class CategoriesFixture extends TestFixture
             'lft' => 1,
             'rght' => 1,
             'city_id' => 1,
-            'created_on' => 1520404596,
+            'created_on' => 1520573527,
             'created_by' => 1,
-            'edited_on' => 1520404596,
+            'edited_on' => 1520573527,
             'edited_by' => 1,
-            'status' => 1
+            'status' => 'Lorem ip'
         ],
     ];
 }

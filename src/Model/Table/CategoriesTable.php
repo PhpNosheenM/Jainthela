@@ -86,29 +86,7 @@ class CategoriesTable extends Table
             ->requirePresence('name', 'create')
             ->notEmpty('name');
 
-        $validator
-            ->dateTime('created_on')
-            ->requirePresence('created_on', 'create')
-            ->notEmpty('created_on');
-
-        $validator
-            ->integer('created_by')
-            ->requirePresence('created_by', 'create')
-            ->notEmpty('created_by');
-
-        $validator
-            ->dateTime('edited_on')
-            ->requirePresence('edited_on', 'create')
-            ->notEmpty('edited_on');
-
-        $validator
-            ->integer('edited_by')
-            ->requirePresence('edited_by', 'create')
-            ->notEmpty('edited_by');
-
-        $validator
-            ->requirePresence('status', 'create')
-            ->notEmpty('status');
+       
 
         return $validator;
     }
