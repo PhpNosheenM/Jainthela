@@ -46,6 +46,13 @@
 							</div>
 							
 							<div class="form-group">                                        
+								<label class="col-md-3 control-label">Mobile</label>
+								<div class="col-md-9 col-xs-12">
+									<?= $this->Form->control('mobile_no',['class'=>'form-control','placeholder'=>'Mobile No','label'=>false]) ?>
+								</div>
+							</div>
+							
+							<div class="form-group">                                        
 								<label class="col-md-3 control-label">Status</label>
 								<div class="col-md-9 col-xs-12">
 									<?php $options['Active'] = 'Active'; ?>
