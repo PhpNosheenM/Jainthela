@@ -52,7 +52,12 @@
 						<label>Parent Category</label>
 						<?= $this->Form->select('parent_id',$parentCategories,['class'=>'form-control select','label'=>false,'empty' => '--Select--']) ?>
 					</div>
-					
+					<div class="form-group">
+						<label class="col-md-2 control-label"></label>
+						<div class="col-md-10">
+							<input type="file" class="fileinput btn-danger" name="filename3" id="filename3" data-filename-placement="inside" title="File name goes inside"/>
+						</div>
+					</div>
 					<div class="form-group">
 						<label>Status</label>
 						<?php $options['Active'] = 'Active'; ?>

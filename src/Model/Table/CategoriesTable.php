@@ -85,6 +85,24 @@ class CategoriesTable extends Table
             ->maxLength('name', 100)
             ->requirePresence('name', 'create')
             ->notEmpty('name');
+			
+		$validator
+            ->scalar('show_sub_category')
+            ->maxLength('show_sub_category', 10)
+            ->requirePresence('show_sub_category', 'create')
+            ->notEmpty('show_sub_category');
+
+        $validator
+            ->scalar('app_image')
+            ->maxLength('app_image', 50)
+            ->requirePresence('app_image', 'create')
+            ->notEmpty('app_image');
+
+        $validator
+            ->scalar('web_image')
+            ->maxLength('web_image', 50)
+            ->requirePresence('web_image', 'create')
+            ->notEmpty('web_image');
 
 		return $validator;
     }
