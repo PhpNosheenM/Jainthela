@@ -87,6 +87,9 @@ class SellersController extends AppController
      */
     public function edit($id = null)
     {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$this->viewBuilder()->layout('admin_portal');
         $seller = $this->Sellers->get($id, [
             'contain' => []
         ]);

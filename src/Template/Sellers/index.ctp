@@ -15,9 +15,26 @@
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title"><strong>Seller</strong></h3>
-					<ul class="panel-controls">
-						<li><a href="#" class="panel-remove"><span class="fa fa-times"></span></a></li>
-					</ul>
+					<div class="pull-right">
+						<div class="pull-left">
+							<?= $this->Form->create('Search',['type'=>'GET']) ?>
+								<div class="form-group" style="display:inline-table">
+									<div class="input-group">
+										<div class="input-group-addon">
+											<span class="fa fa-search"></span>
+										</div>
+										<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
+										<div class="input-group-btn">
+											<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
+										</div>
+									</div>
+								</div>
+							<?= $this->Form->end() ?>
+						</div> 
+						<div class="pull-right">
+							<button class="btn btn-default content-frame-left-toggle"><span class="fa fa-bars"></span></button>           
+						</div>                      
+					</div> 
 				</div>
 				<div class="panel-body">    
 					<div class="table-responsive">
@@ -53,7 +70,7 @@
 									<td class="actions">
 										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'edit', $seller->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
 										<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $seller->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $seller->id),'escape'=>false]) ?>
-										<?= $this->Html->link(__('View'), ['action' => 'view', $seller->id]) ?>
+									
 									</td>
 								</tr>
 								<?php endforeach; ?>
