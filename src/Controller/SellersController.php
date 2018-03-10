@@ -27,7 +27,23 @@ class SellersController extends AppController
             'contain' => ['Cities'],
 			'limit' => 20
         ];
-        $sellers = $this->paginate($this->Sellers);
+        $sellers = $this->Sellers->find()->where(['Sellers.city_id'=>$city_id]);
+		if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$sellers->where([
+							'OR' => [
+									'Sellers.name LIKE' => $search.'%',
+									'Sellers.status LIKE' => $search.'%',
+									'Sellers.firm_name LIKE' => $search.'%',
+									'Sellers.email LIKE' => $search.'%',
+									'Sellers.mobile_no LIKE' => $search.'%',
+									'Sellers.gstin LIKE' => $search.'%',
+									'Sellers.gstin_holder_name LIKE' => $search.'%',
+									'Sellers.registration_date' => $search.'%'
+							]
+			]);
+		}
+		$sellers= $this->paginate($sellers);
 		$paginate_limit=$this->paginate['limit'];
         $this->set(compact('sellers','paginate_limit'));
     }
