@@ -35,7 +35,7 @@ class UnitsTable extends Table
         parent::initialize($config);
 
         $this->setTable('units');
-        $this->setDisplayField('id');
+        $this->setDisplayField('unit_name');
         $this->setPrimaryKey('id');
 
         $this->belongsTo('Cities', [
