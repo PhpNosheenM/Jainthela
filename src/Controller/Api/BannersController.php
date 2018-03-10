@@ -16,7 +16,10 @@ class BannersController extends AppController
 	
 	 public function view(){
 		 
-		 
-		 
+		$this->set([
+			'success' => true,
+			'data' => $this->Banners->find(),
+			'_serialize' => ['success', 'data']
+		]);
 	 }
 }
