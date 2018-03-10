@@ -54,8 +54,14 @@
 					</div>
 					<div class="form-group">
 						<div class="col-md-12">
-							<label>Simple</label><br/>
-							<input type="file" multiple id="file-simple"/>
+							<label>App Image</label><br/>
+							<input type="file" id="file-app"/>
+						</div>                                            
+					</div>
+					<div class="form-group">
+						<div class="col-md-12">
+							<label>Web Image</label><br/>
+							<input type="file" id="file-web"/>
 						</div>                                            
 					</div>
 					<div class="form-group">
@@ -124,12 +130,11 @@
 		</div>
 	</div>
 	<!-- END CONTENT FRAME BODY -->
-</div>
+</div> 
 <!-- END CONTENT FRAME -->
-<?= $this->Html->script('plugins/bootstrap/bootstrap-file-input.js',['block'=>'jsFileInput']) ?>
+<?= $this->Html->script('plugins/fileinput/fileinput.min.js',['block'=>'jsFileInput']) ?>
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
-<?= $this->Html->script('demo_file_handling.js',['block'=>'js_demo_file_handling']) ?>
 <?php
    $js='var jvalidate = $("#jvalidate").validate({
 		ignore: [],
@@ -139,6 +144,19 @@
 				},
 				
 			}                                        
-		});';  
+		});
+		$("#file-web").fileinput({
+            showUpload: false,
+            showCaption: false,
+            browseClass: "btn btn-danger",
+            fileType: "any"
+		}); 
+		$("#file-app").fileinput({
+            showUpload: false,
+            showCaption: false,
+            browseClass: "btn btn-danger",
+            fileType: "any"
+		}); 
+		';  
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		
 ?>
