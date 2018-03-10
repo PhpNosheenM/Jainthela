@@ -66,16 +66,7 @@ class BrandsTable extends Table
             ->requirePresence('status', 'create')
             ->notEmpty('status');
 
-        $validator
-            ->integer('created_by')
-            ->requirePresence('created_by', 'create')
-            ->notEmpty('created_by');
-
-        $validator
-            ->dateTime('created_on')
-            ->requirePresence('created_on', 'create')
-            ->notEmpty('created_on');
-
+      
         return $validator;
     }
 

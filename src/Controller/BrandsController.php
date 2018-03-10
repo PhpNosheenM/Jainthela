@@ -18,14 +18,54 @@ class BrandsController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
-    {
-        $this->paginate = [
-            'contain' => ['Cities']
-        ];
-        $brands = $this->paginate($this->Brands);
+    public function index($id = null)
+	 {
+		$city_id=$this->Auth->User('city_id'); 
+		$user_id=$this->Auth->User('id');
+		$this->viewBuilder()->layout('admin_portal');
+		$this->paginate =[
+				'limit' => 20
+		];
+		$brands = $this->Brands->find()->where(['city_id'=>$city_id]);
+		
+		if($id)
+		{
+		   $brand = $this->Brands->get($id);
+		}
+		else
+		{
+			$brand = $this->Brands->newEntity();
+		}
+        if ($this->request->is(['post','put'])) { 
+			$brand = $this->Brands->patchEntity($brand, $this->request->getData());
+			$brand->city_id=$city_id;
+			$brand->created_by=$user_id;
+			if($id)
+			{
+				$brand->id=$id;
+			}
+			if ($this->Brands->save($brand)) {
+				$this->Flash->success(__('The brand has been saved.'));
 
-        $this->set(compact('brands'));
+				return $this->redirect(['action' => 'index']);
+			}
+			$this->Flash->error(__('The unit could not be saved. Please, try again.'));
+            
+        }
+		else if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$brands->where([
+							'OR' => [
+									'name LIKE' => $search.'%',
+									'status LIKE' => $search.'%'
+							]
+			]);
+		}
+		
+		$brands=$this->paginate($brands);
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('brand','brands','paginate_limit'));
+        
     }
 
     /**
