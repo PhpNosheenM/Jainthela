@@ -43,7 +43,12 @@ class CustomersFixture extends TestFixture
         'discount_expiry' => ['type' => 'timestamp', 'length' => null, 'null' => false, 'default' => '0000-00-00 00:00:00', 'comment' => '', 'precision' => null],
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
+<<<<<<< HEAD
             'username' => ['type' => 'unique', 'columns' => ['username'], 'length' => []],
+=======
+            'email' => ['type' => 'unique', 'columns' => ['email'], 'length' => []],
+            'mobile_no' => ['type' => 'unique', 'columns' => ['mobile_no'], 'length' => []],
+>>>>>>> c1f798f59f30424efaae54662b11f18606369abc
         ],
         '_options' => [
             'engine' => 'InnoDB',
@@ -73,7 +78,11 @@ class CustomersFixture extends TestFixture
             'discount_in_percentage' => 1.5,
             'otp' => 'Lorem ip',
             'timeout' => 1,
+<<<<<<< HEAD
             'created_on' => 1520683936,
+=======
+            'created_on' => 1520674793,
+>>>>>>> c1f798f59f30424efaae54662b11f18606369abc
             'created_by' => 1,
             'active' => 1,
             'gstin' => 'Lorem ipsum dolor sit amet',
@@ -81,8 +90,13 @@ class CustomersFixture extends TestFixture
             'gstin_holder_address' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
             'firm_name' => 'Lorem ipsum dolor sit amet',
             'firm_address' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.',
+<<<<<<< HEAD
             'discount_created_on' => 1520683936,
             'discount_expiry' => 1520683936
+=======
+            'discount_created_on' => 1520674793,
+            'discount_expiry' => 1520674793
+>>>>>>> c1f798f59f30424efaae54662b11f18606369abc
         ],
     ];
 }

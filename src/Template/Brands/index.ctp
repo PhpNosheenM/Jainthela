@@ -7,13 +7,13 @@
     font-size: 13px;
 }
 </style>
-<?php $this->set('title', 'Category'); ?>
+<?php $this->set('title', 'Brand'); ?>
 <div class="content-frame">
 	
 	<!-- START CONTENT FRAME TOP -->
 	<div class="content-frame-top">                        
 		<div class="page-title">                    
-			<h2><span class="fa fa-arrow-circle-o-left"></span> Categories</h2>
+			<h2><span class="fa fa-arrow-circle-o-left"></span> Brands</h2>
 		</div>                                      
 		<div class="pull-right">
 			<div class="pull-left">
@@ -33,7 +33,8 @@
 			</div> 
 			<div class="pull-right">
 				<button class="btn btn-default content-frame-left-toggle"><span class="fa fa-bars"></span></button>           
-			</div>                      
+			</div>  
+			                       
 		</div>                        
 	</div>
 	<!-- END CONTENT FRAME TOP -->
@@ -41,22 +42,11 @@
 	<!-- START CONTENT FRAME LEFT -->
 	<div class="content-frame-left">
 		<div class="panel panel-default">
-			<?= $this->Form->create($category,['id'=>"jvalidate"]) ?>
+			<?= $this->Form->create($brand,['id'=>"jvalidate"]) ?>
 				<div class="panel-body">
 					<div class="form-group">
-						<label>Category Name</label>
-						<?= $this->Form->control('name',['class'=>'form-control','placeholder'=>'Category Name','label'=>false]) ?>
-						<span class="help-block"></span>
-					</div>
-					<div class="form-group">
-						<label>Parent Category</label>
-						<?= $this->Form->select('parent_id',$parentCategories,['class'=>'form-control select','label'=>false,'empty' => '--Select--']) ?>
-					</div>
-					<div class="form-group">
-						<label class="col-md-2 control-label"></label>
-						<div class="col-md-10">
-							<input type="file" class="fileinput btn-danger" name="filename3" id="filename3" data-filename-placement="inside" title="File name goes inside"/>
-						</div>
+						<label>Brand Name</label>
+						<?= $this->Form->control('name',['class'=>'form-control','placeholder'=>'Brand Name','label'=>false]) ?>
 					</div>
 					<div class="form-group">
 						<label>Status</label>
@@ -66,9 +56,9 @@
 					</div>
 				</div>
 				<div class="panel-footer">
-					<div class="col-md-offset-3 col-md-4">
+					<center>
 						<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
-					</div>
+					</center>
 				</div>
 			<?= $this->Form->end() ?>
 		</div>
@@ -79,29 +69,29 @@
 	<div class="content-frame-body">
 		<div class="panel panel-default">
 			<div class="panel-body">
+				<?php $page_no=$this->Paginator->current('Brands'); $page_no=($page_no-1)*20; ?>
 				<div class="table-responsive">
 				<table class="table table-bordered">
 					<thead>
 						<tr>
 							<th><?= ('SN.') ?></th>
-							<th><?= ('Category Name') ?></th>
-							<th><?= ('Parent Category') ?></th>
+							<th><?= ('Brand Name') ?></th>
 							<th><?= ('Status') ?></th>
 							
 							<th scope="col" class="actions"><?= __('Actions') ?></th>
 						</tr>
 					</thead>
 					<tbody>                                            
-						<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); 
-						foreach ($categories as $category): ?>
+						<?php 
+						$i = $paginate_limit*($this->Paginator->counter('{{page}}')-1);
+						foreach ($brands as $brand): ?>
 						<tr>
 							<td><?= $this->Number->format(++$i) ?></td>
-							<td><?= h($category->name) ?></td>
-							<td><?= $category->has('parent_category') ? h($category->parent_category->name) : ''  ?></td>
-							<td><?= h($category->status) ?></td>
+							<td><?= h($brand->name) ?></td>
+							<td><?= h($brand->status) ?></td>
 							<td class="actions">
-								<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $category->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
-								<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $category->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $category->id),'escape'=>false]) ?>
+								<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $brand->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+								<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $brand->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $brand->id),'escape'=>false]) ?>
 							</td>
 						</tr>
 						<?php endforeach; ?>
@@ -132,10 +122,16 @@
    $js='var jvalidate = $("#jvalidate").validate({
 		ignore: [],
 		rules: {                                            
-				name: {
+				unit_name: {
 						required: true,
 				},
-				
+				longname: {
+						required: true,
+				},
+				shortname: {
+						required: true,
+				},
+			   
 			}                                        
 		});';  
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		
