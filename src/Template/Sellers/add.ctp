@@ -23,7 +23,12 @@
 									<?= $this->Form->control('name',['class'=>'form-control','placeholder'=>'Seller Name','label'=>false]) ?>
 								</div>
 							</div>
-							
+							<div class="form-group">
+								<label class="col-md-3 control-label">Firm Name</label>
+								<div class="col-md-9">                                            
+									<?= $this->Form->control('firm_name',['class'=>'form-control','placeholder'=>'Firm Name','label'=>false]) ?>
+								</div>
+							</div>
 							<div class="form-group">
 								<label class="col-md-3 control-label">Firm Address</label>
 								<div class="col-md-9 col-xs-12"> 
@@ -43,6 +48,17 @@
 								</div>
 							</div>
 							<div class="form-group">                                        
+								<label class="col-md-3 control-label">Status</label>
+								<div class="col-md-9 col-xs-12">
+									<?php $options['Active'] = 'Active'; ?>
+								<?php $options['Deactive'] = 'Deactive'; ?>
+								<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
+								</div>
+							</div>
+							
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">                                        
 								<label class="col-md-3 control-label">GSTIN</label>
 								<div class="col-md-9 col-xs-12">
 									<?= $this->Form->control('gstin',['class'=>'form-control','placeholder'=>'GSTIN','label'=>false]) ?>
@@ -54,12 +70,10 @@
 									<?= $this->Form->control('gstin_holder_name',['class'=>'form-control','placeholder'=>'GSTIN Holder Name','label'=>false]) ?>
 								</div>
 							</div>
-						</div>
-						<div class="col-md-6">
 							<div class="form-group">
-								<label class="col-md-3 control-label">Firm Name</label>
-								<div class="col-md-9">                                            
-									<?= $this->Form->control('firm_name',['class'=>'form-control','placeholder'=>'Firm Name','label'=>false]) ?>
+								<label class="col-md-3 control-label">GSTIN Holder Address</label>
+								<div class="col-md-9 col-xs-12"> 
+									<?= $this->Form->control('gstin_holder_address',['class'=>'form-control','placeholder'=>'GSTIN Holder Address','label'=>false,'rows'=>'4']) ?>
 								</div>
 							</div>
 							<div class="form-group">                                        
@@ -107,12 +121,7 @@
 							</div>
 							
 							
-							<div class="form-group">
-								<label class="col-md-3 control-label">GSTIN Holder Address</label>
-								<div class="col-md-9 col-xs-12"> 
-									<?= $this->Form->control('gstin_holder_address',['class'=>'form-control','placeholder'=>'GSTIN Holder Address','label'=>false,'rows'=>'4']) ?>
-								</div>
-							</div>
+							
 						</div>
 						
 					</div>
@@ -120,7 +129,7 @@
 				</div>
 				<div class="panel-footer">
 					<center>
-					<button class="btn btn-primary pull-right">Submit</button>
+						<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
 					</center>
 				</div>
 			</div>

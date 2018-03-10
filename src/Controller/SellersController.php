@@ -20,12 +20,16 @@ class SellersController extends AppController
      */
     public function index()
     {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$this->viewBuilder()->layout('admin_portal');
         $this->paginate = [
-            'contain' => ['Cities']
+            'contain' => ['Cities'],
+			'limit' => 20
         ];
         $sellers = $this->paginate($this->Sellers);
-
-        $this->set(compact('sellers'));
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('sellers','paginate_limit'));
     }
 
     /**
@@ -37,6 +41,7 @@ class SellersController extends AppController
      */
     public function view($id = null)
     {
+		
         $seller = $this->Sellers->get($id, [
             'contain' => ['Cities','Items', 'SellerItems', 'SellerRatings']
         ]);
@@ -60,6 +65,7 @@ class SellersController extends AppController
             $seller = $this->Sellers->patchEntity($seller, $this->request->getData());
 			$seller->city_id=$city_id;
 			$seller->created_by=$user_id;
+			$seller->registration_date=date('Y-m-d');
             if ($this->Sellers->save($seller)) {
                 $this->Flash->success(__('The seller has been saved.'));
 
