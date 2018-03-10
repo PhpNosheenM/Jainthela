@@ -1,6 +1,6 @@
 <?php
 namespace App\Model\Entity;
-
+use Cake\Auth\DefaultPasswordHasher;
 use Cake\ORM\Entity;
 
 /**
@@ -10,7 +10,8 @@ use Cake\ORM\Entity;
  * @property int $city_id
  * @property string $name
  * @property string $email
- * @property string $mobile_no
+ * @property string $username
+ * @property string $password
  * @property string $latitude
  * @property string $longitude
  * @property string $device_id_name
@@ -21,7 +22,7 @@ use Cake\ORM\Entity;
  * @property int $timeout
  * @property \Cake\I18n\FrozenTime $created_on
  * @property int $created_by
- * @property string $status
+ * @property int $active
  * @property string $gstin
  * @property string $gstin_holder_name
  * @property string $gstin_holder_address
@@ -46,6 +47,10 @@ use Cake\ORM\Entity;
  */
 class Customer extends Entity
 {
+	protected function _setPassword($password)
+    {
+        return (new DefaultPasswordHasher)->hash($password);
+    }
 
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -60,7 +65,8 @@ class Customer extends Entity
         'city_id' => true,
         'name' => true,
         'email' => true,
-        'mobile_no' => true,
+        'username' => true,
+        'password' => true,
         'latitude' => true,
         'longitude' => true,
         'device_id_name' => true,
@@ -71,7 +77,7 @@ class Customer extends Entity
         'timeout' => true,
         'created_on' => true,
         'created_by' => true,
-        'status' => true,
+        'active' => true,
         'gstin' => true,
         'gstin_holder_name' => true,
         'gstin_holder_address' => true,
@@ -92,5 +98,14 @@ class Customer extends Entity
         'sales_invoices' => true,
         'seller_ratings' => true,
         'wallets' => true
+    ];
+
+    /**
+     * Fields that are excluded from JSON versions of the entity.
+     *
+     * @var array
+     */
+    protected $_hidden = [
+        'password'
     ];
 }

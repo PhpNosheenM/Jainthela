@@ -55,8 +55,12 @@
             <td><?= h($customer->email) ?></td>
         </tr>
         <tr>
-            <th scope="row"><?= __('Mobile No') ?></th>
-            <td><?= h($customer->mobile_no) ?></td>
+            <th scope="row"><?= __('Username') ?></th>
+            <td><?= h($customer->username) ?></td>
+        </tr>
+        <tr>
+            <th scope="row"><?= __('Password') ?></th>
+            <td><?= h($customer->password) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Latitude') ?></th>
@@ -73,10 +77,6 @@
         <tr>
             <th scope="row"><?= __('Otp') ?></th>
             <td><?= h($customer->otp) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Status') ?></th>
-            <td><?= h($customer->status) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Gstin') ?></th>
@@ -105,6 +105,10 @@
         <tr>
             <th scope="row"><?= __('Created By') ?></th>
             <td><?= $this->Number->format($customer->created_by) ?></td>
+        </tr>
+        <tr>
+            <th scope="row"><?= __('Active') ?></th>
+            <td><?= $this->Number->format($customer->active) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Created On') ?></th>

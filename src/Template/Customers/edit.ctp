@@ -50,7 +50,8 @@
             echo $this->Form->control('city_id', ['options' => $cities]);
             echo $this->Form->control('name');
             echo $this->Form->control('email');
-            echo $this->Form->control('mobile_no');
+            echo $this->Form->control('username');
+            echo $this->Form->control('password');
             echo $this->Form->control('latitude');
             echo $this->Form->control('longitude');
             echo $this->Form->control('device_id_name');
@@ -61,7 +62,7 @@
             echo $this->Form->control('timeout');
             echo $this->Form->control('created_on');
             echo $this->Form->control('created_by');
-            echo $this->Form->control('status');
+            echo $this->Form->control('active');
             echo $this->Form->control('gstin');
             echo $this->Form->control('gstin_holder_name');
             echo $this->Form->control('gstin_holder_address');

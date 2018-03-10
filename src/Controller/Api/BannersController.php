@@ -13,4 +13,10 @@ class BannersController extends AppController
         parent::initialize();
         $this->Auth->allow(['view']);
     }
+	
+	 public function view(){
+		 
+		 
+		 
+	 }
 }

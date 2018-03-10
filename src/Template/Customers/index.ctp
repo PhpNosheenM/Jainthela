@@ -45,7 +45,8 @@
                 <th scope="col"><?= $this->Paginator->sort('city_id') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('name') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('email') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('mobile_no') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('username') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('password') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('latitude') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('longitude') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('referral_code') ?></th>
@@ -54,7 +55,7 @@
                 <th scope="col"><?= $this->Paginator->sort('timeout') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('created_on') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('created_by') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('status') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('active') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('gstin') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('gstin_holder_name') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('firm_name') ?></th>
@@ -70,7 +71,8 @@
                 <td><?= $customer->has('city') ? $this->Html->link($customer->city->name, ['controller' => 'Cities', 'action' => 'view', $customer->city->id]) : '' ?></td>
                 <td><?= h($customer->name) ?></td>
                 <td><?= h($customer->email) ?></td>
-                <td><?= h($customer->mobile_no) ?></td>
+                <td><?= h($customer->username) ?></td>
+                <td><?= h($customer->password) ?></td>
                 <td><?= h($customer->latitude) ?></td>
                 <td><?= h($customer->longitude) ?></td>
                 <td><?= h($customer->referral_code) ?></td>
@@ -79,7 +81,7 @@
                 <td><?= $this->Number->format($customer->timeout) ?></td>
                 <td><?= h($customer->created_on) ?></td>
                 <td><?= $this->Number->format($customer->created_by) ?></td>
-                <td><?= h($customer->status) ?></td>
+                <td><?= $this->Number->format($customer->active) ?></td>
                 <td><?= h($customer->gstin) ?></td>
                 <td><?= h($customer->gstin_holder_name) ?></td>
                 <td><?= h($customer->firm_name) ?></td>

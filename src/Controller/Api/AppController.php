@@ -39,8 +39,10 @@ class AppController extends Controller
                     'queryDatasource' => true
                 ]
             ],
+			
             'unauthorizedRedirect' => false,
             'checkAuthIn' => 'Controller.initialize'
         ]);
     }
 }
+?>

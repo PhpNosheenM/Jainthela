@@ -102,7 +102,7 @@ class CustomersTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
-        $validator
+       /*  $validator
             ->scalar('name')
             ->maxLength('name', 100)
             ->requirePresence('name', 'create')
@@ -114,10 +114,17 @@ class CustomersTable extends Table
             ->notEmpty('email');
 
         $validator
-            ->scalar('mobile_no')
-            ->maxLength('mobile_no', 20)
-            ->requirePresence('mobile_no', 'create')
-            ->notEmpty('mobile_no');
+            ->scalar('username')
+            ->maxLength('username', 20)
+            ->requirePresence('username', 'create')
+            ->notEmpty('username')
+            ->add('username', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
+
+        $validator
+            ->scalar('password')
+            ->maxLength('password', 300)
+            ->requirePresence('password', 'create')
+            ->notEmpty('password');
 
         $validator
             ->scalar('latitude')
@@ -173,10 +180,9 @@ class CustomersTable extends Table
             ->notEmpty('created_by');
 
         $validator
-            ->scalar('status')
-            ->maxLength('status', 10)
-            ->requirePresence('status', 'create')
-            ->notEmpty('status');
+            ->integer('active')
+            ->requirePresence('active', 'create')
+            ->notEmpty('active');
 
         $validator
             ->scalar('gstin')
@@ -214,11 +220,17 @@ class CustomersTable extends Table
         $validator
             ->dateTime('discount_expiry')
             ->requirePresence('discount_expiry', 'create')
-            ->notEmpty('discount_expiry');
+            ->notEmpty('discount_expiry'); */
 
         return $validator;
     }
+public function findAuth(\Cake\ORM\Query $query, array $options)
+	{
+		$query
+			->where(['Customers.active' => 1]);
 
+		return $query;
+	}
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.
@@ -229,6 +241,7 @@ class CustomersTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->isUnique(['email']));
+        $rules->add($rules->isUnique(['username']));
         $rules->add($rules->existsIn(['city_id'], 'Cities'));
 
         return $rules;
