@@ -7,6 +7,7 @@
     font-size: 13px;
 }
 </style>
+<?php $this->set('title', 'State'); ?>
 <div class="content-frame">
 	
 	<!-- START CONTENT FRAME TOP -->
@@ -17,7 +18,7 @@
 		<div class="pull-right">
 			<div class="pull-left">
 				<?= $this->Form->create('Search',['type'=>'GET']) ?>
-					<div class="form-group">
+					<div class="form-group" style="display:inline-table">
 						<div class="input-group">
 							<div class="input-group-addon">
 								<span class="fa fa-search"></span>
