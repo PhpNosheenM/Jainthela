@@ -15,26 +15,23 @@
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title"><strong>Seller</strong></h3>
-					<div class="pull-right">
-						<div class="pull-left">
-							<?= $this->Form->create('Search',['type'=>'GET']) ?>
-								<div class="form-group" style="display:inline-table">
-									<div class="input-group">
-										<div class="input-group-addon">
-											<span class="fa fa-search"></span>
-										</div>
-										<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
-										<div class="input-group-btn">
-											<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
-										</div>
-									</div>
-								</div>
-							<?= $this->Form->end() ?>
-						</div> 
-						<div class="pull-right">
-							<button class="btn btn-default content-frame-left-toggle"><span class="fa fa-bars"></span></button>           
-						</div>                      
-					</div> 
+				<div class="pull-right">
+			<div class="pull-left">
+				<?= $this->Form->create('Search',['type'=>'GET']) ?>
+					<div class="form-group" style="display:inline-table">
+						<div class="input-group">
+							<div class="input-group-addon">
+								<span class="fa fa-search"></span>
+							</div>
+							<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
+							<div class="input-group-btn">
+								<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
+							</div>
+						</div>
+					</div>
+				<?= $this->Form->end() ?>
+			</div> 
+		</div> 	
 				</div>
 				<div class="panel-body">    
 					<div class="table-responsive">
@@ -48,13 +45,13 @@
 									<th><?= ('mobile no') ?></th>
 									<th><?= ('GSTIN') ?></th>
 									<th><?= ('GSTIN Holder') ?></th>
-									<th><?= ('Registration Date') ?></th>
 									<th><?= ('status') ?></th>
 									<th scope="col" class="actions"><?= __('Actions') ?></th>
 								</tr>
 							</thead>
 							<tbody>                                            
 								<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); ?>
+								
 								  <?php foreach ($sellers as $seller): ?>
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
@@ -64,8 +61,6 @@
 									<td><?= h($seller->mobile_no) ?></td>
 									<td><?= h($seller->gstin) ?></td>
 									<td><?= h($seller->gstin_holder_name) ?></td>
-									<td><?= h($seller->registration_date) ?></td>
-									
 									<td><?= h($seller->status) ?></td>
 									<td class="actions">
 										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'edit', $seller->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
