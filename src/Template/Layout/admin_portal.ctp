@@ -90,15 +90,18 @@
         <!-- START THIS PAGE PLUGINS-->        
 		<?= $this->Html->script('plugins/icheck/icheck.min.js') ?>  
 		<?= $this->Html->script('plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js') ?>  
+		<?= $this->fetch('jsFileInput') ?>
 		<?= $this->fetch('jsSelect') ?>
 		<?= $this->fetch('jsValidate') ?>
+		
         <!-- END THIS PAGE PLUGINS-->        
 
         <!-- START TEMPLATE -->
 		
 		<?= $this->Html->script('settings.js') ?>  
 		<?= $this->Html->script('plugins.js') ?>  
-		<?= $this->Html->script('actions.js') ?>       
+		<?= $this->Html->script('actions.js') ?>  
+		<?= $this->fetch('js_demo_file_handling') ?>		
         <!-- END TEMPLATE -->
 		<?= $this->fetch('scriptBottom') ?>
     <!-- END SCRIPTS -->         
