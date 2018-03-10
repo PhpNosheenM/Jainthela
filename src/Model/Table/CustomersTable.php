@@ -106,13 +106,7 @@ class CustomersTable extends Table
 
         return $validator;
     }
-public function findAuth(\Cake\ORM\Query $query, array $options)
-	{
-		$query
-			->where(['Customers.active' => 1]);
 
-		return $query;
-	}
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.
