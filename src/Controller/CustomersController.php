@@ -51,6 +51,9 @@ class CustomersController extends AppController
      */
     public function add()
     {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$this->viewBuilder()->layout('admin_portal');
         $customer = $this->Customers->newEntity();
         if ($this->request->is('post')) {
             $customer = $this->Customers->patchEntity($customer, $this->request->getData());
@@ -61,8 +64,7 @@ class CustomersController extends AppController
             }
             $this->Flash->error(__('The customer could not be saved. Please, try again.'));
         }
-        $cities = $this->Customers->Cities->find('list', ['limit' => 200]);
-        $this->set(compact('customer', 'cities'));
+		$this->set(compact('customer', 'cities'));
     }
 
     /**

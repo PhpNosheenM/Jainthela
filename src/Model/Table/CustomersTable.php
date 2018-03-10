@@ -111,110 +111,96 @@ class CustomersTable extends Table
         $validator
             ->email('email')
             ->requirePresence('email', 'create')
-            ->notEmpty('email');
+            ->notEmpty('email')
+            ->add('email', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
         $validator
             ->scalar('mobile_no')
             ->maxLength('mobile_no', 20)
             ->requirePresence('mobile_no', 'create')
-            ->notEmpty('mobile_no');
+            ->notEmpty('mobile_no')
+            ->add('mobile_no', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
         $validator
             ->scalar('latitude')
             ->maxLength('latitude', 50)
             ->requirePresence('latitude', 'create')
-            ->notEmpty('latitude');
+            ->allowEmpty('latitude');
 
         $validator
             ->scalar('longitude')
             ->maxLength('longitude', 50)
             ->requirePresence('longitude', 'create')
-            ->notEmpty('longitude');
+            ->allowEmpty('longitude');
 
         $validator
             ->scalar('device_id_name')
             ->requirePresence('device_id_name', 'create')
-            ->notEmpty('device_id_name');
+            ->allowEmpty('device_id_name');
 
         $validator
             ->scalar('device_token')
             ->requirePresence('device_token', 'create')
-            ->notEmpty('device_token');
+            ->allowEmpty('device_token');
 
         $validator
             ->scalar('referral_code')
             ->maxLength('referral_code', 100)
             ->requirePresence('referral_code', 'create')
-            ->notEmpty('referral_code');
+            ->allowEmpty('referral_code');
 
         $validator
             ->decimal('discount_in_percentage')
             ->requirePresence('discount_in_percentage', 'create')
-            ->notEmpty('discount_in_percentage');
+            ->allowEmpty('discount_in_percentage');
 
         $validator
             ->scalar('otp')
             ->maxLength('otp', 10)
             ->requirePresence('otp', 'create')
-            ->notEmpty('otp');
+            ->allowEmpty('otp');
 
         $validator
             ->requirePresence('timeout', 'create')
-            ->notEmpty('timeout');
-
-        $validator
-            ->dateTime('created_on')
-            ->requirePresence('created_on', 'create')
-            ->notEmpty('created_on');
-
-        $validator
-            ->integer('created_by')
-            ->requirePresence('created_by', 'create')
-            ->notEmpty('created_by');
-
-        $validator
-            ->scalar('status')
-            ->maxLength('status', 10)
-            ->requirePresence('status', 'create')
-            ->notEmpty('status');
+            ->allowEmpty('timeout');
 
         $validator
             ->scalar('gstin')
             ->maxLength('gstin', 100)
             ->requirePresence('gstin', 'create')
-            ->notEmpty('gstin');
+            ->allowEmpty('gstin');
 
         $validator
             ->scalar('gstin_holder_name')
             ->maxLength('gstin_holder_name', 100)
             ->requirePresence('gstin_holder_name', 'create')
-            ->notEmpty('gstin_holder_name');
+            ->allowEmpty('gstin_holder_name');
 
         $validator
             ->scalar('gstin_holder_address')
             ->requirePresence('gstin_holder_address', 'create')
-            ->notEmpty('gstin_holder_address');
+            ->allowEmpty('gstin_holder_address');
 
         $validator
             ->scalar('firm_name')
             ->maxLength('firm_name', 100)
             ->requirePresence('firm_name', 'create')
-            ->notEmpty('firm_name');
+            ->allowEmpty('firm_name');
 
         $validator
             ->scalar('firm_address')
             ->requirePresence('firm_address', 'create')
-            ->notEmpty('firm_address');
+            ->allowEmpty('firm_address');
 
         $validator
             ->dateTime('discount_created_on')
             ->requirePresence('discount_created_on', 'create')
-            ->notEmpty('discount_created_on');
+            ->allowEmpty('discount_created_on');
 
         $validator
             ->dateTime('discount_expiry')
             ->requirePresence('discount_expiry', 'create')
-            ->notEmpty('discount_expiry');
+            ->allowEmpty('discount_expiry');
 
         return $validator;
     }
@@ -229,6 +215,7 @@ class CustomersTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->isUnique(['email']));
+        $rules->add($rules->isUnique(['mobile_no']));
         $rules->add($rules->existsIn(['city_id'], 'Cities'));
 
         return $rules;
