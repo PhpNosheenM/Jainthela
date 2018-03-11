@@ -6,6 +6,20 @@
     color: #656C78;
     font-size: 13px;
 }
+.file-preview-image
+{
+	width: 100% !important;
+	height:160px !important;
+}
+.file-preview-frame
+{
+	display: contents;
+	float:none !important;
+}
+.kv-file-zoom
+{
+	display:none;
+}
 </style>
 <?php $this->set('title', 'Category'); ?>
 <div class="content-frame">
@@ -41,7 +55,8 @@
 	<!-- START CONTENT FRAME LEFT -->
 	<div class="content-frame-left">
 		<div class="panel panel-default">
-			<?= $this->Form->create($category,['id'=>"jvalidate"]) ?>
+			<?= $this->Form->create($category,['id'=>'jvalidate','type'=>'file']) ?>
+				<?php $js=''; ?>
 				<div class="panel-body">
 					<div class="form-group">
 						<label>Category Name</label>
@@ -52,17 +67,35 @@
 						<label>Parent Category</label>
 						<?= $this->Form->select('parent_id',$parentCategories,['class'=>'form-control select','label'=>false,'empty' => '--Select--']) ?>
 					</div>
-					<div class="form-group">
-						<div class="col-md-12">
-							<label>App Image</label><br/>
-							<input type="file" id="file-app"/>
-						</div>                                            
+					
+					<div class="form-group" id="app_image_data">
+						<label>App Image</label> 
+						<?= $this->Form->control('app_image',['type'=>'file','label'=>false,'id' => 'app_image','data-show-upload'=>false, 'data-show-caption'=>false]) ?>
+						<label id="app_image-error" class="error" for="app_image"></label>
+						 <?php  
+						$keyname = 'category/'.$category->id.'/app/'.$category->app_image;
+						$info = $awsFileLoad->doesObjectExistFile($keyname);
+						if($info)
+						{
+							$result=$awsFileLoad->getObjectFile($keyname);
+							$app_image_view='<img src="data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'" alt="" style="width: auto; height: 160px;" class="file-preview-image"/>';
+							
+							$js.=' $( document ).ready(function() {
+									 $("#app_image_data").find("div.file-input-new").removeClass("file-input-new");
+									 $("#app_image_data").find("div.file-preview-thumbnails").html("<div data-template=image class=file-preview-frame><div class=kv-file-content><img src=data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'></div></div>");
+									$("#app_image_data").find("div.file-preview-frame").addClass("file-preview-frame krajee-default  kv-preview-thumb");
+									
+									$("#app_image_data").find("img").addClass("file-preview-image kv-preview-data rotate-1");
+									
+									});
+							';
+						}
+						?>
+						 						
 					</div>
 					<div class="form-group">
-						<div class="col-md-12">
-							<label>Web Image</label><br/>
-							<input type="file" id="file-web"/>
-						</div>                                            
+							<label>Web Image</label>
+							<?= $this->Form->control('web_image',['type'=>'file','label'=>false,'id' => 'web_image']) ?>	        
 					</div>
 					<div class="form-group">
 						<label>Status</label>
@@ -136,7 +169,7 @@
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
 <?php
-   $js='var jvalidate = $("#jvalidate").validate({
+   $js.='var jvalidate = $("#jvalidate").validate({
 		ignore: [],
 		rules: {                                            
 				name: {
@@ -145,17 +178,19 @@
 				
 			}                                        
 		});
-		$("#file-web").fileinput({
+		$("#web_image").fileinput({
             showUpload: false,
             showCaption: false,
+            showCancel: false,
             browseClass: "btn btn-danger",
-            fileType: "any"
+			allowedFileExtensions: ["jpg", "png"]
 		}); 
-		$("#file-app").fileinput({
+		$("#app_image").fileinput({
             showUpload: false,
             showCaption: false,
+            showCancel: false,
             browseClass: "btn btn-danger",
-            fileType: "any"
+			allowedFileExtensions: ["jpg", "png"]
 		}); 
 		';  
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		

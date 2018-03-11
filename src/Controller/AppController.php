@@ -46,9 +46,9 @@ class AppController extends Controller
 		
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
-		$this->loadComponent('AwsFile');
+		$awsFileLoad=$this->loadComponent('AwsFile');
 		$this->loadComponent('SidebarMenu');
-		
+		$this->set(compact('awsFileLoad'));  /// Use in ctp page
         /*
          * Enable the following components for recommended CakePHP security settings.
          * see https://book.cakephp.org/3.0/en/controllers/components/security.html

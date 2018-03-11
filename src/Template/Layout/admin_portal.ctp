@@ -100,8 +100,7 @@
 		
 		<?= $this->Html->script('settings.js') ?>  
 		<?= $this->Html->script('plugins.js') ?>  
-		<?= $this->Html->script('actions.js') ?>  
-		<?= $this->fetch('js_demo_file_handling') ?>		
+		<?= $this->Html->script('actions.js') ?>  	
         <!-- END TEMPLATE -->
 		<?= $this->fetch('scriptBottom') ?>
     <!-- END SCRIPTS -->         

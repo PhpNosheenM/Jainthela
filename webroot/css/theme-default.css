@@ -2493,7 +2493,7 @@ strong {
 }
 .page-container.page-navigation-top-fixed .x-navigation.x-navigation-horizontal {
   position: fixed;
-  padding-right: 300px;
+  padding-right: 250px;
   top: 0px;
 }
 .page-container.page-navigation-top-fixed .page-content {

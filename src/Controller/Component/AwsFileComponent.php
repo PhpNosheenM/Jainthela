@@ -13,17 +13,20 @@ class AwsFileComponent extends Component
 		parent::initialize($config);
 		$this->AwsFiles = TableRegistry::get('AwsFiles');
 		$AwsFiles=$this->AwsFiles->get(1);
-		$bucketName=$AwsFiles->bucket_name;  // Bucket Name
-		$awsAccessKey=$AwsFiles->access_key; // Access Key
-		$awsSecretAccessKey=$AwsFiles->secret_access_key;  // Secret Access key
-		
-		/*     Connect to AWS S3   */
+		$this->bucketName=$AwsFiles->bucket_name;  // Bucket Name
+		$this->awsAccessKey=$AwsFiles->access_key; // Access Key
+		$this->awsSecretAccessKey=$AwsFiles->secret_access_key;  // Secret Access key
+	}
+	
+	/*     Connect to AWS S3   */
+	function credential()
+	{
 		$config = [
 					'region'  => 'ap-south-1',
 					'version' => 'latest',
 					'credentials' => [
-						'key'    => $awsAccessKey,
-						'secret' => $awsSecretAccessKey
+						'key'    => $this->awsAccessKey,
+						'secret' => $this->awsSecretAccessKey
 					],
 					'options' => [
 					'scheme' => 'http',
@@ -33,14 +36,15 @@ class AwsFileComponent extends Component
 					]
 				]; 
 
-		$s3Client = new S3Client($config);
+		$this->s3Client = new S3Client($config);
 	}
 	
 	/*  Store Image on s3             */
 	function putObjectFile($keyname,$sourceFile,$contentType)
-	{				
-		$s3Client->putObject(array(
-			'Bucket' => $bucketName,
+	{		
+		$this->credential();
+		$this->s3Client->putObject(array(
+			'Bucket' => $this->bucketName,
 			'Key'    => $keyname,
 			'SourceFile'   => $sourceFile,
 			'ContentType'  => $contentType,
@@ -53,8 +57,9 @@ class AwsFileComponent extends Component
 	/*  Store PDF on s3             */
 	function putObjectPdf($keyname,$body,$contentType)
 	{				
-		$s3Client->putObject(array(
-			'Bucket' => $bucketName,
+		$this->credential();
+		$this->s3Client->putObject(array(
+			'Bucket' => $this->bucketName,
 			'Key'    => $keyname,
 			'Body'   => $body,
 			'ContentType'  => $contentType,
@@ -66,18 +71,20 @@ class AwsFileComponent extends Component
 	
 	/*  Store any file on s3             */
 	function deleteObjectFile($keyname)
-	{				
+	{		
+		$this->credential();
 		$s3Client->deleteObject(array(
-			'Bucket' => $bucketName,
+			'Bucket' => $this->bucketName,
 			'Key'    => $keyname
 		));
 	}
 	
 	/*  Get object of image/pdf etc. from s3             */
 	function getObjectFile($keyname)
-	{				
-		 $result = $s3Client->getObject(array(
-			'Bucket' => $bucketName,
+	{			
+		$this->credential();
+		$result = $this->s3Client->getObject(array(
+			'Bucket' => $this->bucketName,
 			'Key'    => $keyname
 		));
 		return $result;
@@ -86,7 +93,8 @@ class AwsFileComponent extends Component
 	/*  File exist or not on s3             */
 	function doesObjectExistFile($keyname)
 	{
-		$result = $s3Client->doesObjectExist($bucketName, $keyname);
+		$this->credential();
+		$result = $this->s3Client->doesObjectExist($this->bucketName, $keyname);
 		return $result;
 	}
 }

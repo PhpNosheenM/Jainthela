@@ -35,7 +35,12 @@ class CategoriesController extends AppController
 		else{
 			$category = $this->Categories->newEntity();
 		}
-        if ($this->request->is(['post','put'])) {
+        if ($this->request->is(['post','put'])) { 
+		pr($this->request->getData());
+		exit;
+			$app_image=$this->request->data['app_image'];
+			$app_ext=explode('/',$app_image['type']);
+			$this->request->data['app_image']='app'.time().'.'.$app_ext[1];
             $category = $this->Categories->patchEntity($category, $this->request->getData());
 			$category->city_id=$city_id;
 			if ($this->request->is('post')){
@@ -43,7 +48,11 @@ class CategoriesController extends AppController
 			}else{
 				$category->edited_by=$user_id;
 			}
-            if ($this->Categories->save($category)) {
+            if ($category_data=$this->Categories->save($category)) {
+				///////////////// S3 Upload //////////////
+				$keyname = 'category/'.$category_data->id.'/app/'.$this->request->data['app_image'];
+				$this->AwsFile->putObjectFile($keyname,$app_image['tmp_name'],$app_image['type']);
+				///////////////////////////////
                 $this->Flash->success(__('The category has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
