@@ -22,8 +22,8 @@ class CitiesController extends AppController
 	
 	public function city(){
 		
-		$city_name=$this->request->query['name']; 
-		$Cities=$this->Cities->find()->where(['name'=>$city_name]);
+		//$state_id=$this->request->query['state_id']; 
+		$Cities=$this->Cities->find();
 		if($Cities->toArray()){
 			$message='Data found successfully';
 			$success=true;
