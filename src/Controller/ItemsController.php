@@ -82,6 +82,9 @@ class ItemsController extends AppController
      */
     public function edit($id = null)
     {
+		$city_id=$this->Auth->User('city_id'); 
+		$user_id=$this->Auth->User('id');
+		$this->viewBuilder()->layout('admin_portal');
         $item = $this->Items->get($id, [
             'contain' => []
         ]);
@@ -94,12 +97,10 @@ class ItemsController extends AppController
             }
             $this->Flash->error(__('The item could not be saved. Please, try again.'));
         }
-        $categories = $this->Items->Categories->find('list', ['limit' => 200]);
-        $brands = $this->Items->Brands->find('list', ['limit' => 200]);
-        $admins = $this->Items->Admins->find('list', ['limit' => 200]);
-        $sellers = $this->Items->Sellers->find('list', ['limit' => 200]);
-        $cities = $this->Items->Cities->find('list', ['limit' => 200]);
-        $this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities'));
+        $categories = $this->Items->Categories->find('list')->where(['Categories.city_id'=>$city_id]);
+        $brands = $this->Items->Brands->find('list')->where(['Brands.city_id'=>$city_id]);
+        $units = $this->Items->ItemVariations->Units->find('list')->where(['Units.city_id'=>$city_id]);
+        $this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities','units'));
     }
 
     /**
