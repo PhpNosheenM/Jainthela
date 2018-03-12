@@ -38,16 +38,15 @@ class CategoriesController extends AppController
 		}
         if ($this->request->is(['post','put'])) { 
 			
-			$web_image=$this->request->data['web_image'];
-			$web_error=$web_image['error'];
+			$category_image=$this->request->data['category_image'];
+			$category_error=$category_image['error'];
 			
             $category = $this->Categories->patchEntity($category, $this->request->getData());
 			
-			if(empty($web_error))
+			if(empty($category_error))
 			{
-				$web_ext=explode('/',$web_image['type']);
-				$category->web_image='web'.time().'.'.$web_ext[1];
-				$category->app_image='app'.time().'.'.$web_ext[1];
+				$category_ext=explode('/',$category_image['type']);
+				$category->category_image='category'.time().'.'.$category_ext[1];
 			}
 			
 			$category->city_id=$city_id;
@@ -59,24 +58,24 @@ class CategoriesController extends AppController
 			}
             if ($category_data=$this->Categories->save($category)) {
 				///////////////// S3 Upload //////////////
-				if(empty($web_error))
+				if(empty($category_error))
 				{
 					/* For Web Image */
 					$deletekeyname = 'category/'.$category_data->id.'/web';
 					$this->AwsFile->deleteMatchingObjects($deletekeyname);
-					$keyname = 'category/'.$category_data->id.'/web/'.$category_data->web_image;
-					$this->AwsFile->putObjectFile($keyname,$web_image['tmp_name'],$web_image['type']);
+					$keyname = 'category/'.$category_data->id.'/web/'.$category_data->category_image;
+					$this->AwsFile->putObjectFile($keyname,$category_image['tmp_name'],$category_image['type']);
 					
 					/* Resize Image */
-					$destination_url = 'img/temp/'.$category_data->app_image;
-					$image = imagecreatefromjpeg($web_image['tmp_name']);
+					$destination_url = WWW_ROOT . 'img/temp/'.$category_data->category_image;
+					$image = imagecreatefromjpeg($category_image['tmp_name']);
 					imagejpeg($image, $destination_url, 10);
 					
 					/* For App Image */
 					$deletekeyname = 'category/'.$category_data->id.'/app';
 					$this->AwsFile->deleteMatchingObjects($deletekeyname);
-					$keyname = 'category/'.$category_data->id.'/app/'.$category_data->app_image;
-					$this->AwsFile->putObjectFile($keyname,$destination_url,$web_image['type']);
+					$keyname = 'category/'.$category_data->id.'/app/'.$category_data->category_image;
+					$this->AwsFile->putObjectFile($keyname,$destination_url,$category_image['type']);
 					
 					/* Delete Temp File */
 					$file = new File(WWW_ROOT . $destination_url, false, 0777);
