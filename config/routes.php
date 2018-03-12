@@ -81,6 +81,7 @@ Router::prefix('api', function ($routes) {
     $routes->resources('Banners');
 	$routes->resources('Customers');
 	$routes->resources('States');
+	$routes->resources('Cities');
 	
     $routes->fallbacks('InflectedRoute');
 });

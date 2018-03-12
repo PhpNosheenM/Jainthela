@@ -22,10 +22,21 @@ class StatesController extends AppController
     }
 	
 	public function state(){
+		
+		$state=$this->States->find();
+		if($state->toArray()){
+			$message='Data found successfully';
+			$success=true;
+		}else{
+			
+			$message='Data not found';
+			$success=false;
+		}
+				
 		$this->set([
-				'success' => true,
-				'message' => 'data successfully',
-				'state' => $this->States->find(),
+				'success' => $success,
+				'message' => $message,
+				'state' => $state,
 				'_serialize' => ['success', 'message','state']
 			]);
 		}	
