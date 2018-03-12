@@ -68,44 +68,11 @@
 						<?= $this->Form->select('parent_id',$parentCategories,['class'=>'form-control select','label'=>false,'empty' => '--Select--']) ?>
 					</div>
 					
-					<div class="form-group" id="app_image_data">
-						<label>App Image</label> 
-						<?php
-							$keyname = 'category/'.$category->id.'/app/'.$category->app_image;
-							$info = $awsFileLoad->doesObjectExistFile($keyname);
-							$required=true;
-							if($info)
-							{
-								$required=false;
-							}
-						?>
-						<?= $this->Form->control('app_image',['type'=>'file','label'=>false,'id' => 'app_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>$required]) ?>
-						<label id="app_image-error" class="error" for="app_image"></label>
-						 <?php  
-						$keyname = 'category/'.$category->id.'/app/'.$category->app_image;
-						$info = $awsFileLoad->doesObjectExistFile($keyname);
-						if($info)
-						{
-							$result=$awsFileLoad->getObjectFile($keyname);
-							$app_image_view='<img src="data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'" alt="" style="width: auto; height: 160px;" class="file-preview-image"/>';
-							
-							$js.=' $( document ).ready(function() {
-										$("#app_image_data").find("div.file-input-new").removeClass("file-input-new");
-										$("#app_image_data").find("div.file-preview-thumbnails").html("<div data-template=image class=file-preview-frame><div class=kv-file-content><img src=data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'></div></div>");
-										$("#app_image_data").find("div.file-preview-frame").addClass("file-preview-frame krajee-default  kv-preview-thumb");
-									
-										$("#app_image_data").find("img").addClass("file-preview-image kv-preview-data rotate-1");
-									
-									});
-							';
-						}
-						?>
-						 						
-					</div>
 					<div class="form-group" id="web_image_data">
 						<label>Web Image</label> 
 						<?php
-							$keyname = 'category/'.$category->id.'/web/'.$category->web_image;
+							$required=true;
+							$keyname = 'category/'.$category->id.'/app/'.$category->app_image;
 							$info = $awsFileLoad->doesObjectExistFile($keyname);
 							if($info)
 							{
@@ -222,16 +189,9 @@
             showCancel: false,
             browseClass: "btn btn-danger",
 			allowedFileExtensions: ["jpg", "png"],
-			maxFileSize: 300,
+			maxFileSize: 1024,
 		}); 
-		$("#app_image").fileinput({
-            showUpload: false,
-            showCaption: false,
-            showCancel: false,
-            browseClass: "btn btn-danger",
-			allowedFileExtensions: ["jpg", "png"],
-			maxFileSize: 100,
-		}); 
+		
 		
 		$(document).on("click", ".fileinput-remove-button", function(){
 			$(this).closest("div.file-input").find("input[type=file]").attr("required",true);

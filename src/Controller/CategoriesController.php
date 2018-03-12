@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
-
+use Cake\Filesystem\Folder;
+use Cake\Filesystem\File;
 use App\Controller\AppController;
 
 /**
@@ -37,22 +38,18 @@ class CategoriesController extends AppController
 		}
         if ($this->request->is(['post','put'])) { 
 			
-			$app_image=$this->request->data['app_image'];
-			$app_error=$app_image['error'];
 			$web_image=$this->request->data['web_image'];
 			$web_error=$web_image['error'];
 			
             $category = $this->Categories->patchEntity($category, $this->request->getData());
-			if(empty($app_error))
-			{
-				$app_ext=explode('/',$app_image['type']);
-				$category->app_image='app'.time().'.'.$app_ext[1];
-			}
+			
 			if(empty($web_error))
 			{
 				$web_ext=explode('/',$web_image['type']);
 				$category->web_image='web'.time().'.'.$web_ext[1];
+				$category->app_image='app'.time().'.'.$web_ext[1];
 			}
+			
 			$category->city_id=$city_id;
 			
 			if ($this->request->is('post')){
@@ -62,19 +59,28 @@ class CategoriesController extends AppController
 			}
             if ($category_data=$this->Categories->save($category)) {
 				///////////////// S3 Upload //////////////
-				if(empty($app_error))
-				{
-					$deletekeyname = 'category/'.$category_data->id.'/app';
-					$this->AwsFile->deleteMatchingObjects($deletekeyname);
-					$keyname = 'category/'.$category_data->id.'/app/'.$category_data->app_image;
-					$this->AwsFile->putObjectFile($keyname,$app_image['tmp_name'],$app_image['type']);
-				}
 				if(empty($web_error))
 				{
+					/* For Web Image */
 					$deletekeyname = 'category/'.$category_data->id.'/web';
 					$this->AwsFile->deleteMatchingObjects($deletekeyname);
 					$keyname = 'category/'.$category_data->id.'/web/'.$category_data->web_image;
 					$this->AwsFile->putObjectFile($keyname,$web_image['tmp_name'],$web_image['type']);
+					
+					/* Resize Image */
+					$destination_url = 'img/temp/'.$category_data->app_image;
+					$image = imagecreatefromjpeg($web_image['tmp_name']);
+					imagejpeg($image, $destination_url, 10);
+					
+					/* For App Image */
+					$deletekeyname = 'category/'.$category_data->id.'/app';
+					$this->AwsFile->deleteMatchingObjects($deletekeyname);
+					$keyname = 'category/'.$category_data->id.'/app/'.$category_data->app_image;
+					$this->AwsFile->putObjectFile($keyname,$destination_url,$web_image['type']);
+					
+					/* Delete Temp File */
+					$file = new File(WWW_ROOT . $destination_url, false, 0777);
+					$file->delete();
 				}
 				///////////////////////////////
                 $this->Flash->success(__('The category has been saved.'));
