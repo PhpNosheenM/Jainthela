@@ -53,10 +53,13 @@ class CustomersController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
 		$this->viewBuilder()->layout('admin_portal');
         $customer = $this->Customers->newEntity();
         if ($this->request->is('post')) {
+			pr($this->request->getData()); exit;
             $customer = $this->Customers->patchEntity($customer, $this->request->getData());
+			//
             if ($this->Customers->save($customer)) {
                 $this->Flash->success(__('The customer has been saved.'));
 
