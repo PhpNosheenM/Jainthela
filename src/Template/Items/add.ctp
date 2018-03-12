@@ -106,7 +106,7 @@
 										<th><?= ('Out Of Stock') ?></th>
 										<th><?= ('Status') ?></th>
 										
-										<th class="actions"><?= __('Actions') ?></th>
+										<th  class="actions"><?= __('Actions') ?></th>
 									</tr>
 								</thead>
 								<tbody class="MainTbody">  
@@ -133,7 +133,7 @@
 	<tbody class="sampleMainTbody">
 		<tr class="MainTr">
 			<td  valign="top"> 
-				<?php echo $this->Form->select('unit_id', $units,['class'=>'form-control unit','label'=>false]) ?> 			</td>
+				<?php echo $this->Form->select('unit_id', $units,['class'=>'form-control unit select','label'=>false]) ?> 			</td>
 			<td width="" valign="top">
 				<?= $this->Form->control('quantity_factor',['class'=>'form-control quantity_factor','label'=>false]) ?>
 			</td>
@@ -158,17 +158,17 @@
 				<?php $sale_options['Yes'] = 'Yes'; ?>
 				<?= $this->Form->select('ready_to_sale',$sale_options,['class'=>'form-control select ready_to_sale','label'=>false]) ?>
 			</td>
-			<td valign="top">
+			<td  valign="top">
 				<?php $out_options['No'] = 'No'; ?>
 				<?php $out_options['Yes'] = 'Yes'; ?>
 				<?= $this->Form->select('out_of_stock',$out_options,['class'=>'form-control select out_of_stock','label'=>false]) ?>
 			</td>
-			<td valign="top">
-				<?php $options['Active'] = 'Active'; ?>
-								<?php $options['Deactive'] = 'Deactive'; ?>
-								<?= $this->Form->select('status',$options,['class'=>'form-control select status','label'=>false]) ?>
+			<td width="10%" valign="top">
+				<?php $options1['Active'] = 'Active'; ?>
+				<?php $options1['Deactive'] = 'Deactive'; ?>
+								<?= $this->Form->select('status',$options1,['class'=>'status1 form-control select ','label'=>false]) ?>
 			</td>
-			<td valign="top">
+			<td valign="top"  >
 				<a class="btn btn-primary  btn-condensed btn-sm add_row" href="#" role="button" ><i class="fa fa-plus"></i></a>
 				<a class="btn btn-danger  btn-condensed btn-sm delete_row " href="#" role="button" ><i class="fa fa-times"></i></a>
 			</td>
@@ -211,16 +211,16 @@
 				var i=0; 
 				$(".main_table tbody tr").each(function(){
 					$(this).attr("row_no",i);
-						$(this).find("td:nth-child(1) select.unit").attr({name:"item_variations["+i+"][unit_id]",id:"item_variations-"+i+"-unit_id"}).select();
-						$(this).find("td:nth-child(2) input.quantity_factor").attr({name:"item_variations["+i+"][quantity_factor]",id:"item_variations-"+i+"-quantity_factor"});
-						$(this).find("td:nth-child(3) input.print_quantity").attr({name:"item_variations["+i+"][print_quantity]",id:"item_variations-"+i+"-print_quantity"});
-						$(this).find("td:nth-child(4) input.print_rate").attr({name:"item_variations["+i+"][print_rate]",id:"item_variations-"+i+"-print_rate"});
+						$(this).find("td:nth-child(1) select.unit").attr({name:"item_variations["+i+"][unit_id]",id:"item_variations-"+i+"-unit_id"}).rules("add", "required");
+						$(this).find("td:nth-child(2) input.quantity_factor").attr({name:"item_variations["+i+"][quantity_factor]",id:"item_variations-"+i+"-quantity_factor"}).rules("add", "required");
+						$(this).find("td:nth-child(3) input.print_quantity").attr({name:"item_variations["+i+"][print_quantity]",id:"item_variations-"+i+"-print_quantity"}).rules("add", "required");
+						$(this).find("td:nth-child(4) input.print_rate").attr({name:"item_variations["+i+"][print_rate]",id:"item_variations-"+i+"-print_rate"}).rules("add", "required");
 						$(this).find("td:nth-child(5) input.discount_per").attr({name:"item_variations["+i+"][discount_per]",id:"item_variations-"+i+"-discount_per"});
-						$(this).find("td:nth-child(6) input.sales_rate").attr({name:"item_variations["+i+"][sales_rate]",id:"item_variations-"+i+"-sales_rate"});
+						$(this).find("td:nth-child(6) input.sales_rate").attr({name:"item_variations["+i+"][sales_rate]",id:"item_variations-"+i+"-sales_rate"}).rules("add", "required");
 						$(this).find("td:nth-child(7) input.maximum_quantity_purchase").attr({name:"item_variations["+i+"][maximum_quantity_purchase]",id:"item_variations-"+i+"-maximum_quantity_purchase"});
 						$(this).find("td:nth-child(8) select.ready_to_sale").attr({name:"item_variations["+i+"][ready_to_sale]",id:"item_variations-"+i+"-ready_to_sale"});
 						$(this).find("td:nth-child(9) select.out_of_stock").attr({name:"item_variations["+i+"][out_of_stock]",id:"item_variations-"+i+"-out_of_stock"});
-						$(this).find("td:nth-child(10) select.status").attr({name:"item_variations["+i+"][status]",id:"item_variations-"+i+"-status"});
+						$(this).find("td:nth-child(10) select.status1").attr({name:"item_variations["+i+"][status]",id:"item_variations-"+i+"-status"});
 						i++;
 			});
 		}
