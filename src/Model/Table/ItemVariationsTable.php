@@ -62,7 +62,7 @@ class ItemVariationsTable extends Table
         $validator
             ->integer('id')
             ->allowEmpty('id', 'create');
-
+		/*
         $validator
             ->decimal('quantity_factor')
             ->requirePresence('quantity_factor', 'create')
@@ -113,7 +113,7 @@ class ItemVariationsTable extends Table
             ->maxLength('status', 10)
             ->requirePresence('status', 'create')
             ->notEmpty('status');
-
+		*/
         return $validator;
     }
 

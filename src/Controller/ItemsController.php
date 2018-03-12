@@ -57,12 +57,13 @@ class ItemsController extends AppController
         $item = $this->Items->newEntity();
         if ($this->request->is('post')) {
             $item = $this->Items->patchEntity($item, $this->request->getData());
-            if ($this->Items->save($item)) {
+				//pr($item); exit;
+            if ($this->Items->save($item)) { //pr($item);exit;
                 $this->Flash->success(__('The item has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
             }
-			//pr($item); exit;
+		
             $this->Flash->error(__('The item could not be saved. Please, try again.'));
         }
         $categories = $this->Items->Categories->find('list')->where(['Categories.city_id'=>$city_id]);
