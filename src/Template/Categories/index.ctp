@@ -70,7 +70,16 @@
 					
 					<div class="form-group" id="app_image_data">
 						<label>App Image</label> 
-						<?= $this->Form->control('app_image',['type'=>'file','label'=>false,'id' => 'app_image','data-show-upload'=>false, 'data-show-caption'=>false]) ?>
+						<?php
+							$keyname = 'category/'.$category->id.'/app/'.$category->app_image;
+							$info = $awsFileLoad->doesObjectExistFile($keyname);
+							$required=true;
+							if($info)
+							{
+								$required=false;
+							}
+						?>
+						<?= $this->Form->control('app_image',['type'=>'file','label'=>false,'id' => 'app_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>$required]) ?>
 						<label id="app_image-error" class="error" for="app_image"></label>
 						 <?php  
 						$keyname = 'category/'.$category->id.'/app/'.$category->app_image;
@@ -81,11 +90,11 @@
 							$app_image_view='<img src="data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'" alt="" style="width: auto; height: 160px;" class="file-preview-image"/>';
 							
 							$js.=' $( document ).ready(function() {
-									 $("#app_image_data").find("div.file-input-new").removeClass("file-input-new");
-									 $("#app_image_data").find("div.file-preview-thumbnails").html("<div data-template=image class=file-preview-frame><div class=kv-file-content><img src=data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'></div></div>");
-									$("#app_image_data").find("div.file-preview-frame").addClass("file-preview-frame krajee-default  kv-preview-thumb");
+										$("#app_image_data").find("div.file-input-new").removeClass("file-input-new");
+										$("#app_image_data").find("div.file-preview-thumbnails").html("<div data-template=image class=file-preview-frame><div class=kv-file-content><img src=data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'></div></div>");
+										$("#app_image_data").find("div.file-preview-frame").addClass("file-preview-frame krajee-default  kv-preview-thumb");
 									
-									$("#app_image_data").find("img").addClass("file-preview-image kv-preview-data rotate-1");
+										$("#app_image_data").find("img").addClass("file-preview-image kv-preview-data rotate-1");
 									
 									});
 							';
@@ -93,9 +102,37 @@
 						?>
 						 						
 					</div>
-					<div class="form-group">
-							<label>Web Image</label>
-							<?= $this->Form->control('web_image',['type'=>'file','label'=>false,'id' => 'web_image']) ?>	        
+					<div class="form-group" id="web_image_data">
+						<label>Web Image</label> 
+						<?php
+							$keyname = 'category/'.$category->id.'/web/'.$category->web_image;
+							$info = $awsFileLoad->doesObjectExistFile($keyname);
+							if($info)
+							{
+								$required=false;
+							}
+						?>
+						<?= $this->Form->control('web_image',['type'=>'file','label'=>false,'id' => 'web_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>$required]) ?>
+						<label id="web_image-error" class="error" for="web_image"></label>
+						 <?php  
+						
+						if($info)
+						{
+							$result=$awsFileLoad->getObjectFile($keyname);
+							$app_image_view='<img src="data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'" alt="" style="width: auto; height: 160px;" class="file-preview-image"/>';
+							
+							$js.=' $( document ).ready(function() {
+										$("#web_image_data").find("div.file-input-new").removeClass("file-input-new");
+										$("#web_image_data").find("div.file-preview-thumbnails").html("<div data-template=image class=file-preview-frame><div class=kv-file-content><img src=data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'></div></div>");
+										$("#web_image_data").find("div.file-preview-frame").addClass("file-preview-frame krajee-default  kv-preview-thumb");
+									
+										$("#web_image_data").find("img").addClass("file-preview-image kv-preview-data rotate-1");
+									
+									});
+							';
+						}
+						?>
+						 						
 					</div>
 					<div class="form-group">
 						<label>Status</label>
@@ -178,20 +215,27 @@
 				
 			}                                        
 		});
+		
 		$("#web_image").fileinput({
             showUpload: false,
             showCaption: false,
             showCancel: false,
             browseClass: "btn btn-danger",
-			allowedFileExtensions: ["jpg", "png"]
+			allowedFileExtensions: ["jpg", "png"],
+			maxFileSize: 300,
 		}); 
 		$("#app_image").fileinput({
             showUpload: false,
             showCaption: false,
             showCancel: false,
             browseClass: "btn btn-danger",
-			allowedFileExtensions: ["jpg", "png"]
+			allowedFileExtensions: ["jpg", "png"],
+			maxFileSize: 100,
 		}); 
+		
+		$(document).on("click", ".fileinput-remove-button", function(){
+			$(this).closest("div.file-input").find("input[type=file]").attr("required",true);
+		});
 		';  
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		
 ?>

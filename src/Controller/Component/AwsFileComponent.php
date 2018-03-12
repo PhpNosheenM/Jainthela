@@ -19,7 +19,7 @@ class AwsFileComponent extends Component
 	}
 	
 	/*     Connect to AWS S3   */
-	function credential()
+	function configuration()
 	{
 		$config = [
 					'region'  => 'ap-south-1',
@@ -42,7 +42,7 @@ class AwsFileComponent extends Component
 	/*  Store Image on s3             */
 	function putObjectFile($keyname,$sourceFile,$contentType)
 	{		
-		$this->credential();
+		$this->configuration();
 		$this->s3Client->putObject(array(
 			'Bucket' => $this->bucketName,
 			'Key'    => $keyname,
@@ -57,7 +57,7 @@ class AwsFileComponent extends Component
 	/*  Store PDF on s3             */
 	function putObjectPdf($keyname,$body,$contentType)
 	{				
-		$this->credential();
+		$this->configuration();
 		$this->s3Client->putObject(array(
 			'Bucket' => $this->bucketName,
 			'Key'    => $keyname,
@@ -69,20 +69,27 @@ class AwsFileComponent extends Component
 		));
 	}
 	
-	/*  Store any file on s3             */
+	/*  Delete file on s3             */
 	function deleteObjectFile($keyname)
 	{		
-		$this->credential();
-		$s3Client->deleteObject(array(
+		$this->configuration();
+		$this->s3Client->deleteObject(array(
 			'Bucket' => $this->bucketName,
 			'Key'    => $keyname
 		));
 	}
 	
+	/*  Delete Folder on s3             */
+	function deleteMatchingObjects($keyname)
+	{		
+		$this->configuration();
+		$this->s3Client->deleteMatchingObjects($this->bucketName,$keyname);
+	}
+	
 	/*  Get object of image/pdf etc. from s3             */
 	function getObjectFile($keyname)
 	{			
-		$this->credential();
+		$this->configuration();
 		$result = $this->s3Client->getObject(array(
 			'Bucket' => $this->bucketName,
 			'Key'    => $keyname
@@ -93,7 +100,7 @@ class AwsFileComponent extends Component
 	/*  File exist or not on s3             */
 	function doesObjectExistFile($keyname)
 	{
-		$this->credential();
+		$this->configuration();
 		$result = $this->s3Client->doesObjectExist($this->bucketName, $keyname);
 		return $result;
 	}

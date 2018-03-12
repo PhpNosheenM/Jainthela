@@ -36,13 +36,25 @@ class CategoriesController extends AppController
 			$category = $this->Categories->newEntity();
 		}
         if ($this->request->is(['post','put'])) { 
-		pr($this->request->getData());
-		exit;
+			
 			$app_image=$this->request->data['app_image'];
-			$app_ext=explode('/',$app_image['type']);
-			$this->request->data['app_image']='app'.time().'.'.$app_ext[1];
+			$app_error=$app_image['error'];
+			$web_image=$this->request->data['web_image'];
+			$web_error=$web_image['error'];
+			
             $category = $this->Categories->patchEntity($category, $this->request->getData());
+			if(empty($app_error))
+			{
+				$app_ext=explode('/',$app_image['type']);
+				$category->app_image='app'.time().'.'.$app_ext[1];
+			}
+			if(empty($web_error))
+			{
+				$web_ext=explode('/',$web_image['type']);
+				$category->web_image='web'.time().'.'.$web_ext[1];
+			}
 			$category->city_id=$city_id;
+			
 			if ($this->request->is('post')){
 				$category->created_by=$user_id;
 			}else{
@@ -50,8 +62,20 @@ class CategoriesController extends AppController
 			}
             if ($category_data=$this->Categories->save($category)) {
 				///////////////// S3 Upload //////////////
-				$keyname = 'category/'.$category_data->id.'/app/'.$this->request->data['app_image'];
-				$this->AwsFile->putObjectFile($keyname,$app_image['tmp_name'],$app_image['type']);
+				if(empty($app_error))
+				{
+					$deletekeyname = 'category/'.$category_data->id.'/app';
+					$this->AwsFile->deleteMatchingObjects($deletekeyname);
+					$keyname = 'category/'.$category_data->id.'/app/'.$category_data->app_image;
+					$this->AwsFile->putObjectFile($keyname,$app_image['tmp_name'],$app_image['type']);
+				}
+				if(empty($web_error))
+				{
+					$deletekeyname = 'category/'.$category_data->id.'/web';
+					$this->AwsFile->deleteMatchingObjects($deletekeyname);
+					$keyname = 'category/'.$category_data->id.'/web/'.$category_data->web_image;
+					$this->AwsFile->putObjectFile($keyname,$web_image['tmp_name'],$web_image['type']);
+				}
 				///////////////////////////////
                 $this->Flash->success(__('The category has been saved.'));
 
