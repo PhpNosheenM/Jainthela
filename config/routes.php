@@ -80,6 +80,7 @@ Router::prefix('api', function ($routes) {
     $routes->extensions(['json', 'xml']);
     $routes->resources('Banners');
 	$routes->resources('Customers');
+	$routes->resources('States');
 	
     $routes->fallbacks('InflectedRoute');
 });
