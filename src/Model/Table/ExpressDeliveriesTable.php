@@ -7,17 +7,17 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * ExpesssDeliveries Model
+ * ExpressDeliveries Model
  *
- * @method \App\Model\Entity\ExpesssDelivery get($primaryKey, $options = [])
- * @method \App\Model\Entity\ExpesssDelivery newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\ExpesssDelivery[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\ExpesssDelivery|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\ExpesssDelivery patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\ExpesssDelivery[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\ExpesssDelivery findOrCreate($search, callable $callback = null, $options = [])
+ * @method \App\Model\Entity\ExpressDelivery get($primaryKey, $options = [])
+ * @method \App\Model\Entity\ExpressDelivery newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\ExpressDelivery[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\ExpressDelivery|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\ExpressDelivery patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\ExpressDelivery[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\ExpressDelivery findOrCreate($search, callable $callback = null, $options = [])
  */
-class ExpesssDeliveriesTable extends Table
+class ExpressDeliveriesTable extends Table
 {
 
     /**
@@ -30,7 +30,7 @@ class ExpesssDeliveriesTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('expesss_deliveries');
+        $this->setTable('express_deliveries');
         $this->setDisplayField('title');
         $this->setPrimaryKey('id');
     }

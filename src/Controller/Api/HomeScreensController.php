@@ -22,8 +22,8 @@ class HomeScreensController extends AppController
 	
 	 public function homescreen(){
 		 
-		$city_id=@$this->request->query['city_id'];
-		$city_id=1;
+		$city_id=$this->request->query['city_id'];
+		
 		$Banners=$this->HomeScreens->Banners->find()->where(['city_id'=>$city_id,'status'=>'Active']);
 		$SubCategories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'show_category'=>'yes','status'=>'Active']);
 		
@@ -33,30 +33,46 @@ class HomeScreensController extends AppController
 		if($HomeScreens->toArray()){
 			foreach($HomeScreens as $HomeScreen){
 				
-				if($HomeScreen->model_name=='ExpesssDeliveries'){
-					
-					$ExpesssDeliveries=$this->HomeScreens->ExpesssDeliveries->find()->where(['status'=>'Active']);
-					if($ExpesssDeliveries->toArray()){
-						$Expesss=array("layout"=>$HomeScreen->layout,"ExpesssDeliveries"=>$ExpesssDeliveries);
+					if($HomeScreen->model_name=='ExpressDeliveries'){
+						
+						$ExpressDeliveries=$this->HomeScreens->ExpressDeliveries->find()->where(['status'=>'Active']);
+						if($ExpressDeliveries->toArray()){
+							$Express=array("layout"=>$HomeScreen->layout,"ExpressDeliveries"=>$ExpressDeliveries);
+						}else{
+							$Express=[];
+						}
+											
 					}
-										
+					if($HomeScreen->model_name=='Brands'){
+						
+							$Brands=$this->HomeScreens->Brands->find()->where(['status'=>'Active','city_id'=>$city_id]);
+							if($Brands->toArray()){
+								$Brand=array("layout"=>$HomeScreen->layout,"Brands"=>$Brands);
+							}else{
+								$Brand=[];
+							}
+						}	
+						
+					if($HomeScreen->model_name=='Category'){
+						
+							$Items=$this->HomeScreens->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])->contain(['Items']);
+							if($Items->toArray()){
+								$Item=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"Items"=>$Items);
+							}else{
+								$Item=[];
+							}
+						}					
 				}
-				if($HomeScreen->model_name=='Brands'){
-					
-					$ExpesssDeliveries=$this->HomeScreens->Brands->find()->where(['status'=>'Active']);
-					if($ExpesssDeliveries->toArray()){
-						$Expesss=array("layout"=>$HomeScreen->layout,"ExpesssDeliveries"=>$ExpesssDeliveries);
-					}
-										
-				}
+				
+				$dynamic=array($Express,$Brand,$Item);
 			}
-		}
 		
 		
 		
-		$data=array("Banners"=>$Banners,"Sub Categories"=>$SubCategories,"Categories"=>$Categories,'ExpesssDeliveries'=>$Expesss);
+		
+		$data=array("Banners"=>$Banners,"Sub Categories"=>$SubCategories,"Categories"=>$Categories,'dynamic'=>$dynamic);
 		
 		
-		$this->set(['success' => true,'data' => $data,'_serialize' => ['success', 'data']]);
+		$this->set(['success' => true,'message'=>'Data Found Successfully','data' => $data,'_serialize' => ['success','message', 'data']]);
 	 }
 }

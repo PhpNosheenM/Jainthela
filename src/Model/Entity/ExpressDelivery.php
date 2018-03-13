@@ -4,7 +4,7 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * ExpesssDelivery Entity
+ * ExpressDelivery Entity
  *
  * @property int $id
  * @property string $title
@@ -12,7 +12,7 @@ use Cake\ORM\Entity;
  * @property string $content_data
  * @property string $status
  */
-class ExpesssDelivery extends Entity
+class ExpressDelivery extends Entity
 {
 
     /**

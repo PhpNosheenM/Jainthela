@@ -36,7 +36,8 @@ class HomeScreensTable extends Table
         $this->setDisplayField('title');
         $this->setPrimaryKey('id');
 		$this->belongsTo('Banners');
-		$this->belongsTo('ExpesssDeliveries');
+		$this->belongsTo('Brands');
+		$this->belongsTo('ExpressDeliveries');
         $this->belongsTo('Categories', [
             'foreignKey' => 'category_id',
             'joinType' => 'INNER'
