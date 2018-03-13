@@ -95,15 +95,6 @@ class CategoriesTable extends Table
             ->requirePresence('show_sub_category', 'create')
             ->notEmpty('show_sub_category'); */
 
-       /*  $validator
-            ->scalar('app_image')
-            ->requirePresence('app_image', 'create')
-            ->notEmpty('app_image'); */
-
-        /* $validator
-            ->scalar('web_image')
-            ->requirePresence('web_image', 'create')
-            ->notEmpty('web_image'); */
 
 		return $validator;
     }
