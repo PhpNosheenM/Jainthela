@@ -152,9 +152,8 @@
 			<td width="10%" valign="top">
 				<?= $this->Form->control('longitude',['class'=>'form-control longitude','label'=>false]) ?>
 			</td>
-		
 			<td valign="top">
-				<?= $this->Form->control('default_address',['class'=>'form-control icheckbox','label'=>false,'type'=>'checkbox']) ?>
+				<?= $this->Form->control('default_address',['class'=>'form-control','label'=>false,'type'=>'checkbox']) ?>
 				
 			</td>
 			
