@@ -22,7 +22,7 @@ class HomeScreensController extends AppController
 	
 	 public function homescreen(){
 		 
-		$city_id=$this->request->query['city_id'];
+		$city_id=@$this->request->query['city_id'];
 		$city_id=1;
 		$Banners=$this->HomeScreens->Banners->find()->where(['city_id'=>$city_id,'status'=>'Active']);
 		$SubCategories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'show_category'=>'yes','status'=>'Active']);
@@ -33,10 +33,28 @@ class HomeScreensController extends AppController
 		if($HomeScreens->toArray()){
 			foreach($HomeScreens as $HomeScreen){
 				
-				
+				if($HomeScreen->model_name=='ExpesssDeliveries'){
+					
+					$ExpesssDeliveries=$this->HomeScreens->ExpesssDeliveries->find()->where(['status'=>'Active']);
+					if($ExpesssDeliveries->toArray()){
+						$Expesss=array("layout"=>$HomeScreen->layout,"ExpesssDeliveries"=>$ExpesssDeliveries);
+					}
+										
+				}
+				if($HomeScreen->model_name=='Brands'){
+					
+					$ExpesssDeliveries=$this->HomeScreens->Brands->find()->where(['status'=>'Active']);
+					if($ExpesssDeliveries->toArray()){
+						$Expesss=array("layout"=>$HomeScreen->layout,"ExpesssDeliveries"=>$ExpesssDeliveries);
+					}
+										
+				}
 			}
 		}
-		$data=array("Banners"=>$Banners,"Sub Categories"=>$SubCategories,"Categories"=>$Categories,'HomeScreens'=>$HomeScreens);
+		
+		
+		
+		$data=array("Banners"=>$Banners,"Sub Categories"=>$SubCategories,"Categories"=>$Categories,'ExpesssDeliveries'=>$Expesss);
 		
 		
 		$this->set(['success' => true,'data' => $data,'_serialize' => ['success', 'data']]);
