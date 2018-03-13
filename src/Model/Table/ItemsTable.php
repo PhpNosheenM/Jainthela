@@ -106,6 +106,11 @@ class ItemsTable extends Table
         $this->hasMany('SellerItems', [
             'foreignKey' => 'item_id'
         ]);
+		
+		  $this->hasMany('ItemsVariations', [
+            'className' => 'ItemVariations',
+			'foreignKey' => 'item_id'
+        ])->setConditions(['section_show'=>'Yes']);
     }
 
     /**
