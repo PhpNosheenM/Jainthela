@@ -61,7 +61,19 @@ class LocationsTable extends Table
             'foreignKey' => 'city_id',
             'joinType' => 'INNER'
         ]);
-        $this->hasMany('AccountingEntries', [
+        $this->hasMany('AccountingGroups', [
+            'foreignKey' => 'location_id'
+        ]);
+		$this->hasMany('FinancialYears', [
+            'foreignKey' => 'location_id'
+        ]);
+		$this->hasMany('GstFigures', [
+            'foreignKey' => 'location_id'
+        ]);
+		$this->hasMany('Ledgers', [
+            'foreignKey' => 'location_id'
+        ]);
+		$this->hasMany('AccountingEntries', [
             'foreignKey' => 'location_id'
         ]);
         $this->hasMany('AccountingGroups', [

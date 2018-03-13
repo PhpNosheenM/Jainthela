@@ -86,7 +86,7 @@ class ItemsController extends AppController
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('admin_portal');
         $item = $this->Items->get($id, [
-            'contain' => []
+            'contain' => ['ItemVariations']
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $item = $this->Items->patchEntity($item, $this->request->getData());

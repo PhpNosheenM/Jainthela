@@ -110,48 +110,51 @@
 									</tr>
 								</thead>
 								<tbody class="MainTbody">  
+								<?php foreach($item->item_variations as $item_variation){ //pr($item_variation);exit; ?>
 									<tr class="MainTr">
 										<td  valign="top"> 
-											<?php echo $this->Form->select('unit_id', $units,['class'=>'form-control unit select','label'=>false]) ?> 			</td>
+											<?php echo $this->Form->select('unit_id', $units,['class'=>'form-control unit select','label'=>false, 'value'=>$item_variation->unit_id]) ?> 
+										</td>
 										<td width="" valign="top">
-											<?= $this->Form->control('quantity_factor',['class'=>'form-control quantity_factor','label'=>false]) ?>
+											<?= $this->Form->control('quantity_factor',['class'=>'form-control quantity_factor','label'=>false , 'value'=>$item_variation->quantity_factor]) ?>
 										</td>
 										<td valign="top">
-											<?= $this->Form->control('print_quantity',['class'=>'form-control print_quantity','label'=>false]) ?>
+											<?= $this->Form->control('print_quantity',['class'=>'form-control print_quantity','label'=>false, 'value'=>$item_variation->print_quantity]) ?>
 										</td>
 										<td valign="top">
-											<?= $this->Form->control('print_rate',['class'=>'form-control print_rate','label'=>false]) ?>
+											<?= $this->Form->control('print_rate',['class'=>'form-control print_rate','label'=>false, 'value'=>$item_variation->print_rate]) ?>
 										</td>
 										<td valign="top">
-											<?= $this->Form->control('discount_per',['class'=>'form-control discount_per','label'=>false]) ?>
+											<?= $this->Form->control('discount_per',['class'=>'form-control discount_per','label'=>false, 'value'=>$item_variation->discount_per]) ?>
 										</td>
 										<td valign="top">
-											<?= $this->Form->control('sales_rate',['class'=>'form-control sales_rate','label'=>false]) ?>
+											<?= $this->Form->control('sales_rate',['class'=>'form-control sales_rate','label'=>false, 'value'=>$item_variation->sales_rate]) ?>
 										</td>
 										<td valign="top">
-											<?= $this->Form->control('maximum_quantity_purchase',['class'=>'form-control maximum_quantity_purchase','label'=>false]) ?>
+											<?= $this->Form->control('maximum_quantity_purchase',['class'=>'form-control maximum_quantity_purchase','label'=>false, 'value'=>$item_variation->maximum_quantity_purchase]) ?>
 										</td>
 										
 										<td valign="top">
 											<?php $sale_options['No'] = 'No'; ?>
 											<?php $sale_options['Yes'] = 'Yes'; ?>
-											<?= $this->Form->select('ready_to_sale',$sale_options,['class'=>'form-control select ready_to_sale','label'=>false]) ?>
+											<?= $this->Form->select('ready_to_sale',$sale_options,['class'=>'form-control  ready_to_sale','label'=>false, 'value'=>$item_variation->ready_to_sale]) ?>
 										</td>
 										<td  valign="top">
 											<?php $out_options['No'] = 'No'; ?>
 											<?php $out_options['Yes'] = 'Yes'; ?>
-											<?= $this->Form->select('out_of_stock',$out_options,['class'=>'form-control select out_of_stock','label'=>false]) ?>
+											<?= $this->Form->select('out_of_stock',$out_options,['class'=>'form-control  out_of_stock','label'=>false, 'value'=>$item_variation->out_of_stock]) ?>
 										</td>
 										<td width="10%" valign="top">
 											<?php $options1['Active'] = 'Active'; ?>
 											<?php $options1['Deactive'] = 'Deactive'; ?>
-															<?= $this->Form->select('status',$options1,['class'=>'status1 form-control select ','label'=>false]) ?>
+															<?= $this->Form->select('status',$options1,['class'=>' form-control status1 ','label'=>false, 'value'=>$item_variation->status]) ?>
 										</td>
 										<td valign="top"  >
 											<a class="btn btn-primary  btn-condensed btn-sm add_row" href="#" role="button" ><i class="fa fa-plus"></i></a>
 											<a class="btn btn-danger  btn-condensed btn-sm delete_row " href="#" role="button" ><i class="fa fa-times"></i></a>
 										</td>
 									</tr>
+								<?php } ?>
 								</tbody>
 							</table>
 						</div>
@@ -198,17 +201,17 @@
 			<td valign="top">
 				<?php $sale_options['No'] = 'No'; ?>
 				<?php $sale_options['Yes'] = 'Yes'; ?>
-				<?= $this->Form->select('ready_to_sale',$sale_options,['class'=>'form-control select ready_to_sale','label'=>false]) ?>
+				<?= $this->Form->select('ready_to_sale',$sale_options,['class'=>'form-control  ready_to_sale','label'=>false]) ?>
 			</td>
 			<td  valign="top">
 				<?php $out_options['No'] = 'No'; ?>
 				<?php $out_options['Yes'] = 'Yes'; ?>
-				<?= $this->Form->select('out_of_stock',$out_options,['class'=>'form-control select out_of_stock','label'=>false]) ?>
+				<?= $this->Form->select('out_of_stock',$out_options,['class'=>'form-control  out_of_stock','label'=>false]) ?>
 			</td>
 			<td width="10%" valign="top">
 				<?php $options1['Active'] = 'Active'; ?>
 				<?php $options1['Deactive'] = 'Deactive'; ?>
-								<?= $this->Form->select('status',$options1,['class'=>'status1 form-control select ','label'=>false]) ?>
+								<?= $this->Form->select('status',$options1,['class'=>'status1 form-control  ','label'=>false]) ?>
 			</td>
 			<td valign="top"  >
 				<a class="btn btn-primary  btn-condensed btn-sm add_row" href="#" role="button" ><i class="fa fa-plus"></i></a>
@@ -262,7 +265,7 @@
 						$(this).find("td:nth-child(7) input.maximum_quantity_purchase").attr({name:"item_variations["+i+"][maximum_quantity_purchase]",id:"item_variations-"+i+"-maximum_quantity_purchase"});
 						$(this).find("td:nth-child(8) select.ready_to_sale").attr({name:"item_variations["+i+"][ready_to_sale]",id:"item_variations-"+i+"-ready_to_sale"});
 						$(this).find("td:nth-child(9) select.out_of_stock").attr({name:"item_variations["+i+"][out_of_stock]",id:"item_variations-"+i+"-out_of_stock"});
-						$(this).find("td:nth-child(10) select.status1").attr({name:"item_variations["+i+"][status]",id:"item_variations-"+i+"-status"});
+						$(this).find("td:nth-child(10) select.status1").attr({name:"item_variations["+i+"][status]",id:"item_variations-"+i+"-status"}).addClass("select");
 						i++;
 			});
 		}
