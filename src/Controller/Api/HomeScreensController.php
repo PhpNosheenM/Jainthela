@@ -72,7 +72,11 @@ class HomeScreensController extends AppController
 
 		$data=array("Banners"=>$Banners,"Sub Categories"=>$SubCategories,"Categories"=>$Categories,'dynamic'=>$dynamic);
 
+		 $this->set(['success' => true,'message'=>'Data Found Successfully','data' => $data,'_serialize' => ['success','message', 'data']]);
+		}else{
+			$data=[];
+			$this->set(['success' => false,'message'=>'Data Not Found','data' => $data,'_serialize' => ['success','message', 'data']]);
+		}
 
-		$this->set(['success' => true,'message'=>'Data Found Successfully','data' => $data,'_serialize' => ['success','message', 'data']]);
 	 }
 }
