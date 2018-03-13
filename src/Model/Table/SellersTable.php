@@ -52,6 +52,18 @@ class SellersTable extends Table
         $this->hasMany('SellerRatings', [
             'foreignKey' => 'seller_id'
         ]);
+		$this->belongsTo('Ledgers', [
+            'foreignKey' => 'ledger_id',
+            'joinType' => 'INNER'
+        ]);
+		$this->belongsTo('Locations', [
+            'foreignKey' => 'location_id'
+        ]); 
+		$this->hasMany('ReferenceDetails', [
+            'foreignKey' => 'seller_id',
+			'saveStrategy'=>'replace'
+			
+        ]);
     }
 
     /**

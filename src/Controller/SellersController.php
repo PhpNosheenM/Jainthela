@@ -74,6 +74,8 @@ class SellersController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
+		//pr($location_id); exit;
 		$this->viewBuilder()->layout('admin_portal');
         $seller = $this->Sellers->newEntity();
         if ($this->request->is('post')) {
@@ -82,7 +84,58 @@ class SellersController extends AppController
 			$seller->city_id=$city_id;
 			$seller->created_by=$user_id;
 			$seller->registration_date=date('Y-m-d');
-            if ($this->Sellers->save($seller)) {
+			$bill_to_bill_accounting=$seller->bill_to_bill_accounting;
+			
+			if(!empty($seller->reference_details))
+				{
+					foreach($seller->reference_details as $reference_detail)
+					{
+						$data=$this->Sellers->Locations->get($location_id);
+						$reference_detail->transaction_date = $data->books_beginning_from;
+						$reference_detail->opening_balance = 'yes';
+						
+					}
+				}
+			
+				
+				
+			//pr($seller); exit;
+            if ($this->Sellers->save($seller)) { 
+				
+				$accounting_group = $this->Sellers->Ledgers->AccountingGroups->find()->where(['supplier'=>1])->first();
+				$ledger = $this->Sellers->Ledgers->newEntity();
+				$ledger->name = $seller->firm_name;
+				$ledger->accounting_group_id = $accounting_group->id;
+				$ledger->seller_id=$seller->id;
+				$ledger->bill_to_bill_accounting=$bill_to_bill_accounting;
+				
+				if($this->Sellers->Ledgers->save($ledger))
+				{
+					$query=$this->Sellers->ReferenceDetails->query();
+						$result = $query->update()
+						->set(['ledger_id' => $ledger->id])
+						->where(['seller_id' => $seller->id])
+						->execute();
+					//Create Accounting Entry//
+			        $transaction_date=$data->books_beginning_from;
+					$AccountingEntry = $this->Sellers->Ledgers->AccountingEntries->newEntity();
+					$AccountingEntry->ledger_id        = $ledger->id;
+					if($seller->debit_credit=="Dr")
+					{
+						$AccountingEntry->debit        = $seller->opening_balance_value;
+					}
+					if($seller->debit_credit=="Cr")
+					{
+						$AccountingEntry->credit       = $seller->opening_balance_value;
+					}
+					$AccountingEntry->transaction_date = date("Y-m-d",strtotime($transaction_date));
+					$AccountingEntry->location_id       = $location_id;
+					$AccountingEntry->city_id       = $city_id;
+					$AccountingEntry->is_opening_balance = 'yes';
+					if($seller->opening_balance_value){
+					$this->Sellers->Ledgers->AccountingEntries->save($AccountingEntry);
+					}
+				}
                 $this->Flash->success(__('The seller has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
