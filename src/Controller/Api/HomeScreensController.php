@@ -37,7 +37,7 @@ class HomeScreensController extends AppController
 						
 						$ExpressDeliveries=$this->HomeScreens->ExpressDeliveries->find()->where(['status'=>'Active']);
 						if($ExpressDeliveries->toArray()){
-							$Express=array("layout"=>$HomeScreen->layout,"ExpressDeliveries"=>$ExpressDeliveries);
+							$Express=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"ExpressDeliveries"=>$ExpressDeliveries);
 						}else{
 							$Express=[];
 						}
@@ -47,7 +47,7 @@ class HomeScreensController extends AppController
 						
 							$Brands=$this->HomeScreens->Brands->find()->where(['status'=>'Active','city_id'=>$city_id]);
 							if($Brands->toArray()){
-								$Brand=array("layout"=>$HomeScreen->layout,"Brands"=>$Brands);
+								$Brand=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"Brands"=>$Brands);
 							}else{
 								$Brand=[];
 							}
@@ -55,7 +55,7 @@ class HomeScreensController extends AppController
 						
 					if($HomeScreen->model_name=='Category'){
 						
-							$Items=$this->HomeScreens->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])->contain(['Items']);
+							$Items=$this->HomeScreens->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])->contain(['Items'=>['ItemVariations'=>['Units']]]);
 							if($Items->toArray()){
 								$Item=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"Items"=>$Items);
 							}else{
@@ -66,10 +66,7 @@ class HomeScreensController extends AppController
 				
 				$dynamic=array($Express,$Brand,$Item);
 			}
-		
-		
-		
-		
+				
 		$data=array("Banners"=>$Banners,"Sub Categories"=>$SubCategories,"Categories"=>$Categories,'dynamic'=>$dynamic);
 		
 		
