@@ -1,3 +1,4 @@
+ <?php $this->set('title','Dashboard'); ?>
  <div class="page-content-wrap">
                     <div class="row">
                         <div class="col-md-12">
