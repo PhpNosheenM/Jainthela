@@ -56,9 +56,44 @@ class ItemsController extends AppController
 		$this->viewBuilder()->layout('admin_portal');
         $item = $this->Items->newEntity();
         if ($this->request->is('post')) {
+			$item_image=$this->request->data['item_image'];
+			$item_error=$item_image['error'];
             $item = $this->Items->patchEntity($item, $this->request->getData());
-			$item->city_id=$city_id;	//pr($item); exit;
-            if ($this->Items->save($item)) { //pr($item);exit;
+			
+			if(empty($item_error))
+			{
+				$item_ext=explode('/',$item_image['type']);
+				$item->item_image='item'.time().'.'.$item_ext[1];
+			}
+			//pr($item);exit;
+			$item->city_id=$city_id;
+			$item->created_by=$user_id;
+			//pr($item); exit;
+            if ($item_data=$this->Items->save($item)) { 
+				if(empty($item_error))
+				{
+					/* For Web Image */
+					$deletekeyname = 'item/'.$item_data->id.'/web';
+					$this->AwsFile->deleteMatchingObjects($deletekeyname);
+					$keyname = 'item/'.$item_data->id.'/web/'.$item_data->item_image;
+					$this->AwsFile->putObjectFile($keyname,$item_image['tmp_name'],$item_image['type']);
+					
+					/* Resize Image */
+					$destination_url = WWW_ROOT . 'img/temp/'.$item_data->item_image;
+					$image = imagecreatefromjpeg($item_image['tmp_name']);
+					imagejpeg($image, $destination_url, 10);
+					
+					/* For App Image */
+					$deletekeyname = 'item/'.$item_data->id.'/app';
+					$this->AwsFile->deleteMatchingObjects($deletekeyname);
+					$keyname = 'item/'.$item_data->id.'/app/'.$item_data->item_image;
+					$this->AwsFile->putObjectFile($keyname,$destination_url,$item_image['type']);
+					
+					/* Delete Temp File */
+					$file = new File(WWW_ROOT . $destination_url, false, 0777);
+					$file->delete();
+				}
+			//pr($item);exit;
                 $this->Flash->success(__('The item has been saved.'));
 
                 return $this->redirect(['action' => 'index']);

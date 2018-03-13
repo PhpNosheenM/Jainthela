@@ -76,7 +76,7 @@ class Item extends Entity
         'approve' => true,
         'status' => true,
         'app_image' => true,
-        'web_image' => true,
+        'item_image' => true,
         'alias_name' => true,
         'out_of_stock' => true,
         'ready_to_sale' => true,
