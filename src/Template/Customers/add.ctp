@@ -128,7 +128,7 @@
 </div>
 
 
-<table id="sampleTable" width="100%" >
+<table id="sampleTable" width="100%" style="display:none;">
 	<tbody class="sampleMainTbody">
 		<tr class="MainTr">
 			
@@ -153,7 +153,7 @@
 				<?= $this->Form->control('longitude',['class'=>'form-control longitude','label'=>false]) ?>
 			</td>
 			<td valign="top">
-				<?= $this->Form->control('default_address',['class'=>'form-control','label'=>false,'type'=>'checkbox']) ?>
+				<?= $this->Form->control('default_address',['class'=>'ichecked', 'label'=>false,'hidden'=>false,'type'=>'checkbox']) ?>
 				
 			</td>
 			
