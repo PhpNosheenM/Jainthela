@@ -69,18 +69,18 @@
 					</div>
 					
 					<div class="form-group" id="web_image_data">
-						<label>Web Image</label> 
+						<label>Category Image</label> 
 						<?php
 							$required=true;
-							$keyname = 'category/'.$category->id.'/app/'.$category->app_image;
+							$keyname = 'category/'.$category->id.'/app/'.$category->category_image;
 							$info = $awsFileLoad->doesObjectExistFile($keyname);
 							if($info)
 							{
 								$required=false;
 							}
 						?>
-						<?= $this->Form->control('web_image',['type'=>'file','label'=>false,'id' => 'web_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>$required]) ?>
-						<label id="web_image-error" class="error" for="web_image"></label>
+						<?= $this->Form->control('category_image',['type'=>'file','label'=>false,'id' => 'category_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>$required]) ?>
+						<label id="category_image-error" class="error" for="category_image"></label>
 						 <?php  
 						
 						if($info)
@@ -102,8 +102,14 @@
 						 						
 					</div>
 					<div class="form-group">
+						<label>Show Category</label>
+						<?php $options['No'] = 'No'; ?>
+						<?php $options['Yes'] = 'Yes'; ?>
+						<?= $this->Form->select('show_category',$options,['class'=>'form-control select','label'=>false]) ?>
+					</div>
+					<div class="form-group">
 						<label>Status</label>
-						<?php $options['Active'] = 'Active'; ?>
+						<?php unset($options); $options['Active'] = 'Active'; ?>
 						<?php $options['Deactive'] = 'Deactive'; ?>
 						<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
 					</div>
@@ -183,7 +189,7 @@
 			}                                        
 		});
 		
-		$("#web_image").fileinput({
+		$("#category_image").fileinput({
             showUpload: false,
             showCaption: false,
             showCancel: false,
