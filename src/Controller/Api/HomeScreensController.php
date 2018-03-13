@@ -21,33 +21,27 @@ class HomeScreensController extends AppController
     }
 
 	 public function homescreen(){
-
 		$city_id=$this->request->query['city_id'];
-
-		$Banners=$this->HomeScreens->Banners->find()->where(['city_id'=>$city_id,'status'=>'Active']);
-		$SubCategories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'show_category'=>'yes','status'=>'Active']);
-
-		$Categories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'status'=>'Active','parent_id IS'=>Null]);
-
-		$HomeScreens=$this->HomeScreens->find()->where(['screen_type'=>'home','section_show'=>'Yes','city_id'=>$city_id]);
-		if($HomeScreens->toArray()){
-			$Express =[];
-			$Brand =[];
-			$Item =[];
-			foreach($HomeScreens as $HomeScreen){
-
+		if(!empty($city_id)){
+			$Banners=$this->HomeScreens->Banners->find()->where(['city_id'=>$city_id,'status'=>'Active']);
+			$SubCategories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'show_category'=>'yes','status'=>'Active']);
+			$Categories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'status'=>'Active','parent_id IS'=>Null]);
+			$HomeScreens=$this->HomeScreens->find()->where(['screen_type'=>'home','section_show'=>'Yes','city_id'=>$city_id]);
+		if($HomeScreens->toArray())
+		{
+				$Express =[];
+				$Brand =[];
+				$Item =[];
+				foreach($HomeScreens as $HomeScreen){
 					if($HomeScreen->model_name=='ExpressDeliveries'){
-
-						$ExpressDeliveries=$this->HomeScreens->ExpressDeliveries->find()->where(['status'=>'Active','city_id'=>$city_id]);
-						if($ExpressDeliveries->toArray()){
-							$Express=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"ExpressDeliveries"=>$ExpressDeliveries);
-						}else{
-							$Express=[];
-						}
-
+							$ExpressDeliveries=$this->HomeScreens->ExpressDeliveries->find()->where(['status'=>'Active','city_id'=>$city_id]);
+							if($ExpressDeliveries->toArray()){
+								$Express=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"ExpressDeliveries"=>$ExpressDeliveries);
+							}else{
+								$Express=[];
+							}
 					}
 					if($HomeScreen->model_name=='Brands'){
-
 							$Brands=$this->HomeScreens->Brands->find()->where(['status'=>'Active','city_id'=>$city_id]);
 							if($Brands->toArray()){
 								$Brand=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"Brands"=>$Brands);
@@ -56,8 +50,8 @@ class HomeScreensController extends AppController
 							}
 						}
 
+				// Please check condition Model table Item and Itemvariation
 					if($HomeScreen->model_name=='Category'){
-
 							$Items=$this->HomeScreens->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])->contain(['ItemActive'=>['ItemsVariations'=>['Units']]]);
 							if($Items->toArray()){
 								$Item=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"Items"=>$Items);
@@ -66,17 +60,14 @@ class HomeScreensController extends AppController
 							}
 						}
 				}
-
 				$dynamic=array($Express,$Brand,$Item);
+				$data=array("Banners"=>$Banners,"Sub Categories"=>$SubCategories,"Categories"=>$Categories,'dynamic'=>$dynamic);
+				$this->set(['success' => true,'message'=>'Data Found Successfully','data' => $data,'_serialize' => ['success','message', 'data']]);
+			}else{
+				$data=[];
+				$this->set(['success' => false,'message'=>'Data Not Found','data' => $data,'_serialize' => ['success','message', 'data']]);
 			}
 
-		$data=array("Banners"=>$Banners,"Sub Categories"=>$SubCategories,"Categories"=>$Categories,'dynamic'=>$dynamic);
-
-		 $this->set(['success' => true,'message'=>'Data Found Successfully','data' => $data,'_serialize' => ['success','message', 'data']]);
-		}else{
-			$data=[];
-			$this->set(['success' => false,'message'=>'Data Not Found','data' => $data,'_serialize' => ['success','message', 'data']]);
 		}
-
-	 }
+ }
 }
