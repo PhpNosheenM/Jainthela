@@ -102,10 +102,10 @@
 						 						
 					</div>
 					<div class="form-group">
-						<label>Show Category</label>
+						<label>Show Section</label>
 						<?php $options['No'] = 'No'; ?>
 						<?php $options['Yes'] = 'Yes'; ?>
-						<?= $this->Form->select('show_category',$options,['class'=>'form-control select','label'=>false]) ?>
+						<?= $this->Form->select('section_show',$options,['class'=>'form-control select','label'=>false]) ?>
 					</div>
 					<div class="form-group">
 						<label>Status</label>
