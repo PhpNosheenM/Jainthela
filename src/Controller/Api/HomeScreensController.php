@@ -55,7 +55,7 @@ class HomeScreensController extends AppController
 						
 					if($HomeScreen->model_name=='Category'){
 						
-							$Items=$this->HomeScreens->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])->contain(['Items'=>['ItemVariations'=>['Units']]]);
+							$Items=$this->HomeScreens->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])->contain(['ItemActive'=>['ItemsVariations'=>['Units']]]);
 							if($Items->toArray()){
 								$Item=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"Items"=>$Items);
 							}else{
