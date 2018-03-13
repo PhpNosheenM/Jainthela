@@ -64,6 +64,9 @@ class Seller extends Entity
         'registration_date' => true,
         'termination_date' => true,
         'termination_reason' => true,
+        'bill_to_bill_accounting' => true,
+        'opening_balance_value' => true,
+        'debit_credit' => true,
         'breif_decription' => true,
         'passkey' => true,
         'timeout' => true,
@@ -73,6 +76,7 @@ class Seller extends Entity
         'city' => true,
         'items' => true,
         'seller_items' => true,
+        'reference_details' => true,
         'seller_ratings' => true
     ];
 
