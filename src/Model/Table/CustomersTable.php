@@ -102,9 +102,20 @@ class CustomersTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
-     
+		$validator
+            ->email('email')
+            ->requirePresence('email', 'create')
+            ->notEmpty('email')
+            ->add('email', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
 
-        return $validator;
+		$validator
+			->scalar('username')
+			->maxLength('username', 20)
+			->requirePresence('username', 'create')
+			->notEmpty('username')
+			->add('username', 'unique', ['rule' => 'validateUnique', 'provider' => 'table']);
+        
+		return $validator;
     }
 
     /**
@@ -117,8 +128,7 @@ class CustomersTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->isUnique(['email']));
-
-        $rules->add($rules->isUnique(['username']));
+		$rules->add($rules->isUnique(['username']));
 
         return $rules;
     }

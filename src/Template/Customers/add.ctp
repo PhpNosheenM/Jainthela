@@ -50,7 +50,7 @@
 							<div class="form-group">                                        
 								<label class="col-md-3 control-label">Mobile</label>
 								<div class="col-md-9 col-xs-12">
-									<?= $this->Form->control('mobile_no',['class'=>'form-control','placeholder'=>'Mobile No','label'=>false]) ?>
+									<?= $this->Form->control('username',['class'=>'form-control','placeholder'=>'Mobile No','label'=>false]) ?>
 								</div>
 							</div>
 							
@@ -82,25 +82,13 @@
 									<?= $this->Form->control('gstin_holder_address',['class'=>'form-control','placeholder'=>'GSTIN Holder Address','label'=>false,'rows'=>'4']) ?>
 								</div>
 							</div>
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">Latitude</label>
-								<div class="col-md-9 col-xs-12">
-									<?= $this->Form->control('latitude',['class'=>'form-control','placeholder'=>'Latitude','label'=>false]) ?>
-								</div>
-							</div>
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">Longitude</label>
-								<div class="col-md-9 col-xs-12">
-									<?= $this->Form->control('longitude',['class'=>'form-control','placeholder'=>'Longitude','label'=>false]) ?>
-								</div>
-							</div>
 							
 							<div class="form-group">                                        
 								<label class="col-md-3 control-label">Status</label>
 								<div class="col-md-9 col-xs-12">
 									<?php $options['Active'] = 'Active'; ?>
-								<?php $options['Deactive'] = 'Deactive'; ?>
-								<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
+									<?php $options['Deactive'] = 'Deactive'; ?>
+									<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
 						</div>
@@ -145,6 +133,8 @@
 		<tr class="MainTr">
 			
 			<td width="" valign="top">
+				<input type="hidden" class="city_container" value="<?php echo $city_id; ?>" >
+				<input type="hidden" class="location_container" value="<?php echo $location_id; ?>">
 				<?= $this->Form->control('house_no',['class'=>'form-control house_no','label'=>false]) ?>
 			</td>
 			<td width="30%" valign="top">
@@ -180,26 +170,19 @@
 <?php
    $js='var jvalidate = $("#jvalidate").validate({
 		ignore: [],
-		rules: {                                            
-				name: {
-						required: true,
-				},
-				firm_name: {
-						required: true,
-				},
-				email: {
-						required: true,
-				},
-				user_name: {
-						required: true,
-				},
-				password: {
-						required: true,
-				},
-				mobile_no: {
-						required: true,
-				},
-			}                                        
+			rules: {                                            
+					name: {
+							required: true,
+					},
+					
+					email: {
+							required: true,
+					},
+					username: {
+							required: true,
+					},
+					
+			}	                                  
 		});
 		
 		$(document).on("click",".add_row",function(){
@@ -220,19 +203,20 @@
 			renameRows();
 		});
 		
-		
-	
 		function renameRows(){
 				var i=0; 
 				$(".main_table tbody tr").each(function(){
-					$(this).attr("row_no",i);
+						$(this).attr("row_no",i);
+						$(this).find("td:nth-child(1) input.city_container").attr({name:"customer_addresses["+i+"][city_id]",id:"customer_addresses-"+i+"-city_container"})
+						$(this).find("td:nth-child(1) input.location_container").attr({name:"customer_addresses["+i+"][location_id]",id:"customer_addresses-"+i+"-location_container"})
 						$(this).find("td:nth-child(1) input.house_no").attr({name:"customer_addresses["+i+"][house_no]",id:"customer_addresses-"+i+"-house_no"}).rules("add", "required");
-						$(this).find("td:nth-child(2) input.address").attr({name:"customer_addresses["+i+"][address]",id:"customer_addresses-"+i+"-address"}).rules("add", "required");
-						$(this).find("td:nth-child(3) input.landmark").attr({name:"customer_addresses["+i+"][landmark]",id:"customer_addresses-"+i+"-landmark"}).rules("add", "required");
+						$(this).find("td:nth-child(2) textarea.address").attr({name:"customer_addresses["+i+"][address]",id:"customer_addresses-"+i+"-address"}).rules("add", "required");
+						$(this).find("td:nth-child(3) textarea.landmark").attr({name:"customer_addresses["+i+"][landmark]",id:"customer_addresses-"+i+"-landmark"}).rules("add", "required");
 						$(this).find("td:nth-child(4) input.pincode").attr({name:"customer_addresses["+i+"][pincode]",id:"customer_addresses-"+i+"-pincode"}).rules("add", "required");
 						$(this).find("td:nth-child(5) input.latitude").attr({name:"customer_addresses["+i+"][latitude]",id:"customer_addresses-"+i+"-latitude"});
 						$(this).find("td:nth-child(6) input.longitude").attr({name:"customer_addresses["+i+"][longitude]",id:"customer_addresses-"+i+"-longitude"});
 						$(this).find("td:nth-child(7) input.default_address").attr({name:"customer_addresses["+i+"][default_address]",id:"customer_addresses-"+i+"-default_address"});
+						
 						i++;
 			});
 		}

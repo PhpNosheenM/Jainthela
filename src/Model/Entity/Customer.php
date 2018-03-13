@@ -64,6 +64,7 @@ class Customer extends Entity
     protected $_accessible = [
         'city_id' => true,
         'name' => true,
+		
         'email' => true,
         'username' => true,
         'password' => true,
@@ -77,6 +78,7 @@ class Customer extends Entity
         'timeout' => true,
         'created_on' => true,
         'created_by' => true,
+		'status' => true,
         'active' => true,
         'gstin' => true,
         'gstin_holder_name' => true,

@@ -57,17 +57,19 @@ class CustomersController extends AppController
 		$this->viewBuilder()->layout('admin_portal');
         $customer = $this->Customers->newEntity();
         if ($this->request->is('post')) {
-			pr($this->request->getData()); exit;
+			
             $customer = $this->Customers->patchEntity($customer, $this->request->getData());
-			//
+			$customer->city_id=$city_id;
+			$customer->created_by=$user_id;
             if ($this->Customers->save($customer)) {
                 $this->Flash->success(__('The customer has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
             }
+			
             $this->Flash->error(__('The customer could not be saved. Please, try again.'));
         }
-		$this->set(compact('customer', 'cities'));
+		$this->set(compact('customer', 'city_id','location_id'));
     }
 
     /**
