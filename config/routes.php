@@ -83,8 +83,13 @@ Router::prefix('api', function ($routes) {
 	$routes->resources('States');
 	$routes->resources('Cities');
 	$routes->resources('HomeScreens');
+<<<<<<< HEAD
 	$routes->resources('Categories');
 	
+=======
+  $routes->resources('Items');
+
+>>>>>>> 654f8de4492c01bf16066069326ff8fd430baf45
     $routes->fallbacks('InflectedRoute');
 });
 
