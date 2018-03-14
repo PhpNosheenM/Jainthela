@@ -7,14 +7,14 @@
     font-size: 13px;
 }
 </style>
-<?php $this->set('title', 'Customers'); ?><!-- PAGE CONTENT WRAPPER -->
+<?php $this->set('title', 'Suppliers'); ?><!-- PAGE CONTENT WRAPPER -->
 <div class="page-content-wrap">
 
 	<div class="row">
 		<div class="col-md-12">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><strong>Customers</strong></h3>
+					<h3 class="panel-title"><strong>Suppliers</strong></h3>
 				<div class="pull-right">
 			<div class="pull-left">
 				<?= $this->Form->create('Search',['type'=>'GET']) ?>
@@ -38,13 +38,12 @@
 						<table class="table table-bordered">
 							<thead>
 								<tr>
-									<th><?= ('SNo.') ?></th>
-									<th><?= ('name') ?></th>
-									<th><?= ('firm_name') ?></th>
-									<th><?= ('email') ?></th>
-									<th><?= ('user_name') ?></th>
-									<th><?= ('GSTIN') ?></th>
-									<th><?= ('GSTIN Holder') ?></th>
+									<th scope="col"><?= $this->Paginator->sort('id') ?></th>
+									<th scope="col"><?= $this->Paginator->sort('city_id') ?></th>
+									<th scope="col"><?= $this->Paginator->sort('location_id') ?></th>
+									<th scope="col"><?= $this->Paginator->sort('name') ?></th>
+									<th scope="col"><?= $this->Paginator->sort('mobile_no') ?></th>
+									<th scope="col"><?= $this->Paginator->sort('email') ?></th>
 									<th><?= ('status') ?></th>
 									<th scope="col" class="actions"><?= __('Actions') ?></th>
 								</tr>
@@ -52,19 +51,19 @@
 							<tbody>                                            
 								<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); ?>
 								
-								  <?php foreach ($customers as $customer): ?>
+								  <?php foreach ($suppliers as $supplier): ?>
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
-									<td><?= h($customer->name) ?></td>
-									<td><?= h($customer->firm_name) ?></td>
-									<td><?= h($customer->email) ?></td>
-									<td><?= h($customer->username) ?></td>
-									<td><?= h($customer->gstin) ?></td>
-									<td><?= h($customer->gstin_holder_name) ?></td>
-									<td><?= h($customer->status) ?></td>
+									<td><?= h($supplier->city->name) ?></td>
+									<td><?= h($supplier->location->name) ?></td>
+									<td><?= h($supplier->name) ?></td>
+									<td><?= h($supplier->mobile_no) ?></td>
+									<td><?= h($supplier->email) ?></td>
+									<td><?= h($supplier->status) ?></td>
+									
 									<td class="actions">
-										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'edit', $customer->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
-										<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $customer->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $customer->id),'escape'=>false]) ?>
+										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'edit', $supplier->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+										<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $supplier->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $supplier->id),'escape'=>false]) ?>
 									
 									</td>
 								</tr>
