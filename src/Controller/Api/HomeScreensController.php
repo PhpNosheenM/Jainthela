@@ -53,8 +53,8 @@ class HomeScreensController extends AppController
 				// Please check condition Model table Item and Itemvariation
 					if($HomeScreen->model_name=='Category'){
 							$Items=$this->HomeScreens->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])->contain(['ItemActive'=>['ItemsVariations'=>['Units']]]);
-							if($Items->toArray()){
-								$Item=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$Items);
+							if($Items){
+								$Item["Multiple"][]=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$Items);
 							}else{
 								$Item=[];
 							}
