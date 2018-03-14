@@ -91,6 +91,7 @@
 		<?= $this->Html->script('plugins/icheck/icheck.min.js') ?>  
 		<?= $this->Html->script('plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js') ?>  
 		<?= $this->fetch('jsFileInput') ?>
+		<?= $this->fetch('jsDatePicker') ?>
 		<?= $this->fetch('jsSelect') ?>
 		<?= $this->fetch('jsValidate') ?>
 		
