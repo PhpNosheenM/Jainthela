@@ -99,7 +99,6 @@
 							';
 						}
 						?>
-						 						
 					</div>
 					<div class="form-group">
 						<label>Show Section</label>

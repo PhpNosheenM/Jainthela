@@ -29,7 +29,7 @@
 							</div>
 							<div class="form-group">
 								<label class="col-md-3 control-label">Firm Name</label>
-								<div class="col-md-9">                                            
+								<div class="col-md-9">    
 									<?= $this->Form->control('firm_name',['class'=>'form-control','placeholder'=>'Firm Name','label'=>false]) ?>
 								</div>
 							</div>
@@ -47,20 +47,22 @@
 								</div>
 							</div>
 							
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">Mobile</label>
-								<div class="col-md-9 col-xs-12">
-									<?= $this->Form->control('username',['class'=>'form-control','placeholder'=>'Mobile No','label'=>false]) ?>
-								</div>
-							</div>
 							
-							<div class="form-group">                                        
+							
+							<div class="form-group">    
 								<label class="col-md-3 control-label">Discount(%)</label>
 								<div class="col-md-9 col-xs-12">
 									<?= $this->Form->control('discount_in_percentage',['class'=>'form-control','placeholder'=>'Discount','label'=>false]) ?>
 								</div>
 							</div>
-							
+							<div class="form-group">   
+								<label class="col-md-3 control-label">Status</label>
+								<div class="col-md-9 col-xs-12">
+									<?php $options['Active'] = 'Active'; ?>
+									<?php $options['Deactive'] = 'Deactive'; ?>
+									<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
+								</div>
+							</div>
 							
 						</div>
 						<div class="col-md-6">
@@ -83,14 +85,24 @@
 								</div>
 							</div>
 							
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">Status</label>
+							<div class="form-group">    
+								<label class="col-md-3 control-label">Mobile</label>
 								<div class="col-md-9 col-xs-12">
-									<?php $options['Active'] = 'Active'; ?>
-									<?php $options['Deactive'] = 'Deactive'; ?>
-									<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
+									<?= $this->Form->control('username',['class'=>'form-control','placeholder'=>'Mobile No','label'=>false]) ?>
 								</div>
 							</div>
+							
+							<div class="form-group">
+								<label class="col-md-3 control-label">Discount Valid</label>
+								<div class="col-md-9 col-xs-12">
+									<div class="input-group">
+										<?= $this->Form->control('discount_created_on',['class'=>'form-control datepicker','placeholder'=>'Discount Valid From','label'=>false,'type'=>'text','data-date-format' => 'DD/MM/YYYY','value'=>'']) ?>
+										<span class="input-group-addon add-on"> - </span>
+										<?= $this->Form->control('discount_expiry',['class'=>'form-control datepicker','placeholder'=>'Discount Valid To','label'=>false,'type'=>'text','data-date-format' => 'DD/MM/YYYY','value'=>'']) ?>
+									</div>
+								</div>
+							</div>
+							
 						</div>
 					</div>
 				</div>
@@ -164,8 +176,11 @@
 		</tr>
 	</tbody>
 </table>
+
+<?= $this->Html->script('plugins/bootstrap/bootstrap-datepicker.js',['block'=>'jsDatePicker']) ?>
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
+
 <?php
    $js='var jvalidate = $("#jvalidate").validate({
 		ignore: [],
@@ -219,6 +234,16 @@
 						i++;
 			});
 		}
+
+$(function() {
+	
+
+    $("#discount-created-on").datepicker({
+        locale: {
+            dateFormat: "dd/mm/yyyy"
+        }
+    });
+});		
 		';  
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		
 ?>
