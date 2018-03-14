@@ -26,7 +26,7 @@ class HomeScreensController extends AppController
 			$Banners=$this->HomeScreens->Banners->find()->where(['city_id'=>$city_id,'status'=>'Active']);
 			$SubCategories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'	section_show'=>'yes','status'=>'Active']);
 			$Categories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'status'=>'Active','parent_id IS'=>Null]);
-			$HomeScreens=$this->HomeScreens->find()->where(['screen_type'=>'home','section_show'=>'Yes','city_id'=>$city_id]);
+			$HomeScreens=$this->HomeScreens->find()->where(['screen_type'=>'Home','section_show'=>'Yes','city_id'=>$city_id]);
 		if($HomeScreens->toArray())
 		{
 				$Express =[];
@@ -36,7 +36,7 @@ class HomeScreensController extends AppController
 					if($HomeScreen->model_name=='ExpressDeliveries'){
 							$ExpressDeliveries=$this->HomeScreens->ExpressDeliveries->find()->where(['status'=>'Active','city_id'=>$city_id]);
 							if($ExpressDeliveries->toArray()){
-								$Express=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"ExpressDeliveries"=>$ExpressDeliveries);
+								$Express=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$ExpressDeliveries);
 							}else{
 								$Express=[];
 							}
@@ -44,7 +44,7 @@ class HomeScreensController extends AppController
 					if($HomeScreen->model_name=='Brands'){
 							$Brands=$this->HomeScreens->Brands->find()->where(['status'=>'Active','city_id'=>$city_id]);
 							if($Brands->toArray()){
-								$Brand=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"Brands"=>$Brands);
+								$Brand=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$Brands);
 							}else{
 								$Brand=[];
 							}
@@ -54,7 +54,7 @@ class HomeScreensController extends AppController
 					if($HomeScreen->model_name=='Category'){
 							$Items=$this->HomeScreens->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])->contain(['ItemActive'=>['ItemsVariations'=>['Units']]]);
 							if($Items->toArray()){
-								$Item=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"Items"=>$Items);
+								$Item=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$Items);
 							}else{
 								$Item=[];
 							}
