@@ -1,109 +1,93 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\Customer[]|\Cake\Collection\CollectionInterface $customers
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('New Customer'), ['action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Cities'), ['controller' => 'Cities', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New City'), ['controller' => 'Cities', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List App Notification Customers'), ['controller' => 'AppNotificationCustomers', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New App Notification Customer'), ['controller' => 'AppNotificationCustomers', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Bulk Booking Leads'), ['controller' => 'BulkBookingLeads', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Bulk Booking Lead'), ['controller' => 'BulkBookingLeads', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Carts'), ['controller' => 'Carts', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Cart'), ['controller' => 'Carts', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Customer Addresses'), ['controller' => 'CustomerAddresses', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Customer Address'), ['controller' => 'CustomerAddresses', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Feedbacks'), ['controller' => 'Feedbacks', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Feedback'), ['controller' => 'Feedbacks', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Ledgers'), ['controller' => 'Ledgers', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Ledger'), ['controller' => 'Ledgers', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Orders'), ['controller' => 'Orders', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Order'), ['controller' => 'Orders', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Reference Details'), ['controller' => 'ReferenceDetails', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Reference Detail'), ['controller' => 'ReferenceDetails', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Sale Returns'), ['controller' => 'SaleReturns', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Sale Return'), ['controller' => 'SaleReturns', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Sales Invoices'), ['controller' => 'SalesInvoices', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Sales Invoice'), ['controller' => 'SalesInvoices', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Seller Ratings'), ['controller' => 'SellerRatings', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Seller Rating'), ['controller' => 'SellerRatings', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Wallets'), ['controller' => 'Wallets', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Wallet'), ['controller' => 'Wallets', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="customers index large-9 medium-8 columns content">
-    <h3><?= __('Customers') ?></h3>
-    <table cellpadding="0" cellspacing="0">
-        <thead>
-            <tr>
-                <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('city_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('name') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('email') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('username') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('password') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('latitude') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('longitude') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('referral_code') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('discount_in_percentage') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('otp') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('timeout') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('created_on') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('created_by') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('active') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('gstin') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('gstin_holder_name') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('firm_name') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('discount_created_on') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('discount_expiry') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($customers as $customer): ?>
-            <tr>
-                <td><?= $this->Number->format($customer->id) ?></td>
-                <td><?= $customer->has('city') ? $this->Html->link($customer->city->name, ['controller' => 'Cities', 'action' => 'view', $customer->city->id]) : '' ?></td>
-                <td><?= h($customer->name) ?></td>
-                <td><?= h($customer->email) ?></td>
-                <td><?= h($customer->username) ?></td>
-                <td><?= h($customer->password) ?></td>
-                <td><?= h($customer->latitude) ?></td>
-                <td><?= h($customer->longitude) ?></td>
-                <td><?= h($customer->referral_code) ?></td>
-                <td><?= $this->Number->format($customer->discount_in_percentage) ?></td>
-                <td><?= h($customer->otp) ?></td>
-                <td><?= $this->Number->format($customer->timeout) ?></td>
-                <td><?= h($customer->created_on) ?></td>
-                <td><?= $this->Number->format($customer->created_by) ?></td>
-                <td><?= $this->Number->format($customer->active) ?></td>
-                <td><?= h($customer->gstin) ?></td>
-                <td><?= h($customer->gstin_holder_name) ?></td>
-                <td><?= h($customer->firm_name) ?></td>
-                <td><?= h($customer->discount_created_on) ?></td>
-                <td><?= h($customer->discount_expiry) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['action' => 'view', $customer->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $customer->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $customer->id], ['confirm' => __('Are you sure you want to delete # {0}?', $customer->id)]) ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
-    </div>
+<style>
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    border-color: transparent;
+    padding: 8px 8px !important; 
+    background: #F0F4F9;
+    color: #656C78;
+    font-size: 13px;
+}
+</style>
+<?php $this->set('title', 'Customers'); ?><!-- PAGE CONTENT WRAPPER -->
+<div class="page-content-wrap">
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title"><strong>Customers</strong></h3>
+				<div class="pull-right">
+			<div class="pull-left">
+				<?= $this->Form->create('Search',['type'=>'GET']) ?>
+					<div class="form-group" style="display:inline-table">
+						<div class="input-group">
+							<div class="input-group-addon">
+								<span class="fa fa-search"></span>
+							</div>
+							<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
+							<div class="input-group-btn">
+								<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
+							</div>
+						</div>
+					</div>
+				<?= $this->Form->end() ?>
+			</div> 
+		</div> 	
+				</div>
+				<div class="panel-body">    
+					<div class="table-responsive">
+						<table class="table table-bordered">
+							<thead>
+								<tr>
+									<th><?= ('SNo.') ?></th>
+									<th><?= ('name') ?></th>
+									<th><?= ('firm_name') ?></th>
+									<th><?= ('email') ?></th>
+									<th><?= ('user_name') ?></th>
+									<th><?= ('GSTIN') ?></th>
+									<th><?= ('GSTIN Holder') ?></th>
+									<th><?= ('status') ?></th>
+									<th scope="col" class="actions"><?= __('Actions') ?></th>
+								</tr>
+							</thead>
+							<tbody>                                            
+								<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); ?>
+								
+								  <?php foreach ($customers as $seller): ?>
+								<tr>
+									<td><?= $this->Number->format(++$i) ?></td>
+									<td><?= h($seller->name) ?></td>
+									<td><?= h($seller->firm_name) ?></td>
+									<td><?= h($seller->email) ?></td>
+									<td><?= h($seller->username) ?></td>
+									<td><?= h($seller->gstin) ?></td>
+									<td><?= h($seller->gstin_holder_name) ?></td>
+									<td><?= h($seller->status) ?></td>
+									<td class="actions">
+										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'edit', $seller->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+										<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $seller->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $seller->id),'escape'=>false]) ?>
+									
+									</td>
+								</tr>
+								<?php endforeach; ?>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="panel-footer">
+					<div class="paginator pull-right">
+						<ul class="pagination">
+							<?= $this->Paginator->first(__('First')) ?>
+							<?= $this->Paginator->prev(__('Previous')) ?>
+							<?= $this->Paginator->numbers() ?>
+							<?= $this->Paginator->next(__('Next')) ?>
+							<?= $this->Paginator->last(__('Last')) ?>
+						</ul>
+						<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+	</div>                    
+	
 </div>

@@ -85,7 +85,7 @@ class SellersController extends AppController
 			$seller->created_by=$user_id;
 			$seller->registration_date=date('Y-m-d');
 			$bill_to_bill_accounting=$seller->bill_to_bill_accounting;
-			
+			$data=$this->Sellers->Locations->get($location_id);
 			if(!empty($seller->reference_details))
 				{
 					foreach($seller->reference_details as $reference_detail)

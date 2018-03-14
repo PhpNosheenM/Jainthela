@@ -267,7 +267,61 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 					}
 					i++;
 				});
+				
+					var total_type=$("div.window table.refTbl tfoot tr td:nth-child(3) input.total_type").val();
+				if(total_type=="Dr"){
+					eqlClass=eqlClassDr;
+				}else{
+					eqlClass=eqlClassCr;
+				}
+				
+				$("div.window table.refTbl tfoot tr td:nth-child(2) input.total")
+						.rules("add", {
+							equalTo: "#"+eqlClass,
+							messages: {
+								equalTo: "Enter bill wise details upto "+mainAmt+" "+cr_dr
+							}
+						});
 		}
+		
+		$(document).on("keyup, change",".calculation",function()
+			{ 
+				calculation();
+			});	
+		
+		function calculation(){ 
+				var total_debit=0;var total_credit=0; var remaining=0;
+				$("div.window table tbody tr").each(function(){
+					var Dr_Cr=$(this).find("td:nth-child(4) select option:selected").val();
+					var amt= parseFloat($(this).find("td:nth-child(3) input").val());
+					
+					if(!amt){ amt=0; }
+					if(Dr_Cr=="Dr"){ 
+						total_debit=total_debit+amt;
+						
+					}
+					else if(Dr_Cr=="Cr"){
+						total_credit=total_credit+amt;
+					}
+					
+					remaining=total_debit-total_credit;
+					
+					if(remaining>0){
+						$(this).closest("table").find(" tfoot td:nth-child(2) input.total").val(remaining);
+						$(this).closest("table").find(" tfoot td:nth-child(3) input.total_type").val("Dr");
+					}
+					else if(remaining<0){
+						remaining=Math.abs(remaining)
+						$(this).closest("table").find(" tfoot td:nth-child(2) input.total").val(remaining);
+						$(this).closest("table").find(" tfoot td:nth-child(3) input.total_type").val("Cr");
+					}
+					else{
+						$(this).closest("table").find(" tfoot td:nth-child(2) input.total").val("0");
+						$(this).closest("table").find(" tfoot td:nth-child(3) input.total_type").val("");	
+					}
+				});
+				renameRefRows();	
+			}
 		
 		';  
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		

@@ -32,18 +32,7 @@
 									<?= $this->Form->control('firm_address',['class'=>'form-control','placeholder'=>'Firm Address','label'=>false,'rows'=>'4']) ?>
 								</div>
 							</div>
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">Latitude</label>
-								<div class="col-md-9 col-xs-12">
-									<?= $this->Form->control('latitude',['class'=>'form-control','placeholder'=>'Latitude','label'=>false]) ?>
-								</div>
-							</div>
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">Longitude</label>
-								<div class="col-md-9 col-xs-12">
-									<?= $this->Form->control('longitude',['class'=>'form-control','placeholder'=>'Longitude','label'=>false]) ?>
-								</div>
-							</div>
+							
 							<div class="form-group">                                        
 								<label class="col-md-3 control-label">Status</label>
 								<div class="col-md-9 col-xs-12">
@@ -52,6 +41,20 @@
 								<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">User Name</label>
+								<div class="col-md-9"> 
+										<?= $this->Form->control('username',['class'=>'form-control','placeholder'=>'User Name','label'=>false]) ?>
+								</div>
+							</div>
+							
+							<div class="form-group">                                        
+								<label class="col-md-3 control-label">Password</label>
+								<div class="col-md-9 col-xs-12">
+									<?= $this->Form->control('password',['class'=>'form-control','placeholder'=>'Password','label'=>false,'type'=>'password']) ?>
+								</div>
+							</div>
+							
 							
 						</div>
 						<div class="col-md-6">
@@ -76,45 +79,16 @@
 							<div class="form-group">                                        
 								<label class="col-md-3 control-label">Email</label>
 								<div class="col-md-9 col-xs-12">
-									<div class="input-group">
-										<span class="input-group-addon"><span class="fa fa-envelope"></span></span>
-										<?= $this->Form->control('email',['class'=>'form-control','placeholder'=>'Email','label'=>false]) ?>
-									</div>  
-									<label id="email-error" class="error" for="email" style="display: none;"></label>
+									<?= $this->Form->control('email',['class'=>'form-control','placeholder'=>'Email','label'=>false]) ?>
 								</div>
 							</div>
 							
-							<div class="form-group">
-								<label class="col-md-3 control-label">User Name</label>
-								<div class="col-md-9"> 
-									<div class="input-group">
-										<span class="input-group-addon"><span class="fa fa-user"></span></span>								
-										<?= $this->Form->control('username',['class'=>'form-control','placeholder'=>'User Name','label'=>false]) ?>
-									</div>
-									<label id="username-error" class="error" for="username" style="display: none;"></label>
-								</div>
-							</div>
-							
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">Password</label>
-								<div class="col-md-9 col-xs-12">
-									<div class="input-group">
-									<span class="input-group-addon"><span class="fa fa-unlock-alt"></span></span>
-									<?= $this->Form->control('password',['class'=>'form-control','placeholder'=>'Password','label'=>false,'type'=>'password']) ?>
-									</div>
-									<label id="password-error" class="error" for="password" style="display: none;"></label>
-								</div>
-							</div>
 							
 							<div class="form-group">                                        
 								<label class="col-md-3 control-label">Mobile</label>
 								<div class="col-md-9 col-xs-12">
-									<div class="input-group">
-									<span class="input-group-addon"><span class="fa fa-mobile"></span></span>
 									<?= $this->Form->control('mobile_no',['class'=>'form-control','placeholder'=>'Mobile No','label'=>false]) ?>
 									</div>
-									<label id="mobile_no-error" class="error" for="mobile-no" style="display: none;"></label>
-								</div>
 							</div>
 							
 							

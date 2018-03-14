@@ -20,12 +20,16 @@ class CustomersController extends AppController
      */
     public function index()
     {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$this->viewBuilder()->layout('admin_portal');
         $this->paginate = [
-            'contain' => ['Cities']
+            'contain' => ['Cities'],
+			'limit' => 20
         ];
         $customers = $this->paginate($this->Customers);
-
-        $this->set(compact('customers'));
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('customers','paginate_limit'));
     }
 
     /**
