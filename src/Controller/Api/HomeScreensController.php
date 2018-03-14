@@ -21,7 +21,7 @@ class HomeScreensController extends AppController
     }
 
 	 public function homescreen(){
-		$city_id=$this->request->query['city_id'];
+		$city_id=@$this->request->query['city_id'];
 		if(!empty($city_id)){
 			$Banners=$this->HomeScreens->Banners->find()->where(['city_id'=>$city_id,'status'=>'Active']);
 			$SubCategories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'	section_show'=>'yes','status'=>'Active']);
@@ -68,6 +68,9 @@ class HomeScreensController extends AppController
 				$this->set(['success' => false,'message'=>'Data Not Found','data' => $data,'_serialize' => ['success','message','data']]);
 			}
 
-		}
+		}else{
+				$data=[];
+				$this->set(['success' => false,'message'=>'Data Not Found','data' => $data,'_serialize' => ['success','message','data']]);
+			}
  }
 }
