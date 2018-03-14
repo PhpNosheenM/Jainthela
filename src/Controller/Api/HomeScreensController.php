@@ -28,7 +28,7 @@ class HomeScreensController extends AppController
 			$Categories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'status'=>'Active','parent_id IS'=>Null]);
 			$HomeScreens=$this->HomeScreens->find()->where(['screen_type'=>'Home','section_show'=>'Yes','city_id'=>$city_id]);
 		if($HomeScreens->toArray())
-		{
+		{		$dynamic=[];
 				$Express =[];
 				$Brand =[];
 				$Item =[];
@@ -37,6 +37,7 @@ class HomeScreensController extends AppController
 							$ExpressDeliveries=$this->HomeScreens->ExpressDeliveries->find()->where(['status'=>'Active','city_id'=>$city_id]);
 							if($ExpressDeliveries->toArray()){
 								$Express=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$ExpressDeliveries);
+								array_push($dynamic,$Express);
 							}else{
 								$Express=[];
 							}
@@ -45,6 +46,7 @@ class HomeScreensController extends AppController
 							$Brands=$this->HomeScreens->Brands->find()->where(['status'=>'Active','city_id'=>$city_id]);
 							if($Brands->toArray()){
 								$Brand=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$Brands);
+								array_push($dynamic,$Brand);
 							}else{
 								$Brand=[];
 							}
@@ -54,13 +56,16 @@ class HomeScreensController extends AppController
 					if($HomeScreen->model_name=='Category'){
 							$Items=$this->HomeScreens->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])->contain(['ItemActive'=>['ItemsVariations'=>['Units']]]);
 							if($Items){
-								$Item["Multiple"][]=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$Items);
+								$Itemc=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$Items);
+								array_push($dynamic,$Itemc);
+								
 							}else{
 								$Item=[];
 							}
 						}
 				}
-				$dynamic=array($Express,$Brand,$Item);
+				
+				//$dynamic=array($Express,$Brand);
 				$data=array("Banners"=>$Banners,"Sub Categories"=>$SubCategories,"Categories"=>$Categories,'dynamic'=>$dynamic);
 				$this->set(['success' => true,'message'=>'Data Found Successfully','data' => $data,'_serialize' => ['success','message','data']]);
 			}else{

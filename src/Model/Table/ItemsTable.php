@@ -57,7 +57,7 @@ class ItemsTable extends Table
         ]);
         $this->belongsTo('Brands', [
             'foreignKey' => 'brand_id',
-            'joinType' => 'INNER'
+            'joinType' => 'Left'
         ]);
 		
         $this->belongsTo('Admins', [

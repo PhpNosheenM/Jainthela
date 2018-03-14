@@ -86,7 +86,35 @@
 									<?= $this->Form->control('description',['class'=>'form-control','placeholder'=>'Description','label'=>false,'rows'=>'4']) ?>
 								</div>
 							</div>
+							<div class="form-group" id="web_image_data">
+								<label class="col-md-3 control-label">Web Image</label> 
+								<div class="col-md-9 col-xs-12"> 
+								<?= $this->Form->control('item_image',['type'=>'file','label'=>false,'id' => 'item_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>true]) ?>
+								<label id="item_image-error" class="error" for="item_image"></label>
+								 <?php  
+									$required=true;
+									$keyname = 'item/'.$item->id.'/app/'.$item->item_image;
+									$info = $awsFileLoad->doesObjectExistFile($keyname);
+									if($info)
+									{
+										$result=$awsFileLoad->getObjectFile($keyname);
+										$app_image_view='<img src="data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'" alt="" style="width: auto; height: 160px;" class="file-preview-image"/>';
+										
+										$js.=' $( document ).ready(function() {
+													$("#web_image_data").find("div.file-input-new").removeClass("file-input-new");
+													$("#web_image_data").find("div.file-preview-thumbnails").html("<div data-template=image class=file-preview-frame><div class=kv-file-content><img src=data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'></div></div>");
+													$("#web_image_data").find("div.file-preview-frame").addClass("file-preview-frame krajee-default  kv-preview-thumb");
+												
+													$("#web_image_data").find("img").addClass("file-preview-image kv-preview-data rotate-1");
+												
+												});
+										';
+									}
+									?>
+														
+							</div>
 							
+						</div>
 						</div>
 					</div>
 					<div class="panel-body">    
@@ -220,7 +248,7 @@
 		</tr>
 	</tbody>
 </table>
-
+<?= $this->Html->script('plugins/fileinput/fileinput.min.js',['block'=>'jsFileInput']) ?>
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
 <?php
@@ -269,6 +297,19 @@
 						i++;
 			});
 		}
+		$("#item_image").fileinput({
+            showUpload: false,
+            showCaption: false,
+            showCancel: false,
+            browseClass: "btn btn-danger",
+			allowedFileExtensions: ["jpg", "png"],
+			maxFileSize: 1024,
+		}); 
+		
+		
+		$(document).on("click", ".fileinput-remove-button", function(){
+			$(this).closest("div.file-input").find("input[type=file]").attr("required",true);
+		});
 		
 		';  
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		
