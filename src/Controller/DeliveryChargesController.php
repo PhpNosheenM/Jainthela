@@ -28,7 +28,7 @@ class DeliveryChargesController extends AppController
          ];
 	     $deliveryCharges = $this->DeliveryCharges->find()->where(['city_id'=>$city_id]);
 		
-		 if($id)
+		if($id)
 		{
 		   $deliveryCharge = $this->DeliveryCharges->get($id);
 		}
