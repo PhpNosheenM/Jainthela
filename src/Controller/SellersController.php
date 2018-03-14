@@ -90,17 +90,13 @@ class SellersController extends AppController
 				{
 					foreach($seller->reference_details as $reference_detail)
 					{
-						$data=$this->Sellers->Locations->get($location_id);
+						//$data=$this->Sellers->Locations->get($location_id);
 						$reference_detail->transaction_date = $data->books_beginning_from;
 						$reference_detail->opening_balance = 'yes';
 						
 					}
 				}
-			
-				
-				
-			//pr($seller); exit;
-            if ($this->Sellers->save($seller)) { 
+			 if ($this->Sellers->save($seller)) { 
 				
 				$accounting_group = $this->Sellers->Ledgers->AccountingGroups->find()->where(['supplier'=>1])->first();
 				$ledger = $this->Sellers->Ledgers->newEntity();
