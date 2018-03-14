@@ -62,7 +62,8 @@ class CustomersTable extends Table
             'foreignKey' => 'customer_id'
         ]);
         $this->hasMany('CustomerAddresses', [
-            'foreignKey' => 'customer_id'
+            'foreignKey' => 'customer_id',
+			'saveStrategy'=>'replace'
         ]);
         $this->hasMany('Feedbacks', [
             'foreignKey' => 'customer_id'

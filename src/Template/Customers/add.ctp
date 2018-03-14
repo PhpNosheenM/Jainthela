@@ -69,7 +69,7 @@
 							<div class="form-group">                                        
 								<label class="col-md-3 control-label">GSTIN</label>
 								<div class="col-md-9 col-xs-12">
-									<?= $this->Form->control('gstin',['class'=>'form-control gst',,'placeholder'=>'Eg:22ASDFR0967W6Z5','label'=>false]) ?>
+									<?= $this->Form->control('gstin',['class'=>'form-control gst','placeholder'=>'Eg:22ASDFR0967W6Z5','label'=>false]) ?>
 								</div>
 							</div>
 							<div class="form-group">                                        
