@@ -69,7 +69,7 @@
 							<div class="form-group">                                        
 								<label class="col-md-3 control-label">GSTIN</label>
 								<div class="col-md-9 col-xs-12">
-									<?= $this->Form->control('gstin',['class'=>'form-control','placeholder'=>'GSTIN','label'=>false]) ?>
+									<?= $this->Form->control('gstin',['class'=>'form-control gst','placeholder'=>'Eg:22ASDFR0967W6Z5','label'=>false]) ?>
 								</div>
 							</div>
 							<div class="form-group">                                        
@@ -224,6 +224,21 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 					AddRefRow();
 				}
 			
+		});
+		
+		$(document).on("blur", ".gst", function()
+		{ 
+			var mdl=$(this).val();
+			var numbers = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+			if(mdl.match(numbers))
+			{
+				
+			}
+			else
+			{
+				$(this).val("");
+				return false;
+			}
 		});
 		
 		$(document).on("click",".delete_tr_ref",function(){
