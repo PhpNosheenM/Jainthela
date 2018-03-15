@@ -95,7 +95,7 @@ class SuppliersController extends AppController
 				
 				$accounting_group = $this->Suppliers->Ledgers->AccountingGroups->find()->where(['supplier'=>1])->first();
 				$ledger = $this->Suppliers->Ledgers->newEntity();
-				$ledger->name = $supplier->name;
+				$ledger->name = $supplier->firm_name;
 				$ledger->accounting_group_id = $accounting_group->id;
 				$ledger->supplier_id=$supplier->id;
 				$ledger->bill_to_bill_accounting=$bill_to_bill_accounting;

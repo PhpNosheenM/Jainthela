@@ -75,7 +75,7 @@ class SellersController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
-		//pr($location_id); exit;
+		//pr($this->Auth->User()); exit;
 		$this->viewBuilder()->layout('admin_portal');
         $seller = $this->Sellers->newEntity();
         if ($this->request->is('post')) {

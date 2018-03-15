@@ -20,6 +20,13 @@
 							</div>
 							
 							<div class="form-group">
+								<label class="col-md-3 control-label">Firm Name</label>
+								<div class="col-md-9">    
+									<?= $this->Form->control('firm_name',['class'=>'form-control','placeholder'=>'Firm Name','label'=>false]) ?>
+								</div>
+							</div>
+							
+							<div class="form-group">
 								<label class="col-md-3 control-label">Address</label>
 								<div class="col-md-9 col-xs-12"> 
 									<?= $this->Form->control('address',['class'=>'form-control','placeholder'=>'Address','label'=>false,'rows'=>'4']) ?>
@@ -45,10 +52,35 @@
 									<?= $this->Form->select('debit_credit',$options1,['class'=>'form-control select cr_dr','label'=>false]) ?>
 								</div>
 							</div>
+							<div class="form-group">                                        
+								<label align="left" class="col-md-3 control-label">Bill to Bill</label>
+								<div class="col-md-9 col-xs-12">
+									<?php $options =[['value'=>'no','text'=>'no'],['value'=>'yes','text'=>'yes']]; ?>
+									<?= $this->Form->select('bill_to_bill_accounting',$options,['class'=>'form-control select bill_to_bill','label'=>false]) ?>
+								</div>
+							</div>
 							
 							
 						</div>
 						<div class="col-md-6">
+							<div class="form-group">                                        
+								<label class="col-md-3 control-label">GSTIN</label>
+								<div class="col-md-9 col-xs-12">
+									<?= $this->Form->control('gstin',['class'=>'form-control gst','placeholder'=>'Eg:22ASDFR0967W6Z5','label'=>false]) ?>
+								</div>
+							</div>
+							<div class="form-group">                                        
+								<label class="col-md-3 control-label">GSTIN Holder</label>
+								<div class="col-md-9 col-xs-12">
+									<?= $this->Form->control('gstin_holder_name',['class'=>'form-control','placeholder'=>'GSTIN Holder Name','label'=>false]) ?>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">GSTIN Holder Address</label>
+								<div class="col-md-9 col-xs-12"> 
+									<?= $this->Form->control('gstin_holder_address',['class'=>'form-control','placeholder'=>'GSTIN Holder Address','label'=>false,'rows'=>'3']) ?>
+								</div>
+							</div>
 							<div class="form-group">                                        
 								<label class="col-md-3 control-label">City</label>
 								<div class="col-md-9 col-xs-12">
@@ -78,13 +110,7 @@
 								</div>
 							</div>
 							
-							<div class="form-group">                                        
-								<label align="left" class="col-md-3 control-label">Bill to Bill</label>
-								<div class="col-md-9 col-xs-12">
-									<?php $options =[['value'=>'no','text'=>'no'],['value'=>'yes','text'=>'yes']]; ?>
-									<?= $this->Form->select('bill_to_bill_accounting',$options,['class'=>'form-control select bill_to_bill','label'=>false]) ?>
-								</div>
-							</div>
+							
 						</div>
 						</div>
 						</div>
