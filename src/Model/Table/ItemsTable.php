@@ -59,7 +59,7 @@ class ItemsTable extends Table
             'foreignKey' => 'brand_id',
             'joinType' => 'Left'
         ]);
-		
+
         $this->belongsTo('Admins', [
             'foreignKey' => 'admin_id',
             'joinType' => 'INNER'
@@ -106,11 +106,16 @@ class ItemsTable extends Table
         $this->hasMany('SellerItems', [
             'foreignKey' => 'item_id'
         ]);
-		
+
 		  $this->hasMany('ItemsVariations', [
             'className' => 'ItemVariations',
 			'foreignKey' => 'item_id'
         ])->setConditions(['section_show'=>'Yes']);
+
+        // HomeScreen Model used in Item (product detail) api
+
+        $this->belongsTo('HomeScreens');
+
     }
 
     /**

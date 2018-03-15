@@ -22,11 +22,13 @@ class ItemsController extends AppController
      }
 
 
-    public function productDetail($item_id = null,$city_id =null)
+    public function productDetail($item_id = null,$city_id =null,$category_id=null)
     {
       $item_id = $this->request->query['item_id'];
       $city_id = $this->request->query['city_id'];
+      $category_id = $this->request->query['category_id'];
       $items = [];
+      $reletedItems = [];
       if(!empty($city_id))
       {
 
@@ -34,11 +36,11 @@ class ItemsController extends AppController
         $isValidCity = $this->CheckAvabiltyOfCity($city_id);
         if($isValidCity == 0)
         {
-            if(!empty($item_id))
+            if(!empty($item_id) && !empty($category_id))
             {
                 $items = $this->Items->find()
                           ->contain(['Categories','Brands','Sellers','Cities','ItemVariations'])
-                          ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.id'=>$item_id,'Items.city_id'=>$city_id]);
+                          ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.id'=>$item_id,'Items.city_id'=>$city_id,'Items.category_id'=>$category_id]);
 
                 if(!empty($items->toArray()))
                 {
@@ -49,9 +51,30 @@ class ItemsController extends AppController
                       $success = false;
                       $message = 'Record not found';
                 }
+
+                $HomeScreens=$this->Items->HomeScreens->find()->where(['screen_type'=>'Product Detail','section_show'=>'Yes','city_id'=>$city_id]);
+                    foreach($HomeScreens as $HomeScreen){
+                        if($HomeScreen->model_name=='Items'){
+                           $reletedItem = $this->Items->find()->contain(['ItemVariations'])
+                            ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.category_id'=>$category_id,'Items.city_id'=>$city_id,'Items.id !='=>$item_id]);
+
+                            if(!empty($reletedItem->toArray()))
+                            {
+                              $reletedItems = array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"reletedItem"=>$reletedItem);
+                              $success = true;
+                              $message = 'Data Found Successfully';
+                            } else {
+                              $success = false;
+                              $message = 'Empty Releted Items';
+                            }
+
+                        }
+                    }
+
+
             }else {
                     $success = false;
-                    $message = 'Empty Item Id';
+                    $message = 'Empty Item Id or Category Id';
             }
         }else {
                 $success = false;
@@ -62,7 +85,6 @@ class ItemsController extends AppController
             $message = 'Empty City Id';
       }
 
-
-      $this->set(['success' => $success,'message'=>$message,'Items' => $items,'_serialize' => ['success','message','Items']]);
+      $this->set(['success' => $success,'message'=>$message,'items' => $items,'reletedItems'=>$reletedItems,'_serialize' => ['success','message','items','reletedItems']]);
     }
 }
