@@ -25,22 +25,16 @@ class CategoriesController extends AppController
 		$city_id=@$this->request->query['city_id'];
 		if(!empty($category_id) and (!empty($city_id))){
 			
-			/* $parent = $this->Categories->get($category_id)
-			//->find('children')
-		//	->find('threaded')
-			//->where(['id' =>$category_id])
-			->toArray();
-			//pr($children);
-			 */
-
-			$query = $this->Categories->find('treeList', [
-			'keyPath' => 'url',
-			'valuePath' => 'id',
-			'spacer' => ' '
-			]);
-			pr($query->toArray());  exit;
-			$data=$query;
-			$this->set(['success' => true,'message'=>'Data Found Successfully','data' => $data,'_serialize' => ['success','message','data']]);
+			$data = $this->Categories->find()->where(['id'=>$category_id,'city_id'=>$city_id,'section_show'=>'Yes','status'=>'Active'])->contain(['ChildCategories'=>['ItemActive'=>['ItemsVariations'=>['Units']]],'ItemActive'=>['ItemsVariations'=>['Units']]]);
+				if($data->toArray()){
+					
+					$this->set(['success' => true,'message'=>'Data Found Successfully','data' => $data,'_serialize' => ['success','message','data']]);
+					
+				}else{
+					$data=[];
+					$this->set(['success' => false,'message'=>'Data Not Found','data' => $data,'_serialize' => ['success','message','data']]);
+				}
+			
 		}else{
 			$data=[];
 			$this->set(['success' => false,'message'=>'Data Not Found','data' => $data,'_serialize' => ['success','message','data']]);
