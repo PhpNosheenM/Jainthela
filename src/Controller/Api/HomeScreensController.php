@@ -58,13 +58,13 @@ class HomeScreensController extends AppController
 							if($Items){
 								$Itemc=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$Items);
 								array_push($dynamic,$Itemc);
-								
+
 							}else{
 								$Item=[];
 							}
 						}
 				}
-				
+
 				//$dynamic=array($Express,$Brand);
 				$data=array("Banners"=>$Banners,"Sub Categories"=>$SubCategories,"Categories"=>$Categories,'dynamic'=>$dynamic);
 				$this->set(['success' => true,'message'=>'Data Found Successfully','data' => $data,'_serialize' => ['success','message','data']]);
