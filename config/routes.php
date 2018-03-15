@@ -79,17 +79,12 @@ Router::scope('/', function (RouteBuilder $routes) {
 Router::prefix('api', function ($routes) {
     $routes->extensions(['json', 'xml']);
     $routes->resources('Banners');
-	$routes->resources('Customers');
-	$routes->resources('States');
-	$routes->resources('Cities');
-	$routes->resources('HomeScreens');
-<<<<<<< HEAD
-	$routes->resources('Categories');
-	
-=======
-  $routes->resources('Items');
-
->>>>>>> 654f8de4492c01bf16066069326ff8fd430baf45
+  	$routes->resources('Customers');
+  	$routes->resources('States');
+  	$routes->resources('Cities');
+  	$routes->resources('HomeScreens');
+  	$routes->resources('Categories');
+	  $routes->resources('Items');
     $routes->fallbacks('InflectedRoute');
 });
 
