@@ -29,6 +29,7 @@ class CancelReason extends Entity
         'reason' => true,
         'created_on' => true,
         'created_by' => true,
-        'orders' => true
+        'orders' => true,
+		'status' => true
     ];
 }

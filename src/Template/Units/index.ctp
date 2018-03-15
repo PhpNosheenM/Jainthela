@@ -7,43 +7,19 @@
     font-size: 13px;
 }
 </style>
-<?php $this->set('title', 'Unit'); ?>
-<div class="content-frame">
-	
-	<!-- START CONTENT FRAME TOP -->
-	<div class="content-frame-top">                        
-		<div class="page-title">                    
-			<h2><span class="fa fa-arrow-circle-o-left"></span> Units</h2>
-		</div>                                      
-		<div class="pull-right">
-			<div class="pull-left">
-				<?= $this->Form->create('Search',['type'=>'GET']) ?>
-					<div class="form-group" style="display:inline-table">
-						<div class="input-group">
-							<div class="input-group-addon">
-								<span class="fa fa-search"></span>
-							</div>
-							<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
-							<div class="input-group-btn">
-								<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
-							</div>
-						</div>
-					</div>
-				<?= $this->Form->end() ?>
-			</div> 
-			<div class="pull-right">
-				<button class="btn btn-default content-frame-left-toggle"><span class="fa fa-bars"></span></button>           
-			</div>  
-			                       
-		</div>                        
-	</div>
-	<!-- END CONTENT FRAME TOP -->
-	
-	<!-- START CONTENT FRAME LEFT -->
-	<div class="content-frame-left">
-		<div class="panel panel-default">
-			<?= $this->Form->create($unit,['id'=>"jvalidate"]) ?>
-				<div class="panel-body">
+<?php $this->set('title', 'unit'); ?>
+<div class="page-content-wrap">
+        <div class="page-title">                    
+			<h2><span class="fa fa-arrow-circle-o-left"></span> UNIT</h2>
+		</div>     
+	<div class="row">
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">ADD UNITS</h3>
+				</div>
+				<?= $this->Form->create($unit,['id'=>"jvalidate"]) ?>
+		        <div class="panel-body">
 					<div class="form-group">
 						<label>Unit Name</label>
 						<?= $this->Form->control('unit_name',['class'=>'form-control','placeholder'=>'Unit Name','label'=>false]) ?>
@@ -63,24 +39,42 @@
 						<?php $options['Deactive'] = 'Deactive'; ?>
 						<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
 					</div>
+				     
 				</div>
 				<div class="panel-footer">
-					<center>
+                 <center>
 						<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
-					</center>
-				</div>
-			<?= $this->Form->end() ?>
+				 </center>
+               </div> 
+			    <?= $this->Form->end() ?>
+			</div>
 		</div>
-	</div>
-	<!-- END CONTENT FRAME LEFT -->
-	
-	<!-- START CONTENT FRAME BODY -->
-	<div class="content-frame-body">
-		<div class="panel panel-default">
-			<div class="panel-body">
-				<?php $page_no=$this->Paginator->current('Units'); $page_no=($page_no-1)*20; ?>
-				<div class="table-responsive">
-				<table class="table table-bordered">
+		<div class="col-md-8">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">LIST UNITS</h3>
+				  <div class="pull-right">
+					<div class="pull-left">
+						<?= $this->Form->create('Search',['type'=>'GET']) ?>
+							<div class="form-group" style="display:inline-table">
+								<div class="input-group">
+									<div class="input-group-addon">
+										<span class="fa fa-search"></span>
+									</div>
+									<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
+									<div class="input-group-btn">
+										<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
+									</div>
+								</div>
+							</div>
+						<?= $this->Form->end() ?>
+					</div> 
+				 </div>
+				</div> 
+           <div class="panel-body">
+					    <?php $page_no=$this->Paginator->current('unit'); $page_no=($page_no-1)*20; ?>
+			    <div class="table-responsive">
+				        <table class="table table-bordered">
 					<thead>
 						<tr>
 							<th><?= ('SN.') ?></th>
@@ -92,8 +86,8 @@
 							<th scope="col" class="actions"><?= __('Actions') ?></th>
 						</tr>
 					</thead>
-					<tbody>                                            
-						<?php 
+					       <tbody>                                            
+							   <?php 
 						$i = $paginate_limit*($this->Paginator->counter('{{page}}')-1);
 						foreach ($units as $unit): ?>
 						<tr>
@@ -105,30 +99,30 @@
 							<td class="actions">
 								<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $unit->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
 								<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $unit->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $unit->id),'escape'=>false]) ?>
-							</td>
-						</tr>
-						<?php endforeach; ?>
-					</tbody>
-				</table>
-				</div>
-			</div>
-			<div class="panel-footer">
-				<div class="paginator pull-right">
-					<ul class="pagination">
-						<?= $this->Paginator->first(__('First')) ?>
-						<?= $this->Paginator->prev(__('Previous')) ?>
-						<?= $this->Paginator->numbers() ?>
-						<?= $this->Paginator->next(__('Next')) ?>
-						<?= $this->Paginator->last(__('Last')) ?>
-					</ul>
-					<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
-				</div>
+									</td>
+								</tr>
+					            <?php endforeach; ?>
+					       </tbody>
+				    </table>
+				</div>	 	 
+            </div>
+      		                    <div class="panel-footer">
+						<div class="paginator pull-right">
+								<ul class="pagination">
+								<?= $this->Paginator->first(__('First')) ?>
+								<?= $this->Paginator->prev(__('Previous')) ?>
+								<?= $this->Paginator->numbers() ?>
+								<?= $this->Paginator->next(__('Next')) ?>
+								<?= $this->Paginator->last(__('Last')) ?>
+								</ul>
+								<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+						</div>
+               </div> 			   
 			</div>
 		</div>
+		
 	</div>
-	<!-- END CONTENT FRAME BODY -->
 </div>
-<!-- END CONTENT FRAME -->
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
 <?php
