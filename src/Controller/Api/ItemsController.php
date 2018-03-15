@@ -39,7 +39,7 @@ class ItemsController extends AppController
             if(!empty($item_id) && !empty($category_id))
             {
                 $items = $this->Items->find()
-                          ->contain(['Categories','Brands','Sellers','Cities','ItemVariations'])
+                          ->contain(['Categories','Brands','Sellers','Cities','ItemVariations'=>['Units']])
                           ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.id'=>$item_id,'Items.city_id'=>$city_id,'Items.category_id'=>$category_id]);
 
                 if(!empty($items->toArray()))
@@ -55,7 +55,7 @@ class ItemsController extends AppController
                 $HomeScreens=$this->Items->HomeScreens->find()->where(['screen_type'=>'Product Detail','section_show'=>'Yes','city_id'=>$city_id]);
                     foreach($HomeScreens as $HomeScreen){
                         if($HomeScreen->model_name=='Items'){
-                           $reletedItem = $this->Items->find()->contain(['ItemVariations'])
+                           $reletedItem = $this->Items->find()->contain(['ItemVariations'=>['Units']])
                             ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.category_id'=>$category_id,'Items.city_id'=>$city_id,'Items.id !='=>$item_id]);
 
                             if(!empty($reletedItem->toArray()))
@@ -70,8 +70,6 @@ class ItemsController extends AppController
 
                         }
                     }
-
-
             }else {
                     $success = false;
                     $message = 'Empty Item Id or Category Id';
