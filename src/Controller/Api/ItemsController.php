@@ -24,9 +24,9 @@ class ItemsController extends AppController
 
     public function productDetail($item_id = null,$city_id =null,$category_id=null)
     {
-      $item_id = $this->request->query['item_id'];
-      $city_id = $this->request->query['city_id'];
-      $category_id = $this->request->query['category_id'];
+      $item_id = @$this->request->query['item_id'];
+      $city_id = @$this->request->query['city_id'];
+      $category_id = @$this->request->query['category_id'];
       $items = [];
       $reletedItems = [];
       if(!empty($city_id))

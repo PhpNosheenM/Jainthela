@@ -85,7 +85,13 @@ Router::prefix('api', function ($routes) {
   	$routes->resources('HomeScreens');
   	$routes->resources('Categories');
 	  $routes->resources('Items');
+    $routes->resources('Faqs');
+
+
+
+    
     $routes->fallbacks('InflectedRoute');
+
 });
 
 
