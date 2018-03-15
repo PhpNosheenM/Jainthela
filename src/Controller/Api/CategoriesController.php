@@ -23,11 +23,10 @@ class CategoriesController extends AppController
 	 public function category(){
 		$category_id=@$this->request->query['category_id'];
 		$city_id=@$this->request->query['city_id'];
-		$page_no=@$this->request->query['page_no'];
 		$page=@$this->request->query['page'];
 		$limit=10;
 		
-		if(!empty($category_id) and (!empty($city_id))){
+		if(!empty($category_id) and (!empty($city_id)) and (!empty($page))){
 			
 			$data = $this->Categories->find()->where(['id'=>$category_id,'city_id'=>$city_id,'section_show'=>'Yes','status'=>'Active'])->contain(['ChildCategories'=>['ItemActive'=>['ItemsVariations'=>['Units']]],'ItemActive'=>function($q) use($page,$limit){
 				return $q->limit($limit)->page($page)->contain(['ItemsVariations'=>['Units']]);
@@ -44,7 +43,7 @@ class CategoriesController extends AppController
 			
 		}else{
 			$data=[];
-			$this->set(['success' => false,'message'=>'Data Not Found','data' => $data,'_serialize' => ['success','message','data']]);
+			$this->set(['success' => false,'message'=>'Empty Category_id or city_id or page','data' => $data,'_serialize' => ['success','message','data']]);
 			}
 	 }
 }
