@@ -42,7 +42,11 @@ class CategoriesTable extends Table
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
-        $this->addBehavior('Tree');
+        $this->addBehavior('Tree', [
+        'parent' => 'parent_id', // Use this instead of parent_id
+        'left' => 'lft', // Use this instead of lft
+        'right' => 'rght' // Use this instead of rght
+    ]);
 
         $this->belongsTo('ParentCategories', [
             'className' => 'Categories',

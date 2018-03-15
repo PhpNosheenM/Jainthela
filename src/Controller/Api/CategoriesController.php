@@ -25,10 +25,21 @@ class CategoriesController extends AppController
 		$city_id=@$this->request->query['city_id'];
 		if(!empty($category_id) and (!empty($city_id))){
 			
-			
-			
-			
-			$data=[];
+			/* $parent = $this->Categories->get($category_id)
+			//->find('children')
+		//	->find('threaded')
+			//->where(['id' =>$category_id])
+			->toArray();
+			//pr($children);
+			 */
+
+			$query = $this->Categories->find('treeList', [
+			'keyPath' => 'url',
+			'valuePath' => 'id',
+			'spacer' => ' '
+			]);
+			pr($query->toArray());  exit;
+			$data=$query;
 			$this->set(['success' => true,'message'=>'Data Found Successfully','data' => $data,'_serialize' => ['success','message','data']]);
 		}else{
 			$data=[];
