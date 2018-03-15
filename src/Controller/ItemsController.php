@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
-
+use Cake\Filesystem\Folder;
+use Cake\Filesystem\File;
 use App\Controller\AppController;
 
 /**
@@ -125,8 +126,7 @@ class ItemsController extends AppController
         $categories = $this->Items->Categories->find('list')->where(['Categories.city_id'=>$city_id]);
         $brands = $this->Items->Brands->find('list')->where(['Brands.city_id'=>$city_id]);
         $units = $this->Items->ItemVariations->Units->find('list')->where(['Units.city_id'=>$city_id]);
-		
-        $this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities','units'));
+		 $this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities','units'));
     }
 
     /**

@@ -1,9 +1,10 @@
-<?php $this->set('title', 'Item'); ?>
+<?php $this->set('title', 'Item'); 
+?>
 <!-- PAGE CONTENT WRAPPER -->
 <div class="page-content-wrap">
 	<div class="row">
 		<div class="col-md-12">
-		<?= $this->Form->create($item,['id'=>"jvalidate",'class'=>"form-horizontal"]) ?>  
+		<?= $this->Form->create($item,['id'=>'jvalidate','class'=>'form-horizontal','type'=>'file']) ?>  
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title"><strong> Edit Item</strong></h3>
@@ -48,7 +49,13 @@
 								<?= $this->Form->select('ready_to_sale',$sale_options,['class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
-							
+							<div class="form-group">
+								<label class="col-md-3 control-label">Show Section</label>
+								<div class="col-md-9 col-xs-12">
+								<?php $options['No'] = 'No'; ?>
+								<?php $options['Yes'] = 'Yes'; ?>
+								<?= $this->Form->select('section_show',$options,['class'=>'form-control select','label'=>false]) ?></div>
+							</div>
 							<div class="form-group">                                        
 								<label class="col-md-3 control-label">Status</label>
 								<div class="col-md-9 col-xs-12">
@@ -87,14 +94,21 @@
 								</div>
 							</div>
 							<div class="form-group" id="web_image_data">
-								<label class="col-md-3 control-label">Web Image</label> 
-								<div class="col-md-9 col-xs-12"> 
-								<?= $this->Form->control('item_image',['type'=>'file','label'=>false,'id' => 'item_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>true]) ?>
-								<label id="item_image-error" class="error" for="item_image"></label>
+							<label class="col-md-3 control-label">Web Image</label> 
 								 <?php  
 									$required=true;
 									$keyname = 'item/'.$item->id.'/app/'.$item->item_image;
 									$info = $awsFileLoad->doesObjectExistFile($keyname);
+									if($info)
+									{
+										$required=false;
+									}
+									?>
+								<div class="col-md-9 col-xs-12"> 
+								<?= $this->Form->control('item_image',['type'=>'file','label'=>false,'id' => 'item_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>true]) ?>
+								<label id="item_image-error" class="error" for="item_image"></label>
+								 <?php  
+									pr($info); exit;
 									if($info)
 									{
 										$result=$awsFileLoad->getObjectFile($keyname);

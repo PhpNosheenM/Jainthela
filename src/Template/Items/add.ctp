@@ -3,7 +3,7 @@
 <div class="page-content-wrap">
 	<div class="row">
 		<div class="col-md-12">
-		<?= $this->Form->create($item,['id'=>"jvalidate",'class'=>"form-horizontal"]) ?>  
+		<?= $this->Form->create($item,['id'=>'jvalidate','class'=>'form-horizontal','type'=>'file']) ?>  
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title"><strong> Item</strong></h3>
@@ -48,13 +48,20 @@
 								<?= $this->Form->select('ready_to_sale',$sale_options,['class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
-							
+							<div class="form-group">
+								<label class="col-md-3 control-label">Show Section</label>
+								<div class="col-md-9 col-xs-12">
+									<?php $options['No'] = 'No'; ?>
+									<?php $options['Yes'] = 'Yes'; ?>
+									<?= $this->Form->select('section_show',$options,['class'=>'form-control select','label'=>false]) ?>
+								</div>
+							</div>
 							<div class="form-group">                                        
 								<label class="col-md-3 control-label">Status</label>
 								<div class="col-md-9 col-xs-12">
 									<?php $options['Active'] = 'Active'; ?>
-								<?php $options['Deactive'] = 'Deactive'; ?>
-								<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
+									<?php $options['Deactive'] = 'Deactive'; ?>
+									<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
 							

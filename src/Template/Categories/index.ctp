@@ -81,8 +81,7 @@
 						?>
 						<?= $this->Form->control('category_image',['type'=>'file','label'=>false,'id' => 'category_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>$required]) ?>
 						<label id="category_image-error" class="error" for="category_image"></label>
-						 <?php  
-						
+						<?php  
 						if($info)
 						{
 							$result=$awsFileLoad->getObjectFile($keyname);
@@ -94,11 +93,10 @@
 										$("#web_image_data").find("div.file-preview-frame").addClass("file-preview-frame krajee-default  kv-preview-thumb");
 									
 										$("#web_image_data").find("img").addClass("file-preview-image kv-preview-data rotate-1");
-									
 									});
 							';
 						}
-						?>
+					?>
 					</div>
 					<div class="form-group">
 						<label>Show Section</label>

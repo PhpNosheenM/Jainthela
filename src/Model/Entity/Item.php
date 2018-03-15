@@ -95,6 +95,7 @@ class Item extends Entity
         'purchase_return_rows' => true,
         'sale_return_rows' => true,
         'sales_invoice_rows' => true,
-        'seller_items' => true
+        'seller_items' => true,
+		'section_show' =>true
     ];
 }
