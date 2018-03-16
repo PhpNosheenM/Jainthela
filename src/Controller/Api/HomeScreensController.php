@@ -23,10 +23,12 @@ class HomeScreensController extends AppController
 	 public function homescreen(){
 		$city_id=@$this->request->query['city_id'];
 		if(!empty($city_id)){
-			$Banners=$this->HomeScreens->Banners->find()->where(['city_id'=>$city_id,'status'=>'Active']);
+			/* $Banners=$this->HomeScreens->Banners->find()->where(['city_id'=>$city_id,'status'=>'Active']);
 			$SubCategories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'	section_show'=>'yes','status'=>'Active']);
 			$Categories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'status'=>'Active','parent_id IS'=>Null]);
-			$HomeScreens=$this->HomeScreens->find()->where(['screen_type'=>'Home','section_show'=>'Yes','city_id'=>$city_id]);
+			*/
+			$HomeScreens=$this->HomeScreens->find()->where(['screen_type'=>'Home','section_show'=>'Yes','city_id'=>$city_id]); 
+			
 		if($HomeScreens->toArray())
 		{		$dynamic=[];
 				$Express =[];
@@ -51,6 +53,35 @@ class HomeScreensController extends AppController
 								$Brand=[];
 							}
 						}
+						
+						if($HomeScreen->model_name=='Banners'){
+								$Banners=$this->HomeScreens->Banners->find()->where(['city_id'=>$city_id,'status'=>'Active']);
+								if($Banners->toArray()){
+									$Banner=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$Banners);
+									array_push($dynamic,$Banner);
+								}else{
+									$Banner=[];
+								}
+							}
+							
+						if($HomeScreen->model_name=='SubCategory'){
+							$SubCategories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'	section_show'=>'yes','status'=>'Active']);
+							if($SubCategories->toArray()){
+								$SubCategory=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$SubCategories);
+								array_push($dynamic,$SubCategory);
+							}else{
+								$SubCategory=[];
+							}
+						}
+						if($HomeScreen->model_name=='MainCategory'){
+							$Categories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'status'=>'Active','parent_id IS'=>Null]);
+							if($Categories->toArray()){
+								$Category=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$Categories);
+								array_push($dynamic,$Category);
+							}else{
+								$SubCategory=[];
+							}
+						}
 
 				
 					if($HomeScreen->model_name=='Category'){
@@ -66,7 +97,7 @@ class HomeScreensController extends AppController
 				}
 
 				//$dynamic=array($Express,$Brand);
-				$data=array("Banners"=>$Banners,"Sub Categories"=>$SubCategories,"Categories"=>$Categories,'dynamic'=>$dynamic);
+				$data=array('dynamic'=>$dynamic);
 				$this->set(['success' => true,'message'=>'Data Found Successfully','data' => $data,'_serialize' => ['success','message','data']]);
 			}else{
 				$data=[];

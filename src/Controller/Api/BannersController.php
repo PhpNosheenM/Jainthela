@@ -11,11 +11,11 @@ class BannersController extends AppController
     public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['view']);
+        //$this->Auth->allow(['view']);
     }
 	
 	 public function view(){
-		 
+		echo  $this->request->query('token'); exit;
 		$this->set([
 			'success' => true,
 			'data' => $this->Banners->find(),
