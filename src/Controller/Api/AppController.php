@@ -57,5 +57,21 @@ class AppController extends Controller
           return 1;
         }
     }
+
+    public function checkToken($token)
+    {
+        $this->loadModel('Customers');
+        if(!empty($token))
+        {
+          $exists = $this->Customers->exists(['Customers.token'=>$token]);
+          if($exists == 1) { return 0; } else { return 1; }
+        }else {
+          return 1;
+        }
+    }
+
+
+
+
 }
 ?>

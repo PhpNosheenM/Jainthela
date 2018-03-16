@@ -65,5 +65,41 @@ class CustomersController extends AppController
    {
    }
 
+   public function viewProfile($id=null,$token=null)
+   {
+     $id = @$this->request->query['id'];
+     $token = @$this->request->query['token'];
+     $customer = [];
+     if(!empty($id) && !empty($token))
+     {
+       // checkToken function is avaliable in app controller for checking token in customer table
+       $isValidToken = $this->checkToken($token);
+
+
+         if($isValidToken == 0)
+         {
+           $customer = $this->Customers->find()
+              ->contain(['Cities','CustomerAddresses'])->where(['Customers.id'=>$id,'Customers.token'=>$token]);
+              if(!empty($customer->toArray()))
+              {
+                $success = true;
+                $message = 'Data Found Successfully';
+              }
+              else {
+                    $success = false;
+                    $message = 'Record not found';
+              }
+         }else {
+           $success = false;
+           $message = 'Invalid Token';
+         }
+     }
+     else {
+       $success = false;
+       $message = 'Empty Customer Id or Token';
+     }
+     $this->set(['success' => $success,'message'=>$message,'customer' => $customer,'_serialize' => ['success','message','customer']]);
+   }
+
 
 }
