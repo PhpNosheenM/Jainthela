@@ -27,7 +27,7 @@ class HomeScreensController extends AppController
 			$SubCategories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'	section_show'=>'yes','status'=>'Active']);
 			$Categories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'status'=>'Active','parent_id IS'=>Null]);
 			*/
-			$HomeScreens=$this->HomeScreens->find()->where(['screen_type'=>'Home','section_show'=>'Yes','city_id'=>$city_id]); 
+			$HomeScreens=$this->HomeScreens->find()->where(['screen_type'=>'Home','section_show'=>'Yes','city_id'=>$city_id])->order(['preference'=>'ASC']); 
 			
 		if($HomeScreens->toArray())
 		{		$dynamic=[];

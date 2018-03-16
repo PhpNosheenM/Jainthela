@@ -15,6 +15,7 @@ class BannersController extends AppController
     }
 	
 	 public function view(){
+		 pr($this->request->data);
 		echo  $this->request->query('token'); exit;
 		$this->set([
 			'success' => true,
