@@ -20,7 +20,7 @@ class CustomersController extends AppController
         parent::initialize();
         $this->Auth->allow(['add', 'token1']);
     }
-	
+
 	public function add()
 	{
 		$this->Crud->on('afterSave', function(Event $event) {
@@ -39,26 +39,31 @@ class CustomersController extends AppController
 		});
 		return $this->Crud->execute();
 	}
-	
+
 	public function token1()
-	{// pr($this->Auth); 
+	{  // pr($this->Auth);
 	  //pr($this->request->data); exit;
 		$user = $this->Auth->identify();
-		
-		if (!$user) {
-			throw new UnauthorizedException('Invalid username or password');
-		}
-		$this->set([
-			'success' => true,
-			'data' => [
-				'token' => JWT::encode([
-					'sub' => $user['id'],
-					'exp' =>  time() + 604800
-				],
-				Security::salt())
-			],
-			'_serialize' => ['success', 'data']
-		]);
-	}
-}
 
+  		if (!$user) {
+  			throw new UnauthorizedException('Invalid username or password');
+  		}
+  		$this->set([
+  			'success' => true,
+  			'data' => [
+  				'token' => JWT::encode([
+  					'sub' => $user['id'],
+  					'exp' =>  time() + 604800
+  				],
+  				Security::salt())
+  			],
+  			'_serialize' => ['success', 'data']
+  		]);
+	 }
+
+   public function editProfile()
+   {
+   }
+
+
+}
