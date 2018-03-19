@@ -23,10 +23,9 @@ class CategoriesController extends AppController
 	 public function category(){
 		$category_id=@$this->request->query['category_id'];
 		$city_id=@$this->request->query['city_id'];
-		$page=@$this->request->query['page'];
-		$limit=10;
 
-		if(!empty($category_id) and (!empty($city_id)) and (!empty($page))){
+
+		if(!empty($category_id) and (!empty($city_id))){
 
 			// CheckAvabiltyOfCity function is avaliable in app controller for checking city_id in cities table
 			$isValidCity = $this->CheckAvabiltyOfCity($city_id);

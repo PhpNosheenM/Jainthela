@@ -21,12 +21,14 @@ class ItemsController extends AppController
          $this->Auth->allow(['productDetail','itemList']);
      }
 
-     public function itemList($category_id=null,$city_id=null)
+     public function itemList($category_id=null,$city_id=null,$page=null)
      {
        $city_id = @$this->request->query['city_id'];
        $category_id = @$this->request->query['category_id'];
+       $page=@$this->request->query['page'];
+   		 $limit=10;
 
-       if(!empty($city_id) && !empty($category_id))
+       if(!empty($city_id) && !empty($category_id) && (!empty($page)))
        {
          // CheckAvabiltyOfCity function is avaliable in app controller for checking city_id in cities table
          $isValidCity = $this->CheckAvabiltyOfCity($city_id);
@@ -34,7 +36,8 @@ class ItemsController extends AppController
          {
            $items = $this->Items->find()
                      ->contain(['Categories','ItemVariations'=>['Units']])
-                     ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id,'Items.category_id'=>$category_id]);
+                     ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id,'Items.category_id'=>$category_id])
+                     ->limit($limit)->page($page);
                if(!empty($items->toArray()))
                {
                  $success = true;
