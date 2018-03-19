@@ -40,7 +40,7 @@ class CustomersController extends AppController
 		return $this->Crud->execute();
 	}
 
-	public function token1()
+	public function login()
 	{  // pr($this->Auth);
 	  //pr($this->request->data); exit;
 		$user = $this->Auth->identify();
