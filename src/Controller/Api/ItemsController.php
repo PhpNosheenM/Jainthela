@@ -27,7 +27,7 @@ class ItemsController extends AppController
        $category_id = @$this->request->query['category_id'];
        $page=@$this->request->query['page'];
    		 $limit=10;
-
+       $items = [];
        if(!empty($city_id) && !empty($category_id) && (!empty($page)))
        {
          // CheckAvabiltyOfCity function is avaliable in app controller for checking city_id in cities table
