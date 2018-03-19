@@ -86,10 +86,10 @@ Router::prefix('api', function ($routes) {
   	$routes->resources('Categories');
 	  $routes->resources('Items');
     $routes->resources('Faqs');
+    $routes->resources('AwsFiles');
 
 
 
-    
     $routes->fallbacks('InflectedRoute');
 
 });
