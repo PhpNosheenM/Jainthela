@@ -46,19 +46,27 @@ class CustomersController extends AppController
 		$user = $this->Auth->identify();
 
   		if (!$user) {
-  			throw new UnauthorizedException('Invalid username or password');
-  		}
-  		$this->set([
-  			'success' => true,
-  			'data' => [
-  				'token' => JWT::encode([
-  					'sub' => $user['id'],
-  					'exp' =>  time() + 604800
-  				],
-  				Security::salt())
-  			],
-  			'_serialize' => ['success', 'data']
-  		]);
+  			//throw new UnauthorizedException();
+        $this->set([
+          'success' => false,
+          'message' => 'Invalid username or password',
+          'data' => [],
+          '_serialize' => ['success', 'data','message']
+        ]);
+  		}else {
+        $this->set([
+    			'success' => true,
+    			'data' => [
+    				'token' => JWT::encode([
+    					'sub' => $user['id'],
+    					'exp' =>  time() + 604800
+    				],
+    				Security::salt())
+    			],
+    			'_serialize' => ['success', 'data']
+    		]);
+      }
+
 	 }
 
    public function editProfile()
