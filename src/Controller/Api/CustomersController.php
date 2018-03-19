@@ -73,6 +73,7 @@ class CustomersController extends AppController
             }
          }
          // checkToken function is avaliable in app controller for checking token in customer table
+        $token = str_replace("Bearer ","",$token);
          $isValidToken = $this->checkToken($token);
            if($isValidToken == 0)
              {
@@ -83,13 +84,21 @@ class CustomersController extends AppController
 
               if(empty($customer_error))
          			{
-         				$customer_ext=explode('/',$category_image['type']);
+         				$customer_ext=explode('/',$customer_image['type']);
          				$customer->customer_image='customer'.time().'.'.$customer_ext[1];
          			}
 
                $customer->edited_by = $id;
 
-                if ($this->Customers->save($customer)) {
+                if ($customer_data = $this->Customers->save($customer)) {
+                  ///////////////// S3 Upload //////////////
+          				if(empty($category_error))
+          				{
+                    $deletekeyname = 'customer/'.$customer_data->id;
+          					$this->AwsFile->deleteMatchingObjects($deletekeyname);
+          					$keyname = 'customer/'.$customer_data->id.'/'.$customer_data->customer_image;
+          					$this->AwsFile->putObjectFile($keyname,$customer_data['tmp_name'],$customer_data['type']);
+                  }
                   $success = true;
                   $message = 'Update Successfully';
                 }else {

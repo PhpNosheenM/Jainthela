@@ -10,6 +10,7 @@ class AppController extends Controller
     {
         parent::initialize();
         $this->loadComponent('RequestHandler');
+        $this->loadComponent('AwsFile');
         $this->loadComponent('Crud.Crud', [
             'actions' => [
                 'Crud.Index',
