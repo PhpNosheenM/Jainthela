@@ -18,7 +18,7 @@ class CustomersController extends AppController
     public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['add', 'token1']);
+        $this->Auth->allow(['add', 'login']);
     }
 
 	public function add()
