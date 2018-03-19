@@ -21,14 +21,14 @@ class CustomersController extends AppController
     public function index()
     {
 		$user_id=$this->Auth->User('id');
-		$city_id=$this->Auth->User('city_id'); 
+		$city_id=$this->Auth->User('city_id');
 		$this->viewBuilder()->layout('admin_portal');
         $this->paginate = [
             'contain' => ['Cities'],
 			'limit' => 20
         ];
 		$customers = $this->Customers->find()->where(['Customers.city_id'=>$city_id]);
-       
+
 		if ($this->request->is(['get'])){
 			$search=$this->request->getQuery('search');
 			$customers->where([
@@ -72,12 +72,12 @@ class CustomersController extends AppController
     public function add()
     {
 		$user_id=$this->Auth->User('id');
-		$city_id=$this->Auth->User('city_id'); 
-		$location_id=$this->Auth->User('location_id'); 
+		$city_id=$this->Auth->User('city_id');
+		$location_id=$this->Auth->User('location_id');
 		$this->viewBuilder()->layout('admin_portal');
         $customer = $this->Customers->newEntity();
         if ($this->request->is('post')) {
-			
+
             $customer = $this->Customers->patchEntity($customer, $this->request->getData());
 			$customer->city_id=$city_id;
 			$customer->created_by=$user_id;
@@ -94,7 +94,7 @@ class CustomersController extends AppController
 				$this->Flash->success(__('The customer has been saved.'));
 				return $this->redirect(['action' => 'index']);
             }
-			
+
             $this->Flash->error(__('The customer could not be saved. Please, try again.'));
         }
 		$this->set(compact('customer', 'city_id','location_id'));
@@ -109,17 +109,17 @@ class CustomersController extends AppController
      */
     public function edit($id = null)
     {
-		$user_id=$this->Auth->User('id');
-		$city_id=$this->Auth->User('city_id'); 
-		$location_id=$this->Auth->User('location_id'); 
-		$this->viewBuilder()->layout('admin_portal');
+  		$user_id=$this->Auth->User('id');
+  		$city_id=$this->Auth->User('city_id');
+  		$location_id=$this->Auth->User('location_id');
+  		$this->viewBuilder()->layout('admin_portal');
         $customer = $this->Customers->get($id, [
             'contain' => ['CustomerAddresses']
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
-			
+
             $customer = $this->Customers->patchEntity($customer, $this->request->getData());
-			$customer->edited_by = $user_id;
+			         $customer->edited_by = $user_id;
             if ($this->Customers->save($customer)) {
                 $this->Flash->success(__('The customer has been saved.'));
 
@@ -127,7 +127,7 @@ class CustomersController extends AppController
             }
             $this->Flash->error(__('The customer could not be saved. Please, try again.'));
         }
-        
+
         $this->set(compact('customer', 'city_id','location_id'));
     }
 

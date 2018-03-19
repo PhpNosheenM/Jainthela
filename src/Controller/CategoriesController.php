@@ -22,7 +22,7 @@ class CategoriesController extends AppController
     public function index($id = null)
     {
 		$user_id=$this->Auth->User('id');
-		$city_id=$this->Auth->User('city_id'); 
+		$city_id=$this->Auth->User('city_id');
 		$this->viewBuilder()->layout('admin_portal');
 		$this->paginate = [
             'contain' => ['ParentCategories'],
@@ -36,21 +36,21 @@ class CategoriesController extends AppController
 		else{
 			$category = $this->Categories->newEntity();
 		}
-        if ($this->request->is(['post','put'])) { 
-			
+        if ($this->request->is(['post','put'])) {
+
 			$category_image=$this->request->data['category_image'];
 			$category_error=$category_image['error'];
-			
+
             $category = $this->Categories->patchEntity($category, $this->request->getData());
-			
+
 			if(empty($category_error))
 			{
 				$category_ext=explode('/',$category_image['type']);
 				$category->category_image='category'.time().'.'.$category_ext[1];
 			}
-			
+
 			$category->city_id=$city_id;
-			
+
 			if ($this->request->is('post')){
 				$category->created_by=$user_id;
 			}else{
@@ -65,18 +65,18 @@ class CategoriesController extends AppController
 					$this->AwsFile->deleteMatchingObjects($deletekeyname);
 					$keyname = 'category/'.$category_data->id.'/web/'.$category_data->category_image;
 					$this->AwsFile->putObjectFile($keyname,$category_image['tmp_name'],$category_image['type']);
-					
+
 					/* Resize Image */
 					$destination_url = WWW_ROOT . 'img/temp/'.$category_data->category_image;
 					$image = imagecreatefromjpeg($category_image['tmp_name']);
 					imagejpeg($image, $destination_url, 10);
-					
+
 					/* For App Image */
 					$deletekeyname = 'category/'.$category_data->id.'/app';
 					$this->AwsFile->deleteMatchingObjects($deletekeyname);
 					$keyname = 'category/'.$category_data->id.'/app/'.$category_data->category_image;
 					$this->AwsFile->putObjectFile($keyname,$destination_url,$category_image['type']);
-					
+
 					/* Delete Temp File */
 					$file = new File(WWW_ROOT . $destination_url, false, 0777);
 					$file->delete();
@@ -98,15 +98,15 @@ class CategoriesController extends AppController
 							]
 			]);
 		}
-		
+
         $parentCategories = $this->Categories->ParentCategories->find('list')->where(['ParentCategories.city_id'=>$city_id]);
         $categories = $this->paginate($categories);
-		
+
 		$paginate_limit=$this->paginate['limit'];
         $this->set(compact('categories','category', 'parentCategories','paginate_limit'));
     }
 
-   
+
     /**
      * Delete method
      *

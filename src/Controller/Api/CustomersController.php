@@ -13,9 +13,7 @@ use Firebase\JWT\JWT;
  */
 class CustomersController extends AppController
 {
-
-
-    public function initialize()
+  public function initialize()
     {
         parent::initialize();
         $this->Auth->allow(['add', 'login']);
@@ -44,34 +42,66 @@ class CustomersController extends AppController
 	{  // pr($this->Auth);
 	  //pr($this->request->data); exit;
 		$user = $this->Auth->identify();
-
-  		if (!$user) {
+    if (!$user) {
   			//throw new UnauthorizedException();
-        $this->set([
-          'success' => false,
-          'message' => 'Invalid username or password',
-          'data' => [],
-          '_serialize' => ['success', 'data','message']
-        ]);
+          $this->set([
+            'success' => false,
+            'message' => 'Invalid username or password',
+            'users' => [],
+            '_serialize' => ['success', 'users','message']
+          ]);
   		}else {
-        $this->set([
-    			'success' => true,
-          'message' => 'Login Successfully',
-    			'data' => [
-    				'token' => JWT::encode([
-    					'sub' => $user['id'],
-    					'exp' =>  time() + 604800
-    				],
-    				Security::salt())
-    			],
-    			'_serialize' => ['success','message','data']
-    		]);
+        $arr = JWT::encode(['sub' => $user['id'],'exp' =>  time() + 604800],Security::salt());
+        $query = $this->Customers->query();
+        $result = $query->update()->set(['token' => $arr])->where(['id' => $user['id']])->execute();
+        $this->set(['users' => $user,'success' => true,'message' => 'Login Successfully',
+        '_serialize' => ['success','message','users']]);
       }
-
 	 }
 
-   public function editProfile()
+   public function editProfile($id=null)
    {
+      $id = $this->request->getData('id');
+      $token ='';
+       $customer = $this->Customers->get($id);
+       if ($this->request->is(['patch', 'post', 'put'])) {
+         foreach(getallheaders() as $key => $value) {
+            if($key == 'Authorization')
+            {
+              $token = $value;
+            }
+         }
+         // checkToken function is avaliable in app controller for checking token in customer table
+         $isValidToken = $this->checkToken($token);
+           if($isValidToken == 0)
+             {
+               $customer_image = $this->request->data['customer_image'];
+         			 $customer_error = $customer_image['error'];
+
+               $customer = $this->Customers->patchEntity($customer, $this->request->getData());
+
+              if(empty($customer_error))
+         			{
+         				$customer_ext=explode('/',$category_image['type']);
+         				$customer->customer_image='customer'.time().'.'.$customer_ext[1];
+         			}
+
+               $customer->edited_by = $id;
+
+                if ($this->Customers->save($customer)) {
+                  $success = true;
+                  $message = 'Update Successfully';
+                }else {
+                  $success = true;
+                  $message = 'Update Failed';
+                }
+             }
+             else {
+               $success = false;
+               $message = 'Invalid Token';
+             }
+        }
+        $this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
    }
 
    public function viewProfile($id=null,$token=null)
@@ -83,10 +113,8 @@ class CustomersController extends AppController
      {
        // checkToken function is avaliable in app controller for checking token in customer table
        $isValidToken = $this->checkToken($token);
-
-
          if($isValidToken == 0)
-         {
+           {
            $customer = $this->Customers->find()
               ->contain(['Cities','CustomerAddresses'])->where(['Customers.id'=>$id,'Customers.token'=>$token]);
               if(!empty($customer->toArray()))
