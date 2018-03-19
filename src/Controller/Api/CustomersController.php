@@ -56,6 +56,7 @@ class CustomersController extends AppController
   		}else {
         $this->set([
     			'success' => true,
+          'message' => 'Login Successfully',
     			'data' => [
     				'token' => JWT::encode([
     					'sub' => $user['id'],
@@ -63,7 +64,7 @@ class CustomersController extends AppController
     				],
     				Security::salt())
     			],
-    			'_serialize' => ['success', 'data']
+    			'_serialize' => ['success','message','data']
     		]);
       }
 
