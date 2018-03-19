@@ -54,6 +54,7 @@ class CustomersController extends AppController
         $arr = JWT::encode(['sub' => $user['id'],'exp' =>  time() + 604800],Security::salt());
         $query = $this->Customers->query();
         $result = $query->update()->set(['token' => $arr])->where(['id' => $user['id']])->execute();
+        $user['token'] = $arr;
         $this->set(['users' => $user,'success' => true,'message' => 'Login Successfully',
         '_serialize' => ['success','message','users']]);
       }
