@@ -75,7 +75,6 @@ class SellersController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
-		//pr($this->Auth->User()); exit;
 		$this->viewBuilder()->layout('admin_portal');
         $seller = $this->Sellers->newEntity();
         if ($this->request->is('post')) {
@@ -170,6 +169,47 @@ class SellersController extends AppController
      
         $this->set(compact('seller'));
     }
+	
+	  public function sellerItem($id = null)
+    {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$this->viewBuilder()->layout('admin_portal');
+		$id=6;
+		$seller = $this->Sellers->get($id);
+		$Categories = $this->Sellers->Categories->find()->where(['city_id'=>$city_id,'parent_id IS NULL']);
+		
+		if ($this->request->is(['patch', 'post', 'put'])) {
+			$seller = $this->Sellers->patchEntity($seller, $this->request->getData());
+			foreach($seller->seller_items as $seller_item){
+				if($seller_item->check==1){
+					$SellerItem = $this->Sellers->SellerItems->newEntity();
+					$SellerItem->category_id = $seller_item->category_id;
+					$SellerItem->commission_percentage = $seller_item->commission_percentage;
+					$SellerItem->seller_id = $id;
+					$SellerItem->created_by = $user_id;
+					$SellerItem->created_on = date("Y-m-d");
+					$SellerItem->commission_created_on = date("Y-m-d");
+					$SellerItem->status ="Active";
+					$this->Sellers->SellerItems->save($SellerItem);
+					//pr($SellerItem); exit;
+				}
+			} // exit;
+			$this->Flash->success(__('The seller has been saved.'));
+			return $this->redirect(['action' => 'sellerItem']);
+            
+          
+			//
+		}
+		
+		
+		$childrens = $this->Sellers->Categories
+			 ->find('threaded')
+			->toArray();
+		//pr($children); exit;
+		$this->set(compact('seller','Categories','childrens'));
+		//exit;
+	}
 
     /**
      * Delete method

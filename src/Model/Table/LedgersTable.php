@@ -61,6 +61,11 @@ class LedgersTable extends Table
             'foreignKey' => 'supplier_id',
             'joinType' => 'INNER'
         ]);
+		
+		$this->belongsTo('Sellers', [
+            'foreignKey' => 'seller_id',
+            'joinType' => 'LEFT'
+        ]);
         $this->belongsTo('Customers', [
             'foreignKey' => 'customer_id',
             'joinType' => 'INNER'

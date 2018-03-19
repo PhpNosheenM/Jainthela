@@ -43,11 +43,16 @@ class SellersTable extends Table
             'foreignKey' => 'city_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('Categories', [
+            'foreignKey' => 'category_id',
+            'joinType' => 'INNER'
+        ]);
         $this->hasMany('Items', [
             'foreignKey' => 'seller_id'
         ]);
         $this->hasMany('SellerItems', [
-            'foreignKey' => 'seller_id'
+            'foreignKey' => 'seller_id',
+			'saveStrategy'=>'replace'
         ]);
         $this->hasMany('SellerRatings', [
             'foreignKey' => 'seller_id'

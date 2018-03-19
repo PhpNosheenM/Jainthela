@@ -108,7 +108,7 @@
 								<?= $this->Form->control('item_image',['type'=>'file','label'=>false,'id' => 'item_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>true]) ?>
 								<label id="item_image-error" class="error" for="item_image"></label>
 								 <?php  
-									pr($info); exit;
+									//pr($info); exit;
 									if($info)
 									{
 										$result=$awsFileLoad->getObjectFile($keyname);
