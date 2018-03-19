@@ -50,9 +50,9 @@ class ItemsController extends AppController
          }
        }else {
          $success = false;
-         $message = 'Record not found';
+         $message = 'Empty city or category id';
        }
-       $this->set(['success' => $success,'message'=>$message,'items' => $items,'_serialize' => ['success','message','items']]);       
+       $this->set(['success' => $success,'message'=>$message,'items' => $items,'_serialize' => ['success','message','items']]);
      }
 
     public function productDetail($item_id = null,$city_id =null,$category_id=null)
