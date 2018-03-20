@@ -19,9 +19,68 @@ class CustomersController extends AppController
         $this->Auth->allow(['add', 'login']);
     }
 
+
+	public function verify(){
+		$customer = $this->Customers->newEntity();
+		if($this->request->is(['patch', 'post', 'put'])){
+
+			foreach(getallheaders() as $key => $value) {
+				if($key == 'Authorization')
+				{
+					echo $token = $value;
+				}
+			}
+			$token = str_replace("Bearer ","",$token);
+			$isValidToken = $this->checkToken($token);
+			$id=$this->request->data['id'];
+			$otp=$this->request->data['otp'];
+			if($isValidToken == 0)
+             {
+				 if(!empty($id) and (!empty($otp))){
+						$Customers=$this->Customers->find()->where(['id'=>$id,'otp'=>$otp]);
+						if($Customers->toArray()){
+
+							$query = $this->Customers->query();
+							$result = $query->update()->set(['status' => 'Active'])->where(['id' => $id])->execute();
+							$Customers=$this->Customers->find()->where(['id'=>$id,'otp'=>$otp]);
+
+              $accounting_group = $this->Customers->Ledgers->AccountingGroups->find()->where(['customer'=>1])->first();
+    					$ledger = $this->Customers->Ledgers->newEntity();
+    					$ledger->name = $Customers->name;
+    					$ledger->accounting_group_id = $accounting_group->id;
+    					$ledger->customer_id=$Customers->id;
+    					$ledger->bill_to_bill_accounting='yes';
+    					$this->Customers->Ledgers->save($ledger);
+
+							$data=$Customers;
+							$success = true;
+							$message = 'Register Successfully';
+						}else{
+							$data=[];
+							$success = false;
+							$message = 'otp is not match';
+						}
+				 }else{
+					  $data=[];
+					  $success = false;
+					  $message = 'Id or Otp is not empty';
+				 }
+
+			 }
+             else{
+				$data=[];
+               $success = false;
+               $message = 'Invalid Token';
+             }
+		}
+
+
+		$this->set(['success' => $success,'message'=>$message,'data'=>$data,'_serialize' => ['success','message','data']]);
+	}
+
 	public function add()
 	{
-		$this->Crud->on('afterSave', function(Event $event) {
+		/* $this->Crud->on('afterSave', function(Event $event) {
 			if ($event->subject->created) {
 				$this->set('data', [
 					'id' => $event->subject->entity->id,
@@ -35,7 +94,55 @@ class CustomersController extends AppController
 				$this->Crud->action()->config('serialize.data', 'data');
 			}
 		});
-		return $this->Crud->execute();
+		return $this->Crud->execute(); */
+
+		//pr($this->request->data['email']);
+	//	echo $exists_email = $this->Customers->exists(['Customers.email'=>$this->request->data['email']]); exit;
+	 $customer = $this->Customers->newEntity();
+		if($this->request->is(['patch', 'post', 'put'])){
+
+				$exists_email = $this->Customers->exists(['Customers.email'=>$this->request->data['email']]);
+				 $exists_mobile = $this->Customers->exists(['Customers.username'=>$this->request->data['username']]);
+
+
+				if(($exists_email==0) and ($exists_mobile==0)){
+					$opt=(mt_rand(1,10000));
+					$mobile=$this->request->data['username'];
+
+
+					$this->request->data['otp']=$opt;
+					$this->request->data['status']='Deactive';
+					$customer = $this->Customers->patchEntity($customer, $this->request->getData());
+
+					 if ($customers=$this->Customers->save($customer)) {
+						 $content="Your one time password for jainthela is ".$opt;
+						// $this->Sms->sendSms($mobile,$content);
+
+							$arr = JWT::encode(['sub' => $customers->id,'exp' =>  time() + 604800],Security::salt());
+							$query = $this->Customers->query();
+							$result = $query->update()->set(['token' => $arr])->where(['id' => $customers->id])->execute();
+						 $customer_data = $this->Customers->get($customers->id);
+						$success=true;
+						$message="data has been saved successfully";
+						$data=$customer_data;
+					 }else{
+						 $data=[];
+						 $success=false;
+						 $message="data has not been saved";
+
+					 }
+
+				}else{
+					$data=[];
+					$success=false;
+					$message="Email or  Mobile already taken";
+				}
+
+		}
+		$this->set(['success' => $success,'message'=>$message,'data'=>$data,'_serialize' => ['success','message','data']]);
+
+
+
 	}
 
 	public function login()
@@ -83,9 +190,9 @@ class CustomersController extends AppController
          			 $customer_error = $customer_image['error'];
 
                $customer = $this->Customers->patchEntity($customer, $this->request->getData());
-				
+
               if($customer_error == '0')
-         			{ 
+         			{
          				$customer_ext=explode('/',$customer_image['type']);
          				$customer->customer_image='customer'.time().'.'.$customer_ext[1];
          			}

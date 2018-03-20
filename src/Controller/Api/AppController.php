@@ -11,6 +11,7 @@ class AppController extends Controller
         parent::initialize();
         $this->loadComponent('RequestHandler');
         $this->loadComponent('AwsFile');
+        $this->loadComponent('Sms');
         $this->loadComponent('Crud.Crud', [
             'actions' => [
                 'Crud.Index',

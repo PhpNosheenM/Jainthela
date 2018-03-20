@@ -96,9 +96,9 @@
 								<label class="col-md-3 control-label">Discount Valid</label>
 								<div class="col-md-9 col-xs-12">
 									<div class="input-group">
-										<?= $this->Form->control('discount_created_on',['class'=>'form-control datepicker','placeholder'=>'Discount Valid From','label'=>false,'type'=>'text','data-date-format' => 'DD/MM/YYYY','value'=>'']) ?>
+										<?= $this->Form->control('discount_created_on',['class'=>'form-control datepicker','placeholder'=>'Discount Valid From','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>'']) ?>
 										<span class="input-group-addon add-on"> - </span>
-										<?= $this->Form->control('discount_expiry',['class'=>'form-control datepicker','placeholder'=>'Discount Valid To','label'=>false,'type'=>'text','data-date-format' => 'DD/MM/YYYY','value'=>'']) ?>
+										<?= $this->Form->control('discount_expiry',['class'=>'form-control datepicker','placeholder'=>'Discount Valid To','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>'']) ?>
 									</div>
 								</div>
 							</div>
@@ -165,8 +165,7 @@
 				<?= $this->Form->control('longitude',['class'=>'form-control longitude','label'=>false]) ?>
 			</td>
 			<td valign="top">
-				<?= $this->Form->control('default_address',['class'=>'ichecked', 'label'=>false,'hidden'=>false,'type'=>'checkbox']) ?>
-				
+				<?= $this->Form->control('default_address',['class'=>'default_btn', 'label'=>false,'hiddenField'=>false,'checked'=>'checked','type'=>'checkbox','templates' => ['inputContainer' => '{{content}}']]) ?>
 			</td>
 			
 			<td valign="top"  >
@@ -217,6 +216,13 @@
 			renameRows();
 		});
 		
+		$(document).on("click",".default_btn",function(){
+			alert();
+			$(".default_btn").removeAttr("checked");
+			$(this).attr("checked","checked");
+			$.uniform.update();
+		});
+		
 		function renameRows(){
 				var i=0; 
 				$(".main_table tbody tr").each(function(){
@@ -229,7 +235,7 @@
 						$(this).find("td:nth-child(4) input.pincode").attr({name:"customer_addresses["+i+"][pincode]",id:"customer_addresses-"+i+"-pincode"}).rules("add", "required");
 						$(this).find("td:nth-child(5) input.latitude").attr({name:"customer_addresses["+i+"][latitude]",id:"customer_addresses-"+i+"-latitude"});
 						$(this).find("td:nth-child(6) input.longitude").attr({name:"customer_addresses["+i+"][longitude]",id:"customer_addresses-"+i+"-longitude"});
-						$(this).find("td:nth-child(7) input.default_address").attr({name:"customer_addresses["+i+"][default_address]",id:"customer_addresses-"+i+"-default_address"});
+						
 						
 						i++;
 			});

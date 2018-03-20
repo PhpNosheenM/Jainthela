@@ -4,19 +4,15 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * Banner Entity
+ * AppMenu Entity
  *
  * @property int $id
- * @property int $city_id
- * @property string $link_name
  * @property string $name
- * @property string $banner_image
- * @property \Cake\I18n\FrozenTime $created_on
- * @property string $status
- *
- * @property \App\Model\Entity\City $city
+ * @property string $link
+ * @property int $city_id
+ * @property int $status
  */
-class Banner extends Entity
+class AppMenu extends Entity
 {
 
     /**
@@ -29,12 +25,9 @@ class Banner extends Entity
      * @var array
      */
     protected $_accessible = [
-        'city_id' => true,
-        'link_name' => true,
         'name' => true,
-        'banner_image' => true,
-        'created_on' => true,
-        'status' => true,
-        'city' => true
+        'link' => true,
+        'city_id' => true,
+        'status' => true
     ];
 }

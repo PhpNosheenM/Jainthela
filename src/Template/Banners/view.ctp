@@ -31,12 +31,16 @@
             <td><?= h($banner->name) ?></td>
         </tr>
         <tr>
-            <th scope="row"><?= __('Id') ?></th>
-            <td><?= $this->Number->format($banner->id) ?></td>
+            <th scope="row"><?= __('Banner Image') ?></th>
+            <td><?= h($banner->banner_image) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Status') ?></th>
-            <td><?= $this->Number->format($banner->status) ?></td>
+            <td><?= h($banner->status) ?></td>
+        </tr>
+        <tr>
+            <th scope="row"><?= __('Id') ?></th>
+            <td><?= $this->Number->format($banner->id) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Created On') ?></th>

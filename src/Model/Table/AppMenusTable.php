@@ -7,19 +7,19 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * Banners Model
+ * AppMenus Model
  *
- * @property \App\Model\Table\CitiesTable|\Cake\ORM\Association\BelongsTo $Cities
+ * @property |\Cake\ORM\Association\BelongsTo $Cities
  *
- * @method \App\Model\Entity\Banner get($primaryKey, $options = [])
- * @method \App\Model\Entity\Banner newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\Banner[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\Banner|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Banner patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\Banner[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\Banner findOrCreate($search, callable $callback = null, $options = [])
+ * @method \App\Model\Entity\AppMenu get($primaryKey, $options = [])
+ * @method \App\Model\Entity\AppMenu newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\AppMenu[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\AppMenu|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\AppMenu patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\AppMenu[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\AppMenu findOrCreate($search, callable $callback = null, $options = [])
  */
-class BannersTable extends Table
+class AppMenusTable extends Table
 {
 
     /**
@@ -32,7 +32,7 @@ class BannersTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('banners');
+        $this->setTable('app_menus');
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
@@ -40,6 +40,7 @@ class BannersTable extends Table
             'foreignKey' => 'city_id',
             'joinType' => 'INNER'
         ]);
+        $this->belongsTo('Categories');
     }
 
     /**
@@ -55,24 +56,21 @@ class BannersTable extends Table
             ->allowEmpty('id', 'create');
 
         $validator
-            ->scalar('link_name')
-            ->maxLength('link_name', 255)
-            ->requirePresence('link_name', 'create')
-            ->notEmpty('link_name');
-
-        $validator
             ->scalar('name')
-            ->maxLength('name', 200)
+            ->maxLength('name', 255)
             ->requirePresence('name', 'create')
             ->notEmpty('name');
 
         $validator
-            ->scalar('banner_image')
-            ->maxLength('banner_image', 100)
-            ->requirePresence('banner_image', 'create')
-            ->notEmpty('banner_image');
+            ->scalar('link')
+            ->maxLength('link', 255)
+            ->requirePresence('link', 'create')
+            ->notEmpty('link');
 
-        
+        $validator
+            ->requirePresence('status', 'create')
+            ->notEmpty('status');
+
         return $validator;
     }
 
