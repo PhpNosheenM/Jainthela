@@ -10,40 +10,26 @@
 <?php $this->set('title', 'unit'); ?>
 <div class="page-content-wrap">
         <div class="page-title">                    
-			<h2><span class="fa fa-arrow-circle-o-left"></span> UNIT</h2>
+			<h2><span class="fa fa-arrow-circle-o-left"></span> UNIT VARIATION</h2>
 		</div>     
 	<div class="row">
 		<div class="col-md-4">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title">ADD UNITS</h3>
+					<h3 class="panel-title">ADD UNIT VARIATIONS</h3>
 				</div>
-				<?= $this->Form->create($unit,['id'=>"jvalidate"]) ?>
+				<?= $this->Form->create($unitVariation,['id'=>"jvalidate"]) ?>
 		        <div class="panel-body">
 					<div class="form-group">
-						<label>Unit Name</label>
-						<?= $this->Form->control('unit_name',['class'=>'form-control','placeholder'=>'Unit Name','label'=>false]) ?>
+						<label>Quantity Variation</label>
+						<?= $this->Form->control('quantity_variation',['class'=>'form-control','placeholder'=>'Eg: 100','label'=>false]) ?>
 						<span class="help-block"></span>
 					</div>
 					<div class="form-group">
-						<label>Long Name</label>
-						<?= $this->Form->control('longname',['class'=>'form-control','placeholder'=>'Long Name','label'=>false]) ?>
+						<label>Unit</label>
+							<?php echo $this->Form->select('unit_id', $units,['class'=>'form-control unit','label'=>false]) ?>
 					</div>
-					<div class="form-group">
-						<label>Short Name</label>
-						<?= $this->Form->control('shortname',['class'=>'form-control','placeholder'=>'Short Name','label'=>false]) ?>
-					</div>
-					<div class="form-group">
-						<label>Division Factor</label>
-						<?= $this->Form->control('division_factor',['class'=>'form-control','placeholder'=>'Division Factor','label'=>false]) ?>
-					</div>
-					<div class="form-group">
-						<label>Status</label>
-						<?php $options['Active'] = 'Active'; ?>
-						<?php $options['Deactive'] = 'Deactive'; ?>
-						<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
-					</div>
-				     
+				
 				</div>
 				<div class="panel-footer">
                  <center>
@@ -76,33 +62,29 @@
 				 </div>
 				</div> 
            <div class="panel-body">
-					    <?php $page_no=$this->Paginator->current('unit'); $page_no=($page_no-1)*20; ?>
+					    <?php $page_no=$this->Paginator->current('unitVariation'); $page_no=($page_no-1)*20; ?>
 			    <div class="table-responsive">
 				        <table class="table table-bordered">
 					<thead>
 						<tr>
 							<th><?= ('SN.') ?></th>
+							<th><?= ('Quantity Variation') ?></th>
 							<th><?= ('Unit Name') ?></th>
-							<th><?= ('Long Name') ?></th>
-							<th><?= ('Short Name') ?></th>
-							<th><?= ('Status') ?></th>
-							
 							<th scope="col" class="actions"><?= __('Actions') ?></th>
 						</tr>
 					</thead>
 					       <tbody>                                            
 							   <?php 
 						$i = $paginate_limit*($this->Paginator->counter('{{page}}')-1);
-						foreach ($units as $unit): ?>
+						foreach ($unitVariations as $unitVariation): ?>
 						<tr>
 							<td><?= $this->Number->format(++$i) ?></td>
-							<td><?= h($unit->unit_name) ?></td>
-							<td><?= h($unit->longname) ?></td>
-							<td><?= h($unit->shortname) ?></td>
-							<td><?= h($unit->status) ?></td>
+							<td><?= h($unitVariation->quantity_variation). ' '. '(' . ' '?> <?= h($unitVariation->convert_unit_qty). ' ' .h($unitVariation->unit->print_unit). ' ' .')' ?></td>
+							<td><?= h($unitVariation->unit->unit_name) ?></td>
+							
 							<td class="actions">
-								<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $unit->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
-								<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $unit->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $unit->id),'escape'=>false]) ?>
+								<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $unitVariation->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+								<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $unitVariation->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $unitVariation->id),'escape'=>false]) ?>
 									</td>
 								</tr>
 					            <?php endforeach; ?>
