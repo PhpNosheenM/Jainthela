@@ -138,8 +138,10 @@ class SellersController extends AppController
 			//pr($seller); exit;
             $this->Flash->error(__('The seller could not be saved. Please, try again.'));
         }
+		$childrens = $this->Sellers->Categories->find('threaded')->toArray();
+		$Cities = $this->Sellers->Cities->find('list');
         
-        $this->set(compact('seller'));
+        $this->set(compact('seller','Cities','childrens'));
     }
 
     /**

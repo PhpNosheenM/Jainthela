@@ -40,6 +40,24 @@
 								</div>
 							</div>
 							
+							<div class="form-group">
+								<label class="col-md-3 control-label">Duration</label>
+								<div class="col-md-9 col-xs-12">
+									<div class="input-group">
+										<?= $this->Form->control('duration_from',['class'=>'form-control datepicker','placeholder'=>'Duration From','label'=>false,'type'=>'text','data-date-format' => 'DD/MM/YYYY','value'=>'']) ?>
+										<span class="input-group-addon add-on"> - </span>
+										<?= $this->Form->control('duration_to',['class'=>'form-control datepicker','placeholder'=>'Duration To','label'=>false,'type'=>'text','data-date-format' => 'DD/MM/YYYY','value'=>'']) ?>
+									</div>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-md-3 control-label">Terms And Condition</label>
+								<div class="col-md-9 col-xs-12"> 
+									<?= $this->Form->control('terms_and_condition',['class'=>'form-control','placeholder'=>'Terms And Condition','label'=>false,'rows'=>'4']) ?>
+								</div>
+							</div>
+							
 							<div class="form-group">           
 								<label align="left" class="col-md-3 control-label">Opening balance</label>
 								<div class="col-md-6 col-xs-12">
@@ -72,18 +90,40 @@
 									<?= $this->Form->control('gstin',['class'=>'form-control gst','placeholder'=>'Eg:22ASDFR0967W6Z5','label'=>false]) ?>
 								</div>
 							</div>
+							
 							<div class="form-group">                                        
-								<label class="col-md-3 control-label">GSTIN Holder</label>
+								<label class="col-md-3 control-label">City</label>
 								<div class="col-md-9 col-xs-12">
-									<?= $this->Form->control('gstin_holder_name',['class'=>'form-control','placeholder'=>'GSTIN Holder Name','label'=>false]) ?>
+									
+								<?= $this->Form->select('city_id',$Cities,['class'=>'form-control select','label'=>false]) ?>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-md-3 control-label">PAN No </label>
+								<div class="col-md-9"> 
+									<div class="input text required error" aria-required="true">
+										<?= $this->Form->control('pan_no',['class'=>'form-control','placeholder'=>'PAN No','label'=>false]) ?>
+									</div>
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-md-3 control-label">GSTIN Holder Address</label>
-								<div class="col-md-9 col-xs-12"> 
-									<?= $this->Form->control('gstin_holder_address',['class'=>'form-control','placeholder'=>'GSTIN Holder Address','label'=>false,'rows'=>'4']) ?>
+								<label class="col-md-3 control-label">AADHAR No </label>
+								<div class="col-md-9"> 
+									<div class="input text required error" aria-required="true">
+										<?= $this->Form->control('aadhar_no',['class'=>'form-control','placeholder'=>'AADHAR No','label'=>false]) ?>
+									</div>
 								</div>
 							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">Contact Person </label>
+								<div class="col-md-9"> 
+									<div class="input text required error" aria-required="true">
+										<?= $this->Form->control('contact_person',['class'=>'form-control','placeholder'=>'Contact Person Name','label'=>false]) ?>
+									</div>
+								</div>
+							</div>
+							
 							<div class="form-group">                                        
 								<label class="col-md-3 control-label">Email</label>
 								<div class="col-md-9 col-xs-12">
@@ -116,23 +156,49 @@
 						</div>
 						</div>
 						</div>
-			<div class="panel-body">    
-				<div class="row">		
-					<div class="col-md-7">
-						<div class="window" style="margin:auto;display:none;">
-								<table width="90%" class="refTbl">
-								<tbody></tbody>
-								<tfoot>
-								<tr style="border-top:#a5a1a1"><td colspan="2"><a role="button" class="addRefRow">Add Row</a></td><td valign="top"><input type="text" name="total" class="form-control input-sm rightAligntextClass total calculation " id="total" readonly></td><td valign="top"><input type="text" id="total_type" name="total_type" class="form-control input-sm total_type calculation " readonly></td></tr></tfoot></table>
+						<div class="panel-body">    
+							<div class="row">		
+								<div class="col-md-7">
+									<div class="window" style="margin:auto;display:none;">
+											<table width="90%" class="refTbl">
+											<tbody></tbody>
+											<tfoot>
+											<tr style="border-top:#a5a1a1"><td colspan="2"><a role="button" class="addRefRow">Add Row</a></td><td valign="top"><input type="text" name="total" class="form-control input-sm rightAligntextClass total calculation " id="total" readonly></td><td valign="top"><input type="text" id="total_type" name="total_type" class="form-control input-sm total_type calculation " readonly></td></tr></tfoot></table>
+										</div>
+								</div>
 							</div>
-					</div>
-				</div>
-				<div class="panel-footer">
-					<center>
-						<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
-					</center>
-				</div>
-			</div>
+							
+							<div class="row">		
+								<div class="col-md-6">
+									<div class="window" style="margin:auto;">
+											<table width="100%">
+											<?php $i=0; foreach($childrens as $Category){ ?>
+											<tr>
+											
+												<td width="15%">
+												<div class="checkbox-material">
+												<?= $this->Form->control('seller_items['.$i.'][check]',['type'=>'checkbox','class'=>'category','id'=>'category','placeholder'=>'Item Name','label'=>false,'hidden'=>false]) ?>
+												</div>
+												</td>
+												<td width="60%"><a class="accordion-toggle accordion-toggle-styled collapsed " data-toggle="collapse" data-parent="#accordion0" href="#collapse_<?php echo $Category->id;?>" aria-expanded="false"><?php echo $Category->name; ?></a>
+												<?= $this->Form->control('seller_items['.$i.'][category_id]',['type'=>'hidden','class'=>'form-control ','placeholder'=>'Item Name','label'=>false,'value'=>$Category->id]) ?>
+												</td>
+												<td><?= $this->Form->control('seller_items['.$i.'][commission_percentage]',['class'=>'form-control','placeholder'=>'Commission %','label'=>false]) ?></td>
+											</tr>
+											<?php } ?>	
+										</table>
+										</div>
+								</div>
+							</div>
+							
+							<div class="panel-footer">
+								<center>
+									<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
+								</center>
+							</div>
+						</div>
+						
+			
 			<?= $this->Form->end() ?>
 		</div>
 	</div>                    	
@@ -169,7 +235,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 		</tr>
 	</tbody>
 </table>
-
+<?= $this->Html->script('plugins/bootstrap/bootstrap-datepicker.js',['block'=>'jsDatePicker']) ?>
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
 <?php
