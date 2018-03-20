@@ -46,6 +46,10 @@ class ItemVariationsTable extends Table
             'foreignKey' => 'unit_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('UnitVariations', [
+            'foreignKey' => 'unit_variation_id',
+            'joinType' => 'INNER'
+        ]);
         $this->hasMany('OrderDetails', [
             'foreignKey' => 'item_variation_id'
         ]);

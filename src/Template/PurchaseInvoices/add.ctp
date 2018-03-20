@@ -15,13 +15,16 @@
 							<div class="form-group">
 								<label class=" control-label">Purchase Invoice No</label>
 								<div class="">                                            
-									<?= $this->Form->control('name',['class'=>'form-control','placeholder'=>'Item Name','label'=>false]) ?>
+									<?php $voucher_no= $LocationData->alise.'/'.$voucher_no ;
+									//echo $voucher_no;
+									?>
+									<?= $this->Form->control('namsdfee',['class'=>'form-control','placeholder'=>'Item Name','label'=>false,'value'=>$voucher_no,'readonly']) ?>
 								</div>
 							</div>
 							<div class="form-group">
 								<label class=" control-label">Seller</label>
 								<div class="">                                            
-									<?= $this->Form->select('seller_ledger_id',$partyOptions,['empty'=>'---Select--','class'=>'form-control select','label'=>false]) ?>
+									<?= $this->Form->select('seller_ledger_id',$partyOptions,['empty'=>'---Select--','class'=>'form-control select seller_ledger_id','label'=>false]) ?>
 								</div>
 							</div>
 						
@@ -59,7 +62,7 @@
 									<tr align="center">
 										<th rowspan="2" style="text-align:left;"><label>S.N<label></td>
 										<th rowspan="2" style="text-align:left;"><label>Item<label></td>
-										<th rowspan="2" style="text-align:left;"><label>Item Variation<label></td>
+										
 										<th rowspan="2" style="text-align:center; "><label>Quantity<label></td>
 										<th rowspan="2" style="text-align:center;width:20px;"><label>Rate<label></td>
 										<th  colspan="2" style="text-align:center;"><label align="center">Discount (%)</label></th>
@@ -100,11 +103,10 @@
 	<tbody class="sampleMainTbody">
 		<tr class="MainTr">
 			<td  valign="top">1</td>
-			<td  valign="top"> 
-				<?php echo $this->Form->select('item_id', $items,['class'=>'form-control item','label'=>false]) ?> 			</td>
-			<td width="" valign="top">
-				<?= $this->Form->control('item_variation_id',['class'=>'form-control item_variation_id','label'=>false]) ?>
+			<td  valign="top" class="itemList"> 
+				
 			</td>
+			
 			<td  valign="top">
 				<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false]) ?>
 			</td>
@@ -122,7 +124,7 @@
 			</td>
 			<td valign="top">
 				<?= $this->Form->control('item_gst_figure_id',['type'=>'hidden','class'=>'form-control item_gst_figure_id','label'=>false]) ?>
-				<?= $this->Form->select('gst_percentage',$GstFigures,['class'=>'form-control gst_percentage select','label'=>false]) ?>
+				<?= $this->Form->select('gst_percentage',$GstFigures,['class'=>'form-control gst_percentage','label'=>false]) ?>
 			</td>
 			<td valign="top">
 				<?= $this->Form->control('gst_value',['class'=>'form-control gst_value','label'=>false]) ?>
@@ -144,7 +146,7 @@
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
 <?php
-   $js='var jvalidate = $("#jvalidate").validate({
+   $js="var jvalidate = $('#jvalidate').validate({
 		ignore: [],
 		rules: {                                            
 				name: {
@@ -153,49 +155,74 @@
 				
 			}                                        
 		});
-	
-		$(document).on("click",".add_row",function(){
+		
+		$(document).on('change','.seller_ledger_id',function(){
+			var seller_id=$('option:selected', this).attr('seller_id');
+			var url='".$this->Url->build(["controller" => "PurchaseInvoices", "action" => "SelectItemSellerWise"])."';
+			url=url+'/'+seller_id
+			$.ajax({
+				url: url,
+				type: 'GET'
+			}).done(function(response) {
+				//$('#sampleTable tbody tr.MainTr').remove();
+				var t=$('.MainTbody tr').remove();
+				$('.itemList').html(response);
+				addMainRow();
+			});
+			
+		});
+		
+		$(document).on('click','.add_row',function(){
 			addMainRow();
 			renameRows();
 		});
 		
-		addMainRow();
 		function addMainRow(){
-			var tr=$("#sampleTable tbody").html();
-			$(".main_table tbody").append(tr);
-		//	renameRows();
+			var tr=$('#sampleTable tbody').html();
+			$('.main_table tbody').append(tr);
+			renameRows();
 		}
 		
-		$(document).on("click",".delete_row",function(){
-			var t=$(this).closest("tr").remove();
-			//renameRows();
-			
+		$(document).on('click','.delete_row',function(){
+			var t=$(this).closest('tr').remove();
+			renameRows();
+		});
+		
+		$(document).on('keyup','.rate',function(){
+			calculation();
+		});
+		
+		$(document).on('change','.gst_percentage',function(){
+			calculation();
 		});
 		
 		function renameRows(){ 
 				var i=0; 
-				$(".main_table tbody tr").each(function(){
-						$(this).attr("row_no",i);
-						$(this).find("td:nth-child(1)").html(++i); i--;
+				$('.main_table tbody tr').each(function(){
+						$(this).attr('row_no',i);
+						$(this).find('td:nth-child(1)').html(++i); i--;
 						
 						
 						i++;
 			});
 		}
-		$("#item_image").fileinput({
-            showUpload: false,
-            showCaption: false,
-            showCancel: false,
-            browseClass: "btn btn-danger",
-			allowedFileExtensions: ["jpg", "png"],
-			maxFileSize: 1024,
-		}); 
+		function calculation(){
+			$('.main_table tbody tr').each(function(){
+				var qty=$('.quantity').val();
+				var rate=$('.rate').val();
+				
+				var taxable_value=qty*rate;
+				$(this).find('.taxable_value').val(taxable_value);
+				var gst_percentage=$('.gst_percentage').val();
+				if(!gst_percentage){
+					gst_rate=0;
+				}else{
+					$(this).find('.net_amount').val(taxable_value);
+				}
+			});
+		}
+	
 		
-		
-		$(document).on("click", ".fileinput-remove-button", function(){
-			$(this).closest("div.file-input").find("input[type=file]").attr("required",true);
-		});
-		
-		';  
+		";  
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		
 ?>
