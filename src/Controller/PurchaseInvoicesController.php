@@ -124,7 +124,6 @@ class PurchaseInvoicesController extends AppController
 				foreach($item1 as $data){
 					
 					$merge=$data->item->name.'('.$data->unit->shortname.')';
-					
 					$items[]=['text' => $merge,'value' => $data->id,'division_factor' => $data->unit->division_factor];
 					
 				}
