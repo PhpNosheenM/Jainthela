@@ -234,9 +234,9 @@ class ItemsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['category_id'], 'Categories'));
-        $rules->add($rules->existsIn(['brand_id'], 'Brands'));
-        $rules->add($rules->existsIn(['admin_id'], 'Admins'));
-        $rules->add($rules->existsIn(['seller_id'], 'Sellers'));
+       // $rules->add($rules->existsIn(['brand_id'], 'Brands'));
+        //$rules->add($rules->existsIn(['admin_id'], 'Admins'));
+       // $rules->add($rules->existsIn(['seller_id'], 'Sellers'));
         $rules->add($rules->existsIn(['city_id'], 'Cities'));
 
         return $rules;

@@ -51,9 +51,9 @@
 							<div class="form-group">
 								<label class="col-md-3 control-label">Show Section</label>
 								<div class="col-md-9 col-xs-12">
-									<?php $options['No'] = 'No'; ?>
-									<?php $options['Yes'] = 'Yes'; ?>
-									<?= $this->Form->select('section_show',$options,['class'=>'form-control select','label'=>false]) ?>
+									<?php $show_options['No'] = 'No'; ?>
+									<?php $show_options['Yes'] = 'Yes'; ?>
+									<?= $this->Form->select('section_show',$show_options,['class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
 							<div class="form-group">                                        
@@ -148,7 +148,7 @@
 	<tbody class="sampleMainTbody">
 		<tr class="MainTr">
 			<td  valign="top"> 
-				<?php echo $this->Form->select('unit_id', $units,['class'=>'form-control unit select','label'=>false]) ?> 			</td>
+				<?php echo $this->Form->select('unit_id', $units,['class'=>'form-control unit','label'=>false]) ?> 			</td>
 			<td width="" valign="top">
 				<?= $this->Form->control('quantity_factor',['class'=>'form-control quantity_factor','label'=>false]) ?>
 			</td>
@@ -240,6 +240,7 @@
 						i++;
 			});
 		}
+		
 		$("#item_image").fileinput({
             showUpload: false,
             showCaption: false,
