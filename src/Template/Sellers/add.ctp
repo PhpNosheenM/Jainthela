@@ -9,7 +9,10 @@
 					<h3 class="panel-title"><strong>Seller</strong></h3>
 				</div>
 			
-				<div class="panel-body">    
+				<div class="panel-body">   
+<div class="row">
+<?= $this->RecursiveCategories->categories($categories) ?>
+</div>				
 					<div class="row">
 						<div class="col-md-6">
 							<div class="form-group">
@@ -172,7 +175,7 @@
 								<div class="col-md-6">
 									<div class="window" style="margin:auto;">
 											<table width="100%">
-											<?php $i=0; foreach($childrens as $Category){ ?>
+											<?php $i=0; foreach($categories as $Category){ ?>
 											<tr>
 											
 												<td width="15%">
