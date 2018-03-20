@@ -156,6 +156,7 @@ class ItemsController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
 			$item_image=$this->request->data['item_image'];
 			$item_error=$item_image['error'];
+			
             $item = $this->Items->patchEntity($item, $this->request->getData());
 			if(empty($item_error))
 			{
@@ -165,6 +166,8 @@ class ItemsController extends AppController
 			if ($item_data=$this->Items->save($item)) {
 				if(empty($item_error))
 				{
+					
+					
 					/* For Web Image */
 					$deletekeyname = 'item/'.$item_data->id.'/web';
 					$this->AwsFile->deleteMatchingObjects($deletekeyname);
@@ -190,6 +193,7 @@ class ItemsController extends AppController
 
                 return $this->redirect(['action' => 'index']);
             }
+			pr($item); exit;
             $this->Flash->error(__('The item could not be saved. Please, try again.'));
         }
         $categories = $this->Items->Categories->find('list')->where(['Categories.city_id'=>$city_id]);

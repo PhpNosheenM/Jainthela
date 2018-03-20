@@ -1,10 +1,33 @@
-<?php $this->set('title', 'Item'); 
+<style>
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    border-color: transparent;
+    padding: 8px 8px !important; 
+    background: #F0F4F9;
+    color: #656C78;
+    font-size: 13px;
+}
+.file-preview-image
+{
+	width: 100% !important;
+	height:160px !important;
+}
+.file-preview-frame
+{
+	display: contents;
+	float:none !important;
+}
+.kv-file-zoom
+{
+	display:none;
+}
+</style><?php $this->set('title', 'Item'); 
 ?>
 <!-- PAGE CONTENT WRAPPER -->
 <div class="page-content-wrap">
 	<div class="row">
 		<div class="col-md-12">
 		<?= $this->Form->create($item,['id'=>'jvalidate','class'=>'form-horizontal','type'=>'file']) ?>  
+		<?php $js=''; ?>
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title"><strong> Edit Item</strong></h3>
@@ -52,9 +75,9 @@
 							<div class="form-group">
 								<label class="col-md-3 control-label">Show Section</label>
 								<div class="col-md-9 col-xs-12">
-								<?php $options['No'] = 'No'; ?>
-								<?php $options['Yes'] = 'Yes'; ?>
-								<?= $this->Form->select('section_show',$options,['class'=>'form-control select','label'=>false]) ?></div>
+								<?php $show_options['No'] = 'No'; ?>
+								<?php $show_options['Yes'] = 'Yes'; ?>
+								<?= $this->Form->select('section_show',$show_options,['class'=>'form-control select','label'=>false]) ?></div>
 							</div>
 							<div class="form-group">                                        
 								<label class="col-md-3 control-label">Status</label>
@@ -105,24 +128,22 @@
 									}
 									?>
 								<div class="col-md-9 col-xs-12"> 
-								<?= $this->Form->control('item_image',['type'=>'file','label'=>false,'id' => 'item_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>true]) ?>
+								<?= $this->Form->control('item_image',['type'=>'file','label'=>false,'id' => 'item_image','data-show-upload'=>false, 'data-show-caption'=>false]) ?>
 								<label id="item_image-error" class="error" for="item_image"></label>
 								 <?php  
-									//pr($info); exit;
+									
 									if($info)
 									{
 										$result=$awsFileLoad->getObjectFile($keyname);
-										$app_image_view='<img src="data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'" alt="" style="width: auto; height: 160px;" class="file-preview-image"/>';
 										
 										$js.=' $( document ).ready(function() {
-													$("#web_image_data").find("div.file-input-new").removeClass("file-input-new");
-													$("#web_image_data").find("div.file-preview-thumbnails").html("<div data-template=image class=file-preview-frame><div class=kv-file-content><img src=data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'></div></div>");
-													$("#web_image_data").find("div.file-preview-frame").addClass("file-preview-frame krajee-default  kv-preview-thumb");
-												
-													$("#web_image_data").find("img").addClass("file-preview-image kv-preview-data rotate-1");
-												
-												});
-										';
+										$("#web_image_data").find("div.file-input-new").removeClass("file-input-new");
+										$("#web_image_data").find("div.file-preview-thumbnails").html("<div data-template=image class=file-preview-frame><div class=kv-file-content><img src=data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'></div></div>");
+										$("#web_image_data").find("div.file-preview-frame").addClass("file-preview-frame krajee-default  kv-preview-thumb");
+									
+										$("#web_image_data").find("img").addClass("file-preview-image kv-preview-data rotate-1");
+									});
+									';
 									}
 									?>
 														
@@ -179,12 +200,12 @@
 										<td valign="top">
 											<?php $sale_options['No'] = 'No'; ?>
 											<?php $sale_options['Yes'] = 'Yes'; ?>
-											<?= $this->Form->select('ready_to_sale',$sale_options,['class'=>'form-control  ready_to_sale','label'=>false, 'value'=>$item_variation->ready_to_sale]) ?>
+											<?= $this->Form->select('ready_to_sale',$sale_options,['class'=>'form-control ready_to_sale','label'=>false, 'value'=>$item_variation->ready_to_sale]) ?>
 										</td>
 										<td  valign="top">
 											<?php $out_options['No'] = 'No'; ?>
 											<?php $out_options['Yes'] = 'Yes'; ?>
-											<?= $this->Form->select('out_of_stock',$out_options,['class'=>'form-control  out_of_stock','label'=>false, 'value'=>$item_variation->out_of_stock]) ?>
+											<?= $this->Form->select('out_of_stock',$out_options,['class'=>'form-control out_of_stock','label'=>false, 'value'=>$item_variation->out_of_stock]) ?>
 										</td>
 										<td width="10%" valign="top">
 											<?php $options1['Active'] = 'Active'; ?>
@@ -220,7 +241,7 @@
 	<tbody class="sampleMainTbody">
 		<tr class="MainTr">
 			<td  valign="top"> 
-				<?php echo $this->Form->select('unit_id', $units,['class'=>'form-control unit select','label'=>false]) ?> 			</td>
+				<?php echo $this->Form->select('unit_id', $units,['class'=>'form-control unit','label'=>false]) ?> 			</td>
 			<td width="" valign="top">
 				<?= $this->Form->control('quantity_factor',['class'=>'form-control quantity_factor','label'=>false]) ?>
 			</td>
@@ -243,12 +264,12 @@
 			<td valign="top">
 				<?php $sale_options['No'] = 'No'; ?>
 				<?php $sale_options['Yes'] = 'Yes'; ?>
-				<?= $this->Form->select('ready_to_sale',$sale_options,['class'=>'form-control  ready_to_sale','label'=>false]) ?>
+				<?= $this->Form->select('ready_to_sale',$sale_options,['class'=>'form-control ready_to_sale','label'=>false]) ?>
 			</td>
 			<td  valign="top">
 				<?php $out_options['No'] = 'No'; ?>
 				<?php $out_options['Yes'] = 'Yes'; ?>
-				<?= $this->Form->select('out_of_stock',$out_options,['class'=>'form-control  out_of_stock','label'=>false]) ?>
+				<?= $this->Form->select('out_of_stock',$out_options,['class'=>'form-control out_of_stock','label'=>false]) ?>
 			</td>
 			<td width="10%" valign="top">
 				<?php $options1['Active'] = 'Active'; ?>
@@ -266,7 +287,7 @@
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
 <?php
-   $js='var jvalidate = $("#jvalidate").validate({
+   $js.='var jvalidate = $("#jvalidate").validate({
 		ignore: [],
 		rules: {                                            
 				name: {

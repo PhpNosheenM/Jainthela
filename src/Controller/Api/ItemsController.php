@@ -18,9 +18,45 @@ class ItemsController extends AppController
     public function initialize()
      {
          parent::initialize();
-         $this->Auth->allow(['productDetail']);
+         $this->Auth->allow(['productDetail','itemList']);
      }
 
+     public function itemList($category_id=null,$city_id=null,$page=null)
+     {
+       $city_id = @$this->request->query['city_id'];
+       $category_id = @$this->request->query['category_id'];
+       $page=@$this->request->query['page'];
+   		 $limit=10;
+       $items = [];
+       if(!empty($city_id) && !empty($category_id) && (!empty($page)))
+       {
+         // CheckAvabiltyOfCity function is avaliable in app controller for checking city_id in cities table
+         $isValidCity = $this->CheckAvabiltyOfCity($city_id);
+         if($isValidCity == 0)
+         {
+           $items = $this->Items->find()
+                     ->contain(['ItemVariations'=>['Units']])
+                     ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id,'Items.category_id'=>$category_id])
+                     ->limit($limit)->page($page);
+               if(!empty($items->toArray()))
+               {
+                 $success = true;
+                 $message = 'Data Found Successfully';
+               }
+               else {
+                     $success = false;
+                     $message = 'Record not found';
+               }
+         }else {
+                 $success = false;
+                 $message = 'Invalid City';
+         }
+       }else {
+         $success = false;
+         $message = 'Empty city or category id';
+       }
+       $this->set(['success' => $success,'message'=>$message,'items' => $items,'_serialize' => ['success','message','items']]);
+     }
 
     public function productDetail($item_id = null,$city_id =null,$category_id=null)
     {
