@@ -12,7 +12,7 @@ class AwsFilesController extends AppController
      {
          parent::initialize();
          $this->Auth->allow(['awsData']);
-         define('ENCRYPTION_KEY', 'd0a7e7997b6d5fcd55f4b5c32611b87cd923e88837b63bf2941ef819dc8ca282');
+         define('ENCRYPTION_KEY', 'd0a7e7997b6d5fcd55f4b5c32611b87c');
      }
 
 // reference URL for encription : https://www.warpconduit.net/2013/04/14/highly-secure-data-encryption-decryption-made-easy-with-php-mcrypt-rijndael-256-and-cbc/
@@ -53,7 +53,6 @@ class AwsFilesController extends AppController
          $awsData = array("bucketName"=>$this->mc_encrypt($this->bucketName,ENCRYPTION_KEY),
                     "awsAccessKey"=>$this->mc_encrypt($this->awsAccessKey,ENCRYPTION_KEY),
                     "awsSecretAccessKey"=>$this->mc_encrypt($this->awsSecretAccessKey,ENCRYPTION_KEY));
-
           if(!empty($awsData))
           {
               $success = true;
@@ -62,9 +61,7 @@ class AwsFilesController extends AppController
             $success = true;
             $message = 'Data Not Found';
           }
-
           //pr($this->mc_decrypt($age['bucketName'],ENCRYPTION_KEY)); exit;
-
          $this->set(['success' => $success,'message'=>$message,'awsData' => $awsData,'_serialize' => ['success','message','awsData']]);
    }
 
