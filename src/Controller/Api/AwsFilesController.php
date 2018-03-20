@@ -12,35 +12,42 @@ class AwsFilesController extends AppController
      {
          parent::initialize();
          $this->Auth->allow(['awsData']);
-         define('ENCRYPTION_KEY', 'd0a7e7997b6d5fcd55f4b5c32611b87c');
+
+     }
+     private $iv = 'd0a7e7997b6d5fcd';
+     private $key = '55f4b5c32611b87c';
+// reference URL for encription : https://github.com/serpro/Android-PHP-Encrypt-Decrypt/blob/master/PHP/MCrypt.php
+  function encrypt($str, $isBinary = false)
+     {
+         $iv = $this->iv;
+         $str = $isBinary ? $str : utf8_decode($str);
+         $td = mcrypt_module_open('rijndael-128', ' ', 'cbc', $iv);
+         mcrypt_generic_init($td, $this->key, $iv);
+         $encrypted = mcrypt_generic($td, $str);
+         mcrypt_generic_deinit($td);
+         mcrypt_module_close($td);
+         return $isBinary ? $encrypted : bin2hex($encrypted);
      }
 
-// reference URL for encription : https://www.warpconduit.net/2013/04/14/highly-secure-data-encryption-decryption-made-easy-with-php-mcrypt-rijndael-256-and-cbc/
-     function mc_encrypt($encrypt, $key){
-      $encrypt = serialize($encrypt);
-      $iv = mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC), MCRYPT_DEV_URANDOM);
-      $key = pack('H*', $key);
-      $mac = hash_hmac('sha256', $encrypt, substr(bin2hex($key), -32));
-      $passcrypt = mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $key, $encrypt.$mac, MCRYPT_MODE_CBC, $iv);
-      $encoded = base64_encode($passcrypt).'|'.base64_encode($iv);
-      return $encoded;
-  }
-
-  function mc_decrypt($decrypt, $key){
-      $decrypt = explode('|', $decrypt.'|');
-      $decoded = base64_decode($decrypt[0]);
-      $iv = base64_decode($decrypt[1]);
-      if(strlen($iv)!==mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_CBC)){ return false; }
-      $key = pack('H*', $key);
-      $decrypted = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, $decoded, MCRYPT_MODE_CBC, $iv));
-      $mac = substr($decrypted, -64);
-      $decrypted = substr($decrypted, 0, -64);
-      $calcmac = hash_hmac('sha256', $decrypted, substr(bin2hex($key), -32));
-      if($calcmac!==$mac){ return false; }
-      $decrypted = unserialize($decrypted);
-      return $decrypted;
-  }
-
+     function decrypt($code, $isBinary = false)
+     {
+         $code = $isBinary ? $code : $this->hex2bin($code);
+         $iv = $this->iv;
+         $td = mcrypt_module_open('rijndael-128', ' ', 'cbc', $iv);
+         mcrypt_generic_init($td, $this->key, $iv);
+         $decrypted = mdecrypt_generic($td, $code);
+         mcrypt_generic_deinit($td);
+         mcrypt_module_close($td);
+         return $isBinary ? trim($decrypted) : utf8_encode(trim($decrypted));
+     }
+     protected function hex2bin($hexdata)
+     {
+         $bindata = '';
+         for ($i = 0; $i < strlen($hexdata); $i += 2) {
+             $bindata .= chr(hexdec(substr($hexdata, $i, 2)));
+         }
+         return $bindata;
+     }
 
      public function awsData()
      {
@@ -50,9 +57,9 @@ class AwsFilesController extends AppController
          $this->awsAccessKey=$AwsFiles->access_key; // Access Key
          $this->awsSecretAccessKey=$AwsFiles->secret_access_key;  // Secret Access key
 
-         $awsData = array("bucketName"=>$this->mc_encrypt($this->bucketName,ENCRYPTION_KEY),
-                    "awsAccessKey"=>$this->mc_encrypt($this->awsAccessKey,ENCRYPTION_KEY),
-                    "awsSecretAccessKey"=>$this->mc_encrypt($this->awsSecretAccessKey,ENCRYPTION_KEY));
+         $awsData = array("bucketName"=>$this->encrypt($this->bucketName),
+                    "awsAccessKey"=>$this->encrypt($this->awsAccessKey),
+                    "awsSecretAccessKey"=>$this->encrypt($this->awsSecretAccessKey));
           if(!empty($awsData))
           {
               $success = true;
@@ -61,7 +68,7 @@ class AwsFilesController extends AppController
             $success = true;
             $message = 'Data Not Found';
           }
-          //pr($this->mc_decrypt($age['bucketName'],ENCRYPTION_KEY)); exit;
+          //pr($this->decrypt($awsData['bucketName'])); exit;
          $this->set(['success' => $success,'message'=>$message,'awsData' => $awsData,'_serialize' => ['success','message','awsData']]);
    }
 
