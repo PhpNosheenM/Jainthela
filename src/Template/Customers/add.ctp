@@ -96,9 +96,9 @@
 								<label class="col-md-3 control-label">Discount Valid</label>
 								<div class="col-md-9 col-xs-12">
 									<div class="input-group">
-										<?= $this->Form->control('discount_created_on',['class'=>'form-control datepicker','placeholder'=>'Discount Valid From','label'=>false,'type'=>'text','data-date-format' => 'DD/MM/YYYY','value'=>'']) ?>
+										<?= $this->Form->control('discount_created_on',['class'=>'form-control datepicker','placeholder'=>'Discount Valid From','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>'']) ?>
 										<span class="input-group-addon add-on"> - </span>
-										<?= $this->Form->control('discount_expiry',['class'=>'form-control datepicker','placeholder'=>'Discount Valid To','label'=>false,'type'=>'text','data-date-format' => 'DD/MM/YYYY','value'=>'']) ?>
+										<?= $this->Form->control('discount_expiry',['class'=>'form-control datepicker','placeholder'=>'Discount Valid To','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>'']) ?>
 									</div>
 								</div>
 							</div>

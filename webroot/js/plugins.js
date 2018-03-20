@@ -4,7 +4,7 @@ $(function() {
         // Bootstrap datepicker
         var feDatepicker = function(){                        
             if($(".datepicker").length > 0){
-                $(".datepicker").datepicker({format: 'yyyy-mm-dd'});
+                $(".datepicker").datepicker();
             }           
             
         }// END Bootstrap datepicker
