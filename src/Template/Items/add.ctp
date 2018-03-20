@@ -204,12 +204,6 @@
 				
 			}                                        
 		});
-		
-		$(document).on("change",".add_row",function(){
-			addMainRow();
-			renameRows();
-		});
-		
 	
 		$(document).on("click",".add_row",function(){
 			addMainRow();

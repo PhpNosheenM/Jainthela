@@ -10,8 +10,9 @@ use Cake\ORM\Entity;
  * @property int $city_id
  * @property string $link_name
  * @property string $name
+ * @property string $banner_image
  * @property \Cake\I18n\FrozenTime $created_on
- * @property int $status
+ * @property string $status
  *
  * @property \App\Model\Entity\City $city
  */
@@ -31,6 +32,7 @@ class Banner extends Entity
         'city_id' => true,
         'link_name' => true,
         'name' => true,
+        'banner_image' => true,
         'created_on' => true,
         'status' => true,
         'city' => true

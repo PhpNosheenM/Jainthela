@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
-
+use Cake\Filesystem\Folder;
+use Cake\Filesystem\File;
 use App\Controller\AppController;
 
 /**
@@ -18,14 +19,80 @@ class BannersController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    public function index($id = null)
     {
+		$city_id=$this->Auth->User('city_id'); 
+		$user_id=$this->Auth->User('id');
+		$this->viewBuilder()->layout('admin_portal');
         $this->paginate = [
-            'contain' => ['Cities']
+            'limit' => 20
         ];
-        $banners = $this->paginate($this->Banners);
+        $banners =$this->Banners->find()->where(['Banners.city_id'=>$city_id]);
+		
+		if($id)
+		{
+			$banner = $this->Banners->get($id);
+		}
+		else{
+			$banner = $this->Banners->newEntity();
+		}
+	
+        if ($this->request->is(['post','put'])) {
+			$banner_image=$this->request->data['banner_image'];
+			$banner_error=$banner_image['error'];
+			
+            $banner = $this->Banners->patchEntity($banner, $this->request->getData());
+			if(empty($banner_error))
+			{
+				$banner_ext=explode('/',$banner_image['type']);
+				$banner->banner_image='banner'.time().'.'.$banner_ext[1];
+			}
 
-        $this->set(compact('banners'));
+			$banner->city_id=$city_id;
+            if ($banner_data=$this->Banners->save($banner)) {
+				if(empty($category_error))
+				{
+					/* For Web Image */
+					$deletekeyname = 'banner/'.$banner_data->id.'/web';
+					$this->AwsFile->deleteMatchingObjects($deletekeyname);
+					$keyname = 'banner/'.$banner_data->id.'/web/'.$banner_data->banner_image;
+					$this->AwsFile->putObjectFile($keyname,$banner_image['tmp_name'],$banner_image['type']);
+
+					/* Resize Image */
+					$destination_url = WWW_ROOT . 'img/temp/'.$banner_data->banner_image;
+					$image = imagecreatefromjpeg($banner_image['tmp_name']);
+					imagejpeg($image, $destination_url, 10);
+
+					/* For App Image */
+					$deletekeyname = 'banner/'.$banner_data->id.'/app';
+					$this->AwsFile->deleteMatchingObjects($deletekeyname);
+					$keyname = 'banner/'.$banner_data->id.'/app/'.$banner_data->banner_image;
+					$this->AwsFile->putObjectFile($keyname,$destination_url,$banner_image['type']);
+
+					/* Delete Temp File */
+					$file = new File(WWW_ROOT . $destination_url, false, 0777);
+					$file->delete();
+				}
+                $this->Flash->success(__('The banner has been saved.'));
+
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The banner could not be saved. Please, try again.'));
+        }
+		else if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$banners->where([
+							'OR' => [
+									'Banners.name LIKE' => $search.'%',
+									'Banners.link_name LIKE' => $search.'%',
+									'Banners.status LIKE' => $search.'%'
+							]
+			]);
+		}
+
+        $banners = $this->paginate($banners);
+		$paginate_limit=$this->paginate['limit'];
+		$this->set(compact('banners','banner','paginate_limit'));
     }
 
     /**
@@ -40,7 +107,7 @@ class BannersController extends AppController
         $banner = $this->Banners->get($id, [
             'contain' => ['Cities']
         ]);
-
+		
         $this->set('banner', $banner);
     }
 
