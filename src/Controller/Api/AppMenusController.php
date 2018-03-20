@@ -30,15 +30,21 @@ class AppMenusController extends AppController
       if(!empty($city_id))
       {
         // CheckAvabiltyOfCity function is avaliable in app controller for checking city_id in cities table
+		$dynamic=[];
         $isValidCity = $this->CheckAvabiltyOfCity($city_id);
          if($isValidCity == 0)
          {
              $menuData = $this->AppMenus->find()->where(['city_id'=>$city_id,'status'=>0]);
              if(!empty($menuData->toArray()))
              {
-               foreach ($menuData as $key => $value) {
-                 $menuData->category = $this->AppMenus->Categories->find()->where(['city_id'=>$city_id,'section_show'=>'Yes','status'=>'Active'])->contain(['ChildCategories']);
-               }
+				// pr($menuData->toArray());
+				
+				array_push($dynamic,$menuData->toArray());
+				
+             
+                 $Categories = $this->AppMenus->Categories->find()->where(['city_id'=>$city_id,'section_show'=>'Yes','status'=>'Active'])->contain(['ChildCategories']);
+				 $cat=array("ff"=>$Categories->toArray());
+              array_push($dynamic,$cat);
 
                $success = true;
                $message = 'Data Found Successfully';
@@ -56,6 +62,6 @@ class AppMenusController extends AppController
         $success = false;
         $message = 'City Id Empty';
       }
-      $this->set(['success' => $success,'message'=>$message,'menuData' => $menuData,'_serialize' => ['success','message','menuData']]);
+      $this->set(['success' => $success,'message'=>$message,'dynamic' => $dynamic,'_serialize' => ['success','message','dynamic']]);
     }
 }
