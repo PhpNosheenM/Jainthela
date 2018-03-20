@@ -20,6 +20,7 @@
             echo $this->Form->control('city_id', ['options' => $cities]);
             echo $this->Form->control('link_name');
             echo $this->Form->control('name');
+            echo $this->Form->control('banner_image');
             echo $this->Form->control('created_on');
             echo $this->Form->control('status');
         ?>
