@@ -165,8 +165,7 @@
 				<?= $this->Form->control('longitude',['class'=>'form-control longitude','label'=>false]) ?>
 			</td>
 			<td valign="top">
-				<?= $this->Form->control('default_address',['class'=>'ichecked', 'label'=>false,'hidden'=>false,'type'=>'checkbox']) ?>
-				
+				<?= $this->Form->control('default_address',['class'=>'', 'label'=>false,'hiddenField'=>false,'type'=>'checkbox','templates' => ['inputContainer' => '{{content}}']]) ?>
 			</td>
 			
 			<td valign="top"  >
