@@ -35,7 +35,7 @@ class ItemsController extends AppController
          if($isValidCity == 0)
          {
            $items = $this->Items->find()
-                     ->contain(['ItemVariations'=>['Units']])
+                     ->contain(['ItemVariations'=>['UnitVariations']])
                      ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id,'Items.category_id'=>$category_id])
                      ->limit($limit)->page($page);
                if(!empty($items->toArray()))
@@ -75,7 +75,7 @@ class ItemsController extends AppController
             if(!empty($item_id) && !empty($category_id))
             {
                 $items = $this->Items->find()
-                          ->contain(['Categories','Brands','Sellers','Cities','ItemVariations'=>['Units']])
+                          ->contain(['Categories','Brands','Sellers','Cities','ItemVariations'=>['UnitVariations']])
                           ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.id'=>$item_id,'Items.city_id'=>$city_id,'Items.category_id'=>$category_id]);
 
                 if(!empty($items->toArray()))
@@ -91,7 +91,7 @@ class ItemsController extends AppController
                 $HomeScreens=$this->Items->HomeScreens->find()->where(['screen_type'=>'Product Detail','section_show'=>'Yes','city_id'=>$city_id]);
                     foreach($HomeScreens as $HomeScreen){
                         if($HomeScreen->model_name=='Items'){
-                           $reletedItem = $this->Items->find()->contain(['ItemVariations'=>['Units']])
+                           $reletedItem = $this->Items->find()->contain(['ItemVariations'=>['UnitVariations']])
                             ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.category_id'=>$category_id,'Items.city_id'=>$city_id,'Items.id !='=>$item_id]);
 
                             if(!empty($reletedItem->toArray()))
