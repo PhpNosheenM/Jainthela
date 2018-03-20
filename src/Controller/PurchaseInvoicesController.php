@@ -60,6 +60,17 @@ class PurchaseInvoicesController extends AppController
 		$location_id=$this->Auth->User('location_id'); 
 		$this->viewBuilder()->layout('admin_portal');
         $purchaseInvoice = $this->PurchaseInvoices->newEntity();
+		$LocationData = $this->PurchaseInvoices->Locations->get($location_id);
+		$Voucher_no = $this->PurchaseInvoices->find()->select(['voucher_no'])->where(['PurchaseInvoices.location_id'=>$location_id])->order(['voucher_no' => 'DESC'])->first();
+		if($Voucher_no)
+		{
+			$voucher_no=$Voucher_no->voucher_no+1;
+		}
+		else
+		{
+			$voucher_no=1;
+		} 
+		//pr($voucher_no); exit;
         if ($this->request->is('post')) {
             $purchaseInvoice = $this->PurchaseInvoices->patchEntity($purchaseInvoice, $this->request->getData());
             if ($this->PurchaseInvoices->save($purchaseInvoice)) {
@@ -94,7 +105,7 @@ class PurchaseInvoicesController extends AppController
         }
 		$partyOptions=[];
 		foreach($Partyledgers as $Partyledger){ 
-			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id,'city_id'=>$Partyledger->seller->city_id,'state_id'=>$Partyledger->seller->city->state_id,'bill_to_bill_accounting'=>$Partyledger->bill_to_bill_accounting];
+			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id,'city_id'=>$Partyledger->seller->city_id,'state_id'=>$Partyledger->seller->city->state_id,'bill_to_bill_accounting'=>$Partyledger->bill_to_bill_accounting,'seller_id'=>$Partyledger->seller_id];
 		}
 		
 		$accountLedgers = $this->PurchaseInvoices->AccountingGroups->find()->where(['AccountingGroups.purchase_invoice_purchase_account'=>1])->first();
@@ -118,19 +129,19 @@ class PurchaseInvoicesController extends AppController
 		//pr($Accountledgers->toArray()); exit;
 		
 		//pr($partyOptions); exit;
-        $item1 = $this->PurchaseInvoices->Items->ItemVariations->find()->contain(['Items','Units']);
+       /*  $item1 = $this->PurchaseInvoices->Items->ItemVariations->find()->contain(['Items'=>['UnitVariations','Sellers']]);
 		//pr($item1->toArray()); exit;
 		$items=array();
 				foreach($item1 as $data){
+					pr($data); exit;
+					$merge=$data->item->name.'('.$data->unit_variation->unit->shortname.')';
+					$items[]=['text' => $merge,'value' => $data->id,'division_factor' => $data->unit_variation->convert_unit_qty];
 					
-					$merge=$data->item->name.'('.$data->unit->shortname.')';
-					$items[]=['text' => $merge,'value' => $data->id,'division_factor' => $data->unit->division_factor];
-					
-				}
+				} */
 		
-		pr($items); exit;
+	//pr($LocationData); exit;
         $GstFigures = $this->PurchaseInvoices->GstFigures->find('list');
-        $this->set(compact('purchaseInvoice', 'locations', 'partyOptions', 'Accountledgers', 'items','GstFigures'));
+        $this->set(compact('purchaseInvoice', 'locations', 'partyOptions', 'Accountledgers', 'items','GstFigures','voucher_no','LocationData'));
     }
 
     /**
@@ -140,7 +151,23 @@ class PurchaseInvoicesController extends AppController
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
-    public function edit($id = null)
+    public function SelectItemSellerWise($id = null)
+    {
+		$Sellertem=$this->PurchaseInvoices->Items->ItemVariations->find()->contain(['Items'=>['ItemVariations'=>['UnitVariations'=>['Units']]]])->where(['ItemVariations.seller_id'=>$id,'ItemVariations.status'=>'Active']);
+		
+		$items=array();
+		foreach($Sellertem as $data){
+		//pr(@$data->item->item_variations[0]->unit_variation); 
+			$merge=$data->item->name.'('.@$data->item->item_variations[0]->unit_variation->convert_unit_qty.'.'.@$data->item->item_variations[0]->unit_variation->unit->print_unit.')';
+			$items[]=['text' => $merge,'value' => $data->id,'item_id'=>$data->item->id,'quantity_factor'=>@$data->item->item_variations[0]->unit_variation->convert_unit_qty];
+			
+		} 
+		$itemSize=sizeof($items); //pr($itemSize);exit;
+		 $this->set(compact('items','itemSize'));
+		//pr($items);exit;
+	} 
+	
+	public function edit($id = null)
     {
         $purchaseInvoice = $this->PurchaseInvoices->get($id, [
             'contain' => []
