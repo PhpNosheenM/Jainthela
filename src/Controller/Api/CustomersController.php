@@ -83,9 +83,9 @@ class CustomersController extends AppController
          			 $customer_error = $customer_image['error'];
 
                $customer = $this->Customers->patchEntity($customer, $this->request->getData());
-
-              if($customer_error == 0)
-         			{
+				
+              if($customer_error == '0')
+         			{ 
          				$customer_ext=explode('/',$customer_image['type']);
          				$customer->customer_image='customer'.time().'.'.$customer_ext[1];
          			}
@@ -102,7 +102,7 @@ class CustomersController extends AppController
                         $deletekeyname = 'customer/'.$customer_data->id;
                					$this->AwsFile->deleteMatchingObjects($deletekeyname);
                					$keyname = 'customer/'.$customer_data->id.'/'.$customer_data->customer_image;
-               					$this->AwsFile->putObjectFile($keyname,$customer_data['tmp_name'],$customer_data['type']);
+               					$this->AwsFile->putObjectFile($keyname,$customer_image['tmp_name'],$customer_image['type']);
                      }
                      $success = true;
                      $message = 'Update Successfully';
