@@ -118,7 +118,18 @@ class PurchaseInvoicesController extends AppController
 		//pr($Accountledgers->toArray()); exit;
 		
 		//pr($partyOptions); exit;
-        $items = $this->PurchaseInvoices->Items->find('list');
+        $item1 = $this->PurchaseInvoices->Items->ItemVariations->find()->contain(['Items','Units']);
+		//pr($item1->toArray()); exit;
+		$items=array();
+				foreach($item1 as $data){
+					
+					$merge=$data->item->name.'('.$data->unit->shortname.')';
+					
+					$items[]=['text' => $merge,'value' => $data->id,'division_factor' => $data->unit->division_factor];
+					
+				}
+		
+		pr($items); exit;
         $GstFigures = $this->PurchaseInvoices->GstFigures->find('list');
         $this->set(compact('purchaseInvoice', 'locations', 'partyOptions', 'Accountledgers', 'items','GstFigures'));
     }

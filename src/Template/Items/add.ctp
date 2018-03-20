@@ -148,7 +148,7 @@
 	<tbody class="sampleMainTbody">
 		<tr class="MainTr">
 			<td  valign="top"> 
-				<?php echo $this->Form->select('unit_id', $units,['class'=>'form-control unit select','label'=>false]) ?> 			</td>
+				<?php echo $this->Form->select('unit_id', $units,['class'=>'form-control unit','label'=>false]) ?> 			</td>
 			<td width="" valign="top">
 				<?= $this->Form->control('quantity_factor',['class'=>'form-control quantity_factor','label'=>false]) ?>
 			</td>
@@ -204,6 +204,12 @@
 				
 			}                                        
 		});
+		
+		$(document).on("change",".add_row",function(){
+			addMainRow();
+			renameRows();
+		});
+		
 	
 		$(document).on("click",".add_row",function(){
 			addMainRow();

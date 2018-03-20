@@ -101,7 +101,7 @@
 		<tr class="MainTr">
 			<td  valign="top">1</td>
 			<td  valign="top"> 
-				<?php echo $this->Form->select('item_id', $items,['class'=>'form-control item select','label'=>false]) ?> 			</td>
+				<?php echo $this->Form->select('item_id', $items,['class'=>'form-control item','label'=>false]) ?> 			</td>
 			<td width="" valign="top">
 				<?= $this->Form->control('item_variation_id',['class'=>'form-control item_variation_id','label'=>false]) ?>
 			</td>
