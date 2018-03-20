@@ -64,6 +64,7 @@ class CustomersController extends AppController
    {
       $id = $this->request->getData('id');
       $token ='';
+
        $customer = $this->Customers->get($id);
        if ($this->request->is(['patch', 'post', 'put'])) {
          foreach(getallheaders() as $key => $value) {
@@ -77,34 +78,45 @@ class CustomersController extends AppController
          $isValidToken = $this->checkToken($token);
            if($isValidToken == 0)
              {
-               $customer_image = $this->request->data['customer_image'];
+               $customer_error = 1;
+               $customer_image = @$this->request->data['customer_image'];
          			 $customer_error = $customer_image['error'];
 
                $customer = $this->Customers->patchEntity($customer, $this->request->getData());
 
-              if(empty($customer_error))
+              if($customer_error == 0)
          			{
          				$customer_ext=explode('/',$customer_image['type']);
          				$customer->customer_image='customer'.time().'.'.$customer_ext[1];
          			}
 
                $customer->edited_by = $id;
+               $exists = $this->Customers->exists(['Customers.email'=>$customer->email]);
 
-                if ($customer_data = $this->Customers->save($customer)) {
-                  ///////////////// S3 Upload //////////////
-          				if(empty($category_error))
-          				{
-                    $deletekeyname = 'customer/'.$customer_data->id;
-          					$this->AwsFile->deleteMatchingObjects($deletekeyname);
-          					$keyname = 'customer/'.$customer_data->id.'/'.$customer_data->customer_image;
-          					$this->AwsFile->putObjectFile($keyname,$customer_data['tmp_name'],$customer_data['type']);
-                  }
-                  $success = true;
-                  $message = 'Update Successfully';
-                }else {
-                  $success = true;
-                  $message = 'Update Failed';
-                }
+               if($exists == 0)
+               {
+                 if ($customer_data = $this->Customers->save($customer)) {
+                     ///////////////// S3 Upload //////////////
+             				if($customer_error ==0)
+             				{
+                        $deletekeyname = 'customer/'.$customer_data->id;
+               					$this->AwsFile->deleteMatchingObjects($deletekeyname);
+               					$keyname = 'customer/'.$customer_data->id.'/'.$customer_data->customer_image;
+               					$this->AwsFile->putObjectFile($keyname,$customer_data['tmp_name'],$customer_data['type']);
+                     }
+                     $success = true;
+                     $message = 'Update Successfully';
+                   }else {
+
+                     $success = false;
+                     $message = 'Update Failed';
+                   }
+               }
+               else {
+                 $success = false;
+                 $message = 'Provided email value is invalid';
+               }
+
              }
              else {
                $success = false;
