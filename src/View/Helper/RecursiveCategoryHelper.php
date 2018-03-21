@@ -22,7 +22,7 @@ use UnexpectedValueException;
  * After setting messages in your controllers with FlashComponent, you can use
  * this class to output your flash messages in your views.
  */
-class RecursiveCategoriesHelper extends Helper
+class RecursiveCategoryHelper extends Helper
 {
    function categoryItems($array) {
 

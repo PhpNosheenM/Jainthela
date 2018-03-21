@@ -54,7 +54,8 @@ class ItemsTable extends Table
         $this->belongsTo('Categories', [
             'foreignKey' => 'category_id',
             'joinType' => 'INNER'
-        ]);
+        ])->setConditions(['Categories.status' => 'Active']);
+		
         $this->belongsTo('Brands', [
             'foreignKey' => 'brand_id',
             'joinType' => 'Left'
@@ -84,7 +85,7 @@ class ItemsTable extends Table
         $this->hasMany('GrnRows', [
             'foreignKey' => 'item_id'
         ]);
-        $this->hasMany('ItemVariations', [
+        $this->hasMany('ItemVariationMasters', [
             'foreignKey' => 'item_id',
 			'saveStrategy'=>'replace'
         ]);

@@ -31,23 +31,7 @@
 									<?= $this->Form->control('minimum_stock',['class'=>'form-control','placeholder'=>'Minimum Stock','label'=>false]) ?>
 								</div>
 							</div>
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">Out Of Stock</label>
-								<div class="col-md-9 col-xs-12">
-									<?php $out_options['No'] = 'No'; ?>
-									<?php $out_options['Yes'] = 'Yes'; ?>
-								
-								<?= $this->Form->select('out_of_stock',$out_options,['class'=>'form-control select','label'=>false]) ?>
-								</div>
-							</div>
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">Ready To Sale</label>
-								<div class="col-md-9 col-xs-12">
-									<?php $sale_options['No'] = 'No'; ?>
-									<?php $sale_options['Yes'] = 'Yes'; ?>
-								<?= $this->Form->select('ready_to_sale',$sale_options,['class'=>'form-control select','label'=>false]) ?>
-								</div>
-							</div>
+							
 							<div class="form-group">
 								<label class="col-md-3 control-label">Show Section</label>
 								<div class="col-md-9 col-xs-12">
@@ -56,7 +40,15 @@
 									<?= $this->Form->select('section_show',$show_options,['class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
-							<div class="form-group">                                        
+							<div class="form-group">
+								<label class="col-md-3 control-label">Item Maintain By</label>
+								<div class="col-md-9 col-xs-12">
+									<?php $maintain_options['itemwise'] = 'Item Wise'; ?>
+									<?php $maintain_options['variationwise'] = 'Item Variation Wise'; ?>
+									<?= $this->Form->select('item_maintain_by',$maintain_options,['class'=>'form-control select','label'=>false]) ?>
+								</div>
+							</div>
+							<div class="form-group">    
 								<label class="col-md-3 control-label">Status</label>
 								<div class="col-md-9 col-xs-12">
 									<?php $options['Active'] = 'Active'; ?>
@@ -64,7 +56,6 @@
 									<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
-							
 						</div>
 						<div class="col-md-6">
 							<div class="form-group">
@@ -79,14 +70,7 @@
 									<?= $this->Form->select('brand_id',$brands,['class'=>'form-control select','label'=>false,'empty'=>'---Select--']) ?>
 								</div>
 							</div>
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">Sample Request</label>
-								<div class="col-md-9 col-xs-12">
-								<?php $request_options['Yes'] = 'Yes'; ?>
-								<?php $request_options['No'] = 'No'; ?>
-								<?= $this->Form->select('request_for_sample',$request_options,['class'=>'form-control select','label'=>false]) ?>
-								</div>
-							</div>
+							
 							<div class="form-group">
 								<label class="col-md-3 control-label">Description</label>
 								<div class="col-md-9 col-xs-12"> 
@@ -98,33 +82,29 @@
 								<div class="col-md-9 col-xs-12"> 
 								<?= $this->Form->control('item_image',['type'=>'file','label'=>false,'id' => 'item_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>true]) ?>
 								<label id="item_image-error" class="error" for="item_image"></label>
-								
-														
+								</div>
 							</div>
-							
-						</div>
+						
 					</div>
 					<div class="panel-body">    
 					<div class="row">
 						<div class="table-responsive">
 							<table class="table table-bordered main_table">
-								<thead>
-									<tr>
-										<th><?= ('Unit') ?></th>
-										<th><?= ('Quantity Factor') ?></th>
-										<th><?= ('Print Quantity') ?></th>
-										<th><?= ('Print Rate') ?></th>
-										<th><?= ('Discount (%)') ?></th>
-										<th><?= ('Sale Rate') ?></th>
-										<th><?= ('Maximum Quantity') ?></th>
-										<th><?= ('Ready To Sale') ?></th>
-										<th><?= ('Out Of Stock') ?></th>
-										<th><?= ('Status') ?></th>
-										
-										<th  class="actions"><?= __('Actions') ?></th>
-									</tr>
-								</thead>
-								<tbody class="MainTbody">  
+								<tbody class="MainTbody"> 
+								<?php for($i=0; $i<3; $i++) { ?>
+								<tr>
+									<?php for($j=0; $j<3; $j++) {
+											foreach($unitVariations as $unitVariation){ ?>	
+												<td width="5%">
+												<div class="checkbox-material">
+												<?= $this->Form->control('item_variation_master['.$i.'][check]',['type'=>'checkbox','class'=>'form-control unit icheckbox','id'=>'unit','label'=>false,'hidden'=>false]) ?>
+												
+												<?php echo $unitVariation->quantity_variation .' ' .$unitVariation->unit->unit_name ; ?>
+												<?= $this->Form->control('item_variation_master['.$i.'][unit_variation_id]',['type'=>'hidden','class'=>'form-control ','label'=>false,'value'=>$unitVariation->id]) ?>
+												</div>
+												</td>
+									<?php $j++; } } ?>
+											</tr>	<?php $i++; } ?>
 								</tbody>
 							</table>
 						</div>
@@ -210,7 +190,7 @@
 			renameRows();
 		});
 		
-		addMainRow();
+		//addMainRow();
 		function addMainRow(){
 			var tr=$("#sampleTable tbody").html();
 			$(".main_table tbody").append(tr);
