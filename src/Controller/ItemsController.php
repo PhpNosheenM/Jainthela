@@ -139,8 +139,9 @@ class ItemsController extends AppController
         $categories = $this->Items->Categories->find('list')->where(['Categories.city_id'=>$city_id]);
         $brands = $this->Items->Brands->find('list')->where(['Brands.city_id'=>$city_id]);
         $unitVariations = $this->Items->ItemVariationMasters->UnitVariations->find('all')->contain(['Units']);
+		$gstFigures =  $this->Items->GstFigures->find('list');
 		//pr($unitVariations->toArray());exit;
-		$this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities','unitVariations'));
+		$this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities','unitVariations','gstFigures'));
     }
 
     /**
@@ -156,8 +157,9 @@ class ItemsController extends AppController
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('admin_portal');
         $item = $this->Items->get($id, [
-            'contain' => ['ItemVariations']
+            'contain' => ['ItemVariationMasters'=>['UnitVariations']]
         ]);
+		pr($item->toArray()); exit;
         if ($this->request->is(['patch', 'post', 'put'])) {
 			$item_image=$this->request->data['item_image'];
 			$item_error=$item_image['error'];
@@ -198,13 +200,14 @@ class ItemsController extends AppController
 
                 return $this->redirect(['action' => 'index']);
             }
-			pr($item); exit;
+			//spr($item); exit;
             $this->Flash->error(__('The item could not be saved. Please, try again.'));
         }
         $categories = $this->Items->Categories->find('list')->where(['Categories.city_id'=>$city_id]);
         $brands = $this->Items->Brands->find('list')->where(['Brands.city_id'=>$city_id]);
-        $units = $this->Items->ItemVariations->Units->find('list')->where(['Units.city_id'=>$city_id]);
-        $this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities','units'));
+        $unitVariations = $this->Items->ItemVariationMasters->UnitVariations->find('all')->contain(['Units']);
+		$gstFigures =  $this->Items->GstFigures->find('list');
+        $this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities','unitVariations','gstFigures'));
     }
 
     /**

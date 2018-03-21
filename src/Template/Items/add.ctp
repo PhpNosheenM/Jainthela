@@ -88,9 +88,15 @@
 								</div>
 							</div>
 							<div class="form-group">
+								<label class="col-md-3 control-label">GST</label>
+								<div class="col-md-9">                                            
+									<?= $this->Form->select('gst_figure_id',$gstFigures,['class'=>'form-control select','label'=>false, 'data-live-search'=>true]) ?>
+								</div>
+							</div>
+							<div class="form-group">
 								<label class="col-md-3 control-label">Brand</label>
 								<div class="col-md-9">                                            
-									<?= $this->Form->select('brand_id',$brands,['class'=>'form-control select','label'=>false,'empty'=>'---Select--']) ?>
+									<?= $this->Form->select('brand_id',$brands,['class'=>'form-control select','label'=>false, 'data-live-search'=>true,'empty'=>'---Select--']) ?>
 								</div>
 							</div>
 							

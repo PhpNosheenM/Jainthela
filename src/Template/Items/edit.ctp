@@ -55,29 +55,21 @@
 									<?= $this->Form->control('minimum_stock',['class'=>'form-control','placeholder'=>'Minimum Stock','label'=>false]) ?>
 								</div>
 							</div>
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">Out Of Stock</label>
-								<div class="col-md-9 col-xs-12">
-									<?php $out_options['No'] = 'No'; ?>
-									<?php $out_options['Yes'] = 'Yes'; ?>
-								
-								<?= $this->Form->select('out_of_stock',$out_options,['class'=>'form-control select','label'=>false]) ?>
-								</div>
-							</div>
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">Ready To Sale</label>
-								<div class="col-md-9 col-xs-12">
-									<?php $sale_options['No'] = 'No'; ?>
-									<?php $sale_options['Yes'] = 'Yes'; ?>
-								<?= $this->Form->select('ready_to_sale',$sale_options,['class'=>'form-control select','label'=>false]) ?>
-								</div>
-							</div>
+							
 							<div class="form-group">
 								<label class="col-md-3 control-label">Show Section</label>
 								<div class="col-md-9 col-xs-12">
 								<?php $show_options['No'] = 'No'; ?>
 								<?php $show_options['Yes'] = 'Yes'; ?>
 								<?= $this->Form->select('section_show',$show_options,['class'=>'form-control select','label'=>false]) ?></div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">Item Maintain By</label>
+								<div class="col-md-9 col-xs-12">
+									<?php $maintain_options['itemwise'] = 'Item Wise'; ?>
+									<?php $maintain_options['variationwise'] = 'Item Variation Wise'; ?>
+									<?= $this->Form->select('item_maintain_by',$maintain_options,['class'=>'form-control select','label'=>false]) ?>
+								</div>
 							</div>
 							<div class="form-group">                                        
 								<label class="col-md-3 control-label">Status</label>
@@ -97,19 +89,18 @@
 								</div>
 							</div>
 							<div class="form-group">
+								<label class="col-md-3 control-label">GST</label>
+								<div class="col-md-9">                                            
+									<?= $this->Form->select('gst_figure_id',$gstFigures,['class'=>'form-control select','label'=>false, 'data-live-search'=>true]) ?>
+								</div>
+							</div>
+							<div class="form-group">
 								<label class="col-md-3 control-label">Brand</label>
 								<div class="col-md-9">                                            
 									<?= $this->Form->select('brand_id',$brands,['class'=>'form-control select','label'=>false,'empty'=>'---Select--']) ?>
 								</div>
 							</div>
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">Sample Request</label>
-								<div class="col-md-9 col-xs-12">
-								<?php $request_options['Yes'] = 'Yes'; ?>
-								<?php $request_options['No'] = 'No'; ?>
-								<?= $this->Form->select('request_for_sample',$request_options,['class'=>'form-control select','label'=>false]) ?>
-								</div>
-							</div>
+							
 							<div class="form-group">
 								<label class="col-md-3 control-label">Description</label>
 								<div class="col-md-9 col-xs-12"> 
@@ -155,69 +146,25 @@
 					<div class="panel-body">    
 					<div class="row">
 						<div class="table-responsive">
-							<table class="table table-bordered main_table">
-								<thead>
-									<tr>
-										<th><?= ('Unit') ?></th>
-										<th><?= ('Quantity Factor') ?></th>
-										<th><?= ('Print Quantity') ?></th>
-										<th><?= ('Print Rate') ?></th>
-										<th><?= ('Discount (%)') ?></th>
-										<th><?= ('Sale Rate') ?></th>
-										<th><?= ('Maximum Quantity') ?></th>
-										<th><?= ('Ready To Sale') ?></th>
-										<th><?= ('Out Of Stock') ?></th>
-										<th><?= ('Status') ?></th>
-										
-										<th  class="actions"><?= __('Actions') ?></th>
-									</tr>
-								</thead>
+							<table class="table">
+								<?php foreach($item->item_variation_masters as $item_variation_master){ 
+								@$unit_array[]=$item_variation_master->unit_variation_id;
+								 } ?>
 								<tbody class="MainTbody">  
-								<?php foreach($item->item_variations as $item_variation){ //pr($item_variation);exit; ?>
-									<tr class="MainTr">
-										<td  valign="top"> 
-											<?php echo $this->Form->select('unit_id', $units,['class'=>'form-control unit select','label'=>false, 'value'=>$item_variation->unit_id]) ?> 
-										</td>
-										<td width="" valign="top">
-											<?= $this->Form->control('quantity_factor',['class'=>'form-control quantity_factor','label'=>false , 'value'=>$item_variation->quantity_factor]) ?>
-										</td>
-										<td valign="top">
-											<?= $this->Form->control('print_quantity',['class'=>'form-control print_quantity','label'=>false, 'value'=>$item_variation->print_quantity]) ?>
-										</td>
-										<td valign="top">
-											<?= $this->Form->control('print_rate',['class'=>'form-control print_rate','label'=>false, 'value'=>$item_variation->print_rate]) ?>
-										</td>
-										<td valign="top">
-											<?= $this->Form->control('discount_per',['class'=>'form-control discount_per','label'=>false, 'value'=>$item_variation->discount_per]) ?>
-										</td>
-										<td valign="top">
-											<?= $this->Form->control('sales_rate',['class'=>'form-control sales_rate','label'=>false, 'value'=>$item_variation->sales_rate]) ?>
-										</td>
-										<td valign="top">
-											<?= $this->Form->control('maximum_quantity_purchase',['class'=>'form-control maximum_quantity_purchase','label'=>false, 'value'=>$item_variation->maximum_quantity_purchase]) ?>
-										</td>
-										
-										<td valign="top">
-											<?php $sale_options['No'] = 'No'; ?>
-											<?php $sale_options['Yes'] = 'Yes'; ?>
-											<?= $this->Form->select('ready_to_sale',$sale_options,['class'=>'form-control ready_to_sale','label'=>false, 'value'=>$item_variation->ready_to_sale]) ?>
-										</td>
-										<td  valign="top">
-											<?php $out_options['No'] = 'No'; ?>
-											<?php $out_options['Yes'] = 'Yes'; ?>
-											<?= $this->Form->select('out_of_stock',$out_options,['class'=>'form-control out_of_stock','label'=>false, 'value'=>$item_variation->out_of_stock]) ?>
-										</td>
-										<td width="10%" valign="top">
-											<?php $options1['Active'] = 'Active'; ?>
-											<?php $options1['Deactive'] = 'Deactive'; ?>
-															<?= $this->Form->select('status',$options1,['class'=>' form-control status1 ','label'=>false, 'value'=>$item_variation->status]) ?>
-										</td>
-										<td valign="top"  >
-											<a class="btn btn-primary  btn-condensed btn-sm add_row" href="#" role="button" ><i class="fa fa-plus"></i></a>
-											<a class="btn btn-danger  btn-condensed btn-sm delete_row " href="#" role="button" ><i class="fa fa-times"></i></a>
-										</td>
-									</tr>
-								<?php } ?>
+									<?php $i=0; foreach($unitVariations as $unitVariation){ ?>
+										<tr>
+											
+												<td width="5%">
+												<div class="checkbox-material">
+												<?= $this->Form->control('item_variation_masters['.$i.'][check]',['type'=>'checkbox','class'=>'form-control unit icheckbox','id'=>'unit','label'=>false,'hidden'=>false]) ?>
+												</div>
+												</td>
+												<td width="80%"><?php echo $unitVariation->quantity_variation .' ' .$unitVariation->unit->unit_name ; ?>
+												<?= $this->Form->control('item_variation_masters['.$i.'][unit_variation_id]',['type'=>'hidden','class'=>'form-control ','label'=>false,'value'=>$unitVariation->id]) ?>
+												</td>
+											
+											</tr>	<?php $i++; } ?>
+			
 								</tbody>
 							</table>
 						</div>
@@ -236,53 +183,6 @@
 </div>
 
 
-
-<table id="sampleTable" width="100%" style="display:none;">
-	<tbody class="sampleMainTbody">
-		<tr class="MainTr">
-			<td  valign="top"> 
-				<?php echo $this->Form->select('unit_id', $units,['class'=>'form-control unit','label'=>false]) ?> 			</td>
-			<td width="" valign="top">
-				<?= $this->Form->control('quantity_factor',['class'=>'form-control quantity_factor','label'=>false]) ?>
-			</td>
-			<td valign="top">
-				<?= $this->Form->control('print_quantity',['class'=>'form-control print_quantity','label'=>false]) ?>
-			</td>
-			<td valign="top">
-				<?= $this->Form->control('print_rate',['class'=>'form-control print_rate','label'=>false]) ?>
-			</td>
-			<td valign="top">
-				<?= $this->Form->control('discount_per',['class'=>'form-control discount_per','label'=>false]) ?>
-			</td>
-			<td valign="top">
-				<?= $this->Form->control('sales_rate',['class'=>'form-control sales_rate','label'=>false]) ?>
-			</td>
-			<td valign="top">
-				<?= $this->Form->control('maximum_quantity_purchase',['class'=>'form-control maximum_quantity_purchase','label'=>false]) ?>
-			</td>
-			
-			<td valign="top">
-				<?php $sale_options['No'] = 'No'; ?>
-				<?php $sale_options['Yes'] = 'Yes'; ?>
-				<?= $this->Form->select('ready_to_sale',$sale_options,['class'=>'form-control ready_to_sale','label'=>false]) ?>
-			</td>
-			<td  valign="top">
-				<?php $out_options['No'] = 'No'; ?>
-				<?php $out_options['Yes'] = 'Yes'; ?>
-				<?= $this->Form->select('out_of_stock',$out_options,['class'=>'form-control out_of_stock','label'=>false]) ?>
-			</td>
-			<td width="10%" valign="top">
-				<?php $options1['Active'] = 'Active'; ?>
-				<?php $options1['Deactive'] = 'Deactive'; ?>
-								<?= $this->Form->select('status',$options1,['class'=>'status1 form-control  ','label'=>false]) ?>
-			</td>
-			<td valign="top"  >
-				<a class="btn btn-primary  btn-condensed btn-sm add_row" href="#" role="button" ><i class="fa fa-plus"></i></a>
-				<a class="btn btn-danger  btn-condensed btn-sm delete_row " href="#" role="button" ><i class="fa fa-times"></i></a>
-			</td>
-		</tr>
-	</tbody>
-</table>
 <?= $this->Html->script('plugins/fileinput/fileinput.min.js',['block'=>'jsFileInput']) ?>
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
@@ -302,7 +202,7 @@
 			renameRows();
 		});
 		
-		renameRows();
+		//renameRows();
 		function addMainRow(){
 			var tr=$("#sampleTable tbody").html();
 			$(".main_table tbody").append(tr);
