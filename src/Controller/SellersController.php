@@ -144,7 +144,11 @@ class SellersController extends AppController
         $this->set(compact('seller','Cities'));
     }
 	
-
+	public function sellerItemAdd()
+    {
+		
+	}
+	
     /**
      * Edit method
      *
