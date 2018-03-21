@@ -54,6 +54,8 @@ class AppMenusTable extends Table
             'className' => 'AppMenus',
             'foreignKey' => 'parent_id'
         ]);
+		
+		 $this->belongsTo('Categories');
     }
 
     /**
