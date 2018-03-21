@@ -16,7 +16,8 @@ use Cake\ORM\Entity;
  * @property int $rght
  *
  * @property \App\Model\Entity\City $city
- * @property \App\Model\Entity\Category $category
+ * @property \App\Model\Entity\AppMenu $parent_app_menu
+ * @property \App\Model\Entity\AppMenu[] $child_app_menus
  */
 class AppMenu extends Entity
 {
@@ -39,6 +40,7 @@ class AppMenu extends Entity
         'lft' => true,
         'rght' => true,
         'city' => true,
-        'category' => true
+        'parent_app_menu' => true,
+        'child_app_menus' => true
     ];
 }

@@ -21,7 +21,7 @@ class AppMenusController extends AppController
     public function index()
     {
         $this->paginate = [
-            'contain' => ['Cities', 'Categories']
+            'contain' => ['Cities', 'ParentAppMenus']
         ];
         $appMenus = $this->paginate($this->AppMenus);
 
@@ -38,7 +38,7 @@ class AppMenusController extends AppController
     public function view($id = null)
     {
         $appMenu = $this->AppMenus->get($id, [
-            'contain' => ['Cities', 'Categories']
+            'contain' => ['Cities', 'ParentAppMenus', 'ChildAppMenus']
         ]);
 
         $this->set('appMenu', $appMenu);
@@ -62,8 +62,8 @@ class AppMenusController extends AppController
             $this->Flash->error(__('The app menu could not be saved. Please, try again.'));
         }
         $cities = $this->AppMenus->Cities->find('list', ['limit' => 200]);
-        $categories = $this->AppMenus->Categories->find('list', ['limit' => 200]);
-        $this->set(compact('appMenu', 'cities', 'categories'));
+        $parentAppMenus = $this->AppMenus->ParentAppMenus->find('list', ['limit' => 200]);
+        $this->set(compact('appMenu', 'cities', 'parentAppMenus'));
     }
 
     /**
@@ -88,8 +88,8 @@ class AppMenusController extends AppController
             $this->Flash->error(__('The app menu could not be saved. Please, try again.'));
         }
         $cities = $this->AppMenus->Cities->find('list', ['limit' => 200]);
-        //$categories = $this->AppMenus->Categories->find('list', ['limit' => 200]);
-        $this->set(compact('appMenu', 'cities', 'categories'));
+        $parentAppMenus = $this->AppMenus->ParentAppMenus->find('list', ['limit' => 200]);
+        $this->set(compact('appMenu', 'cities', 'parentAppMenus'));
     }
 
     /**

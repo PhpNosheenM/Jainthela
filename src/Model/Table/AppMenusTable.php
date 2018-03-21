@@ -10,8 +10,8 @@ use Cake\Validation\Validator;
  * AppMenus Model
  *
  * @property \App\Model\Table\CitiesTable|\Cake\ORM\Association\BelongsTo $Cities
- * @property |\Cake\ORM\Association\BelongsTo $ParentAppMenus
- * @property |\Cake\ORM\Association\HasMany $ChildAppMenus
+ * @property \App\Model\Table\AppMenusTable|\Cake\ORM\Association\BelongsTo $ParentAppMenus
+ * @property \App\Model\Table\AppMenusTable|\Cake\ORM\Association\HasMany $ChildAppMenus
  *
  * @method \App\Model\Entity\AppMenu get($primaryKey, $options = [])
  * @method \App\Model\Entity\AppMenu newEntity($data = null, array $options = [])
