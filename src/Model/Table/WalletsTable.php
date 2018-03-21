@@ -73,33 +73,6 @@ class WalletsTable extends Table
         $validator
             ->integer('id')
             ->allowEmpty('id', 'create');
-
-        $validator
-            ->decimal('add_amount')
-            ->requirePresence('add_amount', 'create')
-            ->notEmpty('add_amount');
-
-        $validator
-            ->decimal('used_amount')
-            ->requirePresence('used_amount', 'create')
-            ->notEmpty('used_amount');
-
-        $validator
-            ->scalar('cancel_to_wallet_online')
-            ->maxLength('cancel_to_wallet_online', 30)
-            ->requirePresence('cancel_to_wallet_online', 'create')
-            ->notEmpty('cancel_to_wallet_online');
-
-        $validator
-            ->scalar('narration')
-            ->requirePresence('narration', 'create')
-            ->notEmpty('narration');
-
-        $validator
-            ->dateTime('created_on')
-            ->requirePresence('created_on', 'create')
-            ->notEmpty('created_on');
-
         return $validator;
     }
 
@@ -116,7 +89,7 @@ class WalletsTable extends Table
         $rules->add($rules->existsIn(['order_id'], 'Orders'));
         $rules->add($rules->existsIn(['plan_id'], 'Plans'));
         $rules->add($rules->existsIn(['promotion_id'], 'Promotions'));
-        $rules->add($rules->existsIn(['return_order_id'], 'ReturnOrders'));
+      //  $rules->add($rules->existsIn(['return_order_id'], 'ReturnOrders'));
 
         return $rules;
     }

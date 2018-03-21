@@ -16,6 +16,7 @@ use Cake\ORM\Entity;
  * @property string $cancel_to_wallet_online
  * @property string $narration
  * @property int $return_order_id
+ * @property string $amount_type
  * @property \Cake\I18n\FrozenTime $created_on
  *
  * @property \App\Model\Entity\Customer $customer
@@ -46,6 +47,7 @@ class Wallet extends Entity
         'cancel_to_wallet_online' => true,
         'narration' => true,
         'return_order_id' => true,
+        'amount_type' => true,
         'created_on' => true,
         'customer' => true,
         'order' => true,
