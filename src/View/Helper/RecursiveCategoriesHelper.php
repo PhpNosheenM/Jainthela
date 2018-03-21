@@ -24,7 +24,7 @@ use UnexpectedValueException;
  */
 class RecursiveCategoriesHelper extends Helper
 {
-   function categories($array) {
+   function categoryItems($array) {
 
     if (count($array)) {
             echo "<ul>";
@@ -32,7 +32,7 @@ class RecursiveCategoriesHelper extends Helper
 
                     echo "<li id=\"".$vals['id']."\">".$vals['name'];
                     if (count($vals['children'])) {
-                            $this->categories($vals['children']);
+                            $this->categoryItems($vals['children']);
                     }
 					else
 					{
