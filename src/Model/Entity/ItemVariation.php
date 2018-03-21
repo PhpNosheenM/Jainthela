@@ -51,6 +51,7 @@ class ItemVariation extends Entity
         'status' => true,
         'item' => true,
         'unit' => true,
+        'commission' => true,
         'order_details' => true
     ];
 }

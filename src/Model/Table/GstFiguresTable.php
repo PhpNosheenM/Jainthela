@@ -52,6 +52,9 @@ class GstFiguresTable extends Table
         $this->hasMany('SalesInvoiceRows', [
             'foreignKey' => 'gst_figure_id'
         ]);
+		$this->hasMany('Items', [
+            'foreignKey' => 'gst_figure_id'
+        ]);
     }
 
     /**

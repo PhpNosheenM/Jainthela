@@ -120,8 +120,8 @@
 				<?= $this->Form->control('taxable_value',['class'=>'form-control taxable_value','label'=>false]) ?>
 			</td>
 			<td valign="top">
-				<?= $this->Form->control('item_gst_figure_id',['type'=>'hidden','class'=>'form-control item_gst_figure_id','label'=>false]) ?>
-				<?= $this->Form->select('gst_percentage',$GstFigures,['class'=>'form-control gst_percentage','label'=>false]) ?>
+				
+				<?= $this->Form->select('gst_percentage',$GstFigures,['class'=>'form-control gst_percentage','label'=>false,'readonly']) ?>
 			</td>
 			<td valign="top">
 				<?= $this->Form->control('gst_value',['class'=>'form-control gst_value','label'=>false]) ?>
@@ -199,13 +199,18 @@
 		$(document).on('change','.gst_percentage',function(){
 			calculation();
 		});
+		$(document).on('change','.item',function(){
+			var gst_figure_id=$(this).find('option:selected', this).attr('gst_figure_id');
+			$(this).closest('tr').find('.gst_percentage').val(gst_figure_id);
+		});
 		
 		function renameRows(){ 
 				var i=0; 
 				$('.main_table tbody tr').each(function(){
 						$(this).attr('row_no',i);
 						$(this).find('td:nth-child(1)').html(++i); i--;
-						$(this).find('select.item ').attr({name:'purchase_invoice_rows['+i+'][item_id]',id:'purchase_invoice_rows['+i+'][item_id]'});
+						$(this).find('input.item_id ').attr({name:'purchase_invoice_rows['+i+'][item_id]',id:'purchase_invoice_rows['+i+'][item_id]'});
+						$(this).find('select.item ').attr({name:'purchase_invoice_rows['+i+'][item_variation_id]',id:'purchase_invoice_rows['+i+'][item_variation_id]'});
 						$(this).find('.quantity ').attr({name:'purchase_invoice_rows['+i+'][quantity]',id:'purchase_invoice_rows['+i+'][quantity]'});
 						$(this).find('.rate ').attr({name:'purchase_invoice_rows['+i+'][rate]',id:'purchase_invoice_rows['+i+'][rate]'});
 						
@@ -217,6 +222,7 @@
 				var qty=$(this).find('.quantity').val();
 				var rate=$(this).find('.rate').val();
 				var quantity_factor=$(this).find('option:selected', this).attr('quantity_factor');
+				var commission=$(this).find('option:selected', this).attr('commission');
 				var unit=$(this).find('option:selected', this).attr('unit');
 				var total_qty=quantity_factor*qty;
 				$(this).find('.itemQty').html(total_qty +' '+ unit);
@@ -234,10 +240,15 @@
 				$(this).find('.gst_value').val(gst_rate);
 				var net_amount=gst_rate+taxable_value;
 				var net_amount1=round(net_amount,2);
-				
-				 var per_item_purchase_rate=net_amount1/qty;
 				$(this).find('.net_amount').val(net_amount1);
+				
+				var per_item_purchase_rate=net_amount1/qty;
 				$(this).find('.purchase_rate').val(per_item_purchase_rate);
+				
+				var commission_rate=(per_item_purchase_rate*commission)/100;
+				var per_item_sales_rate=per_item_purchase_rate+commission_rate;
+				$(this).find('.sales_rate').val(per_item_sales_rate);
+				
 			});
 		}
 		
