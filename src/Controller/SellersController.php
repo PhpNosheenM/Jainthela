@@ -12,7 +12,6 @@ use App\Controller\AppController;
  */
 class SellersController extends AppController
 {
-
     /**
      * Index method
      *
@@ -138,13 +137,11 @@ class SellersController extends AppController
 			//pr($seller); exit;
             $this->Flash->error(__('The seller could not be saved. Please, try again.'));
         }
-		$categories = $this->Sellers->Categories->find('threaded')->toArray();
+		//$categories = $this->Sellers->Categories->find('threaded')->contain(['Items']);
 		
-		/* pr($categories);
-		exit; */
 		$Cities = $this->Sellers->Cities->find('list');
         
-        $this->set(compact('seller','Cities','categories'));
+        $this->set(compact('seller','Cities'));
     }
 	
 

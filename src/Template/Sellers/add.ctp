@@ -9,10 +9,7 @@
 					<h3 class="panel-title"><strong>Seller</strong></h3>
 				</div>
 			
-				<div class="panel-body">   
-<div class="row">
-<?= $this->RecursiveCategories->categories($categories) ?>
-</div>				
+				<div class="panel-body">   			
 					<div class="row">
 						<div class="col-md-6">
 							<div class="form-group">
@@ -170,30 +167,6 @@
 										</div>
 								</div>
 							</div>
-							
-							<div class="row">		
-								<div class="col-md-6">
-									<div class="window" style="margin:auto;">
-											<table width="100%">
-											<?php $i=0; foreach($categories as $Category){ ?>
-											<tr>
-											
-												<td width="15%">
-												<div class="checkbox-material">
-												<?= $this->Form->control('seller_items['.$i.'][check]',['type'=>'checkbox','class'=>'category','id'=>'category','placeholder'=>'Item Name','label'=>false,'hidden'=>false]) ?>
-												</div>
-												</td>
-												<td width="60%"><a class="accordion-toggle accordion-toggle-styled collapsed " data-toggle="collapse" data-parent="#accordion0" href="#collapse_<?php echo $Category->id;?>" aria-expanded="false"><?php echo $Category->name; ?></a>
-												<?= $this->Form->control('seller_items['.$i.'][category_id]',['type'=>'hidden','class'=>'form-control ','placeholder'=>'Item Name','label'=>false,'value'=>$Category->id]) ?>
-												</td>
-												<td><?= $this->Form->control('seller_items['.$i.'][commission_percentage]',['class'=>'form-control','placeholder'=>'Commission %','label'=>false]) ?></td>
-											</tr>
-											<?php } ?>	
-										</table>
-										</div>
-								</div>
-							</div>
-							
 							<div class="panel-footer">
 								<center>
 									<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>

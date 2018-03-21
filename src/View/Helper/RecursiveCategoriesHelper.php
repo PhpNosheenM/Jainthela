@@ -13,7 +13,6 @@
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 namespace Cake\View\Helper;
-
 use Cake\View\Helper;
 use UnexpectedValueException;
 
@@ -28,16 +27,23 @@ class RecursiveCategoriesHelper extends Helper
    function categories($array) {
 
     if (count($array)) {
-            echo "\n<ul>\n";
+            echo "<ul>";
         foreach ($array as $vals) {
 
                     echo "<li id=\"".$vals['id']."\">".$vals['name'];
                     if (count($vals['children'])) {
-                            $this->RecursiveCategories->categories($vals['children']);
+                            $this->categories($vals['children']);
                     }
-                    echo "</li>\n";
+					else
+					{
+						foreach($vals['items'] as $item)
+						{
+							echo "<li id=\"".$item['id']."\">".$item['name'];echo "</li>";
+						}
+					}
+                    echo "</li>";
         }
-            echo "</ul>\n";
+            echo "</ul>";
     }
    }
 
