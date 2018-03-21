@@ -88,7 +88,7 @@ Router::prefix('api', function ($routes) {
     $routes->resources('Faqs');
     $routes->resources('AwsFiles');
     $routes->resources('AppMenus');
-
+    $routes->resources('TermConditions');
 
     $routes->fallbacks('InflectedRoute');
 
