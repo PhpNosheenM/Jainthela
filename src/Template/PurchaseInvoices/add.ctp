@@ -64,7 +64,7 @@
 										<th rowspan="2" style="text-align:left;width:200px;"><label>Item<label></td>
 										
 										<th rowspan="2" style="text-align:center; "><label>Quantity<label></td>
-										<th rowspan="2" style="text-align:center;width:100px;"><label>Rate<label></td>
+										<th rowspan="2" style="text-align:center;width:110px;"><label>Rate<label></td>
 										
 										<th rowspan="2" style="text-align:center;"><label>Taxable Value<label></td>
 										<th colspan="2" style="text-align:center;"><label id="gstDisplay">GST<label></th>
@@ -235,7 +235,9 @@
 				var net_amount=gst_rate+taxable_value;
 				var net_amount1=round(net_amount,2);
 				
+				 var per_item_purchase_rate=net_amount1/qty;
 				$(this).find('.net_amount').val(net_amount1);
+				$(this).find('.purchase_rate').val(per_item_purchase_rate);
 			});
 		}
 		
