@@ -24,7 +24,7 @@
     </head>
     <body>
         <!-- START PAGE CONTAINER -->
-        <div class="page-container page-navigation-top-fixed">
+        <div class="page-container page-navigation-top-fixed page-navigation-toggled page-container-wide">
             
             <!-- START PAGE SIDEBAR -->
             <div class="page-sidebar page-sidebar-fixed scroll">
@@ -39,7 +39,11 @@
                 
                 <!-- START X-NAVIGATION VERTICAL -->
                 <ul class="x-navigation x-navigation-horizontal x-navigation-panel">
-                  
+					<!--  TOGGLE NAVIGATION  -->
+					<li class="xn-icon-button">
+						<a href="#" class="x-navigation-minimize"><span class="fa fa-indent"></span></a>
+					</li>
+					<!--  End TOGGLE NAVIGATION  -->
                     <!-- POWER OFF -->
                     <li class="xn-icon-button pull-right last">
                         <a href="#"><span class="fa fa-power-off"></span></a>
