@@ -8,6 +8,10 @@
     <ul class="side-nav">
         <li class="heading"><?= __('Actions') ?></li>
         <li><?= $this->Html->link(__('New App Menu'), ['action' => 'add']) ?></li>
+        <li><?= $this->Html->link(__('List Cities'), ['controller' => 'Cities', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New City'), ['controller' => 'Cities', 'action' => 'add']) ?></li>
+        <li><?= $this->Html->link(__('List Categories'), ['controller' => 'Categories', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New Category'), ['controller' => 'Categories', 'action' => 'add']) ?></li>
     </ul>
 </nav>
 <div class="appMenus index large-9 medium-8 columns content">
@@ -20,6 +24,9 @@
                 <th scope="col"><?= $this->Paginator->sort('link') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('city_id') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('status') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('parent_id') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('lft') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('rght') ?></th>
                 <th scope="col" class="actions"><?= __('Actions') ?></th>
             </tr>
         </thead>
@@ -29,8 +36,11 @@
                 <td><?= $this->Number->format($appMenu->id) ?></td>
                 <td><?= h($appMenu->name) ?></td>
                 <td><?= h($appMenu->link) ?></td>
-                <td><?= $this->Number->format($appMenu->city_id) ?></td>
+                <td><?= $appMenu->has('city') ? $this->Html->link($appMenu->city->name, ['controller' => 'Cities', 'action' => 'view', $appMenu->city->id]) : '' ?></td>
                 <td><?= $this->Number->format($appMenu->status) ?></td>
+                <td><?= $this->Number->format($appMenu->parent_id) ?></td>
+                <td><?= $this->Number->format($appMenu->lft) ?></td>
+                <td><?= $this->Number->format($appMenu->rght) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['action' => 'view', $appMenu->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $appMenu->id]) ?>

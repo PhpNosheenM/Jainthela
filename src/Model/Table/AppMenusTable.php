@@ -9,7 +9,9 @@ use Cake\Validation\Validator;
 /**
  * AppMenus Model
  *
- * @property |\Cake\ORM\Association\BelongsTo $Cities
+ * @property \App\Model\Table\CitiesTable|\Cake\ORM\Association\BelongsTo $Cities
+ * @property |\Cake\ORM\Association\BelongsTo $ParentAppMenus
+ * @property |\Cake\ORM\Association\HasMany $ChildAppMenus
  *
  * @method \App\Model\Entity\AppMenu get($primaryKey, $options = [])
  * @method \App\Model\Entity\AppMenu newEntity($data = null, array $options = [])
@@ -18,6 +20,8 @@ use Cake\Validation\Validator;
  * @method \App\Model\Entity\AppMenu patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
  * @method \App\Model\Entity\AppMenu[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\AppMenu findOrCreate($search, callable $callback = null, $options = [])
+ *
+ * @mixin \Cake\ORM\Behavior\TreeBehavior
  */
 class AppMenusTable extends Table
 {
@@ -36,11 +40,20 @@ class AppMenusTable extends Table
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
+        $this->addBehavior('Tree');
+
         $this->belongsTo('Cities', [
             'foreignKey' => 'city_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('Categories');
+        $this->belongsTo('ParentAppMenus', [
+            'className' => 'AppMenus',
+            'foreignKey' => 'parent_id'
+        ]);
+        $this->hasMany('ChildAppMenus', [
+            'className' => 'AppMenus',
+            'foreignKey' => 'parent_id'
+        ]);
     }
 
     /**
@@ -84,6 +97,7 @@ class AppMenusTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['city_id'], 'Cities'));
+        $rules->add($rules->existsIn(['parent_id'], 'ParentAppMenus'));
 
         return $rules;
     }

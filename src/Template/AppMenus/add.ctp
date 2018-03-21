@@ -8,6 +8,10 @@
     <ul class="side-nav">
         <li class="heading"><?= __('Actions') ?></li>
         <li><?= $this->Html->link(__('List App Menus'), ['action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('List Cities'), ['controller' => 'Cities', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New City'), ['controller' => 'Cities', 'action' => 'add']) ?></li>
+        <li><?= $this->Html->link(__('List Categories'), ['controller' => 'Categories', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New Category'), ['controller' => 'Categories', 'action' => 'add']) ?></li>
     </ul>
 </nav>
 <div class="appMenus form large-9 medium-8 columns content">
@@ -17,8 +21,11 @@
         <?php
             echo $this->Form->control('name');
             echo $this->Form->control('link');
-            echo $this->Form->control('city_id');
+            echo $this->Form->control('city_id', ['options' => $cities]);
             echo $this->Form->control('status');
+            echo $this->Form->control('parent_id');
+            echo $this->Form->control('lft');
+            echo $this->Form->control('rght');
         ?>
     </fieldset>
     <?= $this->Form->button(__('Submit')) ?>

@@ -11,6 +11,12 @@ use Cake\ORM\Entity;
  * @property string $link
  * @property int $city_id
  * @property int $status
+ * @property int $parent_id
+ * @property int $lft
+ * @property int $rght
+ *
+ * @property \App\Model\Entity\City $city
+ * @property \App\Model\Entity\Category $category
  */
 class AppMenu extends Entity
 {
@@ -28,6 +34,11 @@ class AppMenu extends Entity
         'name' => true,
         'link' => true,
         'city_id' => true,
-        'status' => true
+        'status' => true,
+        'parent_id' => true,
+        'lft' => true,
+        'rght' => true,
+        'city' => true,
+        'category' => true
     ];
 }
