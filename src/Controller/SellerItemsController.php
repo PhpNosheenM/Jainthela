@@ -51,6 +51,10 @@ class SellerItemsController extends AppController
      */
     public function add()
     {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id');
+		$this->viewBuilder()->layout('admin_portal');
         $sellerItem = $this->SellerItems->newEntity();
         if ($this->request->is('post')) {
             $sellerItem = $this->SellerItems->patchEntity($sellerItem, $this->request->getData());
@@ -62,7 +66,7 @@ class SellerItemsController extends AppController
             $this->Flash->error(__('The seller item could not be saved. Please, try again.'));
         }
         $items = $this->SellerItems->Items->find('list', ['limit' => 200]);
-        $categories = $this->SellerItems->Categories->find('list', ['limit' => 200]);
+        $categories = $this->SellerItems->Categories->find('threaded')->contain(['Items']);
         $sellers = $this->SellerItems->Sellers->find('list', ['limit' => 200]);
         $this->set(compact('sellerItem', 'items', 'categories', 'sellers'));
     }
