@@ -55,6 +55,11 @@ class ItemsTable extends Table
             'foreignKey' => 'category_id',
             'joinType' => 'INNER'
         ]);
+		
+		 $this->belongsTo('GstFigures', [
+            'foreignKey' => 'gst_figure_id',
+            'joinType' => 'INNER'
+        ]);
         $this->belongsTo('Brands', [
             'foreignKey' => 'brand_id',
             'joinType' => 'Left'
