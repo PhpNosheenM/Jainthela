@@ -38,10 +38,10 @@ class AppMenusController extends AppController
              if(!empty($menuData->toArray()))
              {
 				// pr($menuData->toArray());
-				
+
 				array_push($dynamic,array("Menu"=>$menuData));
-				
-             
+
+
                  $Categories = $this->AppMenus->Categories->find()->where(['city_id'=>$city_id,'section_show'=>'Yes','status'=>'Active'])->contain(['ChildCategories']);
 				 //$cat=array("ff"=>$Categories->toArray());
               array_push($dynamic,array("Shop By Category"=>$Categories));
