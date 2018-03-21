@@ -42,7 +42,7 @@
 	</div>                    	
 </div>
 <?php
-echo $js='
+$js='
 		$(document).on("change",".check_all",function(){
 			if($(this).is(":checked"))
 			{
