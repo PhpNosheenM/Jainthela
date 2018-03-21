@@ -144,15 +144,7 @@ class SellersController extends AppController
         $this->set(compact('seller','Cities'));
     }
 	
-	public function sellerItemAdd()
-    {
-		$user_id=$this->Auth->User('id');
-		$city_id=$this->Auth->User('city_id'); 
-		$location_id=$this->Auth->User('location_id'); 
-		$this->viewBuilder()->layout('admin_portal');
-        $seller = $this->SellerItems->newEntity();
-	}
-	
+
     /**
      * Edit method
      *
