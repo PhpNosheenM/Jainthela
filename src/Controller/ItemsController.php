@@ -80,6 +80,7 @@ class ItemsController extends AppController
         if ($this->request->is('post')) {
 			$item_image=$this->request->data['item_image'];
 			$item_error=$item_image['error'];
+			$item_variation_masters=$this->request->data['item_variation_masters'];
             $item = $this->Items->patchEntity($item, $this->request->getData());
 			
 			if(empty($item_error))
@@ -87,10 +88,10 @@ class ItemsController extends AppController
 				$item_ext=explode('/',$item_image['type']);
 				$item->item_image='item'.time().'.'.$item_ext[1];
 			}
-			//pr($item);exit;
+			
 			$item->city_id=$city_id;
 			$item->created_by=$user_id;
-			//pr($item); exit;
+			
             if ($item_data=$this->Items->save($item)) { 
 				if(empty($item_error))
 				{
@@ -115,6 +116,18 @@ class ItemsController extends AppController
 					$file = new File(WWW_ROOT . $destination_url, false, 0777);
 					$file->delete();
 				}
+				
+				foreach($item_variation_masters as $item_variation_master){
+					if($item_variation_master['check']==1){
+						$ItemVariationMaster = $this->Items->ItemVariationMasters->newEntity();
+						$ItemVariationMaster->item_id = $item->id;
+						$ItemVariationMaster->unit_variation_id = $item_variation_master['unit_variation_id'];
+						$ItemVariationMaster->created_by = $user_id;
+						$ItemVariationMaster->status ="Active";
+						$this->Items->ItemVariationMasters->save($ItemVariationMaster);
+						//pr($SellerItem); exit;
+					}
+				}
 				//pr($item);exit;
                 $this->Flash->success(__('The item has been saved.'));
 
@@ -125,11 +138,10 @@ class ItemsController extends AppController
         }
         $categories = $this->Items->Categories->find('list')->where(['Categories.city_id'=>$city_id]);
         $brands = $this->Items->Brands->find('list')->where(['Brands.city_id'=>$city_id]);
-        $unit1 = $this->Items->ItemVariations->UnitVariations->find();
-		
-			
-		
-		 $this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities','units'));
+        $unitVariations = $this->Items->ItemVariationMasters->UnitVariations->find('all')->contain(['Units']);
+		$gstFigures =  $this->Items->GstFigures->find('list');
+		//pr($unitVariations->toArray());exit;
+		$this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities','unitVariations','gstFigures'));
     }
 
     /**
@@ -145,8 +157,9 @@ class ItemsController extends AppController
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('admin_portal');
         $item = $this->Items->get($id, [
-            'contain' => ['ItemVariations']
+            'contain' => ['ItemVariationMasters'=>['UnitVariations']]
         ]);
+		pr($item->toArray()); exit;
         if ($this->request->is(['patch', 'post', 'put'])) {
 			$item_image=$this->request->data['item_image'];
 			$item_error=$item_image['error'];
@@ -187,13 +200,14 @@ class ItemsController extends AppController
 
                 return $this->redirect(['action' => 'index']);
             }
-			pr($item); exit;
+			//spr($item); exit;
             $this->Flash->error(__('The item could not be saved. Please, try again.'));
         }
         $categories = $this->Items->Categories->find('list')->where(['Categories.city_id'=>$city_id]);
         $brands = $this->Items->Brands->find('list')->where(['Brands.city_id'=>$city_id]);
-        $units = $this->Items->ItemVariations->Units->find('list')->where(['Units.city_id'=>$city_id]);
-        $this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities','units'));
+        $unitVariations = $this->Items->ItemVariationMasters->UnitVariations->find('all')->contain(['Units']);
+		$gstFigures =  $this->Items->GstFigures->find('list');
+        $this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities','unitVariations','gstFigures'));
     }
 
     /**

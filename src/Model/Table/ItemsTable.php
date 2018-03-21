@@ -54,17 +54,26 @@ class ItemsTable extends Table
         $this->belongsTo('Categories', [
             'foreignKey' => 'category_id',
             'joinType' => 'INNER'
+<<<<<<< HEAD
         ]);
 		
 		 $this->belongsTo('GstFigures', [
             'foreignKey' => 'gst_figure_id',
             'joinType' => 'INNER'
         ]);
+=======
+        ])->setConditions(['Categories.status' => 'Active']);
+		
+>>>>>>> 6ad956920cdf424e30e80fd3185c0a1bc6d87670
         $this->belongsTo('Brands', [
             'foreignKey' => 'brand_id',
             'joinType' => 'Left'
         ]);
 
+		$this->belongsTo('GstFigures', [
+            'foreignKey' => 'gst_figure_id',
+            'joinType' => 'INNER'
+        ]);
         $this->belongsTo('Admins', [
             'foreignKey' => 'admin_id',
             'joinType' => 'INNER'
@@ -89,7 +98,7 @@ class ItemsTable extends Table
         $this->hasMany('GrnRows', [
             'foreignKey' => 'item_id'
         ]);
-        $this->hasMany('ItemVariations', [
+        $this->hasMany('ItemVariationMasters', [
             'foreignKey' => 'item_id',
 			'saveStrategy'=>'replace'
         ]);

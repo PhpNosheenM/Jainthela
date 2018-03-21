@@ -39,7 +39,7 @@
 									foreach($childrens->children as $children_two):
 										?>
 										<li>
-											<?= $this->Html->link('<span class="'.$children_two->icon.'"></span> <span class="xn-text">'.$children_two->name.'</span>',array('controller'=>$children_two->controller,'action'=>$children_two->action),['escape'=>false]) ?>
+											<?= $this->Html->link('<span class="'.$children_two->icon.'"></span> <span class="">'.$children_two->name.'</span>',array('controller'=>$children_two->controller,'action'=>$children_two->action),['escape'=>false]) ?>
 										<li>
 										<?php
 									endforeach;
@@ -52,7 +52,7 @@
 						{
 							?>
 							<li>
-								<?= $this->Html->link('<span class="'.$childrens->icon.'"></span> <span class="xn-text">'.$childrens->name.'</span>',array('controller'=>$childrens->controller,'action'=>$childrens->action),['escape'=>false]) ?>
+								<?= $this->Html->link('<span class="'.$childrens->icon.'"></span> <span class="">'.$childrens->name.'</span>',array('controller'=>$childrens->controller,'action'=>$childrens->action),['escape'=>false]) ?>
 							<li>
 							<?php
 						}

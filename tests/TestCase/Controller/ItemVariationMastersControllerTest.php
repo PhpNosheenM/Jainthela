@@ -1,22 +1,14 @@
 <?php
-namespace App\Test\TestCase\Model\Table;
+namespace App\Test\TestCase\Controller;
 
-use App\Model\Table\SellerItemsTable;
-use Cake\ORM\TableRegistry;
-use Cake\TestSuite\TestCase;
+use App\Controller\ItemVariationMastersController;
+use Cake\TestSuite\IntegrationTestCase;
 
 /**
- * App\Model\Table\SellerItemsTable Test Case
+ * App\Controller\ItemVariationMastersController Test Case
  */
-class SellerItemsTableTest extends TestCase
+class ItemVariationMastersControllerTest extends IntegrationTestCase
 {
-
-    /**
-     * Test subject
-     *
-     * @var \App\Model\Table\SellerItemsTable
-     */
-    public $SellerItems;
 
     /**
      * Fixtures
@@ -24,7 +16,7 @@ class SellerItemsTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'app.seller_items',
+        'app.item_variation_masters',
         'app.items',
         'app.categories',
         'app.cities',
@@ -51,10 +43,7 @@ class SellerItemsTableTest extends TestCase
         'app.admins',
         'app.roles',
         'app.plans',
-        'app.wallets',
-        'app.orders',
         'app.promotions',
-        'app.return_orders',
         'app.units',
         'app.combo_offer_details',
         'app.item_variations',
@@ -65,9 +54,11 @@ class SellerItemsTableTest extends TestCase
         'app.drivers',
         'app.grns',
         'app.journal_vouchers',
+        'app.orders',
         'app.payments',
         'app.purchase_invoices',
         'app.sellers',
+        'app.seller_items',
         'app.seller_ratings',
         'app.reference_details',
         'app.suppliers',
@@ -90,6 +81,7 @@ class SellerItemsTableTest extends TestCase
         'app.purchase_return_rows',
         'app.purchase_vouchers',
         'app.sales_vouchers',
+        'app.wallets',
         'app.delivery_charges',
         'app.delivery_times',
         'app.supplier_areas',
@@ -97,63 +89,57 @@ class SellerItemsTableTest extends TestCase
         'app.item_active',
         'app.brands',
         'app.grn_rows',
-        'app.item_variation_masters',
         'app.items_variations',
         'app.home_screens',
-        'app.express_deliveries',
-        'app.seller_item_variations'
+        'app.express_deliveries'
     ];
 
     /**
-     * setUp method
+     * Test index method
      *
      * @return void
      */
-    public function setUp()
-    {
-        parent::setUp();
-        $config = TableRegistry::exists('SellerItems') ? [] : ['className' => SellerItemsTable::class];
-        $this->SellerItems = TableRegistry::get('SellerItems', $config);
-    }
-
-    /**
-     * tearDown method
-     *
-     * @return void
-     */
-    public function tearDown()
-    {
-        unset($this->SellerItems);
-
-        parent::tearDown();
-    }
-
-    /**
-     * Test initialize method
-     *
-     * @return void
-     */
-    public function testInitialize()
+    public function testIndex()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 
     /**
-     * Test validationDefault method
+     * Test view method
      *
      * @return void
      */
-    public function testValidationDefault()
+    public function testView()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 
     /**
-     * Test buildRules method
+     * Test add method
      *
      * @return void
      */
-    public function testBuildRules()
+    public function testAdd()
+    {
+        $this->markTestIncomplete('Not implemented yet.');
+    }
+
+    /**
+     * Test edit method
+     *
+     * @return void
+     */
+    public function testEdit()
+    {
+        $this->markTestIncomplete('Not implemented yet.');
+    }
+
+    /**
+     * Test delete method
+     *
+     * @return void
+     */
+    public function testDelete()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }

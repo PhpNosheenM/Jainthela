@@ -1,22 +1,22 @@
 <?php
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\SellerItemsTable;
+use App\Model\Table\ItemVariationMastersTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\SellerItemsTable Test Case
+ * App\Model\Table\ItemVariationMastersTable Test Case
  */
-class SellerItemsTableTest extends TestCase
+class ItemVariationMastersTableTest extends TestCase
 {
 
     /**
      * Test subject
      *
-     * @var \App\Model\Table\SellerItemsTable
+     * @var \App\Model\Table\ItemVariationMastersTable
      */
-    public $SellerItems;
+    public $ItemVariationMasters;
 
     /**
      * Fixtures
@@ -24,7 +24,7 @@ class SellerItemsTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'app.seller_items',
+        'app.item_variation_masters',
         'app.items',
         'app.categories',
         'app.cities',
@@ -51,10 +51,7 @@ class SellerItemsTableTest extends TestCase
         'app.admins',
         'app.roles',
         'app.plans',
-        'app.wallets',
-        'app.orders',
         'app.promotions',
-        'app.return_orders',
         'app.units',
         'app.combo_offer_details',
         'app.item_variations',
@@ -65,9 +62,11 @@ class SellerItemsTableTest extends TestCase
         'app.drivers',
         'app.grns',
         'app.journal_vouchers',
+        'app.orders',
         'app.payments',
         'app.purchase_invoices',
         'app.sellers',
+        'app.seller_items',
         'app.seller_ratings',
         'app.reference_details',
         'app.suppliers',
@@ -90,6 +89,7 @@ class SellerItemsTableTest extends TestCase
         'app.purchase_return_rows',
         'app.purchase_vouchers',
         'app.sales_vouchers',
+        'app.wallets',
         'app.delivery_charges',
         'app.delivery_times',
         'app.supplier_areas',
@@ -97,11 +97,9 @@ class SellerItemsTableTest extends TestCase
         'app.item_active',
         'app.brands',
         'app.grn_rows',
-        'app.item_variation_masters',
         'app.items_variations',
         'app.home_screens',
-        'app.express_deliveries',
-        'app.seller_item_variations'
+        'app.express_deliveries'
     ];
 
     /**
@@ -112,8 +110,8 @@ class SellerItemsTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::exists('SellerItems') ? [] : ['className' => SellerItemsTable::class];
-        $this->SellerItems = TableRegistry::get('SellerItems', $config);
+        $config = TableRegistry::exists('ItemVariationMasters') ? [] : ['className' => ItemVariationMastersTable::class];
+        $this->ItemVariationMasters = TableRegistry::get('ItemVariationMasters', $config);
     }
 
     /**
@@ -123,7 +121,7 @@ class SellerItemsTableTest extends TestCase
      */
     public function tearDown()
     {
-        unset($this->SellerItems);
+        unset($this->ItemVariationMasters);
 
         parent::tearDown();
     }

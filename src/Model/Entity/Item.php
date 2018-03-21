@@ -70,6 +70,8 @@ class Item extends Entity
         'next_day_requirement' => true,
         'request_for_sample' => true,
         'default_grade' => true,
+		'gst_figure_id' => true,
+		'item_maintain_by' => true,
         'tax' => true,
         'created_on' => true,
         'edited_on' => true,
