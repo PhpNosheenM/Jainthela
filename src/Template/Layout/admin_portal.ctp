@@ -110,8 +110,7 @@
 
 <script>
 
-$(document).ready(function() {  
-		round();
+		
 		function round(value, exp) { 
 		  if (typeof exp === 'undefined' || +exp === 0)
 			return Math.round(value);
@@ -130,6 +129,5 @@ $(document).ready(function() {
 		  value = value.toString().split('e');
 		  return +(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp));
 		}
-});
 
 </script>

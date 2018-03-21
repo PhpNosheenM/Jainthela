@@ -139,8 +139,12 @@ class PurchaseInvoicesController extends AppController
 					
 				} */
 		
-	//pr($LocationData); exit;
-        $GstFigures = $this->PurchaseInvoices->GstFigures->find('list');
+
+        $GstFigures1 = $this->PurchaseInvoices->GstFigures->find();
+		$GstFigures=array();
+				foreach($GstFigures1 as $data){
+					$GstFigures[]=['text' => $data->name,'value' => $data->id,'tax_percentage' => $data->tax_percentage];
+				}
         $this->set(compact('purchaseInvoice', 'locations', 'partyOptions', 'Accountledgers', 'items','GstFigures','voucher_no','LocationData'));
     }
 
@@ -159,7 +163,7 @@ class PurchaseInvoicesController extends AppController
 		foreach($Sellertem as $data){
 		//pr(@$data->item->item_variations[0]->unit_variation); 
 			$merge=$data->item->name.'('.@$data->item->item_variations[0]->unit_variation->convert_unit_qty.'.'.@$data->item->item_variations[0]->unit_variation->unit->print_unit.')';
-			$items[]=['text' => $merge,'value' => $data->id,'item_id'=>$data->item->id,'quantity_factor'=>@$data->item->item_variations[0]->unit_variation->convert_unit_qty];
+			$items[]=['text' => $merge,'value' => $data->id,'item_id'=>$data->item->id,'quantity_factor'=>@$data->item->item_variations[0]->unit_variation->convert_unit_qty,'unit'=>@$data->item->item_variations[0]->unit_variation->unit->print_unit];
 			
 		} 
 		$itemSize=sizeof($items); //pr($itemSize);exit;
