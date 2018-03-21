@@ -60,22 +60,23 @@
 							<table class="table table-bordered main_table">
 								<thead>
 									<tr align="center">
-										<th rowspan="2" style="text-align:left;"><label>S.N<label></td>
-										<th rowspan="2" style="text-align:left;"><label>Item<label></td>
+										<th rowspan="2" style="text-align:left;width:10px;"><label>S.N<label></td>
+										<th rowspan="2" style="text-align:left;width:200px;"><label>Item<label></td>
 										
 										<th rowspan="2" style="text-align:center; "><label>Quantity<label></td>
-										<th rowspan="2" style="text-align:center;width:20px;"><label>Rate<label></td>
-										<th  colspan="2" style="text-align:center;"><label align="center">Discount (%)</label></th>
+										<th rowspan="2" style="text-align:center;width:100px;"><label>Rate<label></td>
+										
 										<th rowspan="2" style="text-align:center;"><label>Taxable Value<label></td>
 										<th colspan="2" style="text-align:center;"><label id="gstDisplay">GST<label></th>
-										<th rowspan="2" style="text-align:center;"><label>Total<label></td>
+										<th rowspan="2" style="text-align:center;width:200px;"><label>Total<label></td>
+										<th rowspan="2" style="text-align:center;"><label>Purchase Rate<label></td>
+										<th rowspan="2" style="text-align:center;"><label>Sales Rate<label></td>
 										<th rowspan="2" style="text-align:center;"><label>Action<label></td>
 									</tr>
 									<tr>
-										<th><div align="center">%</div></th>
-										<th><div align="center">Rs</div></th>
-										<th><div align="center">%</div></th>
-										<th><div align="center">Rs</div></th>
+										
+										<th><div align="center" style="width:50px;">%</div></th>
+										<th><div align="center"style="text-align:center;width:50px;">Rs</div></th>
 										
 									</tr>
 								</thead>
@@ -109,16 +110,12 @@
 			
 			<td  valign="top">
 				<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false]) ?>
+				<span class="itemQty" style="font-size:10px;"></span>
 			</td>
 			<td valign="top">
 				<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false]) ?>
 			</td>
-			<td valign="top">
-				<?= $this->Form->control('discount_percentage',['class'=>'form-control discount_percentage','label'=>false]) ?>
-			</td>
-			<td valign="top">
-				<?= $this->Form->control('discount_amount',['class'=>'form-control discount_amount','label'=>false]) ?>
-			</td>
+			
 			<td valign="top">
 				<?= $this->Form->control('taxable_value',['class'=>'form-control taxable_value','label'=>false]) ?>
 			</td>
@@ -133,11 +130,18 @@
 			<td valign="top">
 				<?= $this->Form->control('net_amount',['class'=>'form-control net_amount','label'=>false]) ?>
 			</td>
+			<td valign="top">
+				<?= $this->Form->control('purchase_rate',['class'=>'form-control purchase_rate','label'=>false]) ?>
+			</td>
 			
+			<td valign="top">
+				<?= $this->Form->control('sales_rate',['class'=>'form-control sales_rate','label'=>false]) ?>
+			</td>
 			<td valign="top"  >
 				<a class="btn btn-primary  btn-condensed btn-sm add_row" href="#" role="button" ><i class="fa fa-plus"></i></a>
 				<a class="btn btn-danger  btn-condensed btn-sm delete_row " href="#" role="button" ><i class="fa fa-times"></i></a>
 			</td>
+			
 		</tr>
 	</tbody>
 </table>
@@ -201,26 +205,40 @@
 				$('.main_table tbody tr').each(function(){
 						$(this).attr('row_no',i);
 						$(this).find('td:nth-child(1)').html(++i); i--;
-						
+						$(this).find('select.item ').attr({name:'purchase_invoice_rows['+i+'][item_id]',id:'purchase_invoice_rows['+i+'][item_id]'});
+						$(this).find('.quantity ').attr({name:'purchase_invoice_rows['+i+'][quantity]',id:'purchase_invoice_rows['+i+'][quantity]'});
+						$(this).find('.rate ').attr({name:'purchase_invoice_rows['+i+'][rate]',id:'purchase_invoice_rows['+i+'][rate]'});
 						
 						i++;
 			});
 		}
 		function calculation(){
 			$('.main_table tbody tr').each(function(){
-				var qty=$('.quantity').val();
-				var rate=$('.rate').val();
-				
+				var qty=$(this).find('.quantity').val();
+				var rate=$(this).find('.rate').val();
+				var quantity_factor=$(this).find('option:selected', this).attr('quantity_factor');
+				var unit=$(this).find('option:selected', this).attr('unit');
+				var total_qty=quantity_factor*qty;
+				$(this).find('.itemQty').html(total_qty +' '+ unit);
 				var taxable_value=qty*rate;
 				$(this).find('.taxable_value').val(taxable_value);
-				var gst_percentage=$('.gst_percentage').val();
+				var gst_percentage=parseFloat($(this).find('.gst_percentage option:selected').attr('tax_percentage'));
+				//var gst_percentage=$(this).find('option:selected', this).attr('tax_percentage');
+				
+				
 				if(!gst_percentage){
 					gst_rate=0;
-				}else{
-					$(this).find('.net_amount').val(taxable_value);
+				}else{ 
+					gst_rate=(taxable_value*gst_percentage)/100;
 				}
+				$(this).find('.gst_value').val(gst_rate);
+				var net_amount=gst_rate+taxable_value;
+				var net_amount1=round(net_amount,2);
+				
+				$(this).find('.net_amount').val(net_amount1);
 			});
 		}
+		
 	
 		
 		";  
