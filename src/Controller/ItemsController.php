@@ -80,6 +80,7 @@ class ItemsController extends AppController
         if ($this->request->is('post')) {
 			$item_image=$this->request->data['item_image'];
 			$item_error=$item_image['error'];
+			$item_variation_masters=$this->request->data['item_variation_masters'];
             $item = $this->Items->patchEntity($item, $this->request->getData());
 			
 			if(empty($item_error))
@@ -87,10 +88,10 @@ class ItemsController extends AppController
 				$item_ext=explode('/',$item_image['type']);
 				$item->item_image='item'.time().'.'.$item_ext[1];
 			}
-			//pr($item);exit;
+			
 			$item->city_id=$city_id;
 			$item->created_by=$user_id;
-			//pr($item); exit;
+			
             if ($item_data=$this->Items->save($item)) { 
 				if(empty($item_error))
 				{
@@ -114,6 +115,18 @@ class ItemsController extends AppController
 					/* Delete Temp File */
 					$file = new File(WWW_ROOT . $destination_url, false, 0777);
 					$file->delete();
+				}
+				
+				foreach($item_variation_masters as $item_variation_master){
+					if($item_variation_master['check']==1){
+						$ItemVariationMaster = $this->Items->ItemVariationMasters->newEntity();
+						$ItemVariationMaster->item_id = $item->id;
+						$ItemVariationMaster->unit_variation_id = $item_variation_master['unit_variation_id'];
+						$ItemVariationMaster->created_by = $user_id;
+						$ItemVariationMaster->status ="Active";
+						$this->Items->ItemVariationMasters->save($ItemVariationMaster);
+						//pr($SellerItem); exit;
+					}
 				}
 				//pr($item);exit;
                 $this->Flash->success(__('The item has been saved.'));

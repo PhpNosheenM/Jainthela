@@ -1,3 +1,26 @@
+<style>
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    border-color: transparent;
+    padding: 8px 8px !important; 
+    background: #F0F4F9;
+    color: #656C78;
+    font-size: 13px;
+}
+.file-preview-image
+{
+	width: 100% !important;
+	height:160px !important;
+}
+.file-preview-frame
+{
+	display: contents;
+	float:none !important;
+}
+.kv-file-zoom
+{
+	display:none;
+}
+</style>
 <?php $this->set('title', 'Item'); ?>
 <!-- PAGE CONTENT WRAPPER -->
 <div class="page-content-wrap">
@@ -89,21 +112,20 @@
 					<div class="panel-body">    
 					<div class="row">
 						<div class="table-responsive">
-							<table class="table table-bordered main_table">
+							<table class="table">
 								<tbody class="MainTbody"> 
-								<?php for($i=0; $i<3; $i++) { ?>
+								<?php $i=0; foreach($unitVariations as $unitVariation){ ?>
 								<tr>
-									<?php for($j=0; $j<3; $j++) {
-											foreach($unitVariations as $unitVariation){ ?>	
+											
 												<td width="5%">
 												<div class="checkbox-material">
-												<?= $this->Form->control('item_variation_master['.$i.'][check]',['type'=>'checkbox','class'=>'form-control unit icheckbox','id'=>'unit','label'=>false,'hidden'=>false]) ?>
-												
-												<?php echo $unitVariation->quantity_variation .' ' .$unitVariation->unit->unit_name ; ?>
-												<?= $this->Form->control('item_variation_master['.$i.'][unit_variation_id]',['type'=>'hidden','class'=>'form-control ','label'=>false,'value'=>$unitVariation->id]) ?>
+												<?= $this->Form->control('item_variation_masters['.$i.'][check]',['type'=>'checkbox','class'=>'form-control unit icheckbox','id'=>'unit','label'=>false,'hidden'=>false]) ?>
 												</div>
 												</td>
-									<?php $j++; } } ?>
+												<td width="80%"><?php echo $unitVariation->quantity_variation .' ' .$unitVariation->unit->unit_name ; ?>
+												<?= $this->Form->control('item_variation_masters['.$i.'][unit_variation_id]',['type'=>'hidden','class'=>'form-control ','label'=>false,'value'=>$unitVariation->id]) ?>
+												</td>
+											
 											</tr>	<?php $i++; } ?>
 								</tbody>
 							</table>
