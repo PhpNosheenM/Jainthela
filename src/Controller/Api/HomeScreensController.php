@@ -17,9 +17,33 @@ class HomeScreensController extends AppController
 	 public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['homescreen']);
+        $this->Auth->allow(['homescreen','current_api_version']);
     }
 
+	
+	public function current_api_version(){
+		$data=[];
+		$api_version=@$this->request->query['version'];
+		if(!empty($api_version)){
+			$ApiVersions=$this->HomeScreens->ApiVersions->find()->where(['version'=>$api_version]);
+			
+			if($ApiVersions->toArray()){
+				$success=true;
+				$message="data found";
+				$data=$ApiVersions;
+			}else{
+				$success=false;
+				$message="data not found";
+			  }
+		
+		}else{
+			$success=false;
+			$message="version is empty";
+			
+		}
+		$this->set(['success' => $success,'message'=>$message,'data'=>$data,'_serialize' => ['success','message','data']]);
+	}
+	
 	 public function homescreen(){
 		$city_id=@$this->request->query['city_id'];
 		if(!empty($city_id)){
