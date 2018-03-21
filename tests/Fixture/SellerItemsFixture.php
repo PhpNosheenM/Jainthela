@@ -48,11 +48,11 @@ class SellerItemsFixture extends TestFixture
             'item_id' => 1,
             'category_id' => 1,
             'seller_id' => 1,
-            'created_on' => 1521629752,
+            'created_on' => 1521630912,
             'created_by' => 1,
             'commission_percentage' => 1.5,
-            'commission_created_on' => 1521629752,
-            'expiry_on_date' => 1521629752,
+            'commission_created_on' => 1521630912,
+            'expiry_on_date' => 1521630912,
             'status' => 1
         ],
     ];
