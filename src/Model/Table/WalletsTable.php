@@ -9,6 +9,7 @@ use Cake\Validation\Validator;
 /**
  * Wallets Model
  *
+ * @property \App\Model\Table\CitiesTable|\Cake\ORM\Association\BelongsTo $Cities
  * @property \App\Model\Table\CustomersTable|\Cake\ORM\Association\BelongsTo $Customers
  * @property \App\Model\Table\OrdersTable|\Cake\ORM\Association\BelongsTo $Orders
  * @property \App\Model\Table\PlansTable|\Cake\ORM\Association\BelongsTo $Plans
@@ -40,6 +41,10 @@ class WalletsTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
+        $this->belongsTo('Cities', [
+            'foreignKey' => 'city_id',
+            'joinType' => 'INNER'
+        ]);
         $this->belongsTo('Customers', [
             'foreignKey' => 'customer_id',
             'joinType' => 'INNER'
@@ -85,11 +90,12 @@ class WalletsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
+        $rules->add($rules->existsIn(['city_id'], 'Cities'));
         $rules->add($rules->existsIn(['customer_id'], 'Customers'));
         $rules->add($rules->existsIn(['order_id'], 'Orders'));
         $rules->add($rules->existsIn(['plan_id'], 'Plans'));
         $rules->add($rules->existsIn(['promotion_id'], 'Promotions'));
-      //  $rules->add($rules->existsIn(['return_order_id'], 'ReturnOrders'));
+        //$rules->add($rules->existsIn(['return_order_id'], 'ReturnOrders'));
 
         return $rules;
     }

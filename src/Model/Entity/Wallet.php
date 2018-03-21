@@ -7,6 +7,7 @@ use Cake\ORM\Entity;
  * Wallet Entity
  *
  * @property int $id
+ * @property int $city_id
  * @property int $customer_id
  * @property int $order_id
  * @property int $plan_id
@@ -20,6 +21,7 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime $created_on
  *
  * @property \App\Model\Entity\Customer $customer
+ * @property \App\Model\Entity\City $city
  * @property \App\Model\Entity\Order $order
  * @property \App\Model\Entity\Plan $plan
  * @property \App\Model\Entity\Promotion $promotion
@@ -38,6 +40,7 @@ class Wallet extends Entity
      * @var array
      */
     protected $_accessible = [
+        'city_id' => true,
         'customer_id' => true,
         'order_id' => true,
         'plan_id' => true,
@@ -50,6 +53,7 @@ class Wallet extends Entity
         'amount_type' => true,
         'created_on' => true,
         'customer' => true,
+        'city' => true,
         'order' => true,
         'plan' => true,
         'promotion' => true,
