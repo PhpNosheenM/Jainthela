@@ -33,7 +33,7 @@ class AppMenusController extends AppController
 					 $isValidCity = $this->CheckAvabiltyOfCity($city_id);
 					 if($isValidCity == 0)
 					 {
-						 $submenuData = $this->AppMenus->find()->where(['city_id'=>$city_id,'status'=>0,'parent_id'=>$menu_id]);
+						 $submenuData = $this->AppMenus->find()->select(['id','name','link','title_content'])->where(['city_id'=>$city_id,'status'=>0,'parent_id'=>$menu_id]);
 						 if($submenuData->toArray()){
 							 
 							$success = true;
@@ -66,13 +66,15 @@ class AppMenusController extends AppController
         $isValidCity = $this->CheckAvabiltyOfCity($city_id);
          if($isValidCity == 0)
          {
-             $menuData = $this->AppMenus->find()->where(['city_id'=>$city_id,'status'=>0,'parent_id IS'=>Null]);
+             $menuData = $this->AppMenus->find()->select(['id','name','link','title_content'])->where(['city_id'=>$city_id,'status'=>0,'parent_id IS'=>Null]);
 			
              if(!empty($menuData->toArray()))
              {
 				array_push($dynamic,array("Menu"=>$menuData));
 				
-				$Categories = $this->AppMenus->Categories->find()->where(['city_id'=>$city_id,'section_show'=>'Yes','status'=>'Active'])->contain(['ChildCategories']);
+				$Categories = $this->AppMenus->Categories->find()->select(['id','name','link'])->where(['city_id'=>$city_id,'section_show'=>'Yes','status'=>'Active'])->contain(['ChildCategories'=>function($q){
+					return $q->select(['ChildCategories.parent_id','ChildCategories.id','ChildCategories.name','ChildCategories.link']);
+				}]);
 				
 			    array_push($dynamic,array("Shop By Category"=>$Categories));
 
