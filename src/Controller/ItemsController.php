@@ -125,15 +125,9 @@ class ItemsController extends AppController
         }
         $categories = $this->Items->Categories->find('list')->where(['Categories.city_id'=>$city_id]);
         $brands = $this->Items->Brands->find('list')->where(['Brands.city_id'=>$city_id]);
-        $unit1 = $this->Items->ItemVariations->Units->find()->where(['Units.city_id'=>$city_id]);
+        $unit1 = $this->Items->ItemVariations->UnitVariations->find();
 		
-			$units=array();
-				foreach($unit1 as $data){
-					$units[]=['text' => $data->shortname,'value' => $data->id,'division_factor' => $data->division_factor];
-					
-				}
-				//pr($units); exit; ItemVariations
-
+			
 		
 		 $this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities','units'));
     }
