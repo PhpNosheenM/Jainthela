@@ -161,12 +161,19 @@ class PurchaseInvoicesController extends AppController
 		
 		$items=array();
 		foreach($Sellertem as $data){
-		//pr(@$data->item->item_variations[0]->unit_variation); 
+		if($data->item->item_maintain_by=="itemwise"){
+			$merge=$data->item->name;
+			$p=@$data->item->item_variations[0]->unit_variation->quantity_variation/@$data->item->item_variations[0]->unit_variation->convert_unit_qty;
+			@$quantity_factor=(@$p/@$data->item->item_variations[0]->unit_variation->unit->division_factor); 
+			//pr(@$quantity_factor); exit;
+			$items[]=['text' => $merge,'value' =>0,'item_id'=>$data->item->id,'quantity_factor'=>@$quantity_factor,'unit'=>@$data->item->item_variations[0]->unit_variation->unit->print_unit,'gst_figure_id'=>$data->item->gst_figure_id,'commission'=>@$data->item->item_variations[0]->commission];
+		}else{
 			$merge=$data->item->name.'('.@$data->item->item_variations[0]->unit_variation->convert_unit_qty.'.'.@$data->item->item_variations[0]->unit_variation->unit->print_unit.')';
-			$items[]=['text' => $merge,'value' => $data->id,'item_id'=>$data->item->id,'quantity_factor'=>@$data->item->item_variations[0]->unit_variation->convert_unit_qty,'unit'=>@$data->item->item_variations[0]->unit_variation->unit->print_unit];
-			
+			$items[]=['text' => $merge,'value' => $data->id,'item_id'=>$data->item->id,'quantity_factor'=>@$data->item->item_variations[0]->unit_variation->convert_unit_qty,'unit'=>@$data->item->item_variations[0]->unit_variation->unit->print_unit,'gst_figure_id'=>$data->item->gst_figure_id,'commission'=>@$data->item->item_variations[0]->commission];
+			}
 		} 
-		$itemSize=sizeof($items); //pr($itemSize);exit;
+		$itemSize=sizeof($items); 
+	//	pr($items);exit;
 		 $this->set(compact('items','itemSize'));
 		//pr($items);exit;
 	} 

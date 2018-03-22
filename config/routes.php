@@ -84,12 +84,15 @@ Router::prefix('api', function ($routes) {
   	$routes->resources('Cities');
   	$routes->resources('HomeScreens');
   	$routes->resources('Categories');
-	  $routes->resources('Items');
+	   $routes->resources('Items');
     $routes->resources('Faqs');
     $routes->resources('AwsFiles');
     $routes->resources('AppMenus');
-	$routes->resources('TermConditions');
-	$routes->resources('Feedbacks');
+  	$routes->resources('TermConditions');
+  	$routes->resources('Feedbacks');
+    $routes->resources('Wallets');
+
+
 
     $routes->fallbacks('InflectedRoute');
 

@@ -9,6 +9,7 @@ use Cake\Validation\Validator;
 /**
  * Wallets Model
  *
+ * @property \App\Model\Table\CitiesTable|\Cake\ORM\Association\BelongsTo $Cities
  * @property \App\Model\Table\CustomersTable|\Cake\ORM\Association\BelongsTo $Customers
  * @property \App\Model\Table\OrdersTable|\Cake\ORM\Association\BelongsTo $Orders
  * @property \App\Model\Table\PlansTable|\Cake\ORM\Association\BelongsTo $Plans
@@ -40,6 +41,10 @@ class WalletsTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
+        $this->belongsTo('Cities', [
+            'foreignKey' => 'city_id',
+            'joinType' => 'INNER'
+        ]);
         $this->belongsTo('Customers', [
             'foreignKey' => 'customer_id',
             'joinType' => 'INNER'
@@ -60,6 +65,25 @@ class WalletsTable extends Table
             'foreignKey' => 'return_order_id',
             'joinType' => 'INNER'
         ]);
+
+        // Left JOins for wallets details
+
+        $this->belongsTo('OrdersLeft', [
+            'className' =>'Orders',
+            'foreignKey' => 'order_id',
+            'joinType' => 'LEFT'
+        ]);
+        $this->belongsTo('PlansLeft', [
+            'className' =>'Plans',
+            'foreignKey' => 'plan_id',
+            'joinType' => 'LEFT'
+        ]);
+        $this->belongsTo('PromotionsLeft', [
+            'className' =>'Promotions',
+            'foreignKey' => 'promotion_id',
+            'joinType' => 'LEFT'
+        ]);
+
     }
 
     /**
@@ -73,33 +97,6 @@ class WalletsTable extends Table
         $validator
             ->integer('id')
             ->allowEmpty('id', 'create');
-
-        $validator
-            ->decimal('add_amount')
-            ->requirePresence('add_amount', 'create')
-            ->notEmpty('add_amount');
-
-        $validator
-            ->decimal('used_amount')
-            ->requirePresence('used_amount', 'create')
-            ->notEmpty('used_amount');
-
-        $validator
-            ->scalar('cancel_to_wallet_online')
-            ->maxLength('cancel_to_wallet_online', 30)
-            ->requirePresence('cancel_to_wallet_online', 'create')
-            ->notEmpty('cancel_to_wallet_online');
-
-        $validator
-            ->scalar('narration')
-            ->requirePresence('narration', 'create')
-            ->notEmpty('narration');
-
-        $validator
-            ->dateTime('created_on')
-            ->requirePresence('created_on', 'create')
-            ->notEmpty('created_on');
-
         return $validator;
     }
 
@@ -112,11 +109,12 @@ class WalletsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
+        $rules->add($rules->existsIn(['city_id'], 'Cities'));
         $rules->add($rules->existsIn(['customer_id'], 'Customers'));
         $rules->add($rules->existsIn(['order_id'], 'Orders'));
         $rules->add($rules->existsIn(['plan_id'], 'Plans'));
         $rules->add($rules->existsIn(['promotion_id'], 'Promotions'));
-        $rules->add($rules->existsIn(['return_order_id'], 'ReturnOrders'));
+        //$rules->add($rules->existsIn(['return_order_id'], 'ReturnOrders'));
 
         return $rules;
     }

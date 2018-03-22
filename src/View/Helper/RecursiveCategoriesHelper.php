@@ -25,27 +25,44 @@ use UnexpectedValueException;
 class RecursiveCategoriesHelper extends Helper
 {
    function categoryItems($array) {
-
+		
     if (count($array)) {
-            echo "<ul>";
+           
         foreach ($array as $vals) {
-
-                    echo "<li id=\"".$vals['id']."\">".$vals['name'];
-                    if (count($vals['children'])) {
-                            $this->categoryItems($vals['children']);
-                    }
-					else
+			
+			echo '<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h4 class="panel-title">
+							<input type="checkbox" class="check_all">
+							<a href="#accOneColOne'.$vals['id'].'">
+								'.$vals['name'].'
+							</a>
+						</h4>
+					</div>';
+			if (count($vals['children'])) {
+				echo '<div class="panel-body" id="accOneColOne'.$vals['id'].'">';
+					$this->categoryItems($vals['children']);
+				echo '</div>';
+			}
+			else
+			{
+				echo '<div class="panel-body" id="accOneColOne'.$vals['id'].'" style="margin-left:20px;">';
+					foreach($vals['items'] as $item)
 					{
-						foreach($vals['items'] as $item)
-						{
-							echo "<li id=\"".$item['id']."\">".$item['name'];echo "</li>";
-						}
+						echo '<label><input type="checkbox">&nbsp;&nbsp;'.$item['name'].'</label>';
+						echo '<br/>';
 					}
-                    echo "</li>";
+				echo '</div>';
+			}
+            
+            echo '</div>';  
         }
-            echo "</ul>";
+           
     }
    }
 
 
 }
+
+                                    
+                                     
