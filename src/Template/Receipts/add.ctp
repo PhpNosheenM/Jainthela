@@ -107,8 +107,67 @@
 		</div>
 	</div>                    	
 </div>
+<?php
+$option_ref['New Ref']= 'New Ref';
+$option_ref['Against']= 'Against';
+$option_ref['Advance']= 'Advance';
+$option_ref['On Account']= 'On Account';
+?>
+<table id="sampleForRef" style="display:none;" width="100%">
+	<tbody>
+		<tr>
+			<td width="20%" valign="top"> 
+				<input type="hidden" class="ledgerIdContainer" />
+				<input type="hidden" class="companyIdContainer" />
+				<?php 
+				echo $this->Form->select('type',$option_ref, ['label' => false,'class' => 'form-control input-sm refType','required'=>'required']); ?>
+			</td>
+			<td width="" valign="top">
+				<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','required'=>'required']); ?>
+			</td>
+			
+			<td width="20%" style="padding-right:0px;" valign="top">
+				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm calculation numberOnly rightAligntextClass','placeholder'=>'Amount','required'=>'required']); ?>
+			</td>
+			<td width="10%" style="padding-left:0px;" valign="top">
+				<?php 
+				echo $this->Form->select('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Dr']); ?>
+			</td>
+			<td width="15%" style="padding-left:0px;" valign="top">
+				<?php 
+				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','title'=>'Due Days']);  ?>
+			</td>
+			<td width="5%" align="right" valign="top">
+				<a class="delete-tr-ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+			</td>
+		</tr>
+	</tbody>
+</table>
 
 
+<?php
+$option_mode['Cheque']= 'Cheque';
+$option_mode['NEFT/RTGS']='NEFT/RTGS';
+?>
+<table id="sampleForBank" style="display:none;" width="100%">
+	<tbody>
+		<tr>
+			<td width="30%" valign="top">
+				<?php 
+				echo $this->Form->input('mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required']); ?>
+			</td>
+			<td width="30%" valign="top">
+				<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no positiveValue','placeholder'=>'Cheque No']); ?> 
+			</td>
+			
+			<td width="30%" valign="top">
+				<?php echo $this->Form->input('cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date']); ?>
+			</td>
+			
+			
+		</tr>
+	</tbody>
+</table>
 <table id="sampleMainTable" style="display:none;" width="100%">
 	<tbody class="sampleMainTbody">
 		<tr class="MainTr">
@@ -167,6 +226,30 @@
 			addMainRow();
 			renameMainRows();
 		});
+		$(document).on('change','.ledger',function(){
+				var openWindow=$(this).find('option:selected').attr('open_window');
+				
+				if(openWindow=='party'){
+					var SelectedTr=$(this).closest('tr.MainTr');
+					var windowContainer=$(this).closest('td').find('div.window');
+					windowContainer.html('');
+					windowContainer.html('<table width=90% class=refTbl><tbody></tbody><tfoot><tr style=border-top:double#a5a1a1><td colspan=2><a role=button class=addRefRow>Add Row</a></td><td>$total_input</td><td valign=top>$total_type</td></tr></tfoot></table>');
+					AddRefRow(SelectedTr);
+				}
+				else if(openWindow=='bank'){
+					var SelectedTr=$(this).closest('tr.MainTr')
+					var windowContainer=$(this).closest('td').find('div.window');
+					windowContainer.html('');
+					windowContainer.html('<table width=90% ><tbody></tbody><tfoot><td colspan=4></td></tfoot></table>');
+					AddBankRow(SelectedTr);
+				}
+				else{
+					var windowContainer=$(this).closest('td').find('div.window');
+					windowContainer.html('');
+				}
+				renameMainRows();
+			});
+		
 		$(document).on('change','.cr_dr',function(){
 				var cr_dr=$(this).val();
 				
@@ -236,6 +319,77 @@
 				$('#MainTable tfoot tr td:nth-child(2) input#totalMainDr').val(main_debit);
 				$('#MainTable tfoot tr td:nth-child(3) input#totalMainCr').val(main_credit);
 				$('#MainTable tfoot tr td:nth-child(1) input#totalBankCash').val(count_bank_cash);
+			}
+			$(document).on('click','.addRefRow',function(){
+				var SelectedTr=$(this).closest('tr.MainTr');
+				
+				AddRefRow(SelectedTr);
+			});
+			
+			function AddRefRow(SelectedTr){
+				var refTr=$('#sampleForRef tbody tr').clone();
+				var due_days=SelectedTr.find('td:nth-child(2) select.ledger option:selected').attr('default_days');
+				refTr.find('td:nth-child(5) input.dueDays').val(due_days);
+				//console.log(refTr);
+				SelectedTr.find('td:nth-child(2) div.window table tbody').append(refTr);
+				renameRefRows(SelectedTr);
+			}
+			
+			function renameRefRows(SelectedTr){
+				var i=0;
+				
+				var ledger_id=SelectedTr.find('td:nth-child(2) select.ledger').val();
+				var cr_dr=SelectedTr.find('td:nth-child(1) select.cr_dr option:selected').val();
+				if(cr_dr=='Dr'){
+					var eqlClassDr=SelectedTr.find('td:nth-child(3) input.debitBox').attr('id');
+					var mainAmt=SelectedTr.find('td:nth-child(3) input.debitBox').val();
+				}else{
+					var eqlClassCr=SelectedTr.find('td:nth-child(4) input.creditBox').attr('id');
+					var mainAmt=SelectedTr.find('td:nth-child(4) input.creditBox').val();
+				}
+				
+				SelectedTr.find('input.ledgerIdContainer').val(ledger_id);
+				SelectedTr.find('input.companyIdContainer').val(".$company_id.");
+				var row_no=SelectedTr.attr('row_no');
+				if(SelectedTr.find('td:nth-child(2) div.window table tbody tr').length>0){
+				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
+					$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][company_id]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-company_id'});
+					$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
+					
+					$(this).find('td:nth-child(1) select.refType').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][type]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-type'}).selectpicker();
+					var is_select=$(this).find('td:nth-child(2) select.refList').length;
+					var is_input=$(this).find('td:nth-child(2) input.ref_name').length;
+					if(is_select){
+						$(this).find('td:nth-child(2) select.refList').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
+					}else if(is_input){
+						$(this).find('td:nth-child(2) input.ref_name').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
+						$(this).find('td:nth-child(5) input.dueDays').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][due_days]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-due_days'});
+					}
+					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
+					if(Dr_Cr=='Dr'){
+						$(this).find('td:nth-child(3) input').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][debit]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-debit'}).rules('add', 'required');;
+					}else{
+						$(this).find('td:nth-child(3) input').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][credit]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-credit'}).rules('add', 'required');;
+					}
+					i++;
+				});
+				var total_type=SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(3) input.total_type').val();
+					if(total_type=='Dr'){
+					 eqlClass=eqlClassDr;
+					}else{
+					 eqlClass=eqlClassCr;
+					}
+
+				
+				SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(2) input.total')
+				.attr({name:'receipt_rows['+row_no+'][total]',id:'receipt_rows-'+row_no+'-total'})
+						.rules('add', {
+							equalTo: '#'+eqlClass,
+							messages: {
+								equalTo: 'Enter bill wise details upto '+mainAmt+' '+cr_dr
+							}
+						});
+				}
 			}
 			
 		
