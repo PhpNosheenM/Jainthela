@@ -31,7 +31,6 @@ class WalletsController extends AppController
                 {
                   $wallet_details = $this->Wallets->find()
               		->where(['Wallets.customer_id'=>$customer_id])
-              		->contain(['PlansLeft','OrdersLeft','PromotionsLeft'])
               		->order(['Wallets.id'=>'DESC'])
               		->autoFields(true);
 
