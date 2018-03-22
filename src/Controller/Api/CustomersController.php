@@ -19,30 +19,30 @@ class CustomersController extends AppController
         $this->Auth->allow(['add', 'login','send_otp']);
     }
 
-	
-	
-	
+
+
+
 	public function my_account(){
-		
+
 		$customer_id=@$this->request->query['customer_id'];
 		$city_id=@$this->request->query['city_id'];
 		$token=@$this->request->query['token'];
 		$profiles=[];$wallet_balance=number_format(0, 2);
 		if(!empty($customer_id) and !empty($token) and !empty($city_id)){
-			
-			
+
+
 			$isValidToken = $this->checkToken($token);
             if($isValidToken == 0){
-               
+
 			$isValidCity = $this->CheckAvabiltyOfCity($city_id);
 			if($isValidCity == 0){
-			
 
-			   
+
+
 			$profiles=$this->Customers->get($customer_id);
-			
+
 				if($profiles){
-					
+
 					 $query = $this->Customers->Wallets->find();
                   		$totalInCase = $query->newExpr()
                   			->addCase(
@@ -63,22 +63,22 @@ class CustomersController extends AppController
                 		->where(['Wallets.customer_id' => $customer_id])
                 		->group('customer_id')
                 		->autoFields(true);
-                       
+
 					  foreach($query as $fetch_query)
                 		    {
                       			$advance=$fetch_query->total_in;
                       			$consumed=$fetch_query->total_out;
                       		  $wallet_balance= number_format($advance-$consumed, 2);
                 		    }
-				 
-					
+
+
 					$success = true;
 					$message = 'Data Found successfully';
-					
-					
-					
+
+
+
 				}else{
-					
+
 					$success = false;
 					$message = 'No Data Found';
 				}
@@ -86,26 +86,26 @@ class CustomersController extends AppController
 				$success = false;
 				$message = 'Invalid City';
 
-			}	
+			}
 			}else{
 				$success = false;
 				$message = 'Invalid Token';
 
 			}
 		}else{
-			
+
 			 $success = false;
 			 $message = 'customer id or token or city id is not empty';
-			
+
 		}
-		
+
 		$this->set(['success' => $success,'message'=>$message,'wallet_balance'=>$wallet_balance,'profiles'=>$profiles,'_serialize' => ['success','message','wallet_balance','profiles']]);
 	}
 
 	public function send_otp(){
-		
+
 		$mobile=@$this->request->query['mobile'];
-		
+
 		if(!empty($mobile)){
 			$exists_mobile = $this->Customers->exists(['Customers.username'=>$mobile]);
 			if($exists_mobile==0){
@@ -115,29 +115,28 @@ class CustomersController extends AppController
 				$opt=(mt_rand(1,10000));
 				$VerifyOtps->otp=$opt;
 				if($this->Customers->VerifyOtps->save($VerifyOtps)){
-					
-					
-					
+          $content="Your one time password for jainthela is ".$opt;
+          $this->Sms->sendSms($mobile,$content);
 					$success = true;
 					$message = 'send otp successfully';
 				}else{
 					$success = false;
 					$message = 'otp is not send';
-					
+
 				}
 			}else{
 					$success = false;
 					$message = 'mobile already taken';
-					
+
 				}
-			
+
 		}else{
-			
+
 			$success = false;
 		    $message = 'empty mobile no';
 		}
 	}
-	
+
 	public function verify(){
 		$customer = $this->Customers->newEntity();
 		if($this->request->is(['patch', 'post', 'put'])){
@@ -228,8 +227,7 @@ class CustomersController extends AppController
 					$customer = $this->Customers->patchEntity($customer, $this->request->getData());
 
 					 if ($customers=$this->Customers->save($customer)) {
-						 $content="Your one time password for jainthela is ".$opt;
-						// $this->Sms->sendSms($mobile,$content);
+
 
 							$arr = JWT::encode(['sub' => $customers->id,'exp' =>  time() + 604800],Security::salt());
 							$query = $this->Customers->query();
