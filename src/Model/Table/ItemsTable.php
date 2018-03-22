@@ -89,6 +89,11 @@ class ItemsTable extends Table
         $this->hasMany('GrnRows', [
             'foreignKey' => 'item_id'
         ]);
+		 $this->belongsToMany('UnitVariations', [
+            'foreignKey' => 'item_id',
+			'targetForeignKey'=>'unit_variation_id',
+            'joinTable' => 'item_variation_masters'
+        ]);
         $this->hasMany('ItemVariationMasters', [
             'foreignKey' => 'item_id',
 			'saveStrategy'=>'replace'

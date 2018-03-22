@@ -71,6 +71,15 @@
 									<?= $this->Form->select('item_maintain_by',$maintain_options,['class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
+							<?php $i=0; foreach($unitVariations as $unitVariation){ 
+							
+							}?>
+							<div class="form-group">                                        
+								<label class="col-md-3 control-label">Units</label>
+								<div class="col-md-9 col-xs-12">
+									<?php echo $this->Form->control('item_variation_masters[unit_variations]._ids', ['label' => false,'options' =>$unit_option,'multiple' => 'checkbox']); ?>
+								</div>
+							</div>
 							<div class="form-group">                                        
 								<label class="col-md-3 control-label">Status</label>
 								<div class="col-md-9 col-xs-12">
@@ -149,14 +158,17 @@
 							<table class="table">
 								<?php foreach($item->item_variation_masters as $item_variation_master){ 
 								@$unit_array[]=$item_variation_master->unit_variation_id;
+								// pr($unit_array); exit;
 								 } ?>
+								
 								<tbody class="MainTbody">  
 									<?php $i=0; foreach($unitVariations as $unitVariation){ ?>
 										<tr>
 											
 												<td width="5%">
 												<div class="checkbox-material">
-												<?= $this->Form->control('item_variation_masters['.$i.'][check]',['type'=>'checkbox','class'=>'form-control unit icheckbox','id'=>'unit','label'=>false,'hidden'=>false]) ?>
+												<?= $this->Form->control('item_variation_masters['.$i.'][check]',['type'=>'checkbox','class'=>'form-control unit icheckbox','id'=>'unit','label'=>false,'hidden'=>false,]) ?>
+												
 												</div>
 												</td>
 												<td width="80%"><?php echo $unitVariation->quantity_variation .' ' .$unitVariation->unit->unit_name ; ?>

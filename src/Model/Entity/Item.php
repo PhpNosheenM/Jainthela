@@ -89,6 +89,7 @@ class Item extends Entity
         'city' => true,
         'app_notifications' => true,
         'carts' => true,
+		'unit_variations' => true,
         'combo_offer_details' => true,
         'grn_rows' => true,
         'item_variations' => true,

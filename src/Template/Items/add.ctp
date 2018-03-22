@@ -71,6 +71,12 @@
 									<?= $this->Form->select('item_maintain_by',$maintain_options,['class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
+							<div class="form-group">                                        
+								<label class="col-md-3 control-label">Units</label>
+								<div class="col-md-9 col-xs-12">
+									<?php echo $this->Form->control('unit_variations._ids', ['label' => false,'options' =>$unit_option,'multiple' => 'checkbox']); ?>
+								</div>
+							</div>
 							<div class="form-group">    
 								<label class="col-md-3 control-label">Status</label>
 								<div class="col-md-9 col-xs-12">
@@ -115,7 +121,7 @@
 							</div>
 						
 					</div>
-					<div class="panel-body">    
+				<!--	<div class="panel-body">    
 					<div class="row">
 						<div class="table-responsive">
 							<table class="table">
@@ -125,6 +131,7 @@
 											
 												<td width="5%">
 												<div class="checkbox-material">
+												<?= $this->Form->control('item_variation_masters['.$i.'][check]',['type'=>'checkbox','class'=>'form-control unit icheckbox','id'=>'unit','label'=>false,'hidden'=>false]) ?>
 												<?= $this->Form->control('item_variation_masters['.$i.'][check]',['type'=>'checkbox','class'=>'form-control unit icheckbox','id'=>'unit','label'=>false,'hidden'=>false]) ?>
 												</div>
 												</td>
@@ -137,7 +144,7 @@
 							</table>
 						</div>
 					</div>
-					</div>
+					</div> -->
 				</div>
 				<div class="panel-footer">
 					<center>
