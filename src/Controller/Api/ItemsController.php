@@ -35,7 +35,7 @@ class ItemsController extends AppController
          if($isValidCity == 0)
          {
            $items = $this->Items->find()
-                     ->contain(['ItemVariations'=>['UnitVariations']])
+                     ->contain(['ItemsVariations'=>['UnitVariations']])
                      ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id,'Items.category_id'=>$category_id])
                      ->limit($limit)->page($page);
                if(!empty($items->toArray()))
@@ -74,9 +74,12 @@ class ItemsController extends AppController
         {
             if(!empty($item_id) && !empty($category_id))
             {
-                $items = $this->Items->find()
-                          ->contain(['Categories','Brands','Sellers','Cities','ItemVariations'=>['UnitVariations']])
-                          ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.id'=>$item_id,'Items.city_id'=>$city_id,'Items.category_id'=>$category_id]);
+                $items = $this->Items->find();
+                          $items->select(['AverageReviewRatings.item_id','ItemAverageRating' => $items->func()->avg('AverageReviewRatings.rating')])
+                          ->contain(['Categories','Brands','Sellers','Cities','ItemsVariations'=>['UnitVariations'],'LeftItemReviewRatings'])
+                          ->leftJoinWith('AverageReviewRatings')
+                          ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.id'=>$item_id,'Items.city_id'=>$city_id,'Items.category_id'=>$category_id])
+                          ->autoFields(true);
 
                 if(!empty($items->toArray()))
                 {
@@ -91,7 +94,7 @@ class ItemsController extends AppController
                 $HomeScreens=$this->Items->HomeScreens->find()->where(['screen_type'=>'Product Detail','section_show'=>'Yes','city_id'=>$city_id]);
                     foreach($HomeScreens as $HomeScreen){
                         if($HomeScreen->model_name=='Items'){
-                           $reletedItem = $this->Items->find()->contain(['ItemVariations'=>['UnitVariations']])
+                           $reletedItem = $this->Items->find()->contain(['ItemsVariations'=>['UnitVariations']])
                             ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.category_id'=>$category_id,'Items.city_id'=>$city_id,'Items.id !='=>$item_id]);
 
                             if(!empty($reletedItem->toArray()))
