@@ -43,6 +43,15 @@ class SellerItemsTable extends Table
             'foreignKey' => 'item_id',
             'joinType' => 'INNER'
         ]);
+		/* $this->belongsToMany('Items', [
+			'foreignKey'=>'item_id',
+			'joinTable' => 'seller_items'
+        ]);
+		$this->belongsToMany('Sellers', [
+			'foreignKey'=>'seller_id',
+			'through'=>'Sellers',
+			'joinTable' => 'seller_items'
+        ]); */
         $this->belongsTo('Categories', [
             'foreignKey' => 'category_id',
             'joinType' => 'INNER'
@@ -68,7 +77,7 @@ class SellerItemsTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
-        $validator
+       /*  $validator
             ->dateTime('created_on')
             ->requirePresence('created_on', 'create')
             ->notEmpty('created_on');
@@ -82,8 +91,8 @@ class SellerItemsTable extends Table
             ->decimal('commission_percentage')
             ->requirePresence('commission_percentage', 'create')
             ->notEmpty('commission_percentage');
-
-        $validator
+ */
+       /*  $validator
             ->dateTime('commission_created_on')
             ->requirePresence('commission_created_on', 'create')
             ->notEmpty('commission_created_on');
@@ -95,7 +104,7 @@ class SellerItemsTable extends Table
 
         $validator
             ->requirePresence('status', 'create')
-            ->notEmpty('status');
+            ->notEmpty('status'); */
 
         return $validator;
     }
@@ -115,4 +124,10 @@ class SellerItemsTable extends Table
 
         return $rules;
     }
+	/* public function beforeSave($event, $entity, $options)
+	{exit;
+		if ($entity->tag_string) {
+			$entity->tags = $this->_buildTags($entity->tag_string);
+		}
+	} */
 }

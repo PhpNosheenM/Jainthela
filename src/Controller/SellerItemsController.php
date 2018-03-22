@@ -21,7 +21,7 @@ class SellerItemsController extends AppController
     public function index()
     {
         $this->paginate = [
-            'contain' => ['Items', 'Categories', 'Sellers']
+            'contain' => ['Items', 'Sellers']
         ];
         $sellerItems = $this->paginate($this->SellerItems);
 
@@ -38,7 +38,7 @@ class SellerItemsController extends AppController
     public function view($id = null)
     {
         $sellerItem = $this->SellerItems->get($id, [
-            'contain' => ['Items', 'Categories', 'Sellers', 'SellerItemVariations']
+            'contain' => ['Items', 'Sellers', 'SellerItemVariations']
         ]);
 
         $this->set('sellerItem', $sellerItem);
@@ -57,8 +57,24 @@ class SellerItemsController extends AppController
 		$this->viewBuilder()->layout('admin_portal');
         $sellerItem = $this->SellerItems->newEntity();
         if ($this->request->is('post')) {
-            $sellerItem = $this->SellerItems->patchEntity($sellerItem, $this->request->getData());
-            if ($this->SellerItems->save($sellerItem)) {
+			$commissions=$this->request->getData('commissions');
+			$item_ids=$this->request->getData('item_ids');
+			$seller_id=$this->request->getData('seller_id');
+			//pr($this->request->getData());
+			//exit;
+			$total_rows = sizeof($item_ids);
+			
+			$query = $this->SellerItems->query();
+			$query->insert(['seller_id', 'item_id','commission_percentage']);
+			for($i=0; $i<$total_rows; $i++)
+			{
+				$query->values([
+					'seller_id' => $seller_id,
+					'item_id' => $item_ids[$i],
+					'commission_percentage' => $commissions[$i]
+				]);
+			}
+            if ($query->execute()) {
                 $this->Flash->success(__('The seller item has been saved.'));
 
                 return $this->redirect(['action' => 'index']);

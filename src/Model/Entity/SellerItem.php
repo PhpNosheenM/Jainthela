@@ -45,8 +45,10 @@ class SellerItem extends Entity
         'expiry_on_date' => true,
         'status' => true,
         'item' => true,
+        'items' => true,
         'category' => true,
         'seller' => true,
+        'sellers' => true,
         'seller_item_variations' => true
     ];
 }
