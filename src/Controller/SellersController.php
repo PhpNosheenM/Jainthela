@@ -23,12 +23,11 @@ class SellersController extends AppController
         if ($this->request->is('post')) 
 		{
 			$user = $this->Auth->identify();
-			pr($user);
-			exit;
 			if ($user) 
 			{
 				$city = $this->Sellers->Locations->get($user['location_id']);
 				$user['city_id']=$city->id;
+				$user['user_role']='seller';
 				$this->Auth->setUser($user);
 				return $this->redirect(['controller'=>'Sellers','action' => 'index']);
             }
@@ -44,12 +43,12 @@ class SellersController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
 		$this->viewBuilder()->layout('admin_portal');
         $this->paginate = [
-            'contain' => ['Cities'],
 			'limit' => 20
         ];
-        $sellers = $this->Sellers->find()->where(['Sellers.city_id'=>$city_id]);
+        $sellers = $this->Sellers->find()->where(['Sellers.location_id'=>$location_id]);
 		if ($this->request->is(['get'])){
 			$search=$this->request->getQuery('search');
 			$sellers->where([

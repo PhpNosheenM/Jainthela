@@ -173,7 +173,7 @@ class SellersTable extends Table
 	public function findAuth(\Cake\ORM\Query $query, array $options)
 	{
 		$query
-			->where(['Sellers.status' => 1]);
+			->where(['Sellers.status' => 'Active']);
 
 		return $query;
 	}
