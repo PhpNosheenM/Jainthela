@@ -54,12 +54,12 @@ class ItemsTable extends Table
         $this->belongsTo('Categories', [
             'foreignKey' => 'category_id',
             'joinType' => 'INNER'
-        ]);
+        ])->setConditions(['Categories.status' => 'Active']);
 		
 		$this->belongsTo('GstFigures', [
             'foreignKey' => 'gst_figure_id',
             'joinType' => 'INNER'
-        ])->setConditions(['Categories.status' => 'Active']);
+        ]);
 		
         $this->belongsTo('Brands', [
             'foreignKey' => 'brand_id',

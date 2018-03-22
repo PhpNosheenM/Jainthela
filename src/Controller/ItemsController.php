@@ -83,7 +83,7 @@ class ItemsController extends AppController
 			//$item_variation_masters=$this->request->data['item_variation_masters'];
 			
             $item = $this->Items->patchEntity($item, $this->request->getData());
-			
+			//pr($item); exit;
 			if(empty($item_error))
 			{
 				$item_ext=explode('/',$item_image['type']);
