@@ -86,6 +86,34 @@ class AppController extends Controller
 				'unauthorizedRedirect' => $this->referer(),
 			]);
 		}
+		if($this->request->params['controller'] == 'Sellers' or  $this->request->params['controller'] == 'sellers') 
+		{
+			$this->loadComponent('Auth', [
+			 'authenticate' => [
+					'Form' => [
+						'finder' => 'auth',
+						'fields' => [
+							'username' => 'username',
+							'password' => 'password'
+						],
+						'userModel' => 'Sellers'
+					]
+				],
+				'loginAction' => [
+					'controller' => 'Admins',
+					'action' => 'login'
+				],
+				'loginRedirect' => [
+					'controller' => 'Sellers',
+					'action' => 'index',
+				],
+				'logoutRedirect' => [
+					'controller' => 'Sellers',
+					'action' => 'login'
+				],
+				'unauthorizedRedirect' => $this->referer(),
+			]);
+		}
 		else
 		{
 			$this->loadComponent('Auth');

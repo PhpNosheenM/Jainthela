@@ -92,10 +92,10 @@
 							</div>
 							
 							<div class="form-group">                                        
-								<label class="col-md-3 control-label">City</label>
+								<label class="col-md-3 control-label">Location</label>
 								<div class="col-md-9 col-xs-12">
 									
-								<?= $this->Form->select('city_id',$Cities,['class'=>'form-control select','label'=>false]) ?>
+								<?= $this->Form->select('location_id',$locations,['class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
 							

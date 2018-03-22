@@ -16,7 +16,7 @@ class CustomersController extends AppController
   public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['add', 'login','send_otp']);
+        $this->Auth->allow(['add', 'login','send_otp','verify']);
     }
 
 
@@ -112,11 +112,11 @@ class CustomersController extends AppController
 				$VerifyOtps = $this->Customers->VerifyOtps->newEntity();
 				$VerifyOtps->mobile=$mobile;
 				$VerifyOtps->status=0;
-				$opt=(mt_rand(1,10000));
+				$opt=(mt_rand(1111,9999));
 				$VerifyOtps->otp=$opt;
 				if($this->Customers->VerifyOtps->save($VerifyOtps)){
-          $content="Your one time password for jainthela is ".$opt;
-          $this->Sms->sendSms($mobile,$content);
+					  $content="Your one time password for jainthela is ".$opt;
+					  $this->Sms->sendSms($mobile,$content);
 					$success = true;
 					$message = 'send otp successfully';
 				}else{
@@ -135,57 +135,54 @@ class CustomersController extends AppController
 			$success = false;
 		    $message = 'empty mobile no';
 		}
+		$this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
+	
 	}
 
 	public function verify(){
 		$customer = $this->Customers->newEntity();
 		if($this->request->is(['patch', 'post', 'put'])){
 
-			foreach(getallheaders() as $key => $value) {
+/* 			foreach(getallheaders() as $key => $value) {
 				if($key == 'Authorization')
 				{
 					 $token = $value;
 				}
 			}
 			$token = str_replace("Bearer ","",$token);
-			$isValidToken = $this->checkToken($token);
-			$id=$this->request->data['id'];
+			$isValidToken = $this->checkToken($token); */
+			$mobile=$this->request->data['mobile'];
 			$otp=$this->request->data['otp'];
-			if($isValidToken == 0)
-             {
-				 if(!empty($id) and (!empty($otp))){
-						$Customers=$this->Customers->find()->where(['id'=>$id,'otp'=>$otp]);
-						if($Customers->toArray()){
+			
+				 if(!empty($mobile) and (!empty($otp))){
+						$VerifyOtps=$this->Customers->VerifyOtps->find()->where(['mobile'=>$mobile,'otp'=>$otp]);
+						if($VerifyOtps->toArray()){
 
-							$query = $this->Customers->query();
+							/* 	$query = $this->Customers->query();
 							$result = $query->update()->set(['status' => 'Active'])->where(['id' => $id])->execute();
 							$Customers=$this->Customers->find()->where(['id'=>$id,'otp'=>$otp]);
-              foreach ($Customers as $Customer) {
-                $accounting_group = $this->Customers->Ledgers->AccountingGroups->find()->where(['customer'=>1])->first();
-      					$ledger = $this->Customers->Ledgers->newEntity();
-      					$ledger->name = $Customer->name;
-      					$ledger->accounting_group_id = $accounting_group->id;
-      					$ledger->customer_id=$Customer->id;
-      					$ledger->bill_to_bill_accounting='yes';
-      					$this->Customers->Ledgers->save($ledger);
-              }
-
+							foreach ($Customers as $Customer) {
+							$accounting_group = $this->Customers->Ledgers->AccountingGroups->find()->where(['customer'=>1])->first();
+							$ledger = $this->Customers->Ledgers->newEntity();
+							$ledger->name = $Customer->name;
+							$ledger->accounting_group_id = $accounting_group->id;
+							$ledger->customer_id=$Customer->id;
+							$ledger->bill_to_bill_accounting='yes';
+							$this->Customers->Ledgers->save($ledger);
+							}
+							*/
 							$success = true;
-							$message = 'Register Successfully';
+							$message = 'verify Successfully';
 						}else{
 
 							$success = false;
-							$message = 'otp is not match';
+							$message = 'Not Verify';
 						}
 				 }else{
 					  $success = false;
-					  $message = 'Id or Otp empty';
+					  $message = 'mobile or Otp empty';
 				 }
-			 }
-             else{
-               $success = false;
-               $message = 'Invalid Token';
-             }
+			 
 		}
 		$this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
 	}
@@ -218,12 +215,10 @@ class CustomersController extends AppController
 
 
 				if(($exists_email==0) and ($exists_mobile==0)){
-					$opt=(mt_rand(1,10000));
+					
 					$mobile=$this->request->data['username'];
-
-
-					$this->request->data['otp']=$opt;
-					$this->request->data['status']='Deactive';
+					
+					$this->request->data['status']='Active';
 					$customer = $this->Customers->patchEntity($customer, $this->request->getData());
 
 					 if ($customers=$this->Customers->save($customer)) {
