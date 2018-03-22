@@ -62,7 +62,8 @@ class SellersTable extends Table
             'joinType' => 'INNER'
         ]);
 		$this->belongsTo('Locations', [
-            'foreignKey' => 'location_id'
+            'foreignKey' => 'location_id',
+            'joinType' => 'INNER'
         ]); 
 		$this->hasMany('ReferenceDetails', [
             'foreignKey' => 'seller_id',

@@ -48,7 +48,7 @@ class Seller extends Entity
      * @var array
      */
     protected $_accessible = [
-        'city_id' => true,
+        'location_id' => true,
         'name' => true,
         'username' => true,
         'password' => true,
@@ -73,7 +73,7 @@ class Seller extends Entity
         'created_on' => true,
         'created_by' => true,
         'status' => true,
-        'city' => true,
+        'location' => true,
         'items' => true,
         'seller_items' => true,
         'reference_details' => true,

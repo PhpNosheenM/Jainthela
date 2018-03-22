@@ -139,9 +139,9 @@ class SellersController extends AppController
         }
 		//$categories = $this->Sellers->Categories->find('threaded')->contain(['Items']);
 		
-		$Cities = $this->Sellers->Cities->find('list');
+		$locations = $this->Sellers->Locations->find('list');
         
-        $this->set(compact('seller','Cities'));
+        $this->set(compact('seller','locations'));
     }
 	
 
