@@ -72,10 +72,20 @@ class AppMenusController extends AppController
              {
 				 foreach($menuData as $menu){
 					 
-					 $menu->
-					 
+					$title_content= $menu->title_content;
+					 if($title_content=='Menu'){
+						 $menus[]=$menu;
+					 }
+					 if($title_content=='My Information'){
+						 $MyInformation[]=$menu;
+					 }
+					 if($title_content=='Other'){
+						 $Other[]=$menu;
+					 }
 				 }
-				array_push($dynamic,array("Menu"=>$menuData));
+				array_push($dynamic,array("title"=>$menus));
+				array_push($dynamic,array("title"=>$MyInformation));
+				array_push($dynamic,array("title"=>$Other));
 				
 				$Categories = $this->AppMenus->Categories->find()->select(['id','name','link'])->where(['city_id'=>$city_id,'section_show'=>'Yes','status'=>'Active'])->contain(['ChildCategories'=>function($q){
 					return $q->select(['ChildCategories.parent_id','ChildCategories.id','ChildCategories.name','ChildCategories.link']);

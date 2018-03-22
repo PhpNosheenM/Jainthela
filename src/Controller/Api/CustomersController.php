@@ -227,7 +227,16 @@ class CustomersController extends AppController
 							$arr = JWT::encode(['sub' => $customers->id,'exp' =>  time() + 604800],Security::salt());
 							$query = $this->Customers->query();
 							$result = $query->update()->set(['token' => $arr])->where(['id' => $customers->id])->execute();
-						 $customer_data = $this->Customers->get($customers->id);
+						    $customer_data = $this->Customers->get($customers->id);
+						 						
+							$accounting_group = $this->Customers->Ledgers->AccountingGroups->find()->where(['customer'=>1])->first();
+							$ledger = $this->Customers->Ledgers->newEntity();
+							$ledger->name = $customer_data->name;
+							$ledger->accounting_group_id = $accounting_group->id;
+							$ledger->customer_id=$customer_data->id;
+							$ledger->bill_to_bill_accounting='yes';
+							$this->Customers->Ledgers->save($ledger);
+						
 						$success=true;
 						$message="data has been saved successfully";
 						$data=$customer_data;
