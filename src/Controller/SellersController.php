@@ -12,6 +12,29 @@ use App\Controller\AppController;
  */
 class SellersController extends AppController
 {
+	public function initialize()
+	{
+		parent::initialize();
+		 $this->Auth->allow(['logout', 'login']);		
+	}
+	public function login()
+    {
+		$this->viewBuilder()->layout('seller_login');
+        if ($this->request->is('post')) 
+		{
+			$user = $this->Auth->identify();
+			pr($user);
+			exit;
+			if ($user) 
+			{
+				$city = $this->Sellers->Locations->get($user['location_id']);
+				$user['city_id']=$city->id;
+				$this->Auth->setUser($user);
+				return $this->redirect(['controller'=>'Sellers','action' => 'index']);
+            }
+            $this->Flash->error(__('Invalid Username or Password'));
+        }	
+    }
     /**
      * Index method
      *

@@ -170,7 +170,13 @@ class SellersTable extends Table
         */
         return $validator;
     }
+	public function findAuth(\Cake\ORM\Query $query, array $options)
+	{
+		$query
+			->where(['Sellers.status' => 1]);
 
+		return $query;
+	}
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.
