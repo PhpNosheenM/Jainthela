@@ -65,6 +65,25 @@ class WalletsTable extends Table
             'foreignKey' => 'return_order_id',
             'joinType' => 'INNER'
         ]);
+
+        // Left JOins for wallets details
+
+        $this->belongsTo('OrdersLeft', [
+            'className' =>'Orders',
+            'foreignKey' => 'order_id',
+            'joinType' => 'LEFT'
+        ]);
+        $this->belongsTo('PlansLeft', [
+            'className' =>'Plans',
+            'foreignKey' => 'plan_id',
+            'joinType' => 'LEFT'
+        ]);
+        $this->belongsTo('PromotionsLeft', [
+            'className' =>'Promotions',
+            'foreignKey' => 'promotion_id',
+            'joinType' => 'LEFT'
+        ]);
+
     }
 
     /**
