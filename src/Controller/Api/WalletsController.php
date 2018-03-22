@@ -79,7 +79,7 @@ class WalletsController extends AppController
               		else
               		{
               			$success=true;
-              			$message="";
+              			$message="Data found successfully";
               		}
                 }
                 else {
