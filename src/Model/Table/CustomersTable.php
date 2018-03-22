@@ -89,6 +89,7 @@ class CustomersTable extends Table
         $this->hasMany('Wallets', [
             'foreignKey' => 'customer_id'
         ]);
+		$this->belongsTo('VerifyOtps');
     }
 
     /**

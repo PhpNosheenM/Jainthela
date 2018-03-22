@@ -16,9 +16,12 @@ class CustomersController extends AppController
   public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['add', 'login']);
+        $this->Auth->allow(['add', 'login','send_otp']);
     }
 
+	
+	
+	
 	public function my_account(){
 		
 		$customer_id=@$this->request->query['customer_id'];
@@ -69,7 +72,7 @@ class CustomersController extends AppController
                 		    }
 				 
 					
-					$success = True;
+					$success = true;
 					$message = 'Data Found successfully';
 					
 					
@@ -99,6 +102,42 @@ class CustomersController extends AppController
 		$this->set(['success' => $success,'message'=>$message,'wallet_balance'=>$wallet_balance,'profiles'=>$profiles,'_serialize' => ['success','message','wallet_balance','profiles']]);
 	}
 
+	public function send_otp(){
+		
+		$mobile=@$this->request->query['mobile'];
+		
+		if(!empty($mobile)){
+			$exists_mobile = $this->Customers->exists(['Customers.username'=>$mobile]);
+			if($exists_mobile==0){
+				$VerifyOtps = $this->Customers->VerifyOtps->newEntity();
+				$VerifyOtps->mobile=$mobile;
+				$VerifyOtps->status=0;
+				$opt=(mt_rand(1,10000));
+				$VerifyOtps->otp=$opt;
+				if($this->Customers->VerifyOtps->save($VerifyOtps)){
+					
+					
+					
+					$success = true;
+					$message = 'send otp successfully';
+				}else{
+					$success = false;
+					$message = 'otp is not send';
+					
+				}
+			}else{
+					$success = false;
+					$message = 'mobile already taken';
+					
+				}
+			
+		}else{
+			
+			$success = false;
+		    $message = 'empty mobile no';
+		}
+	}
+	
 	public function verify(){
 		$customer = $this->Customers->newEntity();
 		if($this->request->is(['patch', 'post', 'put'])){
