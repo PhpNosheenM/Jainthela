@@ -43,39 +43,34 @@ class CustomersController extends AppController
 							$query = $this->Customers->query();
 							$result = $query->update()->set(['status' => 'Active'])->where(['id' => $id])->execute();
 							$Customers=$this->Customers->find()->where(['id'=>$id,'otp'=>$otp]);
+              foreach ($Customers as $Customer) {
+                $accounting_group = $this->Customers->Ledgers->AccountingGroups->find()->where(['customer'=>1])->first();
+      					$ledger = $this->Customers->Ledgers->newEntity();
+      					$ledger->name = $Customer->name;
+      					$ledger->accounting_group_id = $accounting_group->id;
+      					$ledger->customer_id=$Customer->id;
+      					$ledger->bill_to_bill_accounting='yes';
+      					$this->Customers->Ledgers->save($ledger);
+              }
 
-              $accounting_group = $this->Customers->Ledgers->AccountingGroups->find()->where(['customer'=>1])->first();
-    					$ledger = $this->Customers->Ledgers->newEntity();
-    					$ledger->name = $Customers->name;
-    					$ledger->accounting_group_id = $accounting_group->id;
-    					$ledger->customer_id=$Customers->id;
-    					$ledger->bill_to_bill_accounting='yes';
-    					$this->Customers->Ledgers->save($ledger);
-
-							$data=$Customers;
 							$success = true;
 							$message = 'Register Successfully';
 						}else{
-							$data=[];
+
 							$success = false;
 							$message = 'otp is not match';
 						}
 				 }else{
-					  $data=[];
 					  $success = false;
-					  $message = 'Id or Otp is not empty';
+					  $message = 'Id or Otp empty';
 				 }
-
 			 }
              else{
-				$data=[];
                $success = false;
                $message = 'Invalid Token';
              }
 		}
-
-
-		$this->set(['success' => $success,'message'=>$message,'data'=>$data,'_serialize' => ['success','message','data']]);
+		$this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
 	}
 
 	public function add()
