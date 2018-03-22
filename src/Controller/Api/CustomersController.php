@@ -19,6 +19,85 @@ class CustomersController extends AppController
         $this->Auth->allow(['add', 'login']);
     }
 
+	public function my_account(){
+		
+		$customer_id=@$this->request->query['customer_id'];
+		$city_id=@$this->request->query['city_id'];
+		$token=@$this->request->query['token'];
+		$profiles=[];$wallet_balance=number_format(0, 2);
+		if(!empty($customer_id) and !empty($token) and !empty($city_id)){
+			
+			
+			$isValidToken = $this->checkToken($token);
+            if($isValidToken == 0){
+               
+			$isValidCity = $this->CheckAvabiltyOfCity($city_id);
+			if($isValidCity == 0){
+			
+
+			   
+			$profiles=$this->Customers->get($customer_id);
+			
+				if($profiles){
+					
+					 $query = $this->Customers->Wallets->find();
+                  		$totalInCase = $query->newExpr()
+                  			->addCase(
+                  				$query->newExpr()->add(['transaction_type' => 'Added']),
+                  				$query->newExpr()->add(['add_amount']),
+                  				'integer'
+                  			);
+                    	$totalOutCase = $query->newExpr()
+                    			->addCase(
+                    				$query->newExpr()->add(['transaction_type' => 'Deduct']),
+                    				$query->newExpr()->add(['used_amount']),
+                    				'integer'
+                    			);
+                  			$query->select([
+                  			'total_in' => $query->func()->sum($totalInCase),
+                  			'total_out' => $query->func()->sum($totalOutCase),'id','customer_id'
+                  		])
+                		->where(['Wallets.customer_id' => $customer_id])
+                		->group('customer_id')
+                		->autoFields(true);
+                       
+					  foreach($query as $fetch_query)
+                		    {
+                      			$advance=$fetch_query->total_in;
+                      			$consumed=$fetch_query->total_out;
+                      		  $wallet_balance= number_format($advance-$consumed, 2);
+                		    }
+				 
+					
+					$success = True;
+					$message = 'Data Found successfully';
+					
+					
+					
+				}else{
+					
+					$success = false;
+					$message = 'No Data Found';
+				}
+			}else{
+				$success = false;
+				$message = 'Invalid City';
+
+			}	
+			}else{
+				$success = false;
+				$message = 'Invalid Token';
+
+			}
+		}else{
+			
+			 $success = false;
+			 $message = 'customer id or token or city id is not empty';
+			
+		}
+		
+		$this->set(['success' => $success,'message'=>$message,'wallet_balance'=>$wallet_balance,'profiles'=>$profiles,'_serialize' => ['success','message','wallet_balance','profiles']]);
+	}
 
 	public function verify(){
 		$customer = $this->Customers->newEntity();
@@ -27,7 +106,7 @@ class CustomersController extends AppController
 			foreach(getallheaders() as $key => $value) {
 				if($key == 'Authorization')
 				{
-					echo $token = $value;
+					 $token = $value;
 				}
 			}
 			$token = str_replace("Bearer ","",$token);

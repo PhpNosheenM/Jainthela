@@ -51,7 +51,7 @@ class FeedbacksController extends AppController
 					if ($Feedbacks_data = $this->Feedbacks->save($Feedbacks)) {
 						$success=true;
 						$message="data has been saved successfully";
-						$data=$Feedbacks_data;
+						//$data=$Feedbacks_data;
 						
 					}else{
 						
@@ -76,6 +76,6 @@ class FeedbacksController extends AppController
 		}
 			
 	}
-		$this->set(['success' => $success,'message'=>$message,'data'=>$data,'_serialize' => ['success','message','data']]);
+		$this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
 	}
 }

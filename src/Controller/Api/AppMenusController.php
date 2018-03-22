@@ -70,6 +70,11 @@ class AppMenusController extends AppController
 			
              if(!empty($menuData->toArray()))
              {
+				 foreach($menuData as $menu){
+					 
+					 $menu->
+					 
+				 }
 				array_push($dynamic,array("Menu"=>$menuData));
 				
 				$Categories = $this->AppMenus->Categories->find()->select(['id','name','link'])->where(['city_id'=>$city_id,'section_show'=>'Yes','status'=>'Active'])->contain(['ChildCategories'=>function($q){
