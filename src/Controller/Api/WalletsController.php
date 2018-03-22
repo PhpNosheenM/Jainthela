@@ -96,7 +96,7 @@ class WalletsController extends AppController
           $message = 'Invalid Token';
         }
       $this->set(compact('success', 'message','wallet_details', 'wallet_balance'));
-      $this->set('_serialize', ['success', 'message','wallet_details', 'wallet_balance']);
+      $this->set('_serialize', ['success', 'message','wallet_balance','wallet_details']);
 
   }
 
