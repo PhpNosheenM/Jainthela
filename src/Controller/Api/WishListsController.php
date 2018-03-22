@@ -1,0 +1,96 @@
+<?php
+namespace App\Controller\Api;
+use Cake\Event\Event;
+use Cake\Network\Exception\UnauthorizedException;
+use Cake\Utility\Security;
+use Firebase\JWT\JWT;
+
+
+class WishListsController extends AppController
+{
+    public function initialize()
+     {
+         parent::initialize();
+         $this->Auth->allow(['addWishList','wishList','CustomerWishList']);
+     }
+
+     public function addWishList()
+     {
+       $wishList = $this->WishLists->newEntity();
+       if ($this->request->is('post')) {
+           $wishList = $this->WishLists->patchEntity($wishList, $this->request->getData());
+           $exists = $this->WishLists->exists(['WishLists.customer_id'=>$wishList->customer_id]);
+            if($exists != 1)
+            {   $wishList->wish_list_items = [];
+                $WishListItems = $this->WishLists->WishListItems->newEntity();
+                $WishListItems->item_id = $this->request->getData('item_id');
+                $WishListItems->item_variation_id = $this->request->getData('item_variation_id');
+                $wishList->wish_list_items[0] =$WishListItems;
+                if ($this->WishLists->save($wishList)) {
+                  $success = true;
+                  $message = 'Item added to wish list';
+                }
+                else {
+                  $success = true;
+                  $message = 'not successfully added';
+                }
+            }else {
+              if(!empty($this->request->getData('item_id')) and  !empty($this->request->getData('item_variation_id')))
+                {
+                    $exists = $this->WishLists->WishListItems->exists(['WishListItems.item_id'=>$this->request->getData('item_id'),'WishListItems.item_variation_id'=>$this->request->getData('item_variation_id')]);
+                        if($exists != 1)
+                        {
+                            $wishListIds = $this->WishLists->find()->select(['id'])->where(['customer_id' => $wishList->customer_id]);
+                            foreach ($wishListIds as $wishListId) {
+                              $query = $this->WishLists->WishListItems->query();
+                              $query->insert(['wish_list_id','item_id','item_variation_id'])
+                                  ->values([
+                                    'wish_list_id' => $wishListId->id,
+                                    'item_id' => $this->request->getData('item_id'),
+                                    'item_variation_id' => $this->request->getData('item_variation_id')
+                                  ])
+                                  ->execute();
+                            }
+                            $success = true;
+                            $message = 'Item added to wish list';
+                        }
+                        else {
+                          $success = false;
+                          $message = 'Already avaliable in wish list';
+                        }
+                }else
+                {
+                  $success = false;
+                  $message = 'empty item details';
+                }
+            }
+       }
+          $this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
+     }
+
+    public function CustomerWishList($customer_id=null)
+    {
+        $customer_id = @$this->request->query['customer_id'];
+        if(!empty($customer_id))
+        {
+            $wishlist = $this->WishLists->find()
+                        ->contain(['WishListItems'=>['Items']])
+                        ->where(['customer_id'=>$customer_id]);
+            if(!empty($wishlist->toArray()))
+            {
+              $success = true;
+              $message = 'wish list found';
+            } else
+            {
+              $wishlist = [];
+              $success = false;
+              $message = 'empty wish list';
+            }
+        }else {
+          $wishlist =[];
+          $success = false;
+          $message = 'customer id empty';
+        }
+        $this->set(['success' => $success,'message'=>$message,'wishlist'=>$wishlist,'_serialize' => ['success','message','wishlist']]);
+    }
+}

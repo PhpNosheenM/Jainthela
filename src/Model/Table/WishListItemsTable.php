@@ -7,20 +7,21 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * ItemReviewRatings Model
+ * WishListItems Model
  *
+ * @property \App\Model\Table\WishListsTable|\Cake\ORM\Association\BelongsTo $WishLists
  * @property \App\Model\Table\ItemsTable|\Cake\ORM\Association\BelongsTo $Items
- * @property \App\Model\Table\CustomersTable|\Cake\ORM\Association\BelongsTo $Customers
+ * @property \App\Model\Table\ItemVariationsTable|\Cake\ORM\Association\BelongsTo $ItemVariations
  *
- * @method \App\Model\Entity\ItemReviewRating get($primaryKey, $options = [])
- * @method \App\Model\Entity\ItemReviewRating newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\ItemReviewRating[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\ItemReviewRating|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\ItemReviewRating patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\ItemReviewRating[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\ItemReviewRating findOrCreate($search, callable $callback = null, $options = [])
+ * @method \App\Model\Entity\WishListItem get($primaryKey, $options = [])
+ * @method \App\Model\Entity\WishListItem newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\WishListItem[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\WishListItem|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\WishListItem patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\WishListItem[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\WishListItem findOrCreate($search, callable $callback = null, $options = [])
  */
-class ItemReviewRatingsTable extends Table
+class WishListItemsTable extends Table
 {
 
     /**
@@ -33,16 +34,20 @@ class ItemReviewRatingsTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('item_review_ratings');
+        $this->setTable('wish_list_items');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
+        $this->belongsTo('WishLists', [
+            'foreignKey' => 'wish_list_id',
+            'joinType' => 'INNER'
+        ]);
         $this->belongsTo('Items', [
             'foreignKey' => 'item_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('Customers', [
-            'foreignKey' => 'customer_id',
+        $this->belongsTo('ItemVariations', [
+            'foreignKey' => 'item_variation_id',
             'joinType' => 'INNER'
         ]);
     }
@@ -58,18 +63,6 @@ class ItemReviewRatingsTable extends Table
         $validator
             ->integer('id')
             ->allowEmpty('id', 'create');
-
-        $validator
-            ->decimal('rating')
-            ->requirePresence('rating', 'create')
-            ->notEmpty('rating');
-
-        $validator
-            ->scalar('comment')
-            ->requirePresence('comment', 'create')
-            ->notEmpty('comment');
-
-
         return $validator;
     }
 
@@ -82,8 +75,9 @@ class ItemReviewRatingsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
+        $rules->add($rules->existsIn(['wish_list_id'], 'WishLists'));
         $rules->add($rules->existsIn(['item_id'], 'Items'));
-        $rules->add($rules->existsIn(['customer_id'], 'Customers'));
+        $rules->add($rules->existsIn(['item_variation_id'], 'ItemVariations'));
 
         return $rules;
     }

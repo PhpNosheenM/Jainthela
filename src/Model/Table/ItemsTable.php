@@ -97,7 +97,7 @@ class ItemsTable extends Table
         ]);
         $this->hasMany('ItemVariationMasters', [
             'foreignKey' => 'item_id',
-			'saveStrategy'=>'replace'
+			       'saveStrategy'=>'replace'
         ]);
         $this->hasMany('PromotionDetails', [
             'foreignKey' => 'item_id'

@@ -18,7 +18,7 @@ class ItemsController extends AppController
     public function initialize()
      {
          parent::initialize();
-         $this->Auth->allow(['productDetail','itemList']);
+         $this->Auth->allow(['productDetail','itemList','addItemRating']);
      }
 
      public function itemList($category_id=null,$city_id=null,$page=null)
@@ -76,7 +76,7 @@ class ItemsController extends AppController
             {
                 $items = $this->Items->find();
                           $items->select(['AverageReviewRatings.item_id','ItemAverageRating' => $items->func()->avg('AverageReviewRatings.rating')])
-                          ->contain(['Categories','Brands','Sellers','Cities','ItemsVariations'=>['UnitVariations'],'LeftItemReviewRatings'])
+                          ->contain(['Categories','Brands','Cities','ItemsVariations'=>['UnitVariations','Sellers'],'LeftItemReviewRatings'])
                           ->leftJoinWith('AverageReviewRatings')
                           ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.id'=>$item_id,'Items.city_id'=>$city_id,'Items.category_id'=>$category_id])
                           ->autoFields(true);
@@ -123,5 +123,27 @@ class ItemsController extends AppController
       }
 
       $this->set(['success' => $success,'message'=>$message,'items' => $items,'reletedItems'=>$reletedItems,'_serialize' => ['success','message','items','reletedItems']]);
+    }
+
+    public function addItemRating()
+    {
+		    $addItemRating = $this->Items->ItemReviewRatings->newEntity();
+		      if($this->request->is(['patch', 'post', 'put'])){
+              $addItemRating = $this->Items->ItemReviewRatings->patchEntity($addItemRating, $this->request->getData());
+               if(!empty($addItemRating->item_id) and (!empty($addItemRating->customer_id))){
+
+       					if ($this->Items->ItemReviewRatings->save($addItemRating)) {
+           						$success=true;
+           						$message="rating n review has been saved successfully";
+                }else{
+                        $success=false;
+       						      $message="rating n review has not been saved";
+       					}
+		         }else{
+       					$success = false;
+       					$message = 'Invalid Item id or customer id';
+       				}
+          }
+          $this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
     }
 }

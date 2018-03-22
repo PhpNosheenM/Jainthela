@@ -19,11 +19,11 @@ class FeedbacksController extends AppController
         parent::initialize();
         //$this->Auth->allow(['feedbackform']);
     }
-	
+
 	public function feedbackform(){
-		
+
 		$Feedbacks = $this->Feedbacks->newEntity();
-		
+
 		if($this->request->is(['patch', 'post', 'put'])){
 			$data=[];
 			$city_id=$this->request->data['city_id'];
@@ -36,14 +36,14 @@ class FeedbacksController extends AppController
 				  $token = $value;
 				}
 			}
-			
+
 			 $token = str_replace("Bearer ","",$token);
 			$isValidToken = $this->checkToken($token);
 		if($isValidToken == 0)
 		{
-			
+
 			if(!empty($customer_id) and (!empty($city_id))){
-				
+
 				$isValidCity = $this->CheckAvabiltyOfCity($city_id);
 				if($isValidCity == 0)
 				{
@@ -52,20 +52,20 @@ class FeedbacksController extends AppController
 						$success=true;
 						$message="data has been saved successfully";
 						//$data=$Feedbacks_data;
-						
+
 					}else{
-						
+
 						$success=false;
 						$message="data has not been saved";
 					}
-					
-					
+
+
 				}else{
 					$success = false;
 					$message = 'Invalid City';
 				}
-				
-			
+
+
 			}else{
 				$success = false;
 				$message = 'Empty customer id or city id';
@@ -74,7 +74,7 @@ class FeedbacksController extends AppController
 			 $success = false;
              $message = 'Invalid Token';
 		}
-			
+
 	}
 		$this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
 	}
