@@ -75,7 +75,7 @@ class ReceiptsTable extends Table
             ->integer('voucher_no')
             ->requirePresence('voucher_no', 'create')
             ->notEmpty('voucher_no');
-
+		/*
         $validator
             ->date('transaction_date')
             ->requirePresence('transaction_date', 'create')
@@ -95,12 +95,8 @@ class ReceiptsTable extends Table
             ->decimal('amount')
             ->requirePresence('amount', 'create')
             ->notEmpty('amount');
-
-        $validator
-            ->scalar('status')
-            ->maxLength('status', 10)
-            ->requirePresence('status', 'create')
-            ->notEmpty('status');
+		*/
+       
 
         return $validator;
     }
@@ -115,7 +111,7 @@ class ReceiptsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['location_id'], 'Locations'));
-        $rules->add($rules->existsIn(['sales_invoice_id'], 'SalesInvoices'));
+        //$rules->add($rules->existsIn(['sales_invoice_id'], 'SalesInvoices'));
 
         return $rules;
     }

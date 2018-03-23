@@ -55,7 +55,7 @@
 									<tr class="MainTr">
 										<td width="10%" valign="top">
 											<?php $options['Cr'] = 'Cr'; ?>
-											<?= $this->Form->select('cr_dr',$options,['class'=>'form-control input-sm select','label'=>false]) ?>
+											<?= $this->Form->select('cr_dr',$options,['class'=>'form-control input-sm cr_dr select','label'=>false]) ?>
 											<?php unset($options); ?>
 										</td>
 										<td width="65%" valign="top">
@@ -122,7 +122,8 @@ $option_type['Dr']='Dr';
 		<tr>
 			<td width="20%" valign="top"> 
 				<input type="hidden" class="ledgerIdContainer" />
-				<input type="hidden" class="companyIdContainer" />
+				<input type="hidden" class="locationIdContainer" />
+				<input type="hidden" class="cityIdContainer" />
 				<?php 
 				echo $this->Form->select('type',$option_ref, ['label' => false,'class' => 'form-control input-sm refType','required'=>'required']); ?>
 			</td>
@@ -158,7 +159,7 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 		<tr>
 			<td width="30%" valign="top">
 				<?php 
-				echo $this->Form->input('mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType','required'=>'required']); ?>
+				echo $this->Form->select('mode_of_payment', $option_mode,['label' => false,'class' => 'form-control input-sm paymentType','required'=>'required']); ?>
 			</td>
 			<td width="30%" valign="top">
 				<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no positiveValue','placeholder'=>'Cheque No']); ?> 
@@ -178,10 +179,11 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 			
 			<td width="10%" valign="top">
 			
-				<?php $options['Cr'] = 'Cr'; 
-					$options['Dr'] = 'Dr';			
+				<?php 
+				$options['Cr'] = 'Cr'; 
+				$options['Dr'] = 'Dr';			
 				 
-				echo $this->Form->select('cr_dr', $options,['label' => false,'class' => 'form-control  input-sm cr_dr','required'=>'required','value'=>'Dr']); ?>
+				echo $this->Form->select('cr_dr', $options,['label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Dr']); ?>
 			</td>
 			<td width="65%" valign="top">
 				<?php echo $this->Form->select('ledger_id',$ledgerOptions, ['empty'=>'--Select--','label' => false,'class' => 'form-control input-sm ledger ','required'=>'required', 'data-live-search'=>true]); ?>
@@ -218,18 +220,122 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" readonly >';
 	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" readonly >';
 	
-	 $js="var jvalidate = $('#jvalidate').validate({
+	 $js="var form1 = $('#jvalidate').validate({
+		
 		ignore: [],
 		rules: {                                            
+			totalMainCr: {
+						equalTo: '#totalMainDr'
+					},	
+				
+			} ,
+			messages: {
+				totalMainCr: {
+					equalTo: 'Total debit and credit not matched !'
+				},
+			}, 
+			submitHandler: function (form) {
+					var totalMainDr  = parseFloat($('#totalMainDr').val());
+					var totalBankCash = parseFloat($('#totalBankCash').val());
+					if(!totalMainDr || totalMainDr==0){
+						alert('Error: zero amount receipt can not be generated.');
+						return false;
+					}
+					else if(totalBankCash<=0){
+						alert('Error: No Bank or Cash Debited.');
+						return false;
+					}
+					else{
+						if(confirm('Are you sure you want to submit!'))
+							{
+								success1.show();
+								error1.hide();
+								form1[0].submit();
+								$('.submit').attr('disabled','disabled');
+								$('.submit').text('Submiting...');
+								return true;
+							}
+					}
+                }
 				
 				
-			}                                        
 		});
 	
-		$(document).on('click','.AddMainRow',function(){
+			$(document).on('click','.AddMainRow',function(){
 			addMainRow();
 			renameMainRows();
-		});
+			});
+		
+			$(document).on('click','.delete-tr',function() 
+			{	
+				$(this).closest('tr.MainTr').remove();
+				renameMainRows();
+			});
+			
+			$(document).on('click','.delete-tr-ref',function() 
+			{	var SelectedTr=$(this).closest('tr.MainTr');
+				$(this).closest('tr').remove();
+				calculation(SelectedTr);
+				renameMainRows();
+				renameRefRows(SelectedTr);
+				
+			});
+			
+			$(document).on('change','.paymentType',function(){
+				
+				var type=$(this).val();	
+				var currentRefRow=$(this).closest('tr');
+				var SelectedTr=$(this).closest('tr.MainTr');
+				if(type=='NEFT/RTGS'){
+				 currentRefRow.find('td:nth-child(2) input').val('');
+					currentRefRow.find('td:nth-child(3) input').val('');
+					currentRefRow.find('td:nth-child(2)').hide();
+					currentRefRow.find('td:nth-child(3)').hide();
+					renameBankRows(SelectedTr);
+				}
+				else{
+					currentRefRow.find('td:nth-child(2)').show();
+					currentRefRow.find('td:nth-child(3)').show();
+				    renameBankRows(SelectedTr);
+				}
+				
+			});
+			
+			$(document).on('change','.refDrCr',function(){
+				var SelectedTr=$(this).closest('tr.MainTr');
+				renameRefRows(SelectedTr);
+			});
+			
+			$(document).on('change','.refType',function(){
+				var type=$(this).val();
+				var currentRefRow=$(this).closest('tr');
+				var ledger_id=$(this).closest('tr.MainTr').find('select.ledger option:selected').val();
+				var due_days=$(this).closest('tr.MainTr').find('select.ledger option:selected').attr('default_days');
+				var SelectedTr=$(this).closest('tr.MainTr');
+				if(type=='Against'){
+					$(this).closest('tr').find('td:nth-child(2)').html('Loading Ref List...');
+					var url='".$this->Url->build(['controller'=>'ReferenceDetails','action'=>'listRef'])."';
+					url=url+'/'+ledger_id;
+					$.ajax({
+						url: url,
+					}).done(function(response) { 
+						currentRefRow.find('td:nth-child(2)').html(response);
+						currentRefRow.find('td:nth-child(5)').html('');
+						
+						renameRefRows(SelectedTr);
+					});
+				}else if(type=='On Account'){
+					currentRefRow.find('td:nth-child(2)').html('');
+					currentRefRow.find('td:nth-child(5)').html('');
+				}else{
+					currentRefRow.find('td:nth-child(2)').html('".$kk."');
+					currentRefRow.find('td:nth-child(5)').html('".$dd."');
+					currentRefRow.find('td:nth-child(5) input.dueDays').val(due_days);
+				}
+				var SelectedTr=$(this).closest('tr.MainTr');
+				renameRefRows(SelectedTr);
+			});
+			
 		$(document).on('change','.ledger',function(){
 				var openWindow=$(this).find('option:selected').attr('open_window');
 				
@@ -339,6 +445,43 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 				renameRefRows(SelectedTr);
 			}
 			
+			$(document).on('click','.addBankRow',function(){
+				var SelectedTr=$(this).closest('tr.MainTr');
+				AddBankRow(SelectedTr);
+				
+			});
+		
+			
+			function AddBankRow(SelectedTr){
+				var bankTr=$('#sampleForBank tbody tr').clone();
+				//console.log(bankTr);
+				SelectedTr.find('td:nth-child(2) div.window table tbody').append(bankTr);
+				renameBankRows(SelectedTr);
+			}
+			
+			function renameBankRows(SelectedTr){
+				var row_no=SelectedTr.attr('row_no');
+				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
+					var type = SelectedTr.find('td:nth-child(1) select.paymentType option:selected').val(); 
+					//alert(type);
+					$(this).find('td:nth-child(1) select.paymentType').attr({name:'receipt_rows['+row_no+'][mode_of_payment]',id:'receipt_rows-'+row_no+'-mode_of_payment'}).selectpicker();
+					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'receipt_rows['+row_no+'][cheque_no]',id:'receipt_rows-'+row_no+'-cheque_no'});
+					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'receipt_rows['+row_no+'][cheque_date]',id:'receipt_rows-'+row_no+'-cheque_date'}).datepicker();
+				
+					if(type=='Cheque')
+					{ 
+						$(this).find('td:nth-child(2) input.cheque_no').rules('add','required');
+						$(this).find('td:nth-child(3) input.cheque_date').rules('add','required');
+					}
+					else if(type=='NEFT/RTGS')
+					{
+						$(this).find('td:nth-child(2) input').rules('remove','required');
+						$(this).find('td:nth-child(3) input').rules('remove','required');
+					}
+				});
+			}
+			
+			
 			function renameRefRows(SelectedTr){
 				var i=0;
 				
@@ -354,10 +497,11 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 				
 				SelectedTr.find('input.ledgerIdContainer').val(ledger_id);
 				SelectedTr.find('input.locationIdContainer').val(".$location_id.");
+				SelectedTr.find('input.cityIdContainer').val(".$city_id.");
 				var row_no=SelectedTr.attr('row_no');
 				if(SelectedTr.find('td:nth-child(2) div.window table tbody tr').length>0){
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
-					$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][company_id]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-company_id'});
+					$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][location_id]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-location_id'});
 					$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
 					
 					$(this).find('td:nth-child(1) select.refType').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][type]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-type'}).selectpicker();
@@ -365,6 +509,7 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 					var is_input=$(this).find('td:nth-child(2) input.ref_name').length;
 					if(is_select){
 						$(this).find('td:nth-child(2) select.refList').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
+						$(this).find('td:nth-child(2) select.refList').selectpicker();
 					}else if(is_input){
 						$(this).find('td:nth-child(2) input.ref_name').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
 						$(this).find('td:nth-child(5) input.dueDays').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][due_days]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-due_days'});
@@ -396,6 +541,63 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 						});
 				}
 			}
+			
+			$(document).on('keyup','.calculate_total',function()
+			{ 
+				 renameMainRows();
+			});
+			$(document).on('keyup', '.calculation', function()
+			{ 
+				var SelectedTr=$(this).closest('tr.MainTr');
+				calculation(SelectedTr);
+				
+			});
+			$(document).on('change', '.calculation',function()
+			{ 
+				var SelectedTr=$(this).closest('tr.MainTr');
+				calculation(SelectedTr);
+				
+			});
+			function calculation(SelectedTr)
+			{
+				var total_debit=0;var total_credit=0; var remaining=0; var i=0;
+				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
+				var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
+				//console.log(Dr_Cr);
+				var amt= parseFloat($(this).find('td:nth-child(3) input').val());
+				if(!amt){amt=0; }
+					if(Dr_Cr=='Dr'){
+						total_debit=round((total_debit+amt),2);
+						
+					}
+					else if(Dr_Cr=='Cr'){
+						total_credit=round((total_credit+amt), 2);
+						//console.log(total_credit);
+					}
+					
+					remaining=round(total_debit-total_credit, 2);
+					
+					if(remaining>0){
+						//console.log(remaining);
+						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(remaining);
+						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Dr');
+					}
+					else if(remaining<0){
+						remaining=Math.abs(remaining)
+						$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val(remaining);
+						$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('Cr');
+					}
+					else{
+					$(this).closest('table').find(' tfoot td:nth-child(2) input.total').val('0');
+					$(this).closest('table').find(' tfoot td:nth-child(3) input.total_type').val('');	
+					}
+					
+				});
+				renameRefRows(SelectedTr);
+					
+				i++;
+			}
+			
 			
 		
 		";  

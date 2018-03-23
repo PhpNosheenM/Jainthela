@@ -5,6 +5,8 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\Event\Event;
+use ArrayObject;
 
 /**
  * ReceiptRows Model
@@ -72,7 +74,7 @@ class ReceiptRowsTable extends Table
         $validator
             ->integer('id')
             ->allowEmpty('id', 'create');
-
+		/*
         $validator
             ->scalar('cr_dr')
             ->maxLength('cr_dr', 10)
@@ -102,7 +104,7 @@ class ReceiptRowsTable extends Table
         $validator
             ->date('cheque_date')
             ->allowEmpty('cheque_date');
-
+		*/
         return $validator;
     }
 
@@ -113,6 +115,11 @@ class ReceiptRowsTable extends Table
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
+	public function beforeMarshal(Event $event, ArrayObject $data)
+    {
+        @$data['cheque_date'] = trim(date('Y-m-d',strtotime(@$data['cheque_date'])));
+    }
+	
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['receipt_id'], 'Receipts'));
