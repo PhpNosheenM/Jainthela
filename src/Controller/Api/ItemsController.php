@@ -135,13 +135,20 @@ class ItemsController extends AppController
               $addItemRating = $this->Items->ItemReviewRatings->patchEntity($addItemRating, $this->request->getData());
                if(!empty($addItemRating->item_id) and (!empty($addItemRating->customer_id))){
 
-       					if ($this->Items->ItemReviewRatings->save($addItemRating)) {
-           						$success=true;
-           						$message="rating n review has been saved successfully";
-                }else{
-                        $success=false;
-       						      $message="rating n review has not been saved";
-       					}
+                 $exists = $this->Items->ItemReviewRatings->exists(['ItemReviewRatings.customer_id'=>$addItemRating->customer_id]);
+                 if($exists == 1) {
+                    $success = false;
+          					$message = 'rating already given';
+                }
+                 else {
+                       if ($this->Items->ItemReviewRatings->save($addItemRating)) {
+                  						$success=true;
+                  						$message="rating n review has been saved successfully";
+                       }else{
+                               $success=false;
+              						      $message="rating n review has not been saved";
+              					}
+                  }
 		         }else{
        					$success = false;
        					$message = 'Invalid Item id or customer id';
