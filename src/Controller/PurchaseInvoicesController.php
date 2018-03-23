@@ -235,7 +235,7 @@ class PurchaseInvoicesController extends AppController
 
                 return $this->redirect(['action' => 'index']);
             }else{
-				pr($purchaseInvoice); exit;
+				//pr($purchaseInvoice); exit;
 			}
             $this->Flash->error(__('The purchase invoice could not be saved. Please, try again.'));
         }

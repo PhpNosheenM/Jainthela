@@ -60,7 +60,7 @@
 									
 									<td class="actions">
 										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'edit', $purchaseInvoice->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
-										<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $purchaseInvoice->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $purchaseInvoice->id),'escape'=>false]) ?>
+										
 									
 									</td>
 								</tr>

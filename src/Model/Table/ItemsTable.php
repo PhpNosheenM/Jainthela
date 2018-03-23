@@ -74,7 +74,15 @@ class ItemsTable extends Table
             'foreignKey' => 'seller_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('Cities', [
+        $this->belongsTo('Locations', [
+            'foreignKey' => 'location_id',
+            'joinType' => 'INNER'
+        ]);
+		$this->belongsTo('ItemLedgers', [
+            'foreignKey' => 'item_id',
+            'joinType' => 'INNER'
+        ]);
+		$this->belongsTo('Cities', [
             'foreignKey' => 'city_id',
             'joinType' => 'INNER'
         ]);
