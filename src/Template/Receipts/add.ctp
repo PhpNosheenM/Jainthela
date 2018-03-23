@@ -113,6 +113,10 @@ $option_ref['Against']= 'Against';
 $option_ref['Advance']= 'Advance';
 $option_ref['On Account']= 'On Account';
 ?>
+<?php
+$option_type['Cr']='Cr';
+$option_type['Dr']='Dr';
+?>
 <table id="sampleForRef" style="display:none;" width="100%">
 	<tbody>
 		<tr>
@@ -131,7 +135,7 @@ $option_ref['On Account']= 'On Account';
 			</td>
 			<td width="10%" style="padding-left:0px;" valign="top">
 				<?php 
-				echo $this->Form->select('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Dr']); ?>
+				echo $this->Form->select('type_cr_dr',$option_type, ['label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Dr']); ?>
 			</td>
 			<td width="15%" style="padding-left:0px;" valign="top">
 				<?php 
@@ -349,7 +353,7 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 				}
 				
 				SelectedTr.find('input.ledgerIdContainer').val(ledger_id);
-				SelectedTr.find('input.companyIdContainer').val(".$company_id.");
+				SelectedTr.find('input.locationIdContainer').val(".$location_id.");
 				var row_no=SelectedTr.attr('row_no');
 				if(SelectedTr.find('td:nth-child(2) div.window table tbody tr').length>0){
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
@@ -365,11 +369,12 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 						$(this).find('td:nth-child(2) input.ref_name').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
 						$(this).find('td:nth-child(5) input.dueDays').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][due_days]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-due_days'});
 					}
+					$(this).find('td:nth-child(4) select.refDrCr').selectpicker();
 					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
 					if(Dr_Cr=='Dr'){
-						$(this).find('td:nth-child(3) input').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][debit]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-debit'}).rules('add', 'required');;
+						$(this).find('td:nth-child(3) input').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][debit]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-debit'}).rules('add', 'required');
 					}else{
-						$(this).find('td:nth-child(3) input').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][credit]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-credit'}).rules('add', 'required');;
+						$(this).find('td:nth-child(3) input').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][credit]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-credit'}).rules('add', 'required');
 					}
 					i++;
 				});
