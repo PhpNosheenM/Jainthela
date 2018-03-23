@@ -22,7 +22,7 @@ class HomeScreensController extends AppController
 
 	
 	public function current_api_version(){
-		$data=[];
+		//$data=[];
 		$api_version=@$this->request->query['version'];
 		if(!empty($api_version)){
 			$ApiVersions=$this->HomeScreens->ApiVersions->find()->where(['version'=>$api_version]);
@@ -30,7 +30,7 @@ class HomeScreensController extends AppController
 			if($ApiVersions->toArray()){
 				$success=true;
 				$message="data found";
-				$data=$ApiVersions;
+				//$data=$ApiVersions;
 			}else{
 				$success=false;
 				$message="data not found";
@@ -41,7 +41,7 @@ class HomeScreensController extends AppController
 			$message="version is empty";
 			
 		}
-		$this->set(['success' => $success,'message'=>$message,'data'=>$data,'_serialize' => ['success','message','data']]);
+		$this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
 	}
 	
 	 public function homescreen(){
