@@ -37,26 +37,31 @@ class WishListsController extends AppController
             }else {
               if(!empty($this->request->getData('item_id')) and  !empty($this->request->getData('item_variation_id')))
                 {
-                    $exists = $this->WishLists->WishListItems->exists(['WishListItems.item_id'=>$this->request->getData('item_id'),'WishListItems.item_variation_id'=>$this->request->getData('item_variation_id')]);
+                  $wishListIds = $this->WishLists->find()->select(['id'])->where(['customer_id' => $wishList->customer_id]);
+                    foreach ($wishListIds as $wishListId) {  $wishListId = $wishListId->id;  }
+                    $exists = $this->WishLists->WishListItems->exists(['WishListItems.wish_list_id'=>$wishListId,'WishListItems.item_id'=>$this->request->getData('item_id'),'WishListItems.item_variation_id'=>$this->request->getData('item_variation_id')]);
                         if($exists != 1)
                         {
                             $wishListIds = $this->WishLists->find()->select(['id'])->where(['customer_id' => $wishList->customer_id]);
-                            foreach ($wishListIds as $wishListId) {
+
                               $query = $this->WishLists->WishListItems->query();
                               $query->insert(['wish_list_id','item_id','item_variation_id'])
                                   ->values([
-                                    'wish_list_id' => $wishListId->id,
+                                    'wish_list_id' => $wishListId,
                                     'item_id' => $this->request->getData('item_id'),
                                     'item_variation_id' => $this->request->getData('item_variation_id')
                                   ])
                                   ->execute();
-                            }
+
                             $success = true;
                             $message = 'Item added to wish list';
                         }
                         else {
-                          $success = false;
-                          $message = 'Already avaliable in wish list';
+                            $query = $this->WishLists->WishListItems->query();
+                            $query->delete()->where(['WishListItems.wish_list_id'=>$wishListId,'WishListItems.item_id'=>$this->request->getData('item_id'),'WishListItems.item_variation_id'=>$this->request->getData('item_variation_id')])
+                            ->execute();
+                          $success = true;
+                          $message = 'removed from wish list';
                         }
                 }else
                 {
