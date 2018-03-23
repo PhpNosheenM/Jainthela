@@ -107,7 +107,7 @@ class WishListsController extends AppController
         if(!empty($customer_id))
         {
             $wishlist = $this->WishLists->find()
-                        ->contain(['WishListItems'=>['Items'=>['ItemsVariations']]])
+                        ->contain(['WishListItems'=>['ItemVariations'=>['Items']]])
                         ->where(['customer_id'=>$customer_id]);
             if(!empty($wishlist->toArray()))
             {
