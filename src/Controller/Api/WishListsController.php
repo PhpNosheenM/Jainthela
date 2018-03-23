@@ -63,9 +63,14 @@ class WishListsController extends AppController
                             $query = $this->WishLists->WishListItems->query();
                             $query->delete()->where(['WishListItems.wish_list_id'=>$wishListId,'WishListItems.item_id'=>$this->request->getData('item_id'),'WishListItems.item_variation_id'=>$this->request->getData('item_variation_id')])
                             ->execute();
+<<<<<<< HEAD
                           $success = true;
 						  $isAdded = false;
                           $message = 'removed from wish list';
+=======
+                            $success = true;
+                            $message = 'removed from wish list';
+>>>>>>> 8d4d4ef404a336f91faaa1e545f10082c9b20c46
                         }
                 }else
                 {
@@ -107,7 +112,7 @@ class WishListsController extends AppController
         if(!empty($customer_id))
         {
             $wishlist = $this->WishLists->find()
-                        ->contain(['WishListItems'=>['Items']])
+                        ->contain(['WishListItems'=>['Items'=>['ItemsVariations']]])
                         ->where(['customer_id'=>$customer_id]);
             if(!empty($wishlist->toArray()))
             {

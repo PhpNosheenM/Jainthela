@@ -141,6 +141,11 @@ class ItemsTable extends Table
 
         // HomeScreen Model used in Item (product detail) api
 
+        $this->belongsTo('WishLists', [
+            'foreignKey' => 'item_id',
+            'joinType' => 'INNER'
+        ]);
+
         $this->belongsTo('HomeScreens');
 
     }

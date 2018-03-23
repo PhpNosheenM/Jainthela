@@ -129,6 +129,7 @@ class WalletsController extends AppController
                      $wallet = $this->Wallets->patchEntity($wallet, $this->request->getData());
                      $customer_id=$wallet->customer_id;
                      $wallet->transaction_type = 'Added';
+                     //pr($wallet);exit;
                      if ($this->Wallets->save($wallet)) {
                          $success=true;
                          $message="Thank You for add money with Jainthela.";
