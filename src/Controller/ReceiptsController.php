@@ -57,10 +57,11 @@ class ReceiptsController extends AppController
 		$this->viewBuilder()->layout('admin_portal');
         $receipt = $this->Receipts->newEntity();
         if ($this->request->is('post')) {
+			
             $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
 			$tdate=$this->request->data('transaction_date');
 			$receipt->transaction_date=date('Y-m-d',strtotime($tdate));
-		
+			$receipt->location_id = $location_id;
 		   //transaction date for receipt code start here--
 			foreach($receipt->receipt_rows as $receipt_row)
 			{
@@ -73,10 +74,25 @@ class ReceiptsController extends AppController
 				}
 			}
             if ($this->Receipts->save($receipt)) {
+				
+			foreach($receipt->receipt_rows as $receipt_row)
+				{
+					$accountEntry = $this->Receipts->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $receipt_row->ledger_id;
+					$accountEntry->debit                      = @$receipt_row->debit;
+					$accountEntry->credit                     = @$receipt_row->credit;
+					$accountEntry->transaction_date           = $receipt->transaction_date;
+					$accountEntry->location_id                = $location_id;
+					$accountEntry->city_id                 	  = $city_id;
+					$accountEntry->receipt_id                 = $receipt->id;
+					$accountEntry->receipt_row_id             = $receipt_row->id;
+					$this->Receipts->AccountingEntries->save($accountEntry);
+				}
                 $this->Flash->success(__('The receipt has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
             }
+			pr($receipt); exit;
             $this->Flash->error(__('The receipt could not be saved. Please, try again.'));
         }
 		$Voucher_no = $this->Receipts->find()->select(['voucher_no'])->where(['location_id'=>$location_id])->order(['voucher_no' => 'DESC'])->first();
@@ -156,7 +172,7 @@ class ReceiptsController extends AppController
 		}
 		$referenceDetails=$this->Receipts->ReceiptRows->ReferenceDetails->find('list');
         $salesInvoices = $this->Receipts->SalesInvoices->find('list', ['limit' => 200]);
-        $this->set(compact('receipt', 'location_id', 'salesInvoices','voucher_no','ledgerOptions','company_id','referenceDetails'));
+        $this->set(compact('receipt', 'location_id', 'city_id','salesInvoices','voucher_no','ledgerOptions','company_id','referenceDetails'));
     }
 
     /**
