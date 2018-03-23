@@ -135,7 +135,7 @@ class ItemsController extends AppController
               $addItemRating = $this->Items->ItemReviewRatings->patchEntity($addItemRating, $this->request->getData());
                if(!empty($addItemRating->item_id) and (!empty($addItemRating->customer_id))){
 
-                 $exists = $this->Items->ItemReviewRatings->exists(['ItemReviewRatings.customer_id'=>$addItemRating->customer_id]);
+                 $exists = $this->Items->ItemReviewRatings->exists(['ItemReviewRatings.item_id'=>$addItemRating->item_id,'ItemReviewRatings.customer_id'=>$addItemRating->customer_id]);
                  if($exists == 1) {
                     $success = false;
           					$message = 'rating already given';
