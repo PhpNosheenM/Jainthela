@@ -35,7 +35,7 @@ class ItemsController extends AppController
          if($isValidCity == 0)
          {
            $items = $this->Items->find()
-                     ->contain(['ItemsVariations'=>['UnitVariations']])
+                     ->contain(['ItemsVariations'=>['UnitVariations'=>['Units']]])
                      ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id,'Items.category_id'=>$category_id])
                      ->limit($limit)->page($page);
                if(!empty($items->toArray()))
