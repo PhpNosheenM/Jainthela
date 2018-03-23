@@ -216,7 +216,7 @@ class PurchaseInvoicesController extends AppController
 				if($purchase_invoice_row->item_variation_id==0){
 					$query = $this->PurchaseInvoices->Items->ItemVariations->query();
 					$query->update()
-					->set(['purchase_rate'=>$purchase_invoice_row->purchase_rate,'sales_rate'=>$purchase_invoice_row->sales_rate,'mrp'=>$purchase_invoice_row->mrp])
+					->set(['purchase_rate'=>$purchase_invoice_row->purchase_rate,'sales_rate'=>$purchase_invoice_row->sales_rate,'mrp'=>$purchase_invoice_row->mrp,'out_of_stock'=>'No','ready_to_sale'=>'Yes','update_on'=>$today_date])
 					->where(['item_id' => $purchase_invoice_row->item_id,'seller_id'=>$seller_ledger->seller_id])
 					->execute();
 					
@@ -224,7 +224,7 @@ class PurchaseInvoicesController extends AppController
 					
 					$query = $this->PurchaseInvoices->Items->ItemVariations->query();
 					$query->update()
-					->set(['purchase_rate'=>$purchase_invoice_row->purchase_rate,'sales_rate'=>$purchase_invoice_row->sales_rate,'mrp'=>$purchase_invoice_row->mrp,'print_rate'=>$purchase_invoice_row->mrp,'update_on'=>$today_date])
+					->set(['purchase_rate'=>$purchase_invoice_row->purchase_rate,'sales_rate'=>$purchase_invoice_row->sales_rate,'mrp'=>$purchase_invoice_row->mrp,'print_rate'=>$purchase_invoice_row->mrp,'update_on'=>$today_date,'out_of_stock'=>'No','ready_to_sale'=>'Yes'])
 					->where(['item_id' => $purchase_invoice_row->item_id,'seller_id'=>$seller_ledger->seller_id])
 					->execute();
 				}

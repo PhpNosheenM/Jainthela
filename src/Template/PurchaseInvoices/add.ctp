@@ -49,7 +49,7 @@
 						<div class="form-group">
 								<label class=" control-label">Narration</label>
 								<div class=""> 
-									<?= $this->Form->control('narration',['class'=>'form-control','placeholder'=>'Narration','label'=>false,'rows'=>'4']) ?>
+									<?= $this->Form->control('narration',['class'=>'form-control','placeholder'=>'Narration','label'=>false,'rows'=>'6']) ?>
 								</div>
 							</div>
 						</div>
@@ -64,7 +64,7 @@
 										<th rowspan="2" style="text-align:left;width:200px;"><label>Item<label></th>
 										
 										<th rowspan="2" style="text-align:center;width:130px; "><label>Quantity<label></th>
-										<th rowspan="2" style="text-align:center;width:130px;"><label>Rate<label></th>
+										<th rowspan="2" style="text-align:center;width:180px;"><label>Rate<label></th>
 										
 										<th rowspan="2" style="text-align:center;"><label>Taxable Value<label></th>
 										<th colspan="2" style="text-align:center;"><label id="gstDisplay">GST<label></th>
