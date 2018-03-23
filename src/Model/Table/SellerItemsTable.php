@@ -53,6 +53,12 @@ class SellerItemsTable extends Table
 			'joinTable' => 'seller_items'
         ]); */
         $this->belongsTo('ItemVariations');
+        $this->belongsTo('ItemVariationMasters');
+		$this->belongsToMany('ItemVariationMasters', [
+			'foreignKey'=>'item_id',
+			'targetForeignKey'=>'item_id',
+			'joinTable' => 'seller_items'
+        ]);
         $this->belongsTo('Categories', [
             'foreignKey' => 'category_id',
             'joinType' => 'INNER'
