@@ -13,6 +13,7 @@ use Cake\Validation\Validator;
  * @property \App\Model\Table\CustomersTable|\Cake\ORM\Association\BelongsTo $Customers
  * @property \App\Model\Table\ItemVariationsTable|\Cake\ORM\Association\BelongsTo $ItemVariations
  * @property \App\Model\Table\ComboOffersTable|\Cake\ORM\Association\BelongsTo $ComboOffers
+ * @property |\Cake\ORM\Association\BelongsTo $Units
  *
  * @method \App\Model\Entity\Cart get($primaryKey, $options = [])
  * @method \App\Model\Entity\Cart newEntity($data = null, array $options = [])
@@ -53,6 +54,10 @@ class CartsTable extends Table
         ]);
         $this->belongsTo('ComboOffers', [
             'foreignKey' => 'combo_offer_id',
+            'joinType' => 'INNER'
+        ]);
+        $this->belongsTo('Units', [
+            'foreignKey' => 'unit_id',
             'joinType' => 'INNER'
         ]);
     }
@@ -110,6 +115,7 @@ class CartsTable extends Table
         $rules->add($rules->existsIn(['customer_id'], 'Customers'));
         $rules->add($rules->existsIn(['item_variation_id'], 'ItemVariations'));
         $rules->add($rules->existsIn(['combo_offer_id'], 'ComboOffers'));
+        $rules->add($rules->existsIn(['unit_id'], 'Units'));
 
         return $rules;
     }

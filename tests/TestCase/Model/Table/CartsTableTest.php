@@ -103,6 +103,8 @@ class CartsTableTest extends TestCase
         'app.average_review_ratings',
         'app.item_review_ratings',
         'app.items_variations',
+        'app.wish_lists',
+        'app.wish_list_items',
         'app.home_screens',
         'app.api_versions',
         'app.express_deliveries',

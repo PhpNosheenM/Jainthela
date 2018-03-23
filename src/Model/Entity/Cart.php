@@ -11,6 +11,7 @@ use Cake\ORM\Entity;
  * @property int $customer_id
  * @property int $item_variation_id
  * @property int $combo_offer_id
+ * @property int $unit_id
  * @property float $quantity
  * @property float $rate
  * @property float $amount
@@ -39,6 +40,7 @@ class Cart extends Entity
         'customer_id' => true,
         'item_variation_id' => true,
         'combo_offer_id' => true,
+        'unit_id' => true,
         'quantity' => true,
         'rate' => true,
         'amount' => true,

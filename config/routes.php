@@ -92,7 +92,7 @@ Router::prefix('api', function ($routes) {
   	$routes->resources('Feedbacks');
     $routes->resources('Wallets');
     $routes->resources('WishLists');
-
+    $routes->resources('Carts');
 
     $routes->fallbacks('InflectedRoute');
 
