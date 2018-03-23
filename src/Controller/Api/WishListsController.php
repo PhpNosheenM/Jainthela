@@ -28,10 +28,12 @@ class WishListsController extends AppController
                 $wishList->wish_list_items[0] =$WishListItems;
                 if ($this->WishLists->save($wishList)) {
                   $success = true;
+				  $isAdded = true;
                   $message = 'Item added to wish list';
                 }
                 else {
-                  $success = true;
+                  $success = false;
+				  $isAdded = false;
                   $message = 'not successfully added';
                 }
             }else {
@@ -54,6 +56,7 @@ class WishListsController extends AppController
                                   ->execute();
 
                             $success = true;
+							$isAdded = true;
                             $message = 'Item added to wish list';
                         }
                         else {
@@ -61,6 +64,7 @@ class WishListsController extends AppController
                             $query->delete()->where(['WishListItems.wish_list_id'=>$wishListId,'WishListItems.item_id'=>$this->request->getData('item_id'),'WishListItems.item_variation_id'=>$this->request->getData('item_variation_id')])
                             ->execute();
                           $success = true;
+						  $isAdded = false;
                           $message = 'removed from wish list';
                         }
                 }else
@@ -70,9 +74,33 @@ class WishListsController extends AppController
                 }
             }
        }
-          $this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
+          $this->set(['isAdded'=>$isAdded,'success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
      }
 
+	 
+	 public function removewishlist(){
+		 
+		  $id = @$this->request->query['id'];
+		  if(!empty($id)){
+			  
+			 $exists = $this->WishLists->WishListItems->exists(['WishListItems.id'=>$id]);
+			 if($exists==1){
+				  $WishListItems= $this->WishLists->WishListItems->get($id);
+				  $this->WishLists->WishListItems->delete($WishListItems);
+				  $success = true;
+				  $message = 'removed from wish list';
+			 }else{
+				 $success = false;
+				 $message = 'No record found';
+			 }
+		  }else{
+			  $success = false;
+              $message = 'empty id';
+			  
+		  }
+		$this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]); 
+	 }
+	 
     public function CustomerWishList($customer_id=null)
     {
         $customer_id = @$this->request->query['customer_id'];
