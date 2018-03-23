@@ -108,6 +108,7 @@ class CustomersController extends AppController
 
 		if(!empty($mobile)){
 			$exists_mobile = $this->Customers->exists(['Customers.username'=>$mobile]);
+			$opt=0;
 			if($exists_mobile==0){
 				$VerifyOtps = $this->Customers->VerifyOtps->newEntity();
 				$VerifyOtps->mobile=$mobile;
@@ -117,7 +118,8 @@ class CustomersController extends AppController
 				if($this->Customers->VerifyOtps->save($VerifyOtps)){
 					  $content="Your one time password for jainthela is ".$opt;
 					  $this->Sms->sendSms($mobile,$content);
-					$success = true;
+					 $success = true;
+					
 					$message = 'send otp successfully';
 				}else{
 					$success = false;
@@ -135,7 +137,7 @@ class CustomersController extends AppController
 			$success = false;
 		    $message = 'empty mobile no';
 		}
-		$this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
+		$this->set(['success' => $success,'otp'=>$opt,'message'=>$message,'_serialize' => ['success','otp','message']]);
 	
 	}
 
