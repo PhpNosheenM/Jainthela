@@ -83,6 +83,9 @@ class ItemsController extends AppController
 
                 if(!empty($items->toArray()))
                 {
+                  foreach ($items as $Item) {
+                    $Item->ItemAverageRating = number_format($Item->ItemAverageRating,1);
+                  }
                   $success = true;
                   $message = 'Data Found Successfully';
                 }
