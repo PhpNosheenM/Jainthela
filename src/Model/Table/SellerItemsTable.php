@@ -52,6 +52,7 @@ class SellerItemsTable extends Table
 			'through'=>'Sellers',
 			'joinTable' => 'seller_items'
         ]); */
+        $this->belongsTo('ItemVariations');
         $this->belongsTo('Categories', [
             'foreignKey' => 'category_id',
             'joinType' => 'INNER'
