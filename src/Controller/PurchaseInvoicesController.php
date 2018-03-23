@@ -21,8 +21,8 @@ class PurchaseInvoicesController extends AppController
     public function index()
     {
 		$user_id=$this->Auth->User('id');
-		$city_id=$this->Auth->User('city_id'); 
-		$location_id=$this->Auth->User('location_id'); 
+		$city_id=$this->Auth->User('city_id');
+		$location_id=$this->Auth->User('location_id');
 		$this->viewBuilder()->layout('admin_portal');
         $this->paginate = [
             'contain' => ['Locations', 'Cities']
@@ -56,8 +56,8 @@ class PurchaseInvoicesController extends AppController
     public function add()
     {
 		$user_id=$this->Auth->User('id');
-		$city_id=$this->Auth->User('city_id'); 
-		$location_id=$this->Auth->User('location_id'); 
+		$city_id=$this->Auth->User('city_id');
+		$location_id=$this->Auth->User('location_id');
 		$this->viewBuilder()->layout('admin_portal');
         $purchaseInvoice = $this->PurchaseInvoices->newEntity();
 		$LocationData = $this->PurchaseInvoices->Locations->get($location_id);
@@ -69,7 +69,7 @@ class PurchaseInvoicesController extends AppController
 		else
 		{
 			$voucher_no=1;
-		} 
+		}
 		//pr($voucher_no); exit;
         if ($this->request->is('post')) {
             $purchaseInvoice = $this->PurchaseInvoices->patchEntity($purchaseInvoice, $this->request->getData());
@@ -80,13 +80,13 @@ class PurchaseInvoicesController extends AppController
             }
             $this->Flash->error(__('The purchase invoice could not be saved. Please, try again.'));
         }
-       
+
 	   $partyParentGroups = $this->PurchaseInvoices->AccountingGroups->find()
 						->where(['AccountingGroups.
 						purchase_invoice_party'=>'1']);
 		//pr($partyParentGroups->toArray()); exit;
 		$partyGroups=[];
-		
+
 
 		foreach($partyParentGroups as $partyParentGroup)
 		{
@@ -98,26 +98,26 @@ class PurchaseInvoicesController extends AppController
 			}
 		}
 		if($partyGroups)
-		{  
+		{
 			$Partyledgers = $this->PurchaseInvoices->SellerLedgers->find()
 							->where(['SellerLedgers.accounting_group_id IN' =>$partyGroups])
 							->contain(['Sellers'=>['Cities']]);
         }
 		$partyOptions=[];
-		foreach($Partyledgers as $Partyledger){ 
+		foreach($Partyledgers as $Partyledger){
 			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id,'city_id'=>$Partyledger->seller->city_id,'state_id'=>$Partyledger->seller->city->state_id,'bill_to_bill_accounting'=>$Partyledger->bill_to_bill_accounting,'seller_id'=>$Partyledger->seller_id];
 		}
-		
+
 		$accountLedgers = $this->PurchaseInvoices->AccountingGroups->find()->where(['AccountingGroups.purchase_invoice_purchase_account'=>1])->first();
 
 		$accountingGroups2 = $this->PurchaseInvoices->AccountingGroups
 		->find('children', ['for' => $accountLedgers->id])
 		->find('List')->toArray();
-		
+
 		$accountingGroups2[$accountLedgers->id]=$accountLedgers->name;
-		ksort($accountingGroups2); 
+		ksort($accountingGroups2);
 		if($accountingGroups2)
-		{   
+		{
 			$account_ids="";
 			foreach($accountingGroups2 as $key=>$accountingGroup)
 			{
@@ -127,7 +127,7 @@ class PurchaseInvoicesController extends AppController
 			$Accountledgers = $this->PurchaseInvoices->AccountingGroups->Ledgers->find('list')->where(['Ledgers.accounting_group_id IN' =>$account_ids]);
         }
 		//pr($Accountledgers->toArray()); exit;
-		
+
 		//pr($partyOptions); exit;
        /*  $item1 = $this->PurchaseInvoices->Items->ItemVariations->find()->contain(['Items'=>['UnitVariations','Sellers']]);
 		//pr($item1->toArray()); exit;
@@ -136,9 +136,9 @@ class PurchaseInvoicesController extends AppController
 					pr($data); exit;
 					$merge=$data->item->name.'('.$data->unit_variation->unit->shortname.')';
 					$items[]=['text' => $merge,'value' => $data->id,'division_factor' => $data->unit_variation->convert_unit_qty];
-					
+
 				} */
-		
+
 
         $GstFigures1 = $this->PurchaseInvoices->GstFigures->find();
 		$GstFigures=array();
@@ -158,26 +158,26 @@ class PurchaseInvoicesController extends AppController
     public function SelectItemSellerWise($id = null)
     {
 		$Sellertem=$this->PurchaseInvoices->Items->ItemVariations->find()->contain(['Items'=>['ItemVariations'=>['UnitVariations'=>['Units']]]])->where(['ItemVariations.seller_id'=>$id,'ItemVariations.status'=>'Active']);
-		
+
 		$items=array();
 		foreach($Sellertem as $data){
 		if($data->item->item_maintain_by=="itemwise"){
 			$merge=$data->item->name;
 			$p=@$data->item->item_variations[0]->unit_variation->quantity_variation/@$data->item->item_variations[0]->unit_variation->convert_unit_qty;
-			@$quantity_factor=(@$p/@$data->item->item_variations[0]->unit_variation->unit->division_factor); 
+			@$quantity_factor=(@$p/@$data->item->item_variations[0]->unit_variation->unit->division_factor);
 			//pr(@$quantity_factor); exit;
 			$items[]=['text' => $merge,'value' =>0,'item_id'=>$data->item->id,'quantity_factor'=>@$quantity_factor,'unit'=>@$data->item->item_variations[0]->unit_variation->unit->print_unit,'gst_figure_id'=>$data->item->gst_figure_id,'commission'=>@$data->item->item_variations[0]->commission];
 		}else{
 			$merge=$data->item->name.'('.@$data->item->item_variations[0]->unit_variation->convert_unit_qty.'.'.@$data->item->item_variations[0]->unit_variation->unit->print_unit.')';
 			$items[]=['text' => $merge,'value' => $data->id,'item_id'=>$data->item->id,'quantity_factor'=>@$data->item->item_variations[0]->unit_variation->convert_unit_qty,'unit'=>@$data->item->item_variations[0]->unit_variation->unit->print_unit,'gst_figure_id'=>$data->item->gst_figure_id,'commission'=>@$data->item->item_variations[0]->commission];
 			}
-		} 
-		$itemSize=sizeof($items); 
+		}
+		$itemSize=sizeof($items);
 	//	pr($items);exit;
 		 $this->set(compact('items','itemSize'));
 		//pr($items);exit;
-	} 
-	
+	}
+
 	public function edit($id = null)
     {
         $purchaseInvoice = $this->PurchaseInvoices->get($id, [

@@ -58,11 +58,12 @@ class ItemsController extends AppController
        $this->set(['success' => $success,'message'=>$message,'items' => $items,'_serialize' => ['success','message','items']]);
      }
 
-    public function productDetail($item_id = null,$city_id =null,$category_id=null)
+    public function productDetail($item_id = null,$city_id =null,$category_id=null,$customer_id=null)
     {
       $item_id = @$this->request->query['item_id'];
       $city_id = @$this->request->query['city_id'];
       $category_id = @$this->request->query['category_id'];
+      $customer_id = @$this->request->query['customer_id'];
       $items = [];
       $reletedItems = [];
       if(!empty($city_id))
@@ -85,6 +86,15 @@ class ItemsController extends AppController
                 {
                   foreach ($items as $Item) {
                     $Item->ItemAverageRating = number_format($Item->ItemAverageRating,1);
+                    $item_id = $Item->id;
+                    $checkWishList = $this->Items->WishLists->find()
+                    ->contain(['WishListItems'=>function($q) use($item_id) {
+                      return $q->select(['WishListItems.id','WishListItems.wish_list_id'])
+                      ->where(['WishListItems.item_id'=>$item_id]); }])
+                    ->where(['customer_id'=>$customer_id]);
+
+                    pr($checkWishList->toArray());exit;
+
                   }
                   $success = true;
                   $message = 'Data Found Successfully';
