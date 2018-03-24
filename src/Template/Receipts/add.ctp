@@ -23,10 +23,8 @@
 					<div class="row">
 						<div class="col-md-6">
 							<div class="form-group">
-								<label class="col-md-3 control-label">Voucher No</label>
-								<div class="col-md-4">                                            
-									<?= $this->Form->control('voucher_no',['class'=>'form-control ','label'=>false,'disable'=>true,'readonly'=>true, 'value'=>$voucher_no]) ?>
-								</div>
+								<label class="col-md-3 control-label">Voucher No : <?php  echo $voucher_no; ?> </label>
+								
 							</div>
 						</div>
 						<div class="col-md-6">
@@ -40,7 +38,7 @@
 					</div>
 					<br/>
 					<div class="row">
-						<div class="table-responsive">
+						<div class="">
 							<table id="MainTable" class="table table-condensed table-striped" width="100%">
 								<thead>
 									<tr>
@@ -140,7 +138,7 @@ $option_type['Dr']='Dr';
 			</td>
 			<td width="15%" style="padding-left:0px;" valign="top">
 				<?php 
-				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','title'=>'Due Days']);  ?>
+				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','title'=>'Due Days','placeholder'=>'Default Days']);  ?>
 			</td>
 			<td width="5%" align="right" valign="top">
 				<a class="delete-tr-ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
