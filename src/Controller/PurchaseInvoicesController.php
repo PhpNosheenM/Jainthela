@@ -58,14 +58,10 @@ class PurchaseInvoicesController extends AppController
     public function add()
     {
 		$user_id=$this->Auth->User('id');
-<<<<<<< HEAD
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
 		$state_id=$this->Auth->User('state_id'); 
-=======
-		$city_id=$this->Auth->User('city_id');
-		$location_id=$this->Auth->User('location_id');
->>>>>>> 8ca8f1bfa61470e0a4e644914bb9e17c0a274b8e
+
 		$this->viewBuilder()->layout('admin_portal');
 		
         $purchaseInvoice = $this->PurchaseInvoices->newEntity();
@@ -83,13 +79,8 @@ class PurchaseInvoicesController extends AppController
 		else
 		{
 			$voucher_no=1;
-<<<<<<< HEAD
 		} 
 
-=======
-		}
-		//pr($voucher_no); exit;
->>>>>>> 8ca8f1bfa61470e0a4e644914bb9e17c0a274b8e
         if ($this->request->is('post')) {
             $purchaseInvoice = $this->PurchaseInvoices->patchEntity($purchaseInvoice, $this->request->getData());
             $purchaseInvoice->voucher_no=$voucher_no;
@@ -256,12 +247,7 @@ class PurchaseInvoicesController extends AppController
 	   $partyParentGroups = $this->PurchaseInvoices->AccountingGroups->find()
 						->where(['AccountingGroups.
 						purchase_invoice_party'=>'1']);
-<<<<<<< HEAD
-=======
-		//pr($partyParentGroups->toArray()); exit;
-		$partyGroups=[];
 
->>>>>>> 8ca8f1bfa61470e0a4e644914bb9e17c0a274b8e
 
 		$partyGroups=[];
 		foreach($partyParentGroups as $partyParentGroup)
@@ -280,13 +266,9 @@ class PurchaseInvoicesController extends AppController
 							->contain(['Sellers'=>['Locations'=>['Cities']]]);
         }
 		$partyOptions=[];
-<<<<<<< HEAD
 		foreach($Partyledgers as $Partyledger){ 
 			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id,'city_id'=>$Partyledger->seller->city_id,'state_id'=>$Partyledger->seller->location->city->state_id,'bill_to_bill_accounting'=>$Partyledger->bill_to_bill_accounting,'seller_id'=>$Partyledger->seller_id];
-=======
-		foreach($Partyledgers as $Partyledger){
-			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id,'city_id'=>$Partyledger->seller->city_id,'state_id'=>$Partyledger->seller->city->state_id,'bill_to_bill_accounting'=>$Partyledger->bill_to_bill_accounting,'seller_id'=>$Partyledger->seller_id];
->>>>>>> 8ca8f1bfa61470e0a4e644914bb9e17c0a274b8e
+
 		}
 
 		$accountLedgers = $this->PurchaseInvoices->AccountingGroups->find()->where(['AccountingGroups.purchase_invoice_purchase_account'=>1])->first();
@@ -307,25 +289,8 @@ class PurchaseInvoicesController extends AppController
 			$account_ids = explode(",",trim($account_ids,','));
 			$Accountledgers = $this->PurchaseInvoices->AccountingGroups->Ledgers->find('list')->where(['Ledgers.accounting_group_id IN' =>$account_ids]);
         }
-<<<<<<< HEAD
 		$GstFigures1 = $this->PurchaseInvoices->GstFigures->find();
-=======
-		//pr($Accountledgers->toArray()); exit;
 
-		//pr($partyOptions); exit;
-       /*  $item1 = $this->PurchaseInvoices->Items->ItemVariations->find()->contain(['Items'=>['UnitVariations','Sellers']]);
-		//pr($item1->toArray()); exit;
-		$items=array();
-				foreach($item1 as $data){
-					pr($data); exit;
-					$merge=$data->item->name.'('.$data->unit_variation->unit->shortname.')';
-					$items[]=['text' => $merge,'value' => $data->id,'division_factor' => $data->unit_variation->convert_unit_qty];
-
-				} */
-
-
-        $GstFigures1 = $this->PurchaseInvoices->GstFigures->find();
->>>>>>> 8ca8f1bfa61470e0a4e644914bb9e17c0a274b8e
 		$GstFigures=array();
 				foreach($GstFigures1 as $data){
 					$GstFigures[]=['text' => $data->name,'value' => $data->id,'tax_percentage' => $data->tax_percentage];
@@ -342,6 +307,8 @@ class PurchaseInvoicesController extends AppController
      */
     public function SelectItemSellerWise($id = null)
     {
+		
+		
 		$Sellertem=$this->PurchaseInvoices->Items->ItemVariations->find()->contain(['Items'=>['ItemVariations'=>['UnitVariations'=>['Units']]]])->where(['ItemVariations.seller_id'=>$id,'ItemVariations.status'=>'Active']);
 
 		$items=array();
@@ -356,15 +323,10 @@ class PurchaseInvoicesController extends AppController
 			$merge=$data->item->name.'('.@$data->item->item_variations[0]->unit_variation->convert_unit_qty.'.'.@$data->item->item_variations[0]->unit_variation->unit->print_unit.')';
 			$items[]=['text' => $merge,'value' => $data->id,'item_id'=>$data->item->id,'quantity_factor'=>@$data->item->item_variations[0]->unit_variation->convert_unit_qty,'unit'=>@$data->item->item_variations[0]->unit_variation->unit->print_unit,'gst_figure_id'=>$data->item->gst_figure_id,'commission'=>@$data->item->item_variations[0]->commission];
 			}
-<<<<<<< HEAD
 		} 
 		$itemSize=sizeof($items); 
 		//pr($items);exit;
-=======
-		}
-		$itemSize=sizeof($items);
-	//	pr($items);exit;
->>>>>>> 8ca8f1bfa61470e0a4e644914bb9e17c0a274b8e
+
 		 $this->set(compact('items','itemSize'));
 		//pr($items);exit;
 	}

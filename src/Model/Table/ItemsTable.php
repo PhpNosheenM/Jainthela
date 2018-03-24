@@ -74,6 +74,7 @@ class ItemsTable extends Table
             'foreignKey' => 'seller_id',
             'joinType' => 'INNER'
         ]);
+
         $this->belongsTo('Locations', [
             'foreignKey' => 'location_id',
             'joinType' => 'INNER'
@@ -128,10 +129,13 @@ class ItemsTable extends Table
         $this->hasMany('SalesInvoiceRows', [
             'foreignKey' => 'item_id'
         ]);
-        $this->hasMany('SellerItems', [
+     /*    $this->hasMany('SellerItems', [
             'foreignKey' => 'item_id'
-        ]);
-
+        ]); */
+		$this->hasMany('SellerItems')
+            ->setForeignKey('item_id')
+            ->setJoinType('INNER');
+			
         $this->hasMany('LeftItemReviewRatings', [
             'className'  =>'ItemReviewRatings',
             'foreignKey' => 'item_id',

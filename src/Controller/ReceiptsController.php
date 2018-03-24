@@ -95,6 +95,7 @@ class ReceiptsController extends AppController
 					$accountEntry->city_id                 	  = $city_id;
 					$accountEntry->receipt_id                 = $receipt->id;
 					$accountEntry->receipt_row_id             = $receipt_row->id;
+					$accountEntry->entry_from                 = 'web';
 					$this->Receipts->AccountingEntries->save($accountEntry);
 				}
                 $this->Flash->success(__('The receipt has been saved.'));
