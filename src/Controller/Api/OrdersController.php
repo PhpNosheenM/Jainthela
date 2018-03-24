@@ -33,7 +33,7 @@ class OrdersController extends AppController
         $customer_id=$this->request->query('customer_id');
     		$order_id=$this->request->query('order_id');
 
-        $orders_details_data = $this->Orders->get($order_id, ['contain'=>['OrderDetails'=>['ItemsVariations'=>['Items','UnitVariations'=>['Units']]]]]);
+        $orders_details_data = $this->Orders->get($order_id, ['contain'=>['OrderDetails'=>['ItemVariations'=>['Items','UnitVariations'=>['Units']]]]]);
 
         if(!empty($orders_details_data->toArray()))
         {
@@ -41,7 +41,7 @@ class OrdersController extends AppController
           $message = 'data found successfully';
           $customer_address_id = $orders_details_data->customer_address_id;
           $customer_addresses=$this->Orders->CustomerAddresses->find()
-            ->where(['CustomerAddresses.customer_id' => $customer_id, 'CustomerAddresses.id'=>$$customer_address_id])->first();
+            ->where(['CustomerAddresses.customer_id' => $customer_id, 'CustomerAddresses.id'=>$customer_address_id])->first();
         }else{
           $success = false;
           $message = 'No data found';

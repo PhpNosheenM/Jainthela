@@ -119,7 +119,7 @@ class CustomersController extends AppController
 					  $content="Your one time password for jainthela is ".$opt;
 					  $this->Sms->sendSms($mobile,$content);
 					 $success = true;
-					
+
 					$message = 'send otp successfully';
 				}else{
 					$success = false;
@@ -138,7 +138,7 @@ class CustomersController extends AppController
 		    $message = 'empty mobile no';
 		}
 		$this->set(['success' => $success,'otp'=>$opt,'message'=>$message,'_serialize' => ['success','otp','message']]);
-	
+
 	}
 
 	public function verify(){
@@ -155,7 +155,7 @@ class CustomersController extends AppController
 			$isValidToken = $this->checkToken($token); */
 			$mobile=$this->request->data['mobile'];
 			$otp=$this->request->data['otp'];
-			
+
 				 if(!empty($mobile) and (!empty($otp))){
 						$VerifyOtps=$this->Customers->VerifyOtps->find()->where(['mobile'=>$mobile,'otp'=>$otp]);
 						if($VerifyOtps->toArray()){
@@ -184,7 +184,7 @@ class CustomersController extends AppController
 					  $success = false;
 					  $message = 'mobile or Otp empty';
 				 }
-			 
+
 		}
 		$this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
 	}
@@ -211,15 +211,15 @@ class CustomersController extends AppController
 	//	echo $exists_email = $this->Customers->exists(['Customers.email'=>$this->request->data['email']]); exit;
 	 $customer = $this->Customers->newEntity();
 		if($this->request->is(['patch', 'post', 'put'])){
-			
+
 				$exists_email = $this->Customers->exists(['Customers.email'=>$this->request->data['email']]);
 				 $exists_mobile = $this->Customers->exists(['Customers.username'=>$this->request->data['username']]);
 
 
 				if(($exists_email==0) and ($exists_mobile==0)){
-					
+
 					$mobile=$this->request->data['username'];
-					
+
 					$this->request->data['status']='Active';
 					$customer = $this->Customers->patchEntity($customer, $this->request->getData());
 
@@ -230,7 +230,7 @@ class CustomersController extends AppController
 							$query = $this->Customers->query();
 							$result = $query->update()->set(['token' => $arr])->where(['id' => $customers->id])->execute();
 						    $customer_data = $this->Customers->get($customers->id);
-						 						
+
 							$accounting_group = $this->Customers->Ledgers->AccountingGroups->find()->where(['customer'=>1])->first();
 							$ledger = $this->Customers->Ledgers->newEntity();
 							$ledger->name = $customer_data->name;
@@ -238,7 +238,7 @@ class CustomersController extends AppController
 							$ledger->customer_id=$customer_data->id;
 							$ledger->bill_to_bill_accounting='yes';
 							$this->Customers->Ledgers->save($ledger);
-						
+
 						$success=true;
 						$message="data has been saved successfully";
 						$data=$customer_data;
@@ -288,7 +288,6 @@ class CustomersController extends AppController
    {
       $id = $this->request->getData('id');
       $token ='';
-
        $customer = $this->Customers->get($id);
        if ($this->request->is(['patch', 'post', 'put'])) {
          foreach(getallheaders() as $key => $value) {
