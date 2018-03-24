@@ -45,6 +45,10 @@ class ItemVariationMastersTable extends Table
             'foreignKey' => 'unit_variation_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('SellerItems', [
+			'bindingKey'=>'item_id',
+			'foreignKey'=>'item_id'
+        ]);
     }
 
     /**

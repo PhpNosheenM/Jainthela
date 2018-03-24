@@ -61,7 +61,8 @@ class CategoriesTable extends Table
             'foreignKey' => 'parent_id'
         ]);
         $this->hasMany('Items', [
-            'foreignKey' => 'category_id'
+            'foreignKey' => 'category_id',
+			'joinType' => 'INNER'
         ]);
         $this->hasMany('PromotionDetails', [
             'foreignKey' => 'category_id'

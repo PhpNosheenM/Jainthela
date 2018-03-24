@@ -117,47 +117,27 @@ class SellerItemsController extends AppController
             }
             $this->Flash->error(__('The seller item could not be saved. Please, try again.'));
         }
-        $categories = $this->SellerItems->Categories->find('threaded')
-							->matching('Items.SellerItems', function($q) use($user_id){
-							return $q->where(['SellerItems.seller_id'=>$user_id])->contain(['Items']);
-							})->autoFields(true)
-							;
-		/*  $categories = $this->SellerItems->Categories->find('threaded');
-							$categories->select(['SellerItems.id','total_item'=>$categories->func()->count('SellerItems.id')])
-							->leftJoinWith('Items.SellerItems')
-							->contain(['Items'=>['SellerItems'=>function($q) use($user_id){
-							return $q->where(['SellerItems.seller_id'=>$user_id])->contain(['Items'=>['ItemVariationMasters']]);
-							}]])
-							->group(['SellerItems.id']); */
+		
+		$sellerItems = $this->SellerItems->find()
+							->where(['SellerItems.seller_id'=>$user_id]);
+								
+		foreach($sellerItems as $sellerItem)
+		{
+			$seller_item[]=$sellerItem->item_id;
+		}
+		 $categories = $this->SellerItems->Categories->find('threaded');
+							$categories->select(['total_item'=>$categories->func()->count('Items.id')])
+							->innerJoinWith('Items',function($q) use($user_id,$seller_item){
+							return $q->where(['Items.id IN'=>$seller_item]);
+							})
+							->contain(['Items'=>function($q) use($user_id,$seller_item){
+								return $q->where(['Items.id IN'=>$seller_item])->contain(['ItemVariationMasters'=>['SellerItems']]);
+							}
+							])
+							->group(['Categories.id'])
+							->autoFields(true);
 							
-		/* 		$query = $this->SellerItems->Categories->find('threaded');
-
-$query->select([
-    'Categories.id'
-	
-]);
-
-$query->contain(['Items'=>function($qi) use($user_id){
-	return $qi->select(['Items.category_id','Items.id'])
-	->contain([
-    'SellerItems' => function($q) use($user_id){
-        $q->select(['SellerItems.item_id','d1c' => 'COUNT(SellerItems.id)'])->where(['SellerItems.seller_id' => $user_id]);
-        return $q;
-    }
-]);
-}]);
-
-$query->innerJoinWith('Items.SellerItems', function($q)  use($user_id){
-    return $q->where(['SellerItems.seller_id' => $user_id]);
-}); */
-/* 
-$query->having(function($q) {
-    return $q->or_([
-        'd1c >' => 0,
-    ]);
-
-}); 
-	*/		
+					
 		pr($categories->toArray());
 		exit;
         $this->set(compact('itemVariation', 'categories'));
