@@ -25,7 +25,10 @@ use Cake\ORM\Entity;
  * @property string $ready_to_sale
  * @property string $status
  * @property string $combo_offer_image
+<<<<<<< HEAD
  * @property string $description
+=======
+>>>>>>> 0c846ee17fee5c591edddce04558bbd09e9e0e5c
  *
  * @property \App\Model\Entity\City $city
  * @property \App\Model\Entity\Admin $admin
@@ -64,7 +67,10 @@ class ComboOffer extends Entity
         'ready_to_sale' => true,
         'status' => true,
         'combo_offer_image' => true,
+<<<<<<< HEAD
         'description' => true,
+=======
+>>>>>>> 0c846ee17fee5c591edddce04558bbd09e9e0e5c
         'city' => true,
         'admin' => true,
         'carts' => true,

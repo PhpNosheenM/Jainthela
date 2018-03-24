@@ -211,7 +211,7 @@ class CustomersController extends AppController
 	//	echo $exists_email = $this->Customers->exists(['Customers.email'=>$this->request->data['email']]); exit;
 	 $customer = $this->Customers->newEntity();
 		if($this->request->is(['patch', 'post', 'put'])){
-
+			
 				$exists_email = $this->Customers->exists(['Customers.email'=>$this->request->data['email']]);
 				 $exists_mobile = $this->Customers->exists(['Customers.username'=>$this->request->data['username']]);
 

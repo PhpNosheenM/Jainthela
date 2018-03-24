@@ -70,7 +70,11 @@ class ComboOffersTable extends Table
         $validator
             ->integer('id')
             ->allowEmpty('id', 'create');
+<<<<<<< HEAD
 		/*
+=======
+
+>>>>>>> 0c846ee17fee5c591edddce04558bbd09e9e0e5c
         $validator
             ->scalar('name')
             ->maxLength('name', 100)

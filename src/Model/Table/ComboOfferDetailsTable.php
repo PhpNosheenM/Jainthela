@@ -7,23 +7,21 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * Carts Model
+ * ComboOfferDetails Model
  *
- * @property \App\Model\Table\CitiesTable|\Cake\ORM\Association\BelongsTo $Cities
- * @property \App\Model\Table\CustomersTable|\Cake\ORM\Association\BelongsTo $Customers
- * @property \App\Model\Table\ItemVariationsTable|\Cake\ORM\Association\BelongsTo $ItemVariations
  * @property \App\Model\Table\ComboOffersTable|\Cake\ORM\Association\BelongsTo $ComboOffers
- * @property |\Cake\ORM\Association\BelongsTo $Units
+ * @property \App\Model\Table\ItemVariationsTable|\Cake\ORM\Association\BelongsTo $ItemVariations
+ * @property \App\Model\Table\UnitsTable|\Cake\ORM\Association\BelongsTo $Units
  *
- * @method \App\Model\Entity\Cart get($primaryKey, $options = [])
- * @method \App\Model\Entity\Cart newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\Cart[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\Cart|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Cart patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\Cart[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\Cart findOrCreate($search, callable $callback = null, $options = [])
+ * @method \App\Model\Entity\ComboOfferDetail get($primaryKey, $options = [])
+ * @method \App\Model\Entity\ComboOfferDetail newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\ComboOfferDetail[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\ComboOfferDetail|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\ComboOfferDetail patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\ComboOfferDetail[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\ComboOfferDetail findOrCreate($search, callable $callback = null, $options = [])
  */
-class CartsTable extends Table
+class ComboOfferDetailsTable extends Table
 {
 
     /**
@@ -36,35 +34,22 @@ class CartsTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('carts');
+        $this->setTable('combo_offer_details');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
-        $this->belongsTo('Cities', [
-            'foreignKey' => 'city_id',
-            'joinType' => 'INNER'
-        ]);
-        $this->belongsTo('Customers', [
-            'foreignKey' => 'customer_id',
+        $this->belongsTo('ComboOffers', [
+            'foreignKey' => 'combo_offer_id',
             'joinType' => 'INNER'
         ]);
         $this->belongsTo('ItemVariations', [
             'foreignKey' => 'item_variation_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('ComboOffers', [
-            'foreignKey' => 'combo_offer_id',
-            'joinType' => 'INNER'
-        ]);
         $this->belongsTo('Units', [
             'foreignKey' => 'unit_id',
             'joinType' => 'INNER'
         ]);
-
-        $this->belongsTo('DeliveryCharges');
-        $this->belongsTo('DeliveryDates');
-        $this->belongsTo('DeliveryTimes');
-
     }
 
     /**
@@ -94,16 +79,6 @@ class CartsTable extends Table
             ->requirePresence('amount', 'create')
             ->notEmpty('amount');
 
-        $validator
-            ->integer('cart_count')
-            ->requirePresence('cart_count', 'create')
-            ->notEmpty('cart_count');
-
-        $validator
-            ->dateTime('created_on')
-            ->requirePresence('created_on', 'create')
-            ->notEmpty('created_on');
-
         return $validator;
     }
 
@@ -116,10 +91,8 @@ class CartsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['city_id'], 'Cities'));
-        $rules->add($rules->existsIn(['customer_id'], 'Customers'));
-        $rules->add($rules->existsIn(['item_variation_id'], 'ItemVariations'));
         $rules->add($rules->existsIn(['combo_offer_id'], 'ComboOffers'));
+        $rules->add($rules->existsIn(['item_variation_id'], 'ItemVariations'));
         $rules->add($rules->existsIn(['unit_id'], 'Units'));
 
         return $rules;

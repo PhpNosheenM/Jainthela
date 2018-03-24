@@ -38,8 +38,11 @@ class ComboOffersControllerTest extends IntegrationTestCase
         'app.receipt_rows',
         'app.ref_receipts',
         'app.payment_rows',
+<<<<<<< HEAD
         'app.payments',
         'app.ref_payments',
+=======
+>>>>>>> 0c846ee17fee5c591edddce04558bbd09e9e0e5c
         'app.credit_notes',
         'app.credit_note_rows',
         'app.debit_notes',
@@ -69,11 +72,14 @@ class ComboOffersControllerTest extends IntegrationTestCase
         'app.plans',
         'app.wallets',
         'app.orders',
+<<<<<<< HEAD
         'app.drivers',
         'app.delivery_charges',
         'app.delivery_times',
         'app.cancel_reasons',
         'app.order_details',
+=======
+>>>>>>> 0c846ee17fee5c591edddce04558bbd09e9e0e5c
         'app.promotions',
         'app.return_orders',
         'app.orders_left',
@@ -81,15 +87,27 @@ class ComboOffersControllerTest extends IntegrationTestCase
         'app.promotions_left',
         'app.sellers',
         'app.seller_ratings',
+<<<<<<< HEAD
         'app.item_ledgers',
         'app.purchase_invoice_rows',
         'app.purchase_return_rows',
         'app.purchase_returns',
         'app.grn_rows',
+=======
+        'app.grn_rows',
+        'app.purchase_invoice_rows',
+        'app.item_gst_figures',
+        'app.item_ledgers',
+        'app.purchase_return_rows',
+>>>>>>> 0c846ee17fee5c591edddce04558bbd09e9e0e5c
         'app.left_item_review_ratings',
         'app.average_review_ratings',
         'app.item_review_ratings',
         'app.items_variations',
+<<<<<<< HEAD
+=======
+        'app.order_details',
+>>>>>>> 0c846ee17fee5c591edddce04558bbd09e9e0e5c
         'app.wish_lists',
         'app.wish_list_items',
         'app.home_screens',
@@ -98,13 +116,27 @@ class ComboOffersControllerTest extends IntegrationTestCase
         'app.seller_item_variations',
         'app.seller_ledgers',
         'app.purchase_ledgers',
+<<<<<<< HEAD
         'app.financial_years',
         'app.grns',
         'app.journal_vouchers',
+=======
+        'app.purchase_returns',
+        'app.financial_years',
+        'app.drivers',
+        'app.grns',
+        'app.journal_vouchers',
+        'app.payments',
+>>>>>>> 0c846ee17fee5c591edddce04558bbd09e9e0e5c
         'app.purchase_vouchers',
         'app.sales_vouchers',
         'app.verify_otps',
         'app.company_details',
+<<<<<<< HEAD
+=======
+        'app.delivery_charges',
+        'app.delivery_times',
+>>>>>>> 0c846ee17fee5c591edddce04558bbd09e9e0e5c
         'app.supplier_areas'
     ];
 

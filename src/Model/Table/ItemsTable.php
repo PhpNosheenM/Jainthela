@@ -163,6 +163,11 @@ class ItemsTable extends Table
             'foreignKey' => 'item_id',
             'joinType' => 'INNER'
         ]);
+		
+		$this->belongsTo('WishListItems', [
+            'foreignKey' => 'item_id',
+            'joinType' => 'INNER'
+        ]);
 
         $this->belongsTo('HomeScreens');
 

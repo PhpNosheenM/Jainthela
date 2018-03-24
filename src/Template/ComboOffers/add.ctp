@@ -43,8 +43,9 @@
             echo $this->Form->control('ready_to_sale');
             echo $this->Form->control('status');
             echo $this->Form->control('combo_offer_image');
+
             echo $this->Form->control('description');
-        ?>
+?>
     </fieldset>
     <?= $this->Form->button(__('Submit')) ?>
     <?= $this->Form->end() ?>

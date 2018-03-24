@@ -49,7 +49,10 @@
             echo $this->Form->control('ready_to_sale');
             echo $this->Form->control('status');
             echo $this->Form->control('combo_offer_image');
+<<<<<<< HEAD
             echo $this->Form->control('description');
+=======
+>>>>>>> 0c846ee17fee5c591edddce04558bbd09e9e0e5c
         ?>
     </fieldset>
     <?= $this->Form->button(__('Submit')) ?>

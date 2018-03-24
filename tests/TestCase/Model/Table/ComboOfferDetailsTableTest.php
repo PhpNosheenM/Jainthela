@@ -1,22 +1,22 @@
 <?php
 namespace App\Test\TestCase\Model\Table;
 
-use App\Model\Table\ComboOffersTable;
+use App\Model\Table\ComboOfferDetailsTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 
 /**
- * App\Model\Table\ComboOffersTable Test Case
+ * App\Model\Table\ComboOfferDetailsTable Test Case
  */
-class ComboOffersTableTest extends TestCase
+class ComboOfferDetailsTableTest extends TestCase
 {
 
     /**
      * Test subject
      *
-     * @var \App\Model\Table\ComboOffersTable
+     * @var \App\Model\Table\ComboOfferDetailsTable
      */
-    public $ComboOffers;
+    public $ComboOfferDetails;
 
     /**
      * Fixtures
@@ -24,6 +24,7 @@ class ComboOffersTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
+        'app.combo_offer_details',
         'app.combo_offers',
         'app.cities',
         'app.states',
@@ -46,11 +47,6 @@ class ComboOffersTableTest extends TestCase
         'app.receipt_rows',
         'app.ref_receipts',
         'app.payment_rows',
-<<<<<<< HEAD
-        'app.payments',
-        'app.ref_payments',
-=======
->>>>>>> 0c846ee17fee5c591edddce04558bbd09e9e0e5c
         'app.credit_notes',
         'app.credit_note_rows',
         'app.debit_notes',
@@ -70,22 +66,9 @@ class ComboOffersTableTest extends TestCase
         'app.item_variations',
         'app.unit_variations',
         'app.units',
-        'app.combo_offer_details',
         'app.sellers',
         'app.seller_ratings',
         'app.order_details',
-<<<<<<< HEAD
-        'app.orders',
-        'app.drivers',
-        'app.delivery_charges',
-        'app.delivery_times',
-        'app.cancel_reasons',
-        'app.wallets',
-        'app.plans',
-        'app.admins',
-        'app.roles',
-        'app.feedbacks',
-=======
         'app.item_variation_masters',
         'app.seller_item_variations',
         'app.item_active',
@@ -96,29 +79,16 @@ class ComboOffersTableTest extends TestCase
         'app.plans',
         'app.wallets',
         'app.orders',
->>>>>>> 0c846ee17fee5c591edddce04558bbd09e9e0e5c
         'app.promotions',
         'app.return_orders',
         'app.orders_left',
         'app.plans_left',
         'app.promotions_left',
-<<<<<<< HEAD
-        'app.item_variation_masters',
-        'app.seller_item_variations',
-        'app.item_active',
-        'app.brands',
-        'app.item_ledgers',
-        'app.purchase_invoice_rows',
-        'app.purchase_return_rows',
-        'app.purchase_returns',
-        'app.grn_rows',
-=======
         'app.grn_rows',
         'app.purchase_invoice_rows',
         'app.item_gst_figures',
         'app.item_ledgers',
         'app.purchase_return_rows',
->>>>>>> 0c846ee17fee5c591edddce04558bbd09e9e0e5c
         'app.left_item_review_ratings',
         'app.average_review_ratings',
         'app.item_review_ratings',
@@ -130,27 +100,18 @@ class ComboOffersTableTest extends TestCase
         'app.express_deliveries',
         'app.seller_ledgers',
         'app.purchase_ledgers',
-<<<<<<< HEAD
-        'app.financial_years',
-        'app.grns',
-        'app.journal_vouchers',
-=======
         'app.purchase_returns',
         'app.financial_years',
         'app.drivers',
         'app.grns',
         'app.journal_vouchers',
         'app.payments',
->>>>>>> 0c846ee17fee5c591edddce04558bbd09e9e0e5c
         'app.purchase_vouchers',
         'app.sales_vouchers',
         'app.verify_otps',
         'app.company_details',
-<<<<<<< HEAD
-=======
         'app.delivery_charges',
         'app.delivery_times',
->>>>>>> 0c846ee17fee5c591edddce04558bbd09e9e0e5c
         'app.supplier_areas'
     ];
 
@@ -162,8 +123,8 @@ class ComboOffersTableTest extends TestCase
     public function setUp()
     {
         parent::setUp();
-        $config = TableRegistry::exists('ComboOffers') ? [] : ['className' => ComboOffersTable::class];
-        $this->ComboOffers = TableRegistry::get('ComboOffers', $config);
+        $config = TableRegistry::exists('ComboOfferDetails') ? [] : ['className' => ComboOfferDetailsTable::class];
+        $this->ComboOfferDetails = TableRegistry::get('ComboOfferDetails', $config);
     }
 
     /**
@@ -173,7 +134,7 @@ class ComboOffersTableTest extends TestCase
      */
     public function tearDown()
     {
-        unset($this->ComboOffers);
+        unset($this->ComboOfferDetails);
 
         parent::tearDown();
     }

@@ -112,6 +112,10 @@ class DeliveryTimesTableTest extends TestCase
         'app.purchase_vouchers',
         'app.sales_vouchers',
         'app.verify_otps',
+<<<<<<< HEAD
+=======
+        'app.delivery_dates',
+>>>>>>> 0c846ee17fee5c591edddce04558bbd09e9e0e5c
         'app.company_details',
         'app.supplier_areas'
     ];

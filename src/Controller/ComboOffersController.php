@@ -51,9 +51,11 @@ class ComboOffersController extends AppController
      */
     public function add()
     {
+
 		$city_id=$this->Auth->User('city_id'); 
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('admin_portal');
+
         $comboOffer = $this->ComboOffers->newEntity();
         if ($this->request->is('post')) {
             $comboOffer = $this->ComboOffers->patchEntity($comboOffer, $this->request->getData());

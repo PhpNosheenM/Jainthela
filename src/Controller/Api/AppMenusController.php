@@ -62,7 +62,7 @@ class AppMenusController extends AppController
       if(!empty($city_id))
       {
         // CheckAvabiltyOfCity function is avaliable in app controller for checking city_id in cities table
-		$dynamic=[];
+		$dynamic=[]; $Categories=[];
         $isValidCity = $this->CheckAvabiltyOfCity($city_id);
          if($isValidCity == 0)
          {
@@ -91,7 +91,7 @@ class AppMenusController extends AppController
 					return $q->select(['ChildCategories.parent_id','ChildCategories.id','ChildCategories.name','ChildCategories.link']);
 				}]);
 				
-			    array_push($dynamic,array("header_name"=>'Shop By Category',"title"=>$Categories));
+			    //array_push($dynamic,array("header_name"=>'Shop By Category',"title"=>$Categories));
 
                $success = true;
                $message = 'Data Found Successfully';
@@ -109,6 +109,6 @@ class AppMenusController extends AppController
         $success = false;
         $message = 'City Id Empty';
       }
-      $this->set(['success' => $success,'message'=>$message,'dynamic' => $dynamic,'_serialize' => ['success','message','dynamic']]);
+      $this->set(['success' => $success,'message'=>$message,'dynamic' => $dynamic,"Allcategories"=>$Categories,'_serialize' => ['success','message','dynamic','Allcategories']]);
     }
 }

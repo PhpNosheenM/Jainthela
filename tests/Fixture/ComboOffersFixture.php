@@ -36,7 +36,10 @@ class ComboOffersFixture extends TestFixture
         'ready_to_sale' => ['type' => 'string', 'length' => 10, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => 'Item which are ready for sale', 'precision' => null, 'fixed' => null],
         'status' => ['type' => 'string', 'length' => 10, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => 'Active for continoue and Deactive for delete', 'precision' => null, 'fixed' => null],
         'combo_offer_image' => ['type' => 'string', 'length' => 150, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+<<<<<<< HEAD
         'description' => ['type' => 'text', 'length' => null, 'null' => false, 'default' => null, 'collate' => 'latin1_swedish_ci', 'comment' => '', 'precision' => null],
+=======
+>>>>>>> 0c846ee17fee5c591edddce04558bbd09e9e0e5c
         '_constraints' => [
             'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
         ],
@@ -64,6 +67,7 @@ class ComboOffersFixture extends TestFixture
             'quantity_factor' => 1.5,
             'print_quantity' => 1.5,
             'maximum_quantity_purchase' => 1.5,
+<<<<<<< HEAD
             'start_date' => 1521895241,
             'end_date' => 1521895241,
             'stock_in_quantity' => 1,
@@ -74,6 +78,17 @@ class ComboOffersFixture extends TestFixture
             'status' => 'Lorem ip',
             'combo_offer_image' => 'Lorem ipsum dolor sit amet',
             'description' => 'Lorem ipsum dolor sit amet, aliquet feugiat. Convallis morbi fringilla gravida, phasellus feugiat dapibus velit nunc, pulvinar eget sollicitudin venenatis cum nullam, vivamus ut a sed, mollitia lectus. Nulla vestibulum massa neque ut et, id hendrerit sit, feugiat in taciti enim proin nibh, tempor dignissim, rhoncus duis vestibulum nunc mattis convallis.'
+=======
+            'start_date' => 1521867025,
+            'end_date' => 1521867025,
+            'stock_in_quantity' => 1,
+            'stock_out_quantity' => 1,
+            'created_on' => 1521867025,
+            'edited_on' => 1521867025,
+            'ready_to_sale' => 'Lorem ip',
+            'status' => 'Lorem ip',
+            'combo_offer_image' => 'Lorem ipsum dolor sit amet'
+>>>>>>> 0c846ee17fee5c591edddce04558bbd09e9e0e5c
         ],
     ];
 }

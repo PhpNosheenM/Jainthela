@@ -103,10 +103,13 @@
             <td><?= h($comboOffer->edited_on) ?></td>
         </tr>
     </table>
+<<<<<<< HEAD
     <div class="row">
         <h4><?= __('Description') ?></h4>
         <?= $this->Text->autoParagraph(h($comboOffer->description)); ?>
     </div>
+=======
+>>>>>>> 0c846ee17fee5c591edddce04558bbd09e9e0e5c
     <div class="related">
         <h4><?= __('Related Carts') ?></h4>
         <?php if (!empty($comboOffer->carts)): ?>
