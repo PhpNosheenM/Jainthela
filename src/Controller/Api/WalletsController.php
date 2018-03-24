@@ -18,20 +18,27 @@ class WalletsController extends AppController
     $city_id = @$this->request->query['city_id'];
     $customer_id = @$this->request->query['customer_id'];
     $token = @$this->request->query['token'];
+	$transaction_type = @$this->request->query['transaction_type'];
+	$page=@$this->request->query['page'];
+    $limit=10;
     $wallet_balance=number_format(0, 2);
     // checkToken function is avaliable in app controller for checking token in customer table
     $isValidToken = $this->checkToken($token);
       if($isValidToken == 0)
         {
-          if(!empty($city_id))
+          if(!empty($city_id) && !empty($page))
           {
               // CheckAvabiltyOfCity function is avaliable in app controller for checking city_id in cities table
               $isValidCity = $this->CheckAvabiltyOfCity($city_id);
                 if($isValidCity == 0)
                 {
-                  $wallet_details = $this->Wallets->find()
-              		->where(['Wallets.customer_id'=>$customer_id])
+                  $wallet_details = $this->Wallets->find();
+				  if(!empty($transaction_type)){
+					  $wallet_details->where(['Wallets.transaction_type'=>$transaction_type]);
+				  }
+              		$wallet_details->where(['Wallets.customer_id'=>$customer_id])
               		->order(['Wallets.id'=>'DESC'])
+					->limit($limit)->page($page)
               		->autoFields(true);
 
                 //  pr($wallet_details->toArray());exit;
@@ -87,7 +94,7 @@ class WalletsController extends AppController
                 }
               }else {
                 $success = false;
-                $message = 'City id empty';
+                $message = 'City id or Page no empty';
               }
         }
         else {
