@@ -16,66 +16,177 @@ class CustomersController extends AppController
   public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['add', 'login']);
+        $this->Auth->allow(['add', 'login','send_otp','verify']);
     }
 
+
+
+
+	public function my_account(){
+
+		$customer_id=@$this->request->query['customer_id'];
+		$city_id=@$this->request->query['city_id'];
+		$token=@$this->request->query['token'];
+		$profiles=[];$wallet_balance=number_format(0, 2);
+		if(!empty($customer_id) and !empty($token) and !empty($city_id)){
+
+
+			$isValidToken = $this->checkToken($token);
+            if($isValidToken == 0){
+
+			$isValidCity = $this->CheckAvabiltyOfCity($city_id);
+			if($isValidCity == 0){
+
+
+
+			$profiles=$this->Customers->get($customer_id);
+
+				if($profiles){
+
+					 $query = $this->Customers->Wallets->find();
+                  		$totalInCase = $query->newExpr()
+                  			->addCase(
+                  				$query->newExpr()->add(['transaction_type' => 'Added']),
+                  				$query->newExpr()->add(['add_amount']),
+                  				'integer'
+                  			);
+                    	$totalOutCase = $query->newExpr()
+                    			->addCase(
+                    				$query->newExpr()->add(['transaction_type' => 'Deduct']),
+                    				$query->newExpr()->add(['used_amount']),
+                    				'integer'
+                    			);
+                  			$query->select([
+                  			'total_in' => $query->func()->sum($totalInCase),
+                  			'total_out' => $query->func()->sum($totalOutCase),'id','customer_id'
+                  		])
+                		->where(['Wallets.customer_id' => $customer_id])
+                		->group('customer_id')
+                		->autoFields(true);
+
+					  foreach($query as $fetch_query)
+                		    {
+                      			$advance=$fetch_query->total_in;
+                      			$consumed=$fetch_query->total_out;
+                      		  $wallet_balance= number_format($advance-$consumed, 2);
+                		    }
+
+
+					$success = true;
+					$message = 'Data Found successfully';
+
+
+
+				}else{
+
+					$success = false;
+					$message = 'No Data Found';
+				}
+			}else{
+				$success = false;
+				$message = 'Invalid City';
+
+			}
+			}else{
+				$success = false;
+				$message = 'Invalid Token';
+
+			}
+		}else{
+
+			 $success = false;
+			 $message = 'customer id or token or city id is not empty';
+
+		}
+
+		$this->set(['success' => $success,'message'=>$message,'wallet_balance'=>$wallet_balance,'profiles'=>$profiles,'_serialize' => ['success','message','wallet_balance','profiles']]);
+	}
+
+	public function send_otp(){
+
+		$mobile=@$this->request->query['mobile'];
+
+		if(!empty($mobile)){
+			$exists_mobile = $this->Customers->exists(['Customers.username'=>$mobile]);
+			$opt=0;
+			if($exists_mobile==0){
+				$VerifyOtps = $this->Customers->VerifyOtps->newEntity();
+				$VerifyOtps->mobile=$mobile;
+				$VerifyOtps->status=0;
+				$opt=(mt_rand(1111,9999));
+				$VerifyOtps->otp=$opt;
+				if($this->Customers->VerifyOtps->save($VerifyOtps)){
+					  $content="Your one time password for jainthela is ".$opt;
+					  $this->Sms->sendSms($mobile,$content);
+					 $success = true;
+					
+					$message = 'send otp successfully';
+				}else{
+					$success = false;
+					$message = 'otp is not send';
+
+				}
+			}else{
+					$success = false;
+					$message = 'mobile already taken';
+
+				}
+
+		}else{
+
+			$success = false;
+		    $message = 'empty mobile no';
+		}
+		$this->set(['success' => $success,'otp'=>$opt,'message'=>$message,'_serialize' => ['success','otp','message']]);
+	
+	}
 
 	public function verify(){
 		$customer = $this->Customers->newEntity();
 		if($this->request->is(['patch', 'post', 'put'])){
 
-			foreach(getallheaders() as $key => $value) {
+/* 			foreach(getallheaders() as $key => $value) {
 				if($key == 'Authorization')
 				{
-					echo $token = $value;
+					 $token = $value;
 				}
 			}
 			$token = str_replace("Bearer ","",$token);
-			$isValidToken = $this->checkToken($token);
-			$id=$this->request->data['id'];
+			$isValidToken = $this->checkToken($token); */
+			$mobile=$this->request->data['mobile'];
 			$otp=$this->request->data['otp'];
-			if($isValidToken == 0)
-             {
-				 if(!empty($id) and (!empty($otp))){
-						$Customers=$this->Customers->find()->where(['id'=>$id,'otp'=>$otp]);
-						if($Customers->toArray()){
+			
+				 if(!empty($mobile) and (!empty($otp))){
+						$VerifyOtps=$this->Customers->VerifyOtps->find()->where(['mobile'=>$mobile,'otp'=>$otp]);
+						if($VerifyOtps->toArray()){
 
-							$query = $this->Customers->query();
+							/* 	$query = $this->Customers->query();
 							$result = $query->update()->set(['status' => 'Active'])->where(['id' => $id])->execute();
 							$Customers=$this->Customers->find()->where(['id'=>$id,'otp'=>$otp]);
-
-              $accounting_group = $this->Customers->Ledgers->AccountingGroups->find()->where(['customer'=>1])->first();
-    					$ledger = $this->Customers->Ledgers->newEntity();
-    					$ledger->name = $Customers->name;
-    					$ledger->accounting_group_id = $accounting_group->id;
-    					$ledger->customer_id=$Customers->id;
-    					$ledger->bill_to_bill_accounting='yes';
-    					$this->Customers->Ledgers->save($ledger);
-
-							$data=$Customers;
+							foreach ($Customers as $Customer) {
+							$accounting_group = $this->Customers->Ledgers->AccountingGroups->find()->where(['customer'=>1])->first();
+							$ledger = $this->Customers->Ledgers->newEntity();
+							$ledger->name = $Customer->name;
+							$ledger->accounting_group_id = $accounting_group->id;
+							$ledger->customer_id=$Customer->id;
+							$ledger->bill_to_bill_accounting='yes';
+							$this->Customers->Ledgers->save($ledger);
+							}
+							*/
 							$success = true;
-							$message = 'Register Successfully';
+							$message = 'verify Successfully';
 						}else{
-							$data=[];
+
 							$success = false;
-							$message = 'otp is not match';
+							$message = 'Not Verify';
 						}
 				 }else{
-					  $data=[];
 					  $success = false;
-					  $message = 'Id or Otp is not empty';
+					  $message = 'mobile or Otp empty';
 				 }
-
-			 }
-             else{
-				$data=[];
-               $success = false;
-               $message = 'Invalid Token';
-             }
+			 
 		}
-
-
-		$this->set(['success' => $success,'message'=>$message,'data'=>$data,'_serialize' => ['success','message','data']]);
+		$this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
 	}
 
 	public function add()
@@ -106,22 +217,28 @@ class CustomersController extends AppController
 
 
 				if(($exists_email==0) and ($exists_mobile==0)){
-					$opt=(mt_rand(1,10000));
+					
 					$mobile=$this->request->data['username'];
-
-
-					$this->request->data['otp']=$opt;
-					$this->request->data['status']='Deactive';
+					
+					$this->request->data['status']='Active';
 					$customer = $this->Customers->patchEntity($customer, $this->request->getData());
 
 					 if ($customers=$this->Customers->save($customer)) {
-						 $content="Your one time password for jainthela is ".$opt;
-						// $this->Sms->sendSms($mobile,$content);
+
 
 							$arr = JWT::encode(['sub' => $customers->id,'exp' =>  time() + 604800],Security::salt());
 							$query = $this->Customers->query();
 							$result = $query->update()->set(['token' => $arr])->where(['id' => $customers->id])->execute();
-						 $customer_data = $this->Customers->get($customers->id);
+						    $customer_data = $this->Customers->get($customers->id);
+						 						
+							$accounting_group = $this->Customers->Ledgers->AccountingGroups->find()->where(['customer'=>1])->first();
+							$ledger = $this->Customers->Ledgers->newEntity();
+							$ledger->name = $customer_data->name;
+							$ledger->accounting_group_id = $accounting_group->id;
+							$ledger->customer_id=$customer_data->id;
+							$ledger->bill_to_bill_accounting='yes';
+							$this->Customers->Ledgers->save($ledger);
+						
 						$success=true;
 						$message="data has been saved successfully";
 						$data=$customer_data;

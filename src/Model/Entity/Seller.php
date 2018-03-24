@@ -1,6 +1,6 @@
 <?php
 namespace App\Model\Entity;
-
+use Cake\Auth\DefaultPasswordHasher;
 use Cake\ORM\Entity;
 
 /**
@@ -38,6 +38,10 @@ use Cake\ORM\Entity;
 class Seller extends Entity
 {
 
+	protected function _setPassword($password)
+    {
+        return (new DefaultPasswordHasher)->hash($password);
+    }
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -48,7 +52,7 @@ class Seller extends Entity
      * @var array
      */
     protected $_accessible = [
-        'city_id' => true,
+        'location_id' => true,
         'name' => true,
         'username' => true,
         'password' => true,
@@ -73,7 +77,7 @@ class Seller extends Entity
         'created_on' => true,
         'created_by' => true,
         'status' => true,
-        'city' => true,
+        'location' => true,
         'items' => true,
         'seller_items' => true,
         'reference_details' => true,

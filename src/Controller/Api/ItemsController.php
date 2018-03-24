@@ -18,7 +18,7 @@ class ItemsController extends AppController
     public function initialize()
      {
          parent::initialize();
-         $this->Auth->allow(['productDetail','itemList']);
+         $this->Auth->allow(['productDetail','itemList','addItemRating']);
      }
 
      public function itemList($category_id=null,$city_id=null,$page=null)
@@ -35,7 +35,7 @@ class ItemsController extends AppController
          if($isValidCity == 0)
          {
            $items = $this->Items->find()
-                     ->contain(['ItemVariations'=>['UnitVariations']])
+                     ->contain(['ItemsVariations'=>['UnitVariations'=>['Units']]])
                      ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id,'Items.category_id'=>$category_id])
                      ->limit($limit)->page($page);
                if(!empty($items->toArray()))
@@ -58,11 +58,12 @@ class ItemsController extends AppController
        $this->set(['success' => $success,'message'=>$message,'items' => $items,'_serialize' => ['success','message','items']]);
      }
 
-    public function productDetail($item_id = null,$city_id =null,$category_id=null)
+    public function productDetail($item_id = null,$city_id =null,$category_id=null,$customer_id=null)
     {
       $item_id = @$this->request->query['item_id'];
       $city_id = @$this->request->query['city_id'];
       $category_id = @$this->request->query['category_id'];
+      $customer_id = @$this->request->query['customer_id'];
       $items = [];
       $reletedItems = [];
       if(!empty($city_id))
@@ -74,12 +75,27 @@ class ItemsController extends AppController
         {
             if(!empty($item_id) && !empty($category_id))
             {
-                $items = $this->Items->find()
-                          ->contain(['Categories','Brands','Sellers','Cities','ItemVariations'=>['UnitVariations']])
-                          ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.id'=>$item_id,'Items.city_id'=>$city_id,'Items.category_id'=>$category_id]);
+                $items = $this->Items->find();
+                          $items->select(['AverageReviewRatings.item_id','ItemAverageRating' => $items->func()->avg('AverageReviewRatings.rating')])
+                          ->contain(['Categories','Brands','Cities','ItemsVariations'=>['UnitVariations','Sellers'],'LeftItemReviewRatings'])
+                          ->leftJoinWith('AverageReviewRatings')
+                          ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.id'=>$item_id,'Items.city_id'=>$city_id,'Items.category_id'=>$category_id])
+                          ->autoFields(true);
 
                 if(!empty($items->toArray()))
                 {
+                  foreach ($items as $Item) {
+                    $Item->ItemAverageRating = number_format($Item->ItemAverageRating,1);
+                    $item_id = $Item->id;
+                    $checkWishList = $this->Items->WishLists->find()
+                    ->contain(['WishListItems'=>function($q) use($item_id) {
+                      return $q->select(['WishListItems.id','WishListItems.wish_list_id'])
+                      ->where(['WishListItems.item_id'=>$item_id]); }])
+                    ->where(['customer_id'=>$customer_id]);
+
+                    pr($checkWishList->toArray());exit;
+
+                  }
                   $success = true;
                   $message = 'Data Found Successfully';
                 }
@@ -91,7 +107,7 @@ class ItemsController extends AppController
                 $HomeScreens=$this->Items->HomeScreens->find()->where(['screen_type'=>'Product Detail','section_show'=>'Yes','city_id'=>$city_id]);
                     foreach($HomeScreens as $HomeScreen){
                         if($HomeScreen->model_name=='Items'){
-                           $reletedItem = $this->Items->find()->contain(['ItemVariations'=>['UnitVariations']])
+                           $reletedItem = $this->Items->find()->contain(['ItemsVariations'=>['UnitVariations']])
                             ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.category_id'=>$category_id,'Items.city_id'=>$city_id,'Items.id !='=>$item_id]);
 
                             if(!empty($reletedItem->toArray()))
@@ -120,5 +136,34 @@ class ItemsController extends AppController
       }
 
       $this->set(['success' => $success,'message'=>$message,'items' => $items,'reletedItems'=>$reletedItems,'_serialize' => ['success','message','items','reletedItems']]);
+    }
+
+    public function addItemRating()
+    {
+		    $addItemRating = $this->Items->ItemReviewRatings->newEntity();
+		      if($this->request->is(['patch', 'post', 'put'])){
+              $addItemRating = $this->Items->ItemReviewRatings->patchEntity($addItemRating, $this->request->getData());
+               if(!empty($addItemRating->item_id) and (!empty($addItemRating->customer_id))){
+
+                 $exists = $this->Items->ItemReviewRatings->exists(['ItemReviewRatings.item_id'=>$addItemRating->item_id,'ItemReviewRatings.customer_id'=>$addItemRating->customer_id]);
+                 if($exists == 1) {
+                    $success = false;
+          					$message = 'rating already given';
+                }
+                 else {
+                       if ($this->Items->ItemReviewRatings->save($addItemRating)) {
+                  						$success=true;
+                  						$message="rating n review has been saved successfully";
+                       }else{
+                               $success=false;
+              						      $message="rating n review has not been saved";
+              					}
+                  }
+		         }else{
+       					$success = false;
+       					$message = 'Invalid Item id or customer id';
+       				}
+          }
+          $this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
     }
 }

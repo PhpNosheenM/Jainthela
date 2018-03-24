@@ -21,7 +21,7 @@ class SellerItemsController extends AppController
     public function index()
     {
         $this->paginate = [
-            'contain' => ['Items', 'Categories', 'Sellers']
+            'contain' => ['Items', 'Sellers']
         ];
         $sellerItems = $this->paginate($this->SellerItems);
 
@@ -38,7 +38,7 @@ class SellerItemsController extends AppController
     public function view($id = null)
     {
         $sellerItem = $this->SellerItems->get($id, [
-            'contain' => ['Items', 'Categories', 'Sellers', 'SellerItemVariations']
+            'contain' => ['Items', 'Sellers', 'SellerItemVariations']
         ]);
 
         $this->set('sellerItem', $sellerItem);
@@ -57,20 +57,111 @@ class SellerItemsController extends AppController
 		$this->viewBuilder()->layout('admin_portal');
         $sellerItem = $this->SellerItems->newEntity();
         if ($this->request->is('post')) {
-            $sellerItem = $this->SellerItems->patchEntity($sellerItem, $this->request->getData());
-            if ($this->SellerItems->save($sellerItem)) {
+			$commissions=$this->request->getData('commissions');
+			$item_ids=$this->request->getData('item_ids');
+			$seller_id=$this->request->getData('seller_id');
+			//pr($this->request->getData());
+			//exit;
+			$total_rows = sizeof($item_ids);
+			
+			$query = $this->SellerItems->query();
+			$query->insert(['seller_id', 'item_id','commission_percentage']);
+			for($i=0; $i<$total_rows; $i++)
+			{
+				$query->values([
+					'seller_id' => $seller_id,
+					'item_id' => $item_ids[$i],
+					'commission_percentage' => $commissions[$i]
+				]);
+			}
+            if ($query->execute()) {
                 $this->Flash->success(__('The seller item has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('The seller item could not be saved. Please, try again.'));
         }
-        $items = $this->SellerItems->Items->find('list', ['limit' => 200]);
         $categories = $this->SellerItems->Categories->find('threaded')->contain(['Items']);
-        $sellers = $this->SellerItems->Sellers->find('list', ['limit' => 200]);
-        $this->set(compact('sellerItem', 'items', 'categories', 'sellers'));
+        $sellers = $this->SellerItems->Sellers->find('list');
+        $this->set(compact('sellerItem', 'categories', 'sellers'));
     }
+	 public function itemVariation()
+    {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id');
+		$this->viewBuilder()->layout('admin_portal');
+        $itemVariation = $this->SellerItems->ItemVariations->newEntity();
+        if ($this->request->is('post')) {
+			$commissions=$this->request->getData('commissions');
+			$item_ids=$this->request->getData('item_ids');
+			$seller_id=$this->request->getData('seller_id');
+			//pr($this->request->getData());
+			//exit;
+			$total_rows = sizeof($item_ids);
+			
+			$query = $this->SellerItems->query();
+			$query->insert(['seller_id', 'item_id','commission_percentage']);
+			for($i=0; $i<$total_rows; $i++)
+			{
+				$query->values([
+					'seller_id' => $seller_id,
+					'item_id' => $item_ids[$i],
+					'commission_percentage' => $commissions[$i]
+				]);
+			}
+            if ($query->execute()) {
+                $this->Flash->success(__('The seller item has been saved.'));
 
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The seller item could not be saved. Please, try again.'));
+        }
+        $categories = $this->SellerItems->Categories->find('threaded')
+							->matching('Items.SellerItems', function($q) use($user_id){
+							return $q->where(['SellerItems.seller_id'=>$user_id])->contain(['Items']);
+							})->autoFields(true)
+							;
+		/*  $categories = $this->SellerItems->Categories->find('threaded');
+							$categories->select(['SellerItems.id','total_item'=>$categories->func()->count('SellerItems.id')])
+							->leftJoinWith('Items.SellerItems')
+							->contain(['Items'=>['SellerItems'=>function($q) use($user_id){
+							return $q->where(['SellerItems.seller_id'=>$user_id])->contain(['Items'=>['ItemVariationMasters']]);
+							}]])
+							->group(['SellerItems.id']); */
+							
+		/* 		$query = $this->SellerItems->Categories->find('threaded');
+
+$query->select([
+    'Categories.id'
+	
+]);
+
+$query->contain(['Items'=>function($qi) use($user_id){
+	return $qi->select(['Items.category_id','Items.id'])
+	->contain([
+    'SellerItems' => function($q) use($user_id){
+        $q->select(['SellerItems.item_id','d1c' => 'COUNT(SellerItems.id)'])->where(['SellerItems.seller_id' => $user_id]);
+        return $q;
+    }
+]);
+}]);
+
+$query->innerJoinWith('Items.SellerItems', function($q)  use($user_id){
+    return $q->where(['SellerItems.seller_id' => $user_id]);
+}); */
+/* 
+$query->having(function($q) {
+    return $q->or_([
+        'd1c >' => 0,
+    ]);
+
+}); 
+	*/		
+		pr($categories->toArray());
+		exit;
+        $this->set(compact('itemVariation', 'categories'));
+    }
     /**
      * Edit method
      *

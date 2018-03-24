@@ -22,15 +22,15 @@ class ItemsController extends AppController
     public function index()
     {
 		$user_id=$this->Auth->User('id');
-		$city_id=$this->Auth->User('city_id'); 
+		$city_id=$this->Auth->User('city_id');
 		$this->viewBuilder()->layout('admin_portal');
         $this->paginate = [
             'contain' => ['Categories', 'Brands'],
 			'limit' => 20
         ];
-		
+
 		$items = $this->Items->find()->where(['Items.city_id'=>$city_id]);
-		
+
 		if ($this->request->is(['get'])){
 			$search=$this->request->getQuery('search');
 			$items->where([
@@ -45,7 +45,7 @@ class ItemsController extends AppController
 			]);
 		}
         $items = $this->paginate($items);
-		
+
 		$paginate_limit=$this->paginate['limit'];
         $this->set(compact('items','paginate_limit'));
     }
@@ -73,26 +73,28 @@ class ItemsController extends AppController
      */
     public function add()
     {
-		$city_id=$this->Auth->User('city_id'); 
+		$city_id=$this->Auth->User('city_id');
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('admin_portal');
         $item = $this->Items->newEntity();
         if ($this->request->is('post')) {
 			$item_image=$this->request->data['item_image'];
 			$item_error=$item_image['error'];
-			$item_variation_masters=$this->request->data['item_variation_masters'];
+			//$item_variation_masters=$this->request->data['item_variation_masters'];
+
             $item = $this->Items->patchEntity($item, $this->request->getData());
-			
+
 			if(empty($item_error))
 			{
 				$item_ext=explode('/',$item_image['type']);
 				$item->item_image='item'.time().'.'.$item_ext[1];
 			}
-			
+
 			$item->city_id=$city_id;
 			$item->created_by=$user_id;
-			
-            if ($item_data=$this->Items->save($item)) { 
+
+            if ($item_data=$this->Items->save($item)) {
+			//pr($item->toArray()); exit;
 				if(empty($item_error))
 				{
 					/* For Web Image */
@@ -100,48 +102,43 @@ class ItemsController extends AppController
 					$this->AwsFile->deleteMatchingObjects($deletekeyname);
 					$keyname = 'item/'.$item_data->id.'/web/'.$item_data->item_image;
 					$this->AwsFile->putObjectFile($keyname,$item_image['tmp_name'],$item_image['type']);
-					
+
 					/* Resize Image */
 					$destination_url = WWW_ROOT . 'img/temp/'.$item_data->item_image;
 					$image = imagecreatefromjpeg($item_image['tmp_name']);
 					imagejpeg($image, $destination_url, 10);
-					
+
 					/* For App Image */
 					$deletekeyname = 'item/'.$item_data->id.'/app';
 					$this->AwsFile->deleteMatchingObjects($deletekeyname);
 					$keyname = 'item/'.$item_data->id.'/app/'.$item_data->item_image;
 					$this->AwsFile->putObjectFile($keyname,$destination_url,$item_image['type']);
-					
+
 					/* Delete Temp File */
 					$file = new File(WWW_ROOT . $destination_url, false, 0777);
 					$file->delete();
 				}
-				
-				foreach($item_variation_masters as $item_variation_master){
-					if($item_variation_master['check']==1){
-						$ItemVariationMaster = $this->Items->ItemVariationMasters->newEntity();
-						$ItemVariationMaster->item_id = $item->id;
-						$ItemVariationMaster->unit_variation_id = $item_variation_master['unit_variation_id'];
-						$ItemVariationMaster->created_by = $user_id;
-						$ItemVariationMaster->status ="Active";
-						$this->Items->ItemVariationMasters->save($ItemVariationMaster);
-						//pr($SellerItem); exit;
-					}
-				}
+
+
 				//pr($item);exit;
                 $this->Flash->success(__('The item has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
             }
-		
+
             $this->Flash->error(__('The item could not be saved. Please, try again.'));
         }
+		$unitVariations = $this->Items->ItemVariationMasters->UnitVariations->find('all')->contain(['Units']);
+		$unit_option=[];
+		$i=0; foreach($unitVariations as $unitVariation){
+			$unit_option[]=['text'=>$unitVariation->quantity_variation .' ' .$unitVariation->unit->unit_name ,'value'=>$unitVariation->id ];
+		}
         $categories = $this->Items->Categories->find('list')->where(['Categories.city_id'=>$city_id]);
         $brands = $this->Items->Brands->find('list')->where(['Brands.city_id'=>$city_id]);
-        $unitVariations = $this->Items->ItemVariationMasters->UnitVariations->find('all')->contain(['Units']);
+
 		$gstFigures =  $this->Items->GstFigures->find('list');
 		//pr($unitVariations->toArray());exit;
-		$this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities','unitVariations','gstFigures'));
+		$this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities','unitVariations','gstFigures','unit_option'));
     }
 	
 	public function stockReport($id = null)
@@ -317,17 +314,17 @@ class ItemsController extends AppController
      */
     public function edit($id = null)
     {
-		$city_id=$this->Auth->User('city_id'); 
+		$city_id=$this->Auth->User('city_id');
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('admin_portal');
         $item = $this->Items->get($id, [
             'contain' => ['ItemVariationMasters'=>['UnitVariations']]
         ]);
-		pr($item->toArray()); exit;
+		//pr($item->toArray()); exit;
         if ($this->request->is(['patch', 'post', 'put'])) {
 			$item_image=$this->request->data['item_image'];
 			$item_error=$item_image['error'];
-			
+
             $item = $this->Items->patchEntity($item, $this->request->getData());
 			if(empty($item_error))
 			{
@@ -337,25 +334,25 @@ class ItemsController extends AppController
 			if ($item_data=$this->Items->save($item)) {
 				if(empty($item_error))
 				{
-					
-					
+
+
 					/* For Web Image */
 					$deletekeyname = 'item/'.$item_data->id.'/web';
 					$this->AwsFile->deleteMatchingObjects($deletekeyname);
 					$keyname = 'item/'.$item_data->id.'/web/'.$item_data->item_image;
 					$this->AwsFile->putObjectFile($keyname,$item_image['tmp_name'],$item_image['type']);
-					
+
 					/* Resize Image */
 					$destination_url = WWW_ROOT . 'img/temp/'.$item_data->item_image;
 					$image = imagecreatefromjpeg($item_image['tmp_name']);
 					imagejpeg($image, $destination_url, 10);
-					
+
 					/* For App Image */
 					$deletekeyname = 'item/'.$item_data->id.'/app';
 					$this->AwsFile->deleteMatchingObjects($deletekeyname);
 					$keyname = 'item/'.$item_data->id.'/app/'.$item_data->item_image;
 					$this->AwsFile->putObjectFile($keyname,$destination_url,$item_image['type']);
-					
+
 					/* Delete Temp File */
 					$file = new File(WWW_ROOT . $destination_url, false, 0777);
 					$file->delete();
@@ -367,11 +364,17 @@ class ItemsController extends AppController
 			//spr($item); exit;
             $this->Flash->error(__('The item could not be saved. Please, try again.'));
         }
+		$unitVariations = $this->Items->ItemVariationMasters->UnitVariations->find('all')->contain(['Units']);
+		$unit_option=[];
+		$i=0; foreach($unitVariations as $unitVariation){
+			$unit_option[]=['text'=>$unitVariation->quantity_variation .' ' .$unitVariation->unit->unit_name ,'value'=>$unitVariation->id ];
+		}
+		//pr($unit_option); exit;
         $categories = $this->Items->Categories->find('list')->where(['Categories.city_id'=>$city_id]);
         $brands = $this->Items->Brands->find('list')->where(['Brands.city_id'=>$city_id]);
-        $unitVariations = $this->Items->ItemVariationMasters->UnitVariations->find('all')->contain(['Units']);
+
 		$gstFigures =  $this->Items->GstFigures->find('list');
-        $this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities','unitVariations','gstFigures'));
+        $this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities','unit_option','gstFigures'));
     }
 
     /**

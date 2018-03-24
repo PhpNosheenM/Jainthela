@@ -128,7 +128,7 @@ class ReferenceDetailsTable extends Table
         $validator
             ->integer('id')
             ->allowEmpty('id', 'create');
-
+		/*
         $validator
             ->date('transaction_date')
             ->allowEmpty('transaction_date');
@@ -150,7 +150,7 @@ class ReferenceDetailsTable extends Table
             ->maxLength('opening_balance', 10)
             ->allowEmpty('opening_balance');
 
-        
+        */
         return $validator;
     }
 
@@ -163,7 +163,7 @@ class ReferenceDetailsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['customer_id'], 'Customers'));
+      /*  $rules->add($rules->existsIn(['customer_id'], 'Customers'));
         $rules->add($rules->existsIn(['supplier_id'], 'Suppliers'));
         $rules->add($rules->existsIn(['location_id'], 'Locations'));
         $rules->add($rules->existsIn(['ledger_id'], 'Ledgers'));
@@ -181,7 +181,7 @@ class ReferenceDetailsTable extends Table
         $rules->add($rules->existsIn(['purchase_invoice_id'], 'PurchaseInvoices'));
         $rules->add($rules->existsIn(['purchase_return_id'], 'PurchaseReturns'));
         $rules->add($rules->existsIn(['sales_invoice_id'], 'SalesInvoices'));
-
+		*/
         return $rules;
     }
 }

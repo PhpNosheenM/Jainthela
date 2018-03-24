@@ -54,13 +54,13 @@ class ItemsTable extends Table
         $this->belongsTo('Categories', [
             'foreignKey' => 'category_id',
             'joinType' => 'INNER'
-        ]);
-		
+        ])->setConditions(['Categories.status' => 'Active']);
+
 		$this->belongsTo('GstFigures', [
             'foreignKey' => 'gst_figure_id',
             'joinType' => 'INNER'
-        ])->setConditions(['Categories.status' => 'Active']);
-		
+        ]);
+
         $this->belongsTo('Brands', [
             'foreignKey' => 'brand_id',
             'joinType' => 'Left'
@@ -98,9 +98,14 @@ class ItemsTable extends Table
         $this->hasMany('GrnRows', [
             'foreignKey' => 'item_id'
         ]);
+		 $this->belongsToMany('UnitVariations', [
+            'foreignKey' => 'item_id',
+			'targetForeignKey'=>'unit_variation_id',
+            'joinTable' => 'item_variation_masters'
+        ]);
         $this->hasMany('ItemVariationMasters', [
             'foreignKey' => 'item_id',
-			'saveStrategy'=>'replace'
+			       'saveStrategy'=>'replace'
         ]);
         
 		 $this->hasMany('ItemVariations', [
@@ -127,12 +132,33 @@ class ItemsTable extends Table
             'foreignKey' => 'item_id'
         ]);
 
+        $this->hasMany('LeftItemReviewRatings', [
+            'className'  =>'ItemReviewRatings',
+            'foreignKey' => 'item_id',
+            'joinType' => 'Left'
+        ])->setConditions(['LeftItemReviewRatings.status'=>'0']);
+
+        $this->hasMany('AverageReviewRatings', [
+            'className'  =>'ItemReviewRatings',
+            'foreignKey' => 'item_id',
+            'joinType' => 'Left'
+        ])->setConditions(['AverageReviewRatings.status'=>'0']);
+
+        $this->hasMany('ItemReviewRatings', [
+              'foreignKey' => 'item_id'
+        ])->setConditions(['ItemReviewRatings.status'=>'0']);
+
 		  $this->hasMany('ItemsVariations', [
             'className' => 'ItemVariations',
-			'foreignKey' => 'item_id'
+			      'foreignKey' => 'item_id'
         ])->setConditions(['section_show'=>'Yes']);
 
         // HomeScreen Model used in Item (product detail) api
+
+        $this->belongsTo('WishLists', [
+            'foreignKey' => 'item_id',
+            'joinType' => 'INNER'
+        ]);
 
         $this->belongsTo('HomeScreens');
 

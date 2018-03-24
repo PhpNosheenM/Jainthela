@@ -12,6 +12,28 @@ use App\Controller\AppController;
  */
 class SellersController extends AppController
 {
+	public function initialize()
+	{
+		parent::initialize();
+		 $this->Auth->allow(['logout', 'login']);		
+	}
+	public function login()
+    {
+		$this->viewBuilder()->layout('seller_login');
+        if ($this->request->is('post')) 
+		{
+			$user = $this->Auth->identify();
+			if ($user) 
+			{
+				$city = $this->Sellers->Locations->get($user['location_id']);
+				$user['city_id']=$city->id;
+				$user['user_role']='seller';
+				$this->Auth->setUser($user);
+				return $this->redirect(['controller'=>'Sellers','action' => 'index']);
+            }
+            $this->Flash->error(__('Invalid Username or Password'));
+        }	
+    }
     /**
      * Index method
      *
@@ -21,12 +43,12 @@ class SellersController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
 		$this->viewBuilder()->layout('admin_portal');
         $this->paginate = [
-            'contain' => ['Cities'],
 			'limit' => 20
         ];
-        $sellers = $this->Sellers->find()->where(['Sellers.city_id'=>$city_id]);
+        $sellers = $this->Sellers->find()->where(['Sellers.location_id'=>$location_id]);
 		if ($this->request->is(['get'])){
 			$search=$this->request->getQuery('search');
 			$sellers->where([
@@ -139,9 +161,9 @@ class SellersController extends AppController
         }
 		//$categories = $this->Sellers->Categories->find('threaded')->contain(['Items']);
 		
-		$Cities = $this->Sellers->Cities->find('list');
+		$locations = $this->Sellers->Locations->find('list');
         
-        $this->set(compact('seller','Cities'));
+        $this->set(compact('seller','locations'));
     }
 	
 
