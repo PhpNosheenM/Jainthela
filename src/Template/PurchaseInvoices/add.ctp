@@ -295,6 +295,8 @@
 						gst_rate=0;
 					}else{ 
 						gst_rate=round(round(taxable_value*gst_percentage)/100,2);
+						gst_rate1=round((gst_rate/2),2);
+						gst_rate=round((gst_rate1*2),2);
 					}
 					total_gst=total_gst+gst_rate;
 					$(this).find('.gst_value').val(gst_rate);
@@ -304,7 +306,7 @@
 					total_taxable_value=total_taxable_value+taxable_value;
 					total_gst=total_gst+gst_rate;
 					total_amount=total_amount+net_amount1;
-					var per_item_purchase_rate=net_amount1/qty;
+					var per_item_purchase_rate=round((net_amount1/qty),2);
 					$(this).find('.purchase_rate').val(per_item_purchase_rate);
 					var commission_rate=(per_item_purchase_rate*commission)/100;
 					var per_item_sales_rate=round(per_item_purchase_rate+commission_rate,2);
@@ -328,6 +330,9 @@
 						gst_rate=0;
 					}else{ 
 						gst_rate=round((taxable_value*gst_percentage)/(100+gst_percentage),2);
+						gst_rate1=round((gst_rate/2),2);
+						gst_rate=round((gst_rate1*2),2);
+						//alert(gst_rate);
 					}
 					var taxable_before_gst=round((taxable_value-gst_rate),2);
 					$(this).find('.taxable_value').val(taxable_before_gst);
