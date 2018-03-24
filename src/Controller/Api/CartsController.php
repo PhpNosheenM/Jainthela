@@ -199,9 +199,7 @@ class CartsController extends AppController
 					}
 				}
 
-
-		//$this->loadModel('DeliveryCharges');
-		//$delivery_charges=$this->DeliveryCharges->find();
+				$delivery_charges=$this->Carts->DeliveryCharges->find()->where(['city_id'=>$city_id]);
 
 			 if(empty($carts))
 			 {

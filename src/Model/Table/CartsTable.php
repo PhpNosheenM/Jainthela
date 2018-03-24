@@ -60,6 +60,10 @@ class CartsTable extends Table
             'foreignKey' => 'unit_id',
             'joinType' => 'INNER'
         ]);
+
+        $this->belongsTo('DeliveryCharges');
+
+
     }
 
     /**
