@@ -48,6 +48,9 @@ class AdminsController extends AppController
 			{
 				$city = $this->Admins->Locations->get($user['location_id']);
 				$user['city_id']=$city->id;
+				$state = $this->Admins->Locations->Cities->get($city->id);
+				$user['state_id']=$state->id;
+				
 				$this->Auth->setUser($user);
 				return $this->redirect(['controller'=>'Admins','action' => 'index']);
             }

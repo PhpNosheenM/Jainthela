@@ -5,6 +5,8 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\Event\Event;
+use ArrayObject;
 
 /**
  * PurchaseInvoices Model
@@ -75,7 +77,7 @@ class PurchaseInvoicesTable extends Table
             'foreignKey' => 'purchase_invoice_id'
         ]);
         $this->hasMany('ItemLedgers', [
-            'foreignKey' => 'purchase_invoice_id'
+            'foreignKey' => 'item_ledger_id'
         ]);
         $this->hasMany('PurchaseInvoiceRows', [
             'foreignKey' => 'purchase_invoice_id'
@@ -86,6 +88,7 @@ class PurchaseInvoicesTable extends Table
         $this->hasMany('ReferenceDetails', [
             'foreignKey' => 'purchase_invoice_id'
         ]);
+		
     }
 
     /**
@@ -115,12 +118,7 @@ class PurchaseInvoicesTable extends Table
             ->requirePresence('narration', 'create')
             ->notEmpty('narration');
 
-        $validator
-            ->scalar('status')
-            ->maxLength('status', 10)
-            ->requirePresence('status', 'create')
-            ->notEmpty('status');
-
+        
         $validator
             ->integer('created_by')
             ->requirePresence('created_by', 'create')
@@ -131,18 +129,19 @@ class PurchaseInvoicesTable extends Table
             ->requirePresence('created_on', 'create')
             ->notEmpty('created_on');
 
-        $validator
-            ->integer('edited_by')
-            ->requirePresence('edited_by', 'create')
-            ->notEmpty('edited_by');
-
-        $validator
-            ->dateTime('edited_on')
-            ->requirePresence('edited_on', 'create')
-            ->notEmpty('edited_on');
+       
 
         return $validator;
     }
+	
+
+	
+	public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
+{
+    if (isset($data['transaction_date'])) {
+        $data['transaction_date'] = date('Y-m-d', strtotime($data['transaction_date']));
+    }
+}
 
     /**
      * Returns a rules checker object that will be used for validating

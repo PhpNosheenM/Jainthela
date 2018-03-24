@@ -57,11 +57,20 @@ class ReceiptsController extends AppController
 		$this->viewBuilder()->layout('admin_portal');
         $receipt = $this->Receipts->newEntity();
         if ($this->request->is('post')) {
-			
+			$Voucher_no = $this->Receipts->find()->select(['voucher_no'])->where(['location_id'=>$location_id])->order(['voucher_no' => 'DESC'])->first();
+			if($Voucher_no)
+			{
+				$voucher_no=$Voucher_no->voucher_no+1;
+			}
+			else
+			{
+				$voucher_no=1;
+			}
             $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
 			$tdate=$this->request->data('transaction_date');
 			$receipt->transaction_date=date('Y-m-d',strtotime($tdate));
 			$receipt->location_id = $location_id;
+			$receipt->voucher_no = $voucher_no;
 		   //transaction date for receipt code start here--
 			foreach($receipt->receipt_rows as $receipt_row)
 			{

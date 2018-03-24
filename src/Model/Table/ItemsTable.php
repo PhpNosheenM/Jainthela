@@ -74,8 +74,16 @@ class ItemsTable extends Table
             'foreignKey' => 'seller_id',
             'joinType' => 'INNER'
         ]);
-		 
-        $this->belongsTo('Cities', [
+
+        $this->belongsTo('Locations', [
+            'foreignKey' => 'location_id',
+            'joinType' => 'INNER'
+        ]);
+		$this->belongsTo('ItemLedgers', [
+            'foreignKey' => 'item_id',
+            'joinType' => 'INNER'
+        ]);
+		$this->belongsTo('Cities', [
             'foreignKey' => 'city_id',
             'joinType' => 'INNER'
         ]);
@@ -100,7 +108,13 @@ class ItemsTable extends Table
             'foreignKey' => 'item_id',
 			       'saveStrategy'=>'replace'
         ]);
-        $this->hasMany('PromotionDetails', [
+        
+		 $this->hasMany('ItemVariations', [
+            'foreignKey' => 'item_id',
+			'saveStrategy'=>'replace'
+        ]);
+		
+		$this->hasMany('PromotionDetails', [
             'foreignKey' => 'item_id'
         ]);
         $this->hasMany('PurchaseInvoiceRows', [

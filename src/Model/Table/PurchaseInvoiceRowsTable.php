@@ -49,14 +49,12 @@ class PurchaseInvoiceRowsTable extends Table
             'foreignKey' => 'item_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('Ledgers');
         $this->belongsTo('ItemVariations', [
             'foreignKey' => 'item_variation_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('ItemGstFigures', [
-            'foreignKey' => 'item_gst_figure_id',
-            'joinType' => 'INNER'
-        ]);
+       
         $this->hasMany('ItemLedgers', [
             'foreignKey' => 'purchase_invoice_row_id'
         ]);
@@ -133,8 +131,7 @@ class PurchaseInvoiceRowsTable extends Table
     {
         $rules->add($rules->existsIn(['purchase_invoice_id'], 'PurchaseInvoices'));
         $rules->add($rules->existsIn(['item_id'], 'Items'));
-        $rules->add($rules->existsIn(['item_variation_id'], 'ItemVariations'));
-        $rules->add($rules->existsIn(['item_gst_figure_id'], 'ItemGstFigures'));
+       // $rules->add($rules->existsIn(['item_variation_id'], 'ItemVariations'));
 
         return $rules;
     }
