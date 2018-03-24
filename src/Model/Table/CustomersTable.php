@@ -5,7 +5,8 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-
+use Cake\Event\Event;
+use ArrayObject;
 /**
  * Customers Model
  *
@@ -120,7 +121,11 @@ class CustomersTable extends Table
 		return $validator;
     }
 
-	
+	public function beforeMarshal(Event $event, ArrayObject $data)
+    {
+        @$data['discount_created_on'] = trim(date('Y-m-d',strtotime(@$data['discount_created_on'])));
+		 @$data['discount_expiry'] = trim(date('Y-m-d',strtotime(@$data['discount_expiry'])));
+    }
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.

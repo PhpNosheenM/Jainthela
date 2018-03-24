@@ -116,13 +116,37 @@
 										<th><?= ('Address') ?></th>
 										<th><?= ('Landmark') ?></th>
 										<th><?= ('Pincode') ?></th>
-										<th><?= ('latitude') ?></th>
-										<th><?= ('longitude') ?></th>
 										<th><?= ('default') ?></th>
 										<th  class="actions"><?= __('Actions') ?></th>
 									</tr>
 								</thead>
 								<tbody class="MainTbody">  
+									<tr class="MainTr">
+			
+										<td width="" valign="top">
+											<input type="hidden" class="city_container" value="<?php echo $city_id; ?>" >
+											<input type="hidden" class="location_container" value="<?php echo $location_id; ?>">
+											<?= $this->Form->control('house_no',['class'=>'form-control house_no','label'=>false]) ?>
+										</td>
+										<td width="30%" valign="top">
+											<?= $this->Form->control('address',['class'=>'form-control address','label'=>false,'rows'=>3]) ?>
+										</td>
+										<td width="20%" valign="top">
+											<?= $this->Form->control('landmark',['class'=>'form-control landmark','label'=>false,'rows'=>3]) ?>
+										</td>
+										<td width="10%" valign="top">
+											<?= $this->Form->control('pincode',['class'=>'form-control pincode','label'=>false]) ?>
+										</td>
+										
+										<td valign="top">
+											<?= $this->Form->control('default_address',['class'=>'default_address', 'label'=>false,'hiddenField'=>false,'type'=>'checkbox','checked'=>'checked','templates' => ['inputContainer' => '{{content}}']]) ?>
+										</td>
+										
+										<td valign="top"  >
+											<a class="btn btn-primary  btn-condensed btn-sm add_row" href="#" role="button" ><i class="fa fa-plus"></i></a>
+											<a class="btn btn-danger  btn-condensed btn-sm delete_row " href="#" role="button" ><i class="fa fa-times"></i></a>
+										</td>
+									</tr>
 								</tbody>
 							</table>
 						</div>
@@ -158,14 +182,9 @@
 			<td width="10%" valign="top">
 				<?= $this->Form->control('pincode',['class'=>'form-control pincode','label'=>false]) ?>
 			</td>
-			<td width="10%" valign="top">
-				<?= $this->Form->control('latitude',['class'=>'form-control latitude','label'=>false]) ?>
-			</td>
-			<td width="10%" valign="top">
-				<?= $this->Form->control('longitude',['class'=>'form-control longitude','label'=>false]) ?>
-			</td>
+			
 			<td valign="top">
-				<?= $this->Form->control('default_address',['class'=>'default_btn', 'label'=>false,'hiddenField'=>false,'checked'=>'checked','type'=>'checkbox','templates' => ['inputContainer' => '{{content}}']]) ?>
+				<?= $this->Form->control('default_address',['class'=>'default_address', 'label'=>false,'hiddenField'=>false,'type'=>'checkbox','checked'=>'','templates' => ['inputContainer' => '{{content}}']]) ?>
 			</td>
 			
 			<td valign="top"  >
@@ -203,7 +222,8 @@
 			renameRows();
 		});
 		
-		addMainRow();
+		//addMainRow();
+		renameRows();
 		function addMainRow(){
 			var tr=$("#sampleTable tbody").html();
 			$(".main_table tbody").append(tr);
@@ -216,12 +236,14 @@
 			renameRows();
 		});
 		
-		$(document).on("click",".default_btn",function(){
-			alert();
-			$(".default_btn").removeAttr("checked");
-			$(this).attr("checked","checked");
-			$.uniform.update();
+		
+		$(document).on("click",".default_address",function(){
+			$(".default_address").prop("checked",false);
+			$(".default_address").val(0);
+			$(this).prop("checked",true);
+			$(this).val(1);
 		});
+		
 		
 		function renameRows(){
 				var i=0; 
@@ -233,10 +255,7 @@
 						$(this).find("td:nth-child(2) textarea.address").attr({name:"customer_addresses["+i+"][address]",id:"customer_addresses-"+i+"-address"}).rules("add", "required");
 						$(this).find("td:nth-child(3) textarea.landmark").attr({name:"customer_addresses["+i+"][landmark]",id:"customer_addresses-"+i+"-landmark"}).rules("add", "required");
 						$(this).find("td:nth-child(4) input.pincode").attr({name:"customer_addresses["+i+"][pincode]",id:"customer_addresses-"+i+"-pincode"}).rules("add", "required");
-						$(this).find("td:nth-child(5) input.latitude").attr({name:"customer_addresses["+i+"][latitude]",id:"customer_addresses-"+i+"-latitude"});
-						$(this).find("td:nth-child(6) input.longitude").attr({name:"customer_addresses["+i+"][longitude]",id:"customer_addresses-"+i+"-longitude"});
-						
-						
+						$(this).find("td:nth-child(5) input.default_address").attr({name:"customer_addresses["+i+"][default_address]",id:"customer_addresses-"+i+"-default_address"});
 						i++;
 			});
 		}

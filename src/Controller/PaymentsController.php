@@ -108,8 +108,7 @@ class PaymentsController extends AppController
 
 				return $this->redirect(['action' => 'index']);
 			}
-			pr($payment);
-						exit;
+			
 			$this->Flash->error(__('The payment could not be saved. Please, try again.'));
 		}
 		$Voucher = $this->Payments->find()->select(['voucher_no'])->where(['location_id'=>$location_id])->order(['voucher_no' => 'DESC'])->first();

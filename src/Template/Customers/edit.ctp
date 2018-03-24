@@ -92,13 +92,14 @@
 								</div>
 							</div>
 							
+							
 							<div class="form-group">
 								<label class="col-md-3 control-label">Discount Valid</label>
 								<div class="col-md-9 col-xs-12">
 									<div class="input-group">
-										<?= $this->Form->control('discount_created_on',['class'=>'form-control datepicker','placeholder'=>'Discount Valid From','label'=>false,'type'=>'text','data-date-format' => 'DD/MM/YYYY']) ?>
+										<?= $this->Form->control('discount_created_on',['class'=>'form-control datepicker','placeholder'=>'Discount Valid From','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy']) ?>
 										<span class="input-group-addon add-on"> - </span>
-										<?= $this->Form->control('discount_expiry',['class'=>'form-control datepicker','placeholder'=>'Discount Valid To','label'=>false,'type'=>'text','data-date-format' => 'DD/MM/YYYY']) ?>
+										<?= $this->Form->control('discount_expiry',['class'=>'form-control datepicker','placeholder'=>'Discount Valid To','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy']) ?>
 									</div>
 								</div>
 							</div>
@@ -116,8 +117,6 @@
 										<th><?= ('Address') ?></th>
 										<th><?= ('Landmark') ?></th>
 										<th><?= ('Pincode') ?></th>
-										<th><?= ('latitude') ?></th>
-										<th><?= ('longitude') ?></th>
 										<th><?= ('default') ?></th>
 										<th  class="actions"><?= __('Actions') ?></th>
 									</tr>
@@ -139,15 +138,14 @@
 										<td width="10%" valign="top">
 											<?= $this->Form->control('pincode',['class'=>'form-control pincode','label'=>false,'value'=>$customer_address->pincode]) ?>
 										</td>
-										<td width="10%" valign="top">
-											<?= $this->Form->control('latitude',['class'=>'form-control latitude','label'=>false,'value'=>$customer_address->latitude]) ?>
-										</td>
-										<td width="10%" valign="top">
-											<?= $this->Form->control('longitude',['class'=>'form-control longitude','label'=>false,'value'=>$customer_address->longitude]) ?>
-										</td>
+										<?php if($customer_address->default_address==1){
+												@$checked="checked";
+											} else{
+												@$checked="";
+											}?>
 										<td valign="top">
-											<?= $this->Form->control('default_address',['class'=>'ichecked', 'label'=>false,'hidden'=>false,'type'=>'checkbox']) ?>
-											
+											<?= $this->Form->control('default_address',['class'=>'default_address', 'label'=>false,'hiddenField'=>false,'type'=>'checkbox','checked'=>$checked,'value'=>$customer_address->default_address,
+											'templates' => ['inputContainer' => '{{content}}']]) ?>
 										</td>
 										
 										<td valign="top"  >
@@ -191,12 +189,7 @@
 			<td width="10%" valign="top">
 				<?= $this->Form->control('pincode',['class'=>'form-control pincode','label'=>false]) ?>
 			</td>
-			<td width="10%" valign="top">
-				<?= $this->Form->control('latitude',['class'=>'form-control latitude','label'=>false]) ?>
-			</td>
-			<td width="10%" valign="top">
-				<?= $this->Form->control('longitude',['class'=>'form-control longitude','label'=>false]) ?>
-			</td>
+		
 			<td valign="top">
 				<?= $this->Form->control('default_address',['class'=>'ichecked', 'label'=>false,'hidden'=>false,'type'=>'checkbox']) ?>
 				
@@ -250,6 +243,13 @@
 			renameRows();
 		});
 		
+		$(document).on("click",".default_address",function(){
+			$(".default_address").prop("checked",false);
+			$(".default_address").val(0);
+			$(this).prop("checked",true);
+			$(this).val(1);
+		});
+		
 		function renameRows(){
 				var i=0; 
 				$(".main_table tbody tr").each(function(){
@@ -260,9 +260,8 @@
 						$(this).find("td:nth-child(2) textarea.address").attr({name:"customer_addresses["+i+"][address]",id:"customer_addresses-"+i+"-address"}).rules("add", "required");
 						$(this).find("td:nth-child(3) textarea.landmark").attr({name:"customer_addresses["+i+"][landmark]",id:"customer_addresses-"+i+"-landmark"}).rules("add", "required");
 						$(this).find("td:nth-child(4) input.pincode").attr({name:"customer_addresses["+i+"][pincode]",id:"customer_addresses-"+i+"-pincode"}).rules("add", "required");
-						$(this).find("td:nth-child(5) input.latitude").attr({name:"customer_addresses["+i+"][latitude]",id:"customer_addresses-"+i+"-latitude"});
-						$(this).find("td:nth-child(6) input.longitude").attr({name:"customer_addresses["+i+"][longitude]",id:"customer_addresses-"+i+"-longitude"});
-						$(this).find("td:nth-child(7) input.default_address").attr({name:"customer_addresses["+i+"][default_address]",id:"customer_addresses-"+i+"-default_address"});
+						
+						$(this).find("td:nth-child(5) input.default_address").attr({name:"customer_addresses["+i+"][default_address]",id:"customer_addresses-"+i+"-default_address"});
 						
 						i++;
 			});
