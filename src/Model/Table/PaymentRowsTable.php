@@ -5,7 +5,8 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-
+use Cake\Event\Event;
+use ArrayObject;
 /**
  * PaymentRows Model
  *
@@ -43,6 +44,11 @@ class PaymentRowsTable extends Table
             'foreignKey' => 'payment_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('RefPayments', [
+			'className' => 'Payments',
+            'foreignKey' => 'payment_id',
+            'joinType' => 'LEFT'
+        ]);
         $this->belongsTo('Ledgers', [
             'foreignKey' => 'ledger_id',
             'joinType' => 'INNER'
@@ -66,7 +72,7 @@ class PaymentRowsTable extends Table
         $validator
             ->integer('id')
             ->allowEmpty('id', 'create');
-
+		/*
         $validator
             ->scalar('cr_dr')
             ->maxLength('cr_dr', 10)
@@ -92,14 +98,20 @@ class PaymentRowsTable extends Table
             ->maxLength('cheque_no', 30)
             ->requirePresence('cheque_no', 'create')
             ->notEmpty('cheque_no');
-
+	*/
         $validator
             ->date('cheque_date')
             ->allowEmpty('cheque_date');
-
+		
         return $validator;
     }
 
+   
+   
+	public function beforeMarshal(Event $event, ArrayObject $data)
+    {
+        @$data['cheque_date'] = trim(date('Y-m-d',strtotime(@$data['cheque_date'])));
+    }
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.
