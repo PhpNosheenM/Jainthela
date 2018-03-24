@@ -160,7 +160,7 @@ class ItemsController extends AppController
 					if($Item->item_maintain_by=="itemwise"){
 						$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$Item->id,'city_id'=>$city_id])->toArray();
 						if($ItemLedgers){
-							$UnitRateSerialItem = $this->itemWiseReport($Item->id,$transaction_date);
+							$UnitRateSerialItem = $this->itemWiseReport($Item->id,$transaction_date,$city_id);
 							
 							$showItems[$Item->id]=['item_name'=>$Item->name,'stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem['unit_rate']];
 						}
@@ -171,7 +171,7 @@ class ItemsController extends AppController
 							$merge=$Item->name.'('.@$ItemsVariation->unit_variation->convert_unit_qty.'.'.@$ItemsVariation->unit_variation->unit->print_unit.')';
 							$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$Item->id,'city_id'=>$city_id])->toArray();
 							if($ItemLedgers){
-							$UnitRateSerialItem = $this->itemVariationWiseReport($ItemsVariation->id,$transaction_date);
+							$UnitRateSerialItem = $this->itemVariationWiseReport($ItemsVariation->id,$transaction_date,$city_id);
 							
 							$showItems[$Item->id]=['item_name'=>$merge,'stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem['unit_rate']];
 							}
@@ -187,9 +187,9 @@ class ItemsController extends AppController
 		$this->set(compact('Locations','Cities','showItems'));
 	}
 
-	public function itemVariationWiseReport($item_variation_id=null,$transaction_date){ 
+	public function itemVariationWiseReport($item_variation_id=null,$transaction_date,$city_id){ 
 		$this->viewBuilder()->layout('admin_portal');
-		$city_id=$this->Auth->User('city_id'); 
+		//$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
 		
 		$StockLedgers =  $this->Items->ItemLedgers->find()->where(['item_variation_id'=>$item_variation_id,'transaction_date <='=>$transaction_date])->order(['ItemLedgers.transaction_date'=>'ASC'])->toArray();
@@ -248,12 +248,12 @@ class ItemsController extends AppController
 		return $Data;
 		exit;
 	}
-	public function itemWiseReport($item_id=null,$transaction_date){ 
+	public function itemWiseReport($item_id=null,$transaction_date,$city_id){ 
 		$this->viewBuilder()->layout('admin_portal');
-		$city_id=$this->Auth->User('city_id'); 
+		//$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
 		
-		$StockLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$item_id,'transaction_date <='=>$transaction_date])->order(['ItemLedgers.transaction_date'=>'ASC'])->toArray();
+		$StockLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$item_id,'transaction_date <='=>$transaction_date,'city_id'=>$city_id])->order(['ItemLedgers.transaction_date'=>'ASC'])->toArray();
 		 $stockNew=[];
 		foreach($StockLedgers as $StockLedger){  
 			if($StockLedger->status=='In'){ 

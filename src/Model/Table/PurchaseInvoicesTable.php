@@ -77,7 +77,7 @@ class PurchaseInvoicesTable extends Table
             'foreignKey' => 'purchase_invoice_id'
         ]);
         $this->hasMany('ItemLedgers', [
-            'foreignKey' => 'purchase_invoice_id'
+            'foreignKey' => 'item_ledger_id'
         ]);
         $this->hasMany('PurchaseInvoiceRows', [
             'foreignKey' => 'purchase_invoice_id'

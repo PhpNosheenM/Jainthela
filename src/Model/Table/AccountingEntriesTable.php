@@ -70,7 +70,7 @@ class AccountingEntriesTable extends Table
             'foreignKey' => 'city_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('PurchaseVouchers', [
+/*         $this->belongsTo('PurchaseVouchers', [
             'foreignKey' => 'purchase_voucher_id'
         ]);
         $this->belongsTo('PurchaseVoucherRows', [
@@ -130,7 +130,7 @@ class AccountingEntriesTable extends Table
         ]);
         $this->belongsTo('ContraVoucherRows', [
             'foreignKey' => 'contra_voucher_row_id'
-        ]);
+        ]); */
     }
 
     /**
@@ -185,7 +185,7 @@ class AccountingEntriesTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['ledger_id'], 'Ledgers'));
+        /* $rules->add($rules->existsIn(['ledger_id'], 'Ledgers'));
         $rules->add($rules->existsIn(['location_id'], 'Locations'));
         $rules->add($rules->existsIn(['city_id'], 'Cities'));
         $rules->add($rules->existsIn(['purchase_voucher_id'], 'PurchaseVouchers'));
@@ -208,7 +208,7 @@ class AccountingEntriesTable extends Table
         $rules->add($rules->existsIn(['journal_voucher_row_id'], 'JournalVoucherRows'));
         $rules->add($rules->existsIn(['contra_voucher_id'], 'ContraVouchers'));
         $rules->add($rules->existsIn(['contra_voucher_row_id'], 'ContraVoucherRows'));
-
+ */
         return $rules;
     }
 }

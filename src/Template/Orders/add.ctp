@@ -1,24 +1,22 @@
-<?php $this->set('title', 'Purchase Invoice'); ?>
+<?php $this->set('title', 'Order'); ?>
 <!-- PAGE CONTENT WRAPPER -->
 <div class="page-content-wrap">
 	<div class="row">
 		<div class="col-md-12">
-		<?= $this->Form->create($purchaseInvoice,['id'=>'jvalidate','class'=>'form-horizontal','type'=>'file']) ?>  
+		<?= $this->Form->create($order,['id'=>'jvalidate','class'=>'form-horizontal','type'=>'file']) ?>  
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><strong> Purchase Invoice</strong></h3>
+					<h3 class="panel-title"><strong> Order </strong></h3>
 				</div>
 			
 				<div class="panel-body">    
 					<div class="row">
 						<div class="col-md-3">
 							<div class="form-group">
-								<label class=" control-label">Purchase Invoice No</label>
+								<label class=" control-label">Order No</label>
 								<div class="">                                            
-									<?php $voucher_no= $LocationData->alise.'/'.$voucher_no ;
-									//echo $voucher_no;
-									?>
-									<?= $this->Form->control('invoice_no',['class'=>'form-control','placeholder'=>'','label'=>false,'value'=>$voucher_no,'readonly']) ?>
+									
+									<?= $this->Form->control('order_no',['class'=>'form-control','placeholder'=>'','label'=>false,'value'=>$order_no,'readonly']) ?>
 								</div>
 							</div>
 							<div class="form-group">

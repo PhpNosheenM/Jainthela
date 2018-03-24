@@ -79,6 +79,7 @@ class PurchaseInvoicesController extends AppController
 		{
 			$voucher_no=1;
 		} 
+
         if ($this->request->is('post')) {
             $purchaseInvoice = $this->PurchaseInvoices->patchEntity($purchaseInvoice, $this->request->getData());
             $purchaseInvoice->voucher_no=$voucher_no;
@@ -87,13 +88,15 @@ class PurchaseInvoicesController extends AppController
             $purchaseInvoice->created_by=$user_id;
             $purchaseInvoice->created_on=date('Y-m-d');
             $purchaseInvoice->entry_from="Web";
-			$purchaseInvoiceVoucherNo=$year.''.$month.''.$day.'/'.$voucher_no;
+			$purchaseInvoiceVoucherNo='PI'.'/'.$year.''.$month.''.$day.'/'.$voucher_no;
 			$purchaseInvoice->invoice_no=$LocationData->alise.'/'.$purchaseInvoiceVoucherNo;
 			
 			$seller_ledger = $this->PurchaseInvoices->SellerLedgers->get($purchaseInvoice->seller_ledger_id);
 			$sellerData = $this->PurchaseInvoices->Sellers->get($seller_ledger->seller_id, [
 				'contain' => (['Locations'=>['Cities']])
 			]);
+			
+			
 			//pr($sellerData->location->city->state_id); exit;
 			if ($this->PurchaseInvoices->save($purchaseInvoice)) {
 				

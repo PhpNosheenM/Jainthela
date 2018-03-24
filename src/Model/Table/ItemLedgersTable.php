@@ -172,7 +172,7 @@ class ItemLedgersTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['item_id'], 'Items'));
-        $rules->add($rules->existsIn(['item_variation_id'], 'ItemVariations'));
+        //$rules->add($rules->existsIn(['item_variation_id'], 'ItemVariations'));
         $rules->add($rules->existsIn(['sales_invoice_id'], 'SalesInvoices'));
         $rules->add($rules->existsIn(['sales_invoice_row_id'], 'SalesInvoiceRows'));
         $rules->add($rules->existsIn(['location_id'], 'Locations'));
