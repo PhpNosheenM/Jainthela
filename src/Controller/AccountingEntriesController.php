@@ -153,6 +153,70 @@ class AccountingEntriesController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+	
+	public function BalanceSheet()
+    {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
+		$this->viewBuilder()->layout('admin_portal');
+		$from_date = $this->request->query('from_date');
+		$to_date   = $this->request->query('to_date');
+		$from_date = date("Y-m-d",strtotime($from_date));
+		$to_date   = date("Y-m-d",strtotime($to_date));
+		
+		$AccountingGroups=$this->AccountingEntries->Ledgers->AccountingGroups->find()
+		->where(['AccountingGroups.nature_of_group_id IN'=>[1,2]]);
+		$Groups=[];
+		foreach($AccountingGroups as $AccountingGroup){
+			$Groups[$AccountingGroup->id]['ids'][]=$AccountingGroup->id;
+			$Groups[$AccountingGroup->id]['name']=$AccountingGroup->name;
+			$Groups[$AccountingGroup->id]['nature']=$AccountingGroup->nature_of_group_id;
+			$accountingChildGroups = $this->AccountingEntries->Ledgers->AccountingGroups->find('children', ['for' => $AccountingGroup->id]);
+			foreach($accountingChildGroups as $accountingChildGroup){
+				$Groups[$AccountingGroup->id]['ids'][]=$accountingChildGroup->id;
+			}
+		}
+		$AllGroups=[];
+		foreach($Groups as $mainGroups){
+			foreach($mainGroups['ids'] as $subGroup){
+				$AllGroups[]=$subGroup;
+			}
+		}
+		
+		$query=$this->AccountingEntries->find();
+		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
+				->group('AccountingEntries.ledger_id')
+				->where(['AccountingEntries.location_id'=>$location_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date])
+				->contain(['Ledgers'=>function($q){
+					return $q->select(['Ledgers.accounting_group_id','Ledgers.id']);
+				}]);
+		$query->matching('Ledgers', function ($q) use($AllGroups){
+			return $q->where(['Ledgers.accounting_group_id IN' => $AllGroups]);
+		});
+		//pr($query->toArray()); exit;
+		$balanceOfLedgers=$query;
+		$groupForPrint=[]; $d=[]; $c=[]; 
+		foreach($balanceOfLedgers as $balanceOfLedger){
+			foreach($Groups as $primaryGroup=>$Group){
+				if(in_array($balanceOfLedger->ledger->accounting_group_id,$Group['ids'])){
+					@$groupForPrint[$primaryGroup]['balance']+=$balanceOfLedger->totalDebit-abs($balanceOfLedger->totalCredit);
+					
+				}else{
+					@$groupForPrint[$primaryGroup]['balance']+=0;
+				}
+				@$groupForPrint[$primaryGroup]['name']=$Group['name'];
+				@$groupForPrint[$primaryGroup]['nature']=$Group['nature'];
+			}
+		}
+		//pr($groupForPrint); exit;
+		$GrossProfit= $this->GrossProfit($from_date,$to_date,$city_id,$location_id);
+		$closingValue= $this->stockReportApp($city_id,$from_date,$to_date);
+		$differenceInOpeningBalance= $this->differenceInOpeningBalance($city_id,$location_id);
+		$this->set(compact('from_date','to_date', 'groupForPrint', 'closingValue', 'openingValue','GrossProfit','differenceInOpeningBalance'));
+		
+	}
+	
 	public function ProfitLossStatement()
     {
 		$user_id=$this->Auth->User('id');
@@ -210,8 +274,83 @@ class AccountingEntriesController extends AppController
 		}
 		//pr($groupForPrint); exit;
 		$openingValue= 0;
-		$closingValue= $this->stockReport($city_id,$from_date,$to_date);
+		$closingValue= $this->stockReportApp($city_id,$from_date,$to_date);
 		$this->set(compact('from_date','to_date', 'groupForPrint', 'closingValue', 'openingValue'));
 		
+	}
+	public function AccountStatement()
+    {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
+		$this->viewBuilder()->layout('admin_portal');
+		$ledger_id = $this->request->query('ledger_id');
+		$from_date = $this->request->query('from_date');
+		$to_date   = $this->request->query('to_date');
+		if(empty($from_date) || empty($to_date))
+		{
+			$from_date = date("Y-m-d");
+			$to_date   = date("Y-m-d");
+		}else{
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$to_date= date("Y-m-d",strtotime($to_date));
+		}
+		if(!empty($ledger_id))
+		{
+			$where['AccountingEntries.ledger_id']=$ledger_id;
+		}
+		
+		if(!empty($ledger_id)){
+			$query = $this->AccountingEntries->find()->where(['AccountingEntries.ledger_id'=>$ledger_id]);
+			
+			$CaseCreditOpeningBalance = $query->newExpr()
+						->addCase(
+							$query->newExpr()->add(['ledger_id']),
+							$query->newExpr()->add(['credit']),
+							'decimal'
+						);
+			$CaseDebitOpeningBalance = $query->newExpr()
+						->addCase(
+							$query->newExpr()->add(['ledger_id']),
+							$query->newExpr()->add(['debit']),
+							'decimal'
+						); 
+			$query->select([
+					'debit_opening_balance' => $query->func()->sum($CaseDebitOpeningBalance),
+					'credit_opening_balance' => $query->func()->sum($CaseCreditOpeningBalance),
+					'id','ledger_id'
+				])
+				->where(['AccountingEntries.transaction_date <'=>$from_date])
+				->group('ledger_id')
+				->autoFields(true);
+			
+			$AccountLedgersOpeningBalance=($query);
+			$total_debit=0;
+			$total_credit=0;
+			foreach($AccountLedgersOpeningBalance as $AccountLedgersOpeningBalance){
+				$total_debit=$AccountLedgersOpeningBalance->debit_opening_balance;
+				$total_credit=$AccountLedgersOpeningBalance->credit_opening_balance;
+			}
+			@$opening_balance=$total_debit-$total_credit;
+				if($opening_balance>0){
+				@$opening_balance_type='Dr';	
+				}
+				else if($opening_balance<0){
+				$opening_balance=abs($opening_balance);
+				@$opening_balance_type='Cr';	
+				}
+				else{
+				@$opening_balance_type='';	
+				}
+			$opening_balance=round($opening_balance,2);
+			
+			 $AccountingLedgers=$this->AccountingEntries->find()->select(['total_credit_sum'=>'SUM(AccountingEntries.credit)','total_debit_sum'=>'SUM(AccountingEntries.debit)'])->contain(['Ledgers','PurchaseInvoices','Payments'])->where($where)->group(['AccountingEntries.payment_id','AccountingEntries.purchase_invoice_id','AccountingEntries.payment_id'])->autoFields(true); 
+			}
+			
+			
+		//	pr($AccountingLedgers->toArray()); exit;	
+			$Ledgers=$this->AccountingEntries->Ledgers->find('List');
+			
+			$this->set(compact('from_date','to_date', 'groupForPrint', 'closingValue', 'openingValue','Ledgers','AccountingLedgers','ledger_id'));
 	}
 }

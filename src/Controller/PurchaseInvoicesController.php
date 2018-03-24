@@ -201,6 +201,7 @@ class PurchaseInvoicesController extends AppController
 				$ItemLedger = $this->PurchaseInvoices->ItemLedgers->newEntity(); 
 				$ItemLedger->item_id=$purchase_invoice_row->item_id;
 				$ItemLedger->item_variation_id=$purchase_invoice_row->item_variation_id;
+				$ItemLedger->seller_id=$seller_ledger->seller_id;
 				$ItemLedger->transaction_date=$purchaseInvoice->transaction_date;
 				$ItemLedger->quantity=$purchase_invoice_row->quantity;
 				$ItemLedger->rate=$purchase_invoice_row->rate;

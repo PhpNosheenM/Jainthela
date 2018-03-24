@@ -28,9 +28,9 @@
 								<div class="col-md-4 col-xs-12">
 									<div class="input-group">
 									<span class="input-group-addon add-on"> FROM </span>
-										<?= $this->Form->control('from_date',['class'=>'form-control datepicker','placeholder'=>'From','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>'']) ?>
+										<?= $this->Form->control('from_date',['class'=>'form-control datepicker','placeholder'=>'From','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>date("d-m-Y",strtotime($from_date))]) ?>
 										<span class="input-group-addon add-on"> TO </span>
-										<?= $this->Form->control('to_date',['class'=>'form-control datepicker','placeholder'=>'To','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>'']) ?>
+										<?= $this->Form->control('to_date',['class'=>'form-control datepicker','placeholder'=>'To','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>date("d-m-Y",strtotime($to_date))]) ?>
 								</div>
 							</div>
 							<div class="input-group-btn">
@@ -43,7 +43,7 @@
 				</div>  
 				<div class="panel-body">    
 					<div class="table-responsive">
-						<table class="table table-bordered table-hover table-condensed" width="100%">
+						<table class="table table-bordered  table-condensed" width="100%">
 					<thead>
 						<tr>
 							<th scope="col" width="25%"></th>

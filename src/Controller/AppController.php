@@ -131,7 +131,7 @@ class AppController extends Controller
 		$this->set(compact('sidebar_menu'));
 	}
 	
-	public function stockReport($city_id = null,$from_date = null,$transaction_date = null)
+	public function stockReportApp($city_id = null,$from_date = null,$transaction_date = null)
     {
 		$this->loadModel('Items');
 		$user_id=$this->Auth->User('id'); 
@@ -149,7 +149,7 @@ class AppController extends Controller
 					if($Item->item_maintain_by=="itemwise"){
 						$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$Item->id,'city_id'=>$city_id])->toArray();
 						if($ItemLedgers){
-							$UnitRateSerialItem = $this->itemWiseReport($Item->id,$transaction_date,$city_id);
+							$UnitRateSerialItem = $this->itemWiseReport1($Item->id,$transaction_date,$city_id);
 							$showItems[$Item->id]=['item_name'=>$Item->name,'stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem['unit_rate']];
 						}
 						
@@ -159,7 +159,7 @@ class AppController extends Controller
 							$merge=$Item->name.'('.@$ItemsVariation->unit_variation->convert_unit_qty.'.'.@$ItemsVariation->unit_variation->unit->print_unit.')';
 							$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$Item->id,'city_id'=>$city_id])->toArray();
 							if($ItemLedgers){
-							$UnitRateSerialItem = $this->itemVariationWiseReport($ItemsVariation->id,$transaction_date,$city_id);
+							$UnitRateSerialItem = $this->itemVariationWiseReport1($ItemsVariation->id,$transaction_date,$city_id);
 							
 							$showItems[$Item->id]=['item_name'=>$merge,'stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem['unit_rate']];
 							}
@@ -178,7 +178,7 @@ class AppController extends Controller
 		
 	}
 
-	public function itemVariationWiseReport($item_variation_id=null,$transaction_date,$city_id){ 
+	public function itemVariationWiseReport1($item_variation_id=null,$transaction_date,$city_id){ 
 		$this->viewBuilder()->layout('admin_portal');
 		//$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
@@ -240,7 +240,7 @@ class AppController extends Controller
 		return $Data;
 		exit;
 	}
-	public function itemWiseReport($item_id=null,$transaction_date,$city_id){ 
+	public function itemWiseReport1($item_id=null,$transaction_date,$city_id){ 
 		$this->viewBuilder()->layout('admin_portal');
 		//$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
@@ -300,5 +300,74 @@ class AppController extends Controller
 		$Data=['stock'=>$total_stock,'unit_rate'=>$unit_rate];
 		return $Data;
 		exit;
+	}
+	
+	public function GrossProfit($from_date = null,$to_date = null,$city_id = null,$location_id = null){
+		$this->loadModel('AccountingEntries');
+		$AccountingGroups=$this->AccountingEntries->Ledgers->AccountingGroups->find()->where(['AccountingGroups.nature_of_group_id IN'=>[3,4]]);
+		$Groups=[];
+		foreach($AccountingGroups as $AccountingGroup){
+			$Groups[$AccountingGroup->id]['ids'][]=$AccountingGroup->id;
+			$Groups[$AccountingGroup->id]['name']=$AccountingGroup->name;
+			$Groups[$AccountingGroup->id]['nature']=$AccountingGroup->nature_of_group_id;
+			$accountingChildGroups = $this->AccountingEntries->Ledgers->AccountingGroups->find('children', ['for' => $AccountingGroup->id]);
+			foreach($accountingChildGroups as $accountingChildGroup){
+				$Groups[$AccountingGroup->id]['ids'][]=$accountingChildGroup->id;
+			}
+		}
+		$AllGroups=[];
+		foreach($Groups as $mainGroups){
+			foreach($mainGroups['ids'] as $subGroup){
+				$AllGroups[]=$subGroup;
+			}
+		}
+		
+		$query=$this->AccountingEntries->find();
+		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
+				->group('AccountingEntries.ledger_id')
+				->where(['AccountingEntries.location_id'=>$location_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date])
+				->contain(['Ledgers'=>function($q){
+					return $q->select(['Ledgers.accounting_group_id','Ledgers.id']);
+				}]);
+		$query->matching('Ledgers', function ($q) use($AllGroups){
+			return $q->where(['Ledgers.accounting_group_id IN' => $AllGroups]);
+		});
+		$balanceOfLedgers=$query;
+		//pr($query->toArray()); exit;
+		$totalDr=0; $totalCr=0;
+		foreach($balanceOfLedgers as $balanceOfLedger){
+			$totalDr+=$balanceOfLedger->totalDebit;
+			$totalCr+=abs($balanceOfLedger->totalCredit);
+		}
+		
+		
+		$openingValue= 0;
+		$closingValue= $this->stockReportApp($city_id,$from_date,$to_date);
+		
+		
+		$totalDr+=$openingValue;
+		$totalCr+=$closingValue;
+		
+		return $totalCr-$totalDr;
+	}
+	
+	public function differenceInOpeningBalance($city_id,$location_id){
+		$this->loadModel('AccountingEntries');
+		//pr($location_id); exit;
+		$Ledgers=$this->AccountingEntries->find()->where(['AccountingEntries.location_id'=>$location_id, 'AccountingEntries.is_opening_balance'=>'yes']);
+		
+		$output=0;
+		foreach($Ledgers as $Ledger){
+			$output+=$Ledger->debit;
+			$output-=$Ledger->credit;
+		}
+		
+		$this->loadModel('ItemLedgers');
+		$ItemLedgers=$this->ItemLedgers->find()->where(['ItemLedgers.location_id'=>$location_id, 'ItemLedgers.is_opening_balance'=> 'yes']);
+		
+		foreach($ItemLedgers as $ItemLedger){
+			$output+=$ItemLedger->quantity*$ItemLedger->rate;
+		}
+		return $output;
 	}
 }

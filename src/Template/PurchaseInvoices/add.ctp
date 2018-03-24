@@ -116,8 +116,9 @@
 	</div>                    	
 </div>
 
-<?php $GstType['including'] = 'Including'; ?>
 <?php $GstType['excluding'] = 'Excluding'; ?>
+<?php $GstType['including'] = 'Including'; ?>
+
 
 
 <table id="sampleTable" width="100%" style="display:none;">
@@ -298,7 +299,7 @@
 						gst_rate1=round((gst_rate/2),2);
 						gst_rate=round((gst_rate1*2),2);
 					}
-					total_gst=total_gst+gst_rate;
+					
 					$(this).find('.gst_value').val(gst_rate);
 					var net_amount=gst_rate+taxable_value;
 					var net_amount1=round(net_amount,2);

@@ -70,6 +70,14 @@ class AccountingEntriesTable extends Table
             'foreignKey' => 'city_id',
             'joinType' => 'INNER'
         ]);
+		
+		 $this->belongsTo('PurchaseInvoices', [
+            'foreignKey' => 'purchase_invoice_id'
+        ]);
+		
+		 $this->belongsTo('Payments', [
+            'foreignKey' => 'payment_id'
+        ]);
 /*         $this->belongsTo('PurchaseVouchers', [
             'foreignKey' => 'purchase_voucher_id'
         ]);

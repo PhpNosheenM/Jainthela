@@ -23,18 +23,37 @@
 				<div class="panel-body">   			
 					<div class="row">
 					<?= $this->Form->create('Search',['type'=>'GET']) ?>
-						<div class="col-md-3">
+						
+						<div class="col-md-2">
 							<div class="form-group">
-								<label>Under Accounting Group</label>
-								<?= $this->Form->select('city_id',$Cities,['class'=>'form-control select', 'label'=>false]) ?>
+								<label>Location</label>
+								<?php echo $this->Form->select('location_id',$Locations, ['empty'=>'--Select--','label' => false,'class' => 'form-control input-sm ledger select', 'data-live-search'=>true,'value'=>$location_id]); ?>
+								
 							</div>
 						</div>
-						<div class="col-md-3">
+						<div class="col-md-2">
 							<div class="form-group">
-								<label>Under Accounting Group</label>
-								<?= $this->Form->select('location_id',$Locations,['class'=>'form-control select', 'label'=>false]) ?>
+								<label>Seller</label>
+								<?php echo $this->Form->select('seller_id',$Sellers, ['empty'=>'--Select--','label' => false,'class' => 'form-control input-sm ledger select', 'data-live-search'=>true,'value'=>$location_id]); ?>
+								
 							</div>
 						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>From</label>
+								<?= $this->Form->control('from_date',['class'=>'form-control datepicker','placeholder'=>'From','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>date('d-m-Y',strtotime($from_date))]) ?>
+							</div>
+						</div>
+						<div class="col-md-2">
+							<div class="form-group">
+								<label>To</label>
+								<?= $this->Form->control('to_date',['class'=>'form-control datepicker','placeholder'=>'To','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>date('d-m-Y',strtotime($to_date))]) ?>
+								
+							</div>
+						</div>
+						
+						
+						
 						<div class="col-md-3">
 							<div class="form-group">
 								<label></label></br/>
@@ -84,3 +103,4 @@
 		</div>
 	</div>                    
 </div>
+<?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>

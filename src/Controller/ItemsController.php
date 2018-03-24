@@ -149,16 +149,36 @@ class ItemsController extends AppController
 		
 		$city_id=$this->request->query('city_id');
 		$location_id=$this->request->query('location_id');
+		$seller_id=$this->request->query('seller_id');
+		$from_date =  date("Y-m-d",strtotime($this->request->query('from_date')));
+		$to_date   =  date("Y-m-d",strtotime($this->request->query('to_date')));
 		$transaction_date=date("Y-m-d");
+		$where=[];
+		if(!empty($location_id))
+		{
+			$where['ItemLedgers.location_id']=$location_id;
+		}
+		if(!empty($seller_id))
+		{ 
+			$where['ItemLedgers.seller_id']=$seller_id;
+		}
+		if($from_date!="1970-01-01")
+		{
+			$where['ItemLedgers.location_id']=$location_id;
+		}
+		if($to_date!="1970-01-01")
+		{ 
+			$where['ItemLedgers.seller_id']=$seller_id;
+		}
+		//pr($where); exit;
 		$showItems=[];
-		if($city_id){
+		if($location_id || $seller_id){
 			 $Items = $this->Items->find()->toArray();
 				foreach($Items as  $Item){
 					if($Item->item_maintain_by=="itemwise"){
-						$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$Item->id,'city_id'=>$city_id])->toArray();
+						$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$Item->id])->where($where)->toArray(); // pr($ItemLedgers); exit;
 						if($ItemLedgers){
-							$UnitRateSerialItem = $this->itemWiseReport($Item->id,$transaction_date,$city_id);
-							
+							$UnitRateSerialItem = $this->itemWiseReport($Item->id,$where);
 							$showItems[$Item->id]=['item_name'=>$Item->name,'stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem['unit_rate']];
 						}
 						
@@ -181,7 +201,8 @@ class ItemsController extends AppController
 		
 		$Locations = $this->Items->Locations->find('list');
 		$Cities = $this->Items->Cities->find('list');
-		$this->set(compact('Locations','Cities','showItems'));
+		$Sellers = $this->Items->Sellers->find('list');
+		$this->set(compact('Locations','Cities','showItems','city_id','location_id','Sellers','seller_id','from_date','to_date'));
 	}
 
 	public function itemVariationWiseReport($item_variation_id=null,$transaction_date,$city_id){ 
@@ -245,12 +266,12 @@ class ItemsController extends AppController
 		return $Data;
 		exit;
 	}
-	public function itemWiseReport($item_id=null,$transaction_date,$city_id){ 
+	public function itemWiseReport($item_id=null,$where=null){ 
 		$this->viewBuilder()->layout('admin_portal');
 		//$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
-		
-		$StockLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$item_id,'transaction_date <='=>$transaction_date,'city_id'=>$city_id])->order(['ItemLedgers.transaction_date'=>'ASC'])->toArray();
+		//pr($where); exit;
+		$StockLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$item_id])->where($where)->order(['ItemLedgers.transaction_date'=>'ASC'])->toArray();
 		 $stockNew=[];
 		foreach($StockLedgers as $StockLedger){  
 			if($StockLedger->status=='In'){ 
