@@ -42,7 +42,7 @@ class ItemsController extends AppController
                      ->limit($limit)->page($page);
                if(!empty($items->toArray()))
                {
-				   $inWishList = false;
+				   $inWishList = 0;
 				   foreach($items as $item){
 
 					   $item_id=$item->id;
@@ -50,10 +50,10 @@ class ItemsController extends AppController
 					   $inWishList = $this->Items->WishListItems->find()->where(['item_id'=>$item_id])->contain(['WishLists'=>function($q) use($customer_id){
 						   return $q->select(['WishLists.customer_id'])->where(['customer_id'=>$customer_id]);
 					   }])->count();
-                 if($item->inWishList == 1)
+                 if($inWishList  == 1)
                  {
-                  $inWishList = true;
-                } else { $inWishList = false; }
+                  $item->inWishList = true;
+                } else { $item->inWishList = false; }
 				   }
                  $success = true;
                  $message = 'Data Found Successfully';
@@ -99,7 +99,7 @@ class ItemsController extends AppController
 
                 if(!empty($items->toArray()))
                 {
-				  $inWishList=false;
+				  $inWishList=0;
                   foreach ($items as $Item) {
                     $Item->ItemAverageRating = number_format($Item->ItemAverageRating,1);
                     $item_id = $Item->id;
@@ -107,10 +107,10 @@ class ItemsController extends AppController
 						   return $q->select(['WishLists.customer_id'])->where(['customer_id'=>$customer_id]);
 					   }])->count();
 
-             if($item->inWishList == 1)
+             if($inWishList  == 1)
              {
-              $inWishList = true;
-            } else { $inWishList = false; }
+              $item->inWishList = true;
+            } else { $item->inWishList = false; }
 
 
                   }
