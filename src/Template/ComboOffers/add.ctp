@@ -1,52 +1,283 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\ComboOffer $comboOffer
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('List Combo Offers'), ['action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('List Cities'), ['controller' => 'Cities', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New City'), ['controller' => 'Cities', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Admins'), ['controller' => 'Admins', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Admin'), ['controller' => 'Admins', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Carts'), ['controller' => 'Carts', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Cart'), ['controller' => 'Carts', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Combo Offer Details'), ['controller' => 'ComboOfferDetails', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Combo Offer Detail'), ['controller' => 'ComboOfferDetails', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Order Details'), ['controller' => 'OrderDetails', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Order Detail'), ['controller' => 'OrderDetails', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="comboOffers form large-9 medium-8 columns content">
-    <?= $this->Form->create($comboOffer) ?>
-    <fieldset>
-        <legend><?= __('Add Combo Offer') ?></legend>
-        <?php
-            echo $this->Form->control('city_id', ['options' => $cities]);
-            echo $this->Form->control('admin_id', ['options' => $admins]);
-            echo $this->Form->control('name');
-            echo $this->Form->control('print_rate');
-            echo $this->Form->control('discount_per');
-            echo $this->Form->control('sales_rate');
-            echo $this->Form->control('quantity_factor');
-            echo $this->Form->control('print_quantity');
-            echo $this->Form->control('maximum_quantity_purchase');
-            echo $this->Form->control('start_date');
-            echo $this->Form->control('end_date');
-            echo $this->Form->control('stock_in_quantity');
-            echo $this->Form->control('stock_out_quantity');
-            echo $this->Form->control('created_on');
-            echo $this->Form->control('edited_on');
-            echo $this->Form->control('ready_to_sale');
-            echo $this->Form->control('status');
-            echo $this->Form->control('combo_offer_image');
-
-            echo $this->Form->control('description');
-?>
-    </fieldset>
-    <?= $this->Form->button(__('Submit')) ?>
-    <?= $this->Form->end() ?>
+<style>
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    border-color: transparent;
+    padding: 8px 8px !important; 
+    background: #F0F4F9;
+    color: #656C78;
+    font-size: 13px;
+}
+.file-preview-image
+{
+	width: 100% !important;
+	height:160px !important;
+}
+.file-preview-frame
+{
+	display: contents;
+	float:none !important;
+}
+.kv-file-zoom
+{
+	display:none;
+}
+</style>
+<?php $this->set('title', 'Combo Offer'); ?>
+<!-- PAGE CONTENT WRAPPER -->
+<div class="page-content-wrap">
+	<div class="row">
+		<div class="col-md-12">
+		<?= $this->Form->create($comboOffer,['id'=>'jvalidate','class'=>'form-horizontal','type'=>'file']) ?>  
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title"><strong> Item</strong></h3>
+				</div>
+			
+				<div class="panel-body">    
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="col-md-3 control-label">Name</label>
+								<div class="col-md-9">                                            
+									<?= $this->Form->control('name',['class'=>'form-control','placeholder'=>'Combo Offer Name','label'=>false]) ?>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-md-3 control-label">Max Purchase Qty</label>
+								<div class="col-md-9">                                            
+									<?= $this->Form->control('maximum_quantity_purchase',['class'=>'form-control','placeholder'=>'Max Purchase Qunatity','label'=>false]) ?>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-md-3 control-label">Ready to Sale</label>
+								<div class="col-md-9 col-xs-12">
+									<?php $show_options['No'] = 'No'; ?>
+									<?php $show_options['Yes'] = 'Yes'; ?>
+									<?= $this->Form->select('ready_to_sale',$show_options,['class'=>'form-control select','label'=>false]) ?>
+								</div>
+							</div>
+							
+							<div class="form-group">    
+								<label class="col-md-3 control-label">Status</label>
+								<div class="col-md-9 col-xs-12">
+									<?php $options['Active'] = 'Active'; ?>
+									<?php $options['Deactive'] = 'Deactive'; ?>
+									<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-md-3 control-label">Print Rate </label>
+								<div class="col-md-9">                                            
+									<?= $this->Form->control('print_rate',['class'=>'form-control print_rate','placeholder'=>'Print Rate','label'=>false]) ?>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-md-3 control-label">Discount (%)</label>
+								<div class="col-md-9">                                            
+									<?= $this->Form->control('discount_per',['class'=>'form-control','placeholder'=>'Discount(%)','label'=>false]) ?>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-md-3 control-label">Sales Rate </label>
+								<div class="col-md-9">                                            
+									<?= $this->Form->control('sales_rate',['class'=>'form-control','placeholder'=>'Sales Rate','label'=>false]) ?>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="col-md-3 control-label">Print Quantity </label>
+								<div class="col-md-9">                                            
+									<?= $this->Form->control('print_quantity',['class'=>'form-control','placeholder'=>'Print Quantity','label'=>false]) ?>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-md-3 control-label">Stock In</label>
+								<div class="col-md-9">                                            
+									<?= $this->Form->control('stock_in_quantity',['class'=>'form-control','placeholder'=>'Stock In Quantity','label'=>false]) ?>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-md-3 control-label">Offer Valid</label>
+								<div class="col-md-9 col-xs-12">
+									<div class="input-group">
+										<?= $this->Form->control('start_date',['class'=>'form-control datepicker','placeholder'=>'Offer Valid From','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>'']) ?>
+										<span class="input-group-addon add-on"> - </span>
+										<?= $this->Form->control('end_date',['class'=>'form-control datepicker','placeholder'=>'Offer Valid To','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>'']) ?>
+									</div>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-md-3 control-label">Description</label>
+								<div class="col-md-9 col-xs-12"> 
+									<?= $this->Form->control('description',['class'=>'form-control','placeholder'=>'Description','label'=>false,'rows'=>'4']) ?>
+								</div>
+							</div>
+							<div class="form-group" id="web_image_data">
+									<label class="col-md-3 control-label">Offer Image</label> 
+									<div class="col-md-9 col-xs-12"> 
+									<?= $this->Form->control('combo_offer_image',['type'=>'file','label'=>false,'id' => 'item_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>true]) ?>
+									<label id="combo_offer_image-error" class="error" for="combo_offer_image"></label>
+									</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="panel-body">    
+					<div class="row">
+						<div class="">
+							<table class="table table-bordered main_table">
+								<thead>
+									<tr>
+										<th><?= ('Item.') ?></th>
+										<th><?= ('Quantity') ?></th>
+										
+										<th  class="actions"><?= __('Actions') ?></th>
+									</tr>
+								</thead>
+								<tbody class="MainTbody">  
+									<tr class="MainTr">
+			
+										<td width="" valign="top">
+											<?= $this->Form->select('item_variation_id',$itemVariation_option,['class'=>'form-control itemVariations','label'=>false, 'data-live-search'=>true]) ?>
+										</td>
+										<td width="30%" valign="top">
+											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false, 'value'=>1]) ?>
+											<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false,'type'=>'hidden']) ?>
+										</td>
+										
+										
+										<td valign="top"  >
+											<a class="btn btn-primary  btn-condensed btn-sm add_row" href="#" role="button" ><i class="fa fa-plus"></i></a>
+											<a class="btn btn-danger  btn-condensed btn-sm delete_row " href="#" role="button" ><i class="fa fa-times"></i></a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="panel-footer">
+					<center>
+						<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
+					</center>
+				</div>
+			
+			<?= $this->Form->end() ?>
+		</div>
+	</div>                    	
 </div>
+
+<table id="sampleTable" width="100%" style="display:none;">
+	<tbody class="sampleMainTbody">
+		<tr class="MainTr">
+			
+			<td width="" valign="top">
+				<?= $this->Form->select('item_variation_id',$itemVariation_option,['class'=>'form-control itemVariations','label'=>false, 'data-live-search'=>true]) ?>
+			</td>
+			<td width="30%" valign="top">
+				<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false, 'value'=>1]) ?>
+				<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false,'type'=>'hidden']) ?>
+			</td>
+			
+			<td valign="top"  >
+				<a class="btn btn-primary  btn-condensed btn-sm add_row" href="#" role="button" ><i class="fa fa-plus"></i></a>
+				<a class="btn btn-danger  btn-condensed btn-sm delete_row " href="#" role="button" ><i class="fa fa-times"></i></a>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+
+<?= $this->Html->script('plugins/fileinput/fileinput.min.js',['block'=>'jsFileInput']) ?>
+<?= $this->Html->script('plugins/bootstrap/bootstrap-datepicker.js',['block'=>'jsDatePicker']) ?>
+<?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
+<?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
+<?php
+   $js='var jvalidate = $("#jvalidate").validate({
+		ignore: [],
+		rules: {                                            
+				name: {
+						required: true,
+				},
+				
+			}                                        
+		});
+	
+		$("#item_image").fileinput({
+            showUpload: false,
+            showCaption: false,
+            showCancel: false,
+            browseClass: "btn btn-danger",
+			allowedFileExtensions: ["jpg", "png"],
+			maxFileSize: 1024,
+		}); 
+		
+		$(document).on("click",".add_row",function(){
+			addMainRow();
+			//renameRows();
+		});
+		
+		//addMainRow();
+		renameRows();
+		function addMainRow(){
+			var tr=$("#sampleTable tbody").html();
+			$(".main_table tbody").append(tr);
+			renameRows();
+			
+		}
+		
+		$(document).on("click",".delete_row",function(){
+			//alert();
+			var t=$(this).closest("tr").remove();
+			renameRows();
+		});
+		$(document).on("keyup",".quantity",function(){
+			
+			renameRows();
+		});
+		
+		$(document).on("change",".itemVariations",function(){
+			
+			renameRows();
+		});
+		function renameRows(){
+				var i=0; 
+				$(".main_table tbody tr").each(function(){
+						$(this).attr("row_no",i);
+						$(this).find("td:nth-child(1) select.itemVariations").selectpicker();
+						$(this).find("td:nth-child(1) select.itemVariations").attr({name:"combo_offer_details["+i+"][item_variation_id]",id:"combo_offer_details-"+i+"-item_variation_id"}).rules("add", "required");
+						$(this).find("td:nth-child(2) input.quantity").attr({name:"combo_offer_details["+i+"][quantity]",id:"combo_offer_details-"+i+"-quantity"}).rules("add", "required");
+						
+						
+						i++;
+			});
+			calculation();
+		}
+		function calculation(){
+			var i=0; var print_rate=0;
+			$(".main_table tbody tr").each(function(){
+				var quantity=$(this).find("td:nth-child(2) input.quantity").val();
+				var rate=parseFloat($(this).find("option:selected", this).attr("rate"));
+				var amount=quantity*rate;
+				
+				print_rate=print_rate+amount;
+				print_rate=round(print_rate,2);
+				$(".print_rate").val(print_rate);
+				i++;
+			});		
+		}
+		$(document).on("click", ".fileinput-remove-button", function(){
+			$(this).closest("div.file-input").find("input[type=file]").attr("required",true);
+		});
+		
+		';  
+echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		
+?>

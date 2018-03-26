@@ -103,7 +103,7 @@ class ItemsTable extends Table
             'foreignKey' => 'item_id',
 			'targetForeignKey'=>'unit_variation_id',
             'joinTable' => 'item_variation_masters'
-        ]);
+        ])->setConditions(['UnitVariations.status' => 'Active']);
         $this->hasMany('ItemVariationMasters', [
             'foreignKey' => 'item_id',
 			       'saveStrategy'=>'replace'

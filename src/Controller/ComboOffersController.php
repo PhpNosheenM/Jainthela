@@ -66,9 +66,13 @@ class ComboOffersController extends AppController
             }
             $this->Flash->error(__('The combo offer could not be saved. Please, try again.'));
         }
-        $cities = $this->ComboOffers->Cities->find('list', ['limit' => 200]);
-        $admins = $this->ComboOffers->Admins->find('list', ['limit' => 200]);
-        $this->set(compact('comboOffer', 'cities', 'admins'));
+		$itemVariations = $this->ComboOffers->ComboOfferDetails->ItemVariations->find('all')->contain(['Items','UnitVariations'=>['Units']]);
+		$itemVariation_option=[];
+		$i=0; foreach($itemVariations as $itemVariation){
+			$itemVariation_option[]=['text'=>$itemVariation->item->name .' ' .$itemVariation->unit_variation->quantity_variation .' ' .$itemVariation->unit_variation->unit->unit_name,'value'=>$itemVariation->id,'rate'=>$itemVariation->print_rate ];
+		}
+		//pr($itemVariations->toArray()); exit;
+        $this->set(compact('comboOffer', 'cities', 'itemVariation_option'));
     }
 
     /**
