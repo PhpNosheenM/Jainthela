@@ -16,7 +16,8 @@ class OrdersController extends AppController
       ->where(['customer_id' => $customer_id,'city_id'=>$city_id])
       ->order(['order_date' => 'DESC'])
       ->autoFields(true);
-      if(!empty($orders_data))
+
+      if(!empty($orders_data->toArray()))
       {
         $success = true;
         $message = 'Data found successfully';
