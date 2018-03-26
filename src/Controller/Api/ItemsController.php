@@ -35,7 +35,7 @@ class ItemsController extends AppController
          $isValidCity = $this->CheckAvabiltyOfCity($city_id);
          if($isValidCity == 0)
          {
-
+           $cart_item_count = $this->Items->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])->count();
 					  $items = $this->Items->find()
                      ->contain(['ItemsVariations'=>['UnitVariations'=>['Units']]])
                      ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id,'Items.category_id'=>$category_id])
@@ -70,7 +70,7 @@ class ItemsController extends AppController
          $success = false;
          $message = 'Empty city or category id';
        }
-       $this->set(['success' => $success,'message'=>$message,'items' => $items,'_serialize' => ['success','message','items']]);
+       $this->set(['success' => $success,'message'=>$message,'items' => $items,'cart_item_count'=>$cart_item_count,'_serialize' => ['success','message','cart_item_count','items']]);
      }
 
     public function productDetail($item_id = null,$city_id =null,$category_id=null,$customer_id=null)
@@ -88,6 +88,7 @@ class ItemsController extends AppController
         $isValidCity = $this->CheckAvabiltyOfCity($city_id);
         if($isValidCity == 0)
         {
+            $cart_item_count = $this->Items->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])->count();
             if(!empty($item_id) && !empty($category_id))
             {
                 $items = $this->Items->find();
@@ -109,8 +110,8 @@ class ItemsController extends AppController
 
              if($inWishList  == 1)
              {
-              $item->inWishList = true;
-            } else { $item->inWishList = false; }
+              $Item->inWishList = true;
+            } else { $Item->inWishList = false; }
 
 
                   }
@@ -153,7 +154,7 @@ class ItemsController extends AppController
             $message = 'Empty City Id';
       }
 
-      $this->set(['success' => $success,'message'=>$message,'items' => $items,'reletedItems'=>$reletedItems,'_serialize' => ['success','message','items','reletedItems']]);
+      $this->set(['success' => $success,'message'=>$message,'cart_item_count'=>$cart_item_count,'items' => $items,'reletedItems'=>$reletedItems,'_serialize' => ['success','message','cart_item_count','items','reletedItems']]);
     }
 
     public function addItemRating()
