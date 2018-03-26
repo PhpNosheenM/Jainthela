@@ -44,18 +44,18 @@ class ItemsController extends AppController
                {
 				   $inWishList = 0;
 				   foreach($items as $item){
+             foreach ($item->items_variations as $items_variation_data) {
+                $item_id=$item->id;
+                $inWishList = $this->Items->WishListItems->find()->where(['item_id'=>$item_id])->contain(['WishLists'=>function($q) use($customer_id){
+  						   return $q->select(['WishLists.customer_id'])->where(['customer_id'=>$customer_id]);}])->count();
+                   if($inWishList  == 1)
+                   { $items_variation_data->inWishList = true; }
+                   else { $items_variation_data->inWishList = false; }
 
-					   $item_id=$item->id;
-
-					   $inWishList = $this->Items->WishListItems->find()->where(['item_id'=>$item_id])->contain(['WishLists'=>function($q) use($customer_id){
-						   return $q->select(['WishLists.customer_id'])->where(['customer_id'=>$customer_id]);
-					   }])->count();
-                 if($inWishList  == 1)
-                 {
-                  $item->inWishList = true;
-                } else { $item->inWishList = false; }
-				   }
-                 $success = true;
+                  $items_variation_data->cart_count = $this->Items->Carts->find('All')->where(['Carts.item_variation_id'=>$items_variation_data->id,'Carts.customer_id'=>$customer_id])->count();
+              }
+      			}
+                $success = true;
                  $message = 'Data Found Successfully';
                }
                else {
@@ -100,21 +100,20 @@ class ItemsController extends AppController
 
                 if(!empty($items->toArray()))
                 {
-				  $inWishList=0;
-                  foreach ($items as $Item) {
-                    $Item->ItemAverageRating = number_format($Item->ItemAverageRating,1);
-                    $item_id = $Item->id;
-                   $inWishList = $this->Items->WishListItems->find()->where(['item_id'=>$item_id])->contain(['WishLists'=>function($q) use($customer_id){
-						   return $q->select(['WishLists.customer_id'])->where(['customer_id'=>$customer_id]);
-					   }])->count();
+                  $inWishList = 0;
+       				   foreach($items as $item){
+                      $item->ItemAverageRating = number_format($item->ItemAverageRating,1);
+                    foreach ($item->items_variations as $items_variation_data) {
+                       $item_id=$item->id;
+                       $inWishList = $this->Items->WishListItems->find()->where(['item_id'=>$item_id])->contain(['WishLists'=>function($q) use($customer_id){
+         						   return $q->select(['WishLists.customer_id'])->where(['customer_id'=>$customer_id]);}])->count();
+                          if($inWishList  == 1)
+                          { $items_variation_data->inWishList = true; }
+                          else { $items_variation_data->inWishList = false; }
 
-             if($inWishList  == 1)
-             {
-              $Item->inWishList = true;
-            } else { $Item->inWishList = false; }
-
-
-                  }
+                         $items_variation_data->cart_count = $this->Items->Carts->find('All')->where(['Carts.item_variation_id'=>$items_variation_data->id,'Carts.customer_id'=>$customer_id])->count();
+                     }
+             			}
                   $success = true;
                   $message = 'Data Found Successfully';
                 }

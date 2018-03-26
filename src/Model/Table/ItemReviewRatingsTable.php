@@ -63,13 +63,6 @@ class ItemReviewRatingsTable extends Table
             ->decimal('rating')
             ->requirePresence('rating', 'create')
             ->notEmpty('rating');
-
-        $validator
-            ->scalar('comment')
-            ->requirePresence('comment', 'create')
-            ->notEmpty('comment');
-
-
         return $validator;
     }
 
