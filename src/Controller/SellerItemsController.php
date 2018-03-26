@@ -137,9 +137,7 @@ class SellerItemsController extends AppController
 							->group(['Categories.id'])
 							->autoFields(true);
 							
-					
-		pr($categories->toArray());
-		exit;
+			
         $this->set(compact('itemVariation', 'categories'));
     }
     /**

@@ -24,48 +24,88 @@ use Cake\View\Helper\FormHelper;
  */
 class RecursiveCategoriesHelper extends Helper
 {
-   function categoryItems($array) {
+    function categoryItems($array) {
 	   
-	$html = new FormHelper(new \Cake\View\View());
-    if (count($array)) {
-           
-        foreach ($array as $vals) {
-			
-			echo '<div class="panel panel-primary">
-					<div class="panel-heading">
-						<h4 class="panel-title" style="width: 100%;">
-							<input type="checkbox" class="check_all">
-							<a href="#accOneColOne'.$vals['id'].'">
-								'.$vals['name'].'
-							</a>';
-							echo $html->control('commission_all', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Commission in %','class'=>'form-control col-sm-3 commission_all','style'=>'display:inline !important;width: 15%;float:none;']);
-					echo	'</h4>
-					</div>';
-			if (count($vals['children'])) {
-				echo '<div class="panel-body" id="accOneColOne'.$vals['id'].'">';
-					$this->categoryItems($vals['children']);
-				echo '</div>';
+		$html = new FormHelper(new \Cake\View\View());
+		if (count($array)) {
+			   
+			foreach ($array as $vals) {
+				
+				echo '<div class="panel panel-primary">
+						<div class="panel-heading">
+							<h4 class="panel-title" style="width: 100%;">
+								<input type="checkbox" class="check_all">
+								<a href="#accOneColOne'.$vals['id'].'">
+									'.$vals['name'].'
+								</a>';
+								echo $html->control('commission_all', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Commission in %','class'=>'form-control col-sm-3 commission_all','style'=>'display:inline !important;width: 15%;float:none;']);
+						echo	'</h4>
+						</div>';
+				if (count($vals['children'])) {
+					echo '<div class="panel-body" id="accOneColOne'.$vals['id'].'">';
+						$this->categoryItems($vals['children']);
+					echo '</div>';
+				}
+				else
+				{
+					echo '<div class="panel-body" id="accOneColOne'.$vals['id'].'" style="margin-left:20px;">';
+					$i=0;
+						foreach($vals['items'] as $item)
+						{
+							echo '<label><input name="item_ids[]" type="checkbox"  value="'.$item['id'].'" class="single_item">&nbsp;&nbsp;'.$item['name'].'</label>';
+							echo $html->control('commissions[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Commission in %','class'=>'form-control','style'=>'display:inline !important;width: 15%;float:none;','disabled'=>true,'item_id'=>$item['id']]);
+							echo '<br/>';
+						}
+						
+					echo '</div>';
+				}
+				
+				echo '</div>';  
 			}
-			else
-			{
-				echo '<div class="panel-body" id="accOneColOne'.$vals['id'].'" style="margin-left:20px;">';
-				$i=0;
-					foreach($vals['items'] as $item)
-					{
-						echo '<label><input name="item_ids[]" type="checkbox"  value="'.$item['id'].'" class="single_item">&nbsp;&nbsp;'.$item['name'].'</label>';
-						echo $html->control('commissions[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Commission in %','class'=>'form-control','style'=>'display:inline !important;width: 15%;float:none;','disabled'=>true,'item_id'=>$item['id']]);
-						echo '<br/>';
-					}
-					
-				echo '</div>';
-			}
-            
-            echo '</div>';  
-        }
-           
+			   
+		}
     }
-   }
-
+	function categoryItemVariations($array) {
+	   
+		$html = new FormHelper(new \Cake\View\View());
+		if (count($array)) {
+			   
+			foreach ($array as $vals) {
+				
+				echo '<div class="panel panel-primary">
+						<div class="panel-heading">
+							<h4 class="panel-title" style="width: 100%;">
+								<input type="checkbox" class="check_all">
+								<a href="#accOneColOne'.$vals['id'].'">
+									'.$vals['name'].'
+								</a>';
+								echo $html->control('commission_all', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Commission in %','class'=>'form-control col-sm-3 commission_all','style'=>'display:inline !important;width: 15%;float:none;']);
+						echo	'</h4>
+						</div>';
+				if (count($vals['children'])) {
+					echo '<div class="panel-body" id="accOneColOne'.$vals['id'].'">';
+						$this->categoryItems($vals['children']);
+					echo '</div>';
+				}
+				else
+				{
+					echo '<div class="panel-body" id="accOneColOne'.$vals['id'].'" style="margin-left:20px;">';
+					$i=0;
+						foreach($vals['items'] as $item)
+						{
+							echo '<label><input name="item_ids[]" type="checkbox"  value="'.$item['id'].'" class="single_item">&nbsp;&nbsp;'.$item['name'].'</label>';
+							echo $html->control('commissions[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Commission in %','class'=>'form-control','style'=>'display:inline !important;width: 15%;float:none;','disabled'=>true,'item_id'=>$item['id']]);
+							echo '<br/>';
+						}
+						
+					echo '</div>';
+				}
+				
+				echo '</div>';  
+			}
+			   
+		}
+    }
 
 }
 

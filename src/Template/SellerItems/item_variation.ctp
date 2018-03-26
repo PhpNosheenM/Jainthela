@@ -13,7 +13,7 @@
 							<div class="form-group">
 								<div class="col-md-12">    
 									<div class="panel-group accordion accordion-dc">
-										<?= $this->RecursiveCategories->categoryItems($categories) ?>
+										<?= $this->RecursiveCategories->categoryItemVariations($categories) ?>
 									</div>
 								</div>
 							</div>
