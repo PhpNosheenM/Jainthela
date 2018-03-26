@@ -29,34 +29,32 @@ class ItemsController extends AppController
        $page=@$this->request->query['page'];
    		 $limit=10;
        $items = [];
-       if(!empty($city_id) && !empty($category_id) && (!empty($page)) && !empty($customer_id))
+       if(!empty($city_id) && !empty($category_id) && (!empty($page)))
        {
          // CheckAvabiltyOfCity function is avaliable in app controller for checking city_id in cities table
          $isValidCity = $this->CheckAvabiltyOfCity($city_id);
          if($isValidCity == 0)
          {
-          					 
+
 					  $items = $this->Items->find()
                      ->contain(['ItemsVariations'=>['UnitVariations'=>['Units']]])
                      ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id,'Items.category_id'=>$category_id])
                      ->limit($limit)->page($page);
                if(!empty($items->toArray()))
                {
-				   $inWishList = 0;
+				   $inWishList = false;
 				   foreach($items as $item){
-					   
+
 					   $item_id=$item->id;
-					   
+
 					   $inWishList = $this->Items->WishListItems->find()->where(['item_id'=>$item_id])->contain(['WishLists'=>function($q) use($customer_id){
 						   return $q->select(['WishLists.customer_id'])->where(['customer_id'=>$customer_id]);
 					   }])->count();
-					   
-					   $item->inWishList =$inWishList;
-					 
-					
+                 if($item->inWishList == 1)
+                 {
+                  $inWishList = true;
+                } else { $inWishList = false; }
 				   }
-				  
-				   
                  $success = true;
                  $message = 'Data Found Successfully';
                }
@@ -70,7 +68,7 @@ class ItemsController extends AppController
          }
        }else {
          $success = false;
-         $message = 'Empty city or category id or Customer Id';
+         $message = 'Empty city or category id';
        }
        $this->set(['success' => $success,'message'=>$message,'items' => $items,'_serialize' => ['success','message','items']]);
      }
@@ -90,7 +88,7 @@ class ItemsController extends AppController
         $isValidCity = $this->CheckAvabiltyOfCity($city_id);
         if($isValidCity == 0)
         {
-            if(!empty($item_id) && !empty($category_id) && !empty($customer_id))
+            if(!empty($item_id) && !empty($category_id))
             {
                 $items = $this->Items->find();
                           $items->select(['AverageReviewRatings.item_id','ItemAverageRating' => $items->func()->avg('AverageReviewRatings.rating')])
@@ -101,15 +99,19 @@ class ItemsController extends AppController
 
                 if(!empty($items->toArray()))
                 {
-				  $inWishList=0;
+				  $inWishList=false;
                   foreach ($items as $Item) {
                     $Item->ItemAverageRating = number_format($Item->ItemAverageRating,1);
                     $item_id = $Item->id;
                    $inWishList = $this->Items->WishListItems->find()->where(['item_id'=>$item_id])->contain(['WishLists'=>function($q) use($customer_id){
 						   return $q->select(['WishLists.customer_id'])->where(['customer_id'=>$customer_id]);
 					   }])->count();
-					   
-					   $item->inWishList =$inWishList;
+
+             if($item->inWishList == 1)
+             {
+              $inWishList = true;
+            } else { $inWishList = false; }
+
 
                   }
                   $success = true;
@@ -140,7 +142,7 @@ class ItemsController extends AppController
                     }
             }else {
                     $success = false;
-                    $message = 'Empty Item Id or Category Id or Customer Id';
+                    $message = 'Empty Item Id or Category Id';
             }
         }else {
                 $success = false;

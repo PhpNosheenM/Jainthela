@@ -314,8 +314,8 @@ class CustomersController extends AppController
          			}
 
                $customer->edited_by = $id;
-               $exists = $this->Customers->exists(['Customers.email'=>$customer->email]);
-
+               $exists = $this->Customers->exists(['Customers.email'=>$customer->email,'Customers.id !='=>$id]);
+               
                if($exists == 0)
                {
                  if ($customer_data = $this->Customers->save($customer)) {
