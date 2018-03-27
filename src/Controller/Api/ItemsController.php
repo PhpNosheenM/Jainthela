@@ -42,6 +42,7 @@ class ItemsController extends AppController
                      ->limit($limit)->page($page);
                if(!empty($items->toArray()))
                {
+            $count_value = 0;
 				   $inWishList = 0;
 				   foreach($items as $item){
              foreach ($item->items_variations as $items_variation_data) {
@@ -52,7 +53,12 @@ class ItemsController extends AppController
                    { $items_variation_data->inWishList = true; }
                    else { $items_variation_data->inWishList = false; }
 
-                  $items_variation_data->cart_count = $this->Items->Carts->find('All')->where(['Carts.item_variation_id'=>$items_variation_data->id,'Carts.customer_id'=>$customer_id])->count();
+                   $count_cart = $this->Items->Carts->find()->select(['Carts.cart_count'])->where(['Carts.item_variation_id'=>$items_variation_data->id,'Carts.customer_id'=>$customer_id]);
+
+                   foreach ($count_cart as $count) {
+                    $count_value = $count->cart_count;
+                   }
+                  $items_variation_data->cart_count = $count_value;
               }
       			}
                 $success = true;
@@ -99,7 +105,7 @@ class ItemsController extends AppController
                           ->autoFields(true);
 
                 if(!empty($items->toArray()))
-                {
+                { $count_value = 0;
                   $inWishList = 0;
        				   foreach($items as $item){
                       $item->ItemAverageRating = number_format($item->ItemAverageRating,1);
@@ -111,7 +117,11 @@ class ItemsController extends AppController
                           { $items_variation_data->inWishList = true; }
                           else { $items_variation_data->inWishList = false; }
 
-                         $items_variation_data->cart_count = $this->Items->Carts->find('All')->where(['Carts.item_variation_id'=>$items_variation_data->id,'Carts.customer_id'=>$customer_id])->count();
+                          $count_cart = $this->Items->Carts->find()->select(['Carts.cart_count'])->where(['Carts.item_variation_id'=>$items_variation_data->id,'Carts.customer_id'=>$customer_id]);
+                          foreach ($count_cart as $count) {
+                           $count_value = $count->cart_count;
+                          }
+                         $items_variation_data->cart_count = $count_value;
                      }
              			}
                   $success = true;
