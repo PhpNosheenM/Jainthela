@@ -68,6 +68,15 @@ class ItemVariationsTable extends Table
         $validator
             ->integer('id')
             ->allowEmpty('id', 'create');
+			
+		$validator
+            ->decimal('item_id')
+            ->requirePresence('item_id', 'create')
+            ->notEmpty('item_id');
+		$validator
+            ->decimal('unit_variation_id')
+            ->requirePresence('unit_variation_id', 'create')
+            ->notEmpty('unit_variation_id');
 		/*
         $validator
             ->decimal('quantity_factor')
@@ -133,7 +142,6 @@ class ItemVariationsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['item_id'], 'Items'));
-        $rules->add($rules->existsIn(['unit_id'], 'Units'));
 
         return $rules;
     }

@@ -39,26 +39,44 @@ $js='
 			if($(this).is(":checked"))
 			{
 				$(this).closest(".panel").find("input[type=checkbox]").prop("checked",true);
+				$(this).closest(".panel").find("input.single_item[type=checkbox]").prop("disabled",false);
+				$(this).closest(".panel").find("input.entity_maximum").prop("disabled",false);
 			}
 			else
 			{
 				$(this).closest(".panel").find("input[type=checkbox]").prop("checked",false);
+				$(this).closest(".panel").find("input.single_item[type=checkbox]").prop("disabled",true);
+				$(this).closest(".panel").find("input.entity_maximum").prop("disabled",true);
 			}
 		});
 		$(document).on("change",".check_all_item",function(){
 			if($(this).is(":checked"))
 			{
 				$(this).closest(".item_variation").find("input[type=checkbox]").prop("checked",true);
+				$(this).closest(".panel").find("input.single_item[type=checkbox]").prop("disabled",false);
+				$(this).closest(".panel").find("input.entity_maximum").prop("disabled",false);
 			}
 			else
 			{
 				$(this).closest(".item_variation").find("input[type=checkbox]").prop("checked",false);
+				$(this).closest(".panel").find("input.single_item[type=checkbox]").prop("disabled",true);
+				$(this).closest(".panel").find("input.entity_maximum").prop("disabled",true);
+			}
+		});
+		$(document).on("change",".single_item",function(){
+			var item_variation=$(this).val();
+			if($(this).is(":checked"))
+			{
+				$(this).closest("div").find("input.entity_variation"+item_variation).prop("checked",true);
+				$(this).closest("div").find("input.entity_maximum"+item_variation).prop("disabled",false);
+			}
+			else
+			{
+				$(this).closest("div").find("input.entity_variation"+item_variation).prop("checked",false);
+				$(this).closest("div").find("input.entity_maximum"+item_variation).prop("disabled",true);
 			}
 		});
 		
-		$(document).on("keyup",".commission_all",function(){
-			$(this).closest(".panel").find("input[type=text]").val($(this).val());
-		});
 ';
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 	
 ?>

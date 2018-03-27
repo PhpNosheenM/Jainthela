@@ -93,28 +93,22 @@ class SellerItemsController extends AppController
 		$this->viewBuilder()->layout('admin_portal');
         $itemVariation = $this->SellerItems->ItemVariations->newEntity();
         if ($this->request->is('post')) {
-			$commissions=$this->request->getData('commissions');
-			$item_ids=$this->request->getData('item_ids');
-			$seller_id=$this->request->getData('seller_id');
-			//pr($this->request->getData());
-			//exit;
-			$total_rows = sizeof($item_ids);
 			
-			$query = $this->SellerItems->query();
-			$query->insert(['seller_id', 'item_id','commission_percentage']);
-			for($i=0; $i<$total_rows; $i++)
+			$arr=$this->request->getData();
+			foreach($arr as $key => $csm)
 			{
-				$query->values([
-					'seller_id' => $seller_id,
-					'item_id' => $item_ids[$i],
-					'commission_percentage' => $commissions[$i]
-				]);
+				$SellerItemdata=$this->SellerItems->find()->where(['seller_id'=>$user_id, 'item_id'=>$arr[$key]['item_id']])->toArray();
+				
+				$arr[$key]['seller_id'] = $user_id;
+				$arr[$key]['commission'] = $SellerItemdata[0]->commission_percentage;
 			}
-            if ($query->execute()) {
+			
+			$itemVariation = $this->SellerItems->ItemVariations->newEntities($arr);
+			 if ($this->SellerItems->ItemVariations->saveMany($itemVariation)) {
                 $this->Flash->success(__('The seller item has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
-            }
+                return $this->redirect(['action' => 'itemVariation']);
+            } 
             $this->Flash->error(__('The seller item could not be saved. Please, try again.'));
         }
 		

@@ -66,7 +66,7 @@ class RecursiveCategoriesHelper extends Helper
 		}
     }
 	function categoryItemVariations($array) {
-	   
+	   $i=0;
 		$html = new FormHelper(new \Cake\View\View());
 		if (count($array)) {
 			   
@@ -89,27 +89,33 @@ class RecursiveCategoriesHelper extends Helper
 				else
 				{
 					echo '<div class="panel-body" id="accOneColOne'.$vals['id'].'" style="margin-left:20px;">';
-					$i=0;
+					
 						foreach($vals['items'] as $item)
 						{
 							echo '<div class="item_variation">
 									<div class="">
 										<h4 class="panel-title" style="width: 100%;">
-											<input type="checkbox" class="check_all_item">
+											<input type="checkbox" class="check_all_item" value="'.$item['id'].'">
 											<a href="#itemshow'.$item['id'].'">
 												'.$item['name'].'
 											</a>';
 									echo	'</h4>
 									</div>';
-							//echo '<label><input name="item_ids[]" type="checkbox"  value="'.$item['id'].'" class="single_item">&nbsp;&nbsp;'.$item['name'].'</label>';
-							//echo $html->control('commissions[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Commission in %','class'=>'form-control','style'=>'display:inline !important;width: 15%;float:none;']);
+							
 							echo '<div class="panel-body" id="itemshow'.$item['id'].'" style="padding: 0px !important;">';
 							foreach($item['item_variation_masters'] as $item_variation_master)
 							{ 
-								echo '<label style="margin-left:30px;"><input name="item_ids[]" type="checkbox"  value="'.$item['id'].'" class="single_item">&nbsp;&nbsp;'.$item_variation_master['unit_variation']['quantity_variation'].' '.$item_variation_master['unit_variation']['unit']['longname'].'</label>';
+								echo '<input name="'.$i.'[item_id]" type="checkbox"  value="'.$item['id'].'" class="entity_variation'.$item_variation_master['unit_variation']['id'].'" style="display:none;">';
+								
+								echo '<label style="margin-left:30px;"><input name="'.$i.'[unit_variation_id]" type="checkbox"  value="'.$item_variation_master['unit_variation']['id'].'" class="single_item variation'.$item['id'].'" disabled="disabled">&nbsp;&nbsp;'.$item_variation_master['unit_variation']['quantity_variation'].' '.$item_variation_master['unit_variation']['unit']['longname'].'</label>';
+								
+								echo $html->control($i.'[maximum_quantity_purchase]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Maximum Quantity Purchase','class'=>'form-control entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;width: 15%;float:none;','disabled'=>true]);
+								
+								$i++;
 							}
 							echo '</div>';
 							echo '</div>';
+							
 						}
 						
 					echo '</div>';

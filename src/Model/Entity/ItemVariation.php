@@ -38,7 +38,7 @@ class ItemVariation extends Entity
      */
     protected $_accessible = [
         'item_id' => true,
-        'unit_id' => true,
+        'unit_variation_id' => true,
         'quantity_factor' => true,
         'print_quantity' => true,
         'print_rate' => true,
@@ -50,8 +50,8 @@ class ItemVariation extends Entity
         'created_on' => true,
         'status' => true,
         'item' => true,
-        'unit' => true,
         'commission' => true,
-        'order_details' => true
+        'order_details' => true,
+        'seller_id' => true
     ];
 }
