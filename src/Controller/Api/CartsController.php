@@ -134,82 +134,132 @@ class CartsController extends AppController
 			$city_id=$this->request->data('city_id');
 			$tag=$this->request->data('tag');
 
-			if($tag=='add')
+			if(!empty($city_id) && !empty($customer_id))
 			{
-				// addCartCommon for code reuseabilty in both function plusAddToCart and fetchCart
-				$this->addCartCommon($customer_id,$city_id,$item_variation_id);
-			}
-			else if($tag=='minus')
-			{
-				// removeCartCommon for code reuseabilty in both function removeFromCart and fetchCart
-				$this->removeCartCommon($customer_id,$city_id,$item_variation_id);
-			}
+					$exists = $this->Carts->Customers->exists(['id'=>$customer_id]);
+				if($exists == 1)
+				{
+							if($tag=='add')
+							{
+							  // addCartCommon for code reuseabilty in both function plusAddToCart and fetchCart
+							  $this->addCartCommon($customer_id,$city_id,$item_variation_id);
+							}
+							else if($tag=='minus')
+							{
+							  // removeCartCommon for code reuseabilty in both function removeFromCart and fetchCart
+							  $this->removeCartCommon($customer_id,$city_id,$item_variation_id);
+							}
 
-			$item_in_cart = $this->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])->count();
-			$address_availablity = $this->Carts->Customers->CustomerAddresses->find()
-			->where(['CustomerAddresses.customer_id'=>$customer_id]);
-			if(empty($address_availablity->toArray()))
-			{
-				$address_available=false;
-			}
-			else
-			{
-				$address_available=true;
-			}
+							$item_in_cart = $this->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])->count();
+							$address_availablity = $this->Carts->Customers->CustomerAddresses->find()
+							->where(['CustomerAddresses.customer_id'=>$customer_id]);
+							if(empty($address_availablity->toArray()))
+							{
+							  $address_available=false;
+							}
+							else
+							{
+							  $address_available=true;
+							}
+
+							$categories = $this->Carts->find()
+							->where(['customer_id' => $customer_id])
+							->contain(['ItemVariations'=>['Items'=>['Categories']]]);
+
+							if(!empty($categories->toArray()))
+							{
+									$category_arr = [];
+
+									foreach ($categories as $cat_date) {
+									    $cat_name = $cat_date->item_variation->item->category->name;
+									    $cat_id = $cat_date->item_variation->item->category->id;
+									    $category_arr[$cat_id] = $cat_name;
+									}
+
+									$carts_data=$this->Carts->find()
+									->where(['customer_id' => $customer_id])
+									->contain(['ItemVariations'=>['Items','UnitVariations'=>['Units']]])
+									->group('Carts.item_variation_id')->autoFields(true)->toArray();
+
+									foreach ($category_arr as $cat_key => $cat_value) {
+									  foreach ($carts_data as $cart) {
+									      $cart_category_id = $cart->item_variation->item->category_id;
+									      if($cat_key == $cart_category_id)
+									      {
+									        $category[$cat_key][] = $cart;
+									      }
+									  }
+									}
+
+									foreach ($category as $key => $value) {
+									    $carts[] = ['category_name'=>$category_arr[$key],'category'=>$value];
+									}
+
+									if(empty($carts_data)){ $carts=[]; }
+									$grand_total1=0;
+									foreach($carts_data as $cart_data)
+									{
+									  $grand_total1+=$cart_data->amount;
+									}
+
+									$grand_total=number_format(round($grand_total1), 2);
 
 
-			$carts=$this->Carts->find()
-			->where(['customer_id' => $customer_id])
-			->contain(['ItemVariations'=>['Items','UnitVariations'=>['Units']]])
-			->group('Carts.item_variation_id')->autoFields(true);
+									$Customers = $this->Carts->Customers->get($customer_id, [
+									  'contain' => ['Wallets'=>function($query){
+									    return $query->select([
+									      'total_add_amount' => $query->func()->sum('add_amount'),
+									      'total_used_amount' => $query->func()->sum('used_amount'),'customer_id',
+									    ]);
+									  }]
+									]);
 
-			if(empty($carts->toArray())){ $carts=[]; }
-			$grand_total1=0;
-			foreach($carts as $cart_data)
-			{
-				$grand_total1+=$cart_data->amount;
-			}
+									if(empty($Customers->wallets))
+									{
+									  $remaining_wallet_amount= number_format(0, 2);
+									}
+									else{
+									  foreach($Customers->wallets as $Customer_data_wallet){
+									    $wallet_total_add_amount = $Customer_data_wallet->total_add_amount;
+									    $wallet_total_used_amount = $Customer_data_wallet->total_used_amount;
+									    $remaining_wallet_amount= number_format(round($wallet_total_add_amount-$wallet_total_used_amount), 2);
+									  }
+									}
 
-			$grand_total=number_format(round($grand_total1), 2);
+							}
 
+							$delivery_charges=$this->Carts->DeliveryCharges->find()->where(['city_id'=>$city_id]);
 
-			$Customers = $this->Carts->Customers->get($customer_id, [
-				'contain' => ['Wallets'=>function($query){
-					return $query->select([
-						'total_add_amount' => $query->func()->sum('add_amount'),
-						'total_used_amount' => $query->func()->sum('used_amount'),'customer_id',
-					]);
-				}]
-			]);
-
-			if(empty($Customers->wallets))
-			{
-				$remaining_wallet_amount= number_format(0, 2);
-			}
-			else{
-				foreach($Customers->wallets as $Customer_data_wallet){
-					$wallet_total_add_amount = $Customer_data_wallet->total_add_amount;
-					$wallet_total_used_amount = $Customer_data_wallet->total_used_amount;
-					$remaining_wallet_amount= number_format(round($wallet_total_add_amount-$wallet_total_used_amount), 2);
+							if(empty($carts_data))
+							{
+							  $success = false;
+							  $message ='Empty Cart';
+							  $this->set(compact('success', 'message'));
+							  $this->set('_serialize', ['success', 'message']);
+							}
+							else
+							{
+							  $success = true;
+							  $message = 'Cart Data found';
+							  $this->set(compact('success', 'message','address_available','grand_total', 'remaining_wallet_amount', 'carts','item_in_cart','delivery_charges'));
+							  $this->set('_serialize', ['success', 'message','address_available','item_in_cart','grand_total', 'remaining_wallet_amount','carts','delivery_charges']);
+							}
 				}
-			}
-
-			$delivery_charges=$this->Carts->DeliveryCharges->find()->where(['city_id'=>$city_id]);
-
-			if(empty($carts))
+				else
+				{
+						$success = false;
+						$message ='Invalid Customer id';
+						$this->set(compact('success', 'message'));
+						$this->set('_serialize', ['success', 'message']);
+				}
+			}else
 			{
 				$success = false;
-				$message ='Empty Cart';
+				$message ='Empty City or Customer_id';
 				$this->set(compact('success', 'message'));
 				$this->set('_serialize', ['success', 'message']);
 			}
-			else
-			{
-				$success = true;
-				$message = 'Cart Data found';
-				$this->set(compact('success', 'message','address_available','grand_total', 'remaining_wallet_amount', 'carts','item_in_cart','delivery_charges'));
-				$this->set('_serialize', ['success', 'message','address_available','item_in_cart','grand_total', 'remaining_wallet_amount','carts','delivery_charges']);
-			}
+
 		}
 
 		public function reviewOrder()

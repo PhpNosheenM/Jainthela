@@ -25,7 +25,7 @@ class ItemsController extends AppController
      {
        $city_id = @$this->request->query['city_id'];
        $category_id = @$this->request->query['category_id'];
-	   $customer_id = @$this->request->query['customer_id'];
+	     $customer_id = @$this->request->query['customer_id'];
        $page=@$this->request->query['page'];
    		 $limit=10;
        $items = [];
@@ -93,7 +93,7 @@ class ItemsController extends AppController
             {
                 $items = $this->Items->find();
                           $items->select(['AverageReviewRatings.item_id','ItemAverageRating' => $items->func()->avg('AverageReviewRatings.rating')])
-                          ->contain(['Categories','Brands','Cities','ItemsVariations'=>['UnitVariations','Sellers'],'LeftItemReviewRatings'])
+                          ->contain(['Categories','Brands','Cities','ItemsVariations'=>['UnitVariations'=>['Units'],'Sellers'],'LeftItemReviewRatings'])
                           ->leftJoinWith('AverageReviewRatings')
                           ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.id'=>$item_id,'Items.city_id'=>$city_id,'Items.category_id'=>$category_id])
                           ->autoFields(true);
@@ -134,7 +134,7 @@ class ItemsController extends AppController
                               $success = true;
                               $message = 'Data Found Successfully';
                             } else {
-                              $success = false;
+                              $success = true;
                               $message = 'Empty Releted Items';
                             }
 

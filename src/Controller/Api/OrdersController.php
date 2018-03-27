@@ -13,8 +13,9 @@ class OrdersController extends AppController
       $city_id=$this->request->query('city_id');
       $customer_id=$this->request->query('customer_id');
       $orders_data = $this->Orders->find()
-      ->where(['customer_id' => $customer_id,'city_id'=>$city_id])
-      ->order(['order_date' => 'DESC'])
+      ->where(['Orders.customer_id' => $customer_id,'Orders.city_id'=>$city_id])
+      ->contain(['DeliveryCharges'])
+      ->order(['Orders.order_date' => 'DESC'])
       ->autoFields(true);
 
       if(!empty($orders_data->toArray()))
@@ -34,7 +35,7 @@ class OrdersController extends AppController
         $customer_id=$this->request->query('customer_id');
     		$order_id=$this->request->query('order_id');
 
-        $orders_details_data = $this->Orders->get($order_id, ['contain'=>['OrderDetails'=>['ItemVariations'=>['Items','UnitVariations'=>['Units']]]]]);
+        $orders_details_data = $this->Orders->get($order_id, ['contain'=>['DeliveryCharges','OrderDetails'=>['ItemVariations'=>['Items','UnitVariations'=>['Units']]]]]);
 
         if(!empty($orders_details_data->toArray()))
         {
