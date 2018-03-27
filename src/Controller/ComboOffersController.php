@@ -71,7 +71,7 @@ class ComboOffersController extends AppController
 			
 			$comboOffer->city_id=$city_id;
 			$comboOffer->created_by=$user_id;
-			
+			$comboOffer->admin_id=$user_id;
             if ($this->ComboOffers->save($comboOffer)) {
                 $this->Flash->success(__('The combo offer has been saved.'));
 
