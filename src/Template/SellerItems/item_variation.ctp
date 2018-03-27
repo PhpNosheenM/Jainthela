@@ -39,25 +39,23 @@ $js='
 			if($(this).is(":checked"))
 			{
 				$(this).closest(".panel").find("input[type=checkbox]").prop("checked",true);
-				$(this).closest(".panel").find("input[type=text]").prop("disabled",false);
 			}
 			else
 			{
 				$(this).closest(".panel").find("input[type=checkbox]").prop("checked",false);
-				$(this).closest(".panel").find("input[type=text]").prop("disabled",true);
 			}
 		});
-		$(document).on("change",".single_item",function(){
-			var item_id = $(this).val();
+		$(document).on("change",".check_all_item",function(){
 			if($(this).is(":checked"))
 			{
-				$(this).closest("div").find("input[item_id="+item_id+"]").prop("disabled",false);
+				$(this).closest(".item_variation").find("input[type=checkbox]").prop("checked",true);
 			}
 			else
 			{
-				$(this).closest("div").find("input[item_id="+item_id+"]").prop("disabled",true);
+				$(this).closest(".item_variation").find("input[type=checkbox]").prop("checked",false);
 			}
 		});
+		
 		$(document).on("keyup",".commission_all",function(){
 			$(this).closest(".panel").find("input[type=text]").val($(this).val());
 		});

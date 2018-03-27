@@ -125,18 +125,19 @@ class SellerItemsController extends AppController
 		{
 			$seller_item[]=$sellerItem->item_id;
 		}
-		 $categories = $this->SellerItems->Categories->find('threaded');
+		$categories = $this->SellerItems->Categories->find('threaded');
 							$categories->select(['total_item'=>$categories->func()->count('Items.id')])
 							->innerJoinWith('Items',function($q) use($user_id,$seller_item){
-							return $q->where(['Items.id IN'=>$seller_item]);
+									return $q->where(['Items.id IN'=>$seller_item]);
 							})
 							->contain(['Items'=>function($q) use($user_id,$seller_item){
-								return $q->where(['Items.id IN'=>$seller_item])->contain(['ItemVariationMasters'=>['SellerItems']]);
+								return $q->where(['Items.id IN'=>$seller_item])->contain(['ItemVariationMasters'=>['SellerItems','UnitVariations'=>['Units']]]);
 							}
 							])
 							->group(['Categories.id'])
 							->autoFields(true);
-							
+		//pr($categories->toArray());
+		//exit;					
 			
         $this->set(compact('itemVariation', 'categories'));
     }

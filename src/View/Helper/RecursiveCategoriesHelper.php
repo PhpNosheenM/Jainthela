@@ -79,12 +79,11 @@ class RecursiveCategoriesHelper extends Helper
 								<a href="#accOneColOne'.$vals['id'].'">
 									'.$vals['name'].'
 								</a>';
-								echo $html->control('commission_all', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Commission in %','class'=>'form-control col-sm-3 commission_all','style'=>'display:inline !important;width: 15%;float:none;']);
 						echo	'</h4>
 						</div>';
 				if (count($vals['children'])) {
 					echo '<div class="panel-body" id="accOneColOne'.$vals['id'].'">';
-						$this->categoryItems($vals['children']);
+						$this->categoryItemVariations($vals['children']);
 					echo '</div>';
 				}
 				else
@@ -93,9 +92,24 @@ class RecursiveCategoriesHelper extends Helper
 					$i=0;
 						foreach($vals['items'] as $item)
 						{
-							echo '<label><input name="item_ids[]" type="checkbox"  value="'.$item['id'].'" class="single_item">&nbsp;&nbsp;'.$item['name'].'</label>';
-							echo $html->control('commissions[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Commission in %','class'=>'form-control','style'=>'display:inline !important;width: 15%;float:none;','disabled'=>true,'item_id'=>$item['id']]);
-							echo '<br/>';
+							echo '<div class="item_variation">
+									<div class="">
+										<h4 class="panel-title" style="width: 100%;">
+											<input type="checkbox" class="check_all_item">
+											<a href="#itemshow'.$item['id'].'">
+												'.$item['name'].'
+											</a>';
+									echo	'</h4>
+									</div>';
+							//echo '<label><input name="item_ids[]" type="checkbox"  value="'.$item['id'].'" class="single_item">&nbsp;&nbsp;'.$item['name'].'</label>';
+							//echo $html->control('commissions[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Commission in %','class'=>'form-control','style'=>'display:inline !important;width: 15%;float:none;']);
+							echo '<div class="panel-body" id="itemshow'.$item['id'].'" style="padding: 0px !important;">';
+							foreach($item['item_variation_masters'] as $item_variation_master)
+							{ 
+								echo '<label style="margin-left:30px;"><input name="item_ids[]" type="checkbox"  value="'.$item['id'].'" class="single_item">&nbsp;&nbsp;'.$item_variation_master['unit_variation']['quantity_variation'].' '.$item_variation_master['unit_variation']['unit']['longname'].'</label>';
+							}
+							echo '</div>';
+							echo '</div>';
 						}
 						
 					echo '</div>';
