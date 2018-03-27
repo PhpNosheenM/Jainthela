@@ -34,7 +34,7 @@
 						<div class="col-md-2">
 							<div class="form-group">
 								<label>Seller</label>
-								<?php echo $this->Form->select('seller_id',$Sellers, ['empty'=>'--Select--','label' => false,'class' => 'form-control input-sm ledger select', 'data-live-search'=>true,'value'=>$location_id]); ?>
+								<?php echo $this->Form->select('seller_id',$Sellers, ['empty'=>'--Select--','label' => false,'class' => 'form-control input-sm ledger select', 'data-live-search'=>true,'value'=>$seller_id]); ?>
 								
 							</div>
 						</div>
@@ -103,4 +103,5 @@
 		</div>
 	</div>                    
 </div>
+<?= $this->Html->script('plugins/bootstrap/bootstrap-datepicker.js',['block'=>'jsDatePicker']) ?>
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>

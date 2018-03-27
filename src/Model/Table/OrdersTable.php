@@ -57,6 +57,18 @@ class OrdersTable extends Table
             'foreignKey' => 'driver_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('Ledgers', [
+            'foreignKey' => 'ledger_id',
+            'joinType' => 'INNER'
+        ]);
+		$this->belongsTo('Grns', [
+            'foreignKey' => 'grn_id',
+            'joinType' => 'INNER'
+        ]);
+		$this->belongsTo('PurchaseInvoices', [
+            'foreignKey' => 'purchase_invoice_id',
+            'joinType' => 'INNER'
+        ]);
         $this->belongsTo('CustomerAddresses', [
             'foreignKey' => 'customer_address_id',
             'joinType' => 'INNER'
