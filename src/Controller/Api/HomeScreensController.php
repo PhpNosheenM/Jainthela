@@ -109,7 +109,7 @@ class HomeScreensController extends AppController
 
 				
 					if($HomeScreen->model_name=='Category'){
-							$Items=$this->HomeScreens->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])->contain(['ItemActive'=>['ItemsVariations'=>['Units']]]);
+							$Items=$this->HomeScreens->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])->contain(['ItemActive'=>['ItemsVariations'=>['UnitVariations'=>['Units']]]]);
 							if($Items){
 								$Itemc=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$Items);
 								array_push($dynamic,$Itemc);
@@ -118,6 +118,41 @@ class HomeScreensController extends AppController
 								$Item=[];
 							}
 						}
+						
+						if($HomeScreen->model_name=='Combooffer'){
+							$Combooffers=$this->HomeScreens->ComboOffers->find()->where(['status'=>'Active','city_id'=>$city_id])->limit(3);
+							
+							if($Combooffers){
+								$Combooffer=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$Combooffers);
+								array_push($dynamic,$Combooffer);
+
+							}else{
+								$Combooffer=[];
+							}
+						}
+						
+						
+						
+						if($HomeScreen->model_name=='Categorytwoitem'){
+							$Singleimagetwoitems=$this->HomeScreens->Categories->find()
+							->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])
+							->contain(['Items'=>function($q){
+								return $q->where(['status'=>'Active','section_show'=>'Yes'])
+								->limit(2)
+								->contain(['ItemsVariations'=>['UnitVariations'=>['Units']]]);
+							}]);
+						
+							if($Singleimagetwoitems){
+								$Singleimagetwoitem=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,'Image'=>$HomeScreen->image,"HomeScreens"=>$Singleimagetwoitems);
+								array_push($dynamic,$Singleimagetwoitem);
+
+							}else{
+								$Singleimagetwoitem=[];
+							}
+						}
+						
+						
+						
 				}
 
 				//$dynamic=array($Express,$Brand);

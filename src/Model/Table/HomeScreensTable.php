@@ -39,6 +39,7 @@ class HomeScreensTable extends Table
 		$this->belongsTo('Brands');
 		$this->belongsTo('ApiVersions');
 		$this->belongsTo('ExpressDeliveries');
+		$this->belongsTo('ComboOffers');
         $this->belongsTo('Categories', [
             'foreignKey' => 'category_id',
             'joinType' => 'INNER'
