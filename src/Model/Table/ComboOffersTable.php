@@ -5,7 +5,8 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-
+use Cake\Event\Event;
+use ArrayObject;
 /**
  * ComboOffers Model
  *
@@ -70,7 +71,7 @@ class ComboOffersTable extends Table
         $validator
             ->integer('id')
             ->allowEmpty('id', 'create');
-
+		/*
         $validator
             ->scalar('name')
             ->maxLength('name', 100)
@@ -154,10 +155,16 @@ class ComboOffersTable extends Table
             ->maxLength('combo_offer_image', 150)
             ->requirePresence('combo_offer_image', 'create')
             ->notEmpty('combo_offer_image');
-
+		*/
         return $validator;
     }
 
+	public function beforeMarshal(Event $event, ArrayObject $data)
+    {
+        @$data['start_date'] = trim(date('Y-m-d',strtotime(@$data['start_date'])));
+		@$data['end_date'] = trim(date('Y-m-d',strtotime(@$data['end_date'])));
+    }
+	
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.
@@ -165,6 +172,8 @@ class ComboOffersTable extends Table
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
+	 
+	 
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['city_id'], 'Cities'));

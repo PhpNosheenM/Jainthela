@@ -123,7 +123,7 @@
 							<div class="form-group" id="web_image_data">
 									<label class="col-md-3 control-label">Offer Image</label> 
 									<div class="col-md-9 col-xs-12"> 
-									<?= $this->Form->control('combo_offer_image',['type'=>'file','label'=>false,'id' => 'item_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>true]) ?>
+									<?= $this->Form->control('combo_offer_image',['type'=>'file','label'=>false,'id' => 'combo_offer_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>true]) ?>
 									<label id="combo_offer_image-error" class="error" for="combo_offer_image"></label>
 									</div>
 							</div>
@@ -211,14 +211,14 @@
 			}                                        
 		});
 	
-		$("#item_image").fileinput({
+		$("#combo_offer_image").fileinput({
             showUpload: false,
             showCaption: false,
             showCancel: false,
             browseClass: "btn btn-danger",
 			allowedFileExtensions: ["jpg", "png"],
 			maxFileSize: 1024,
-		}); 
+		});
 		
 		$(document).on("click",".add_row",function(){
 			addMainRow();
@@ -269,7 +269,6 @@
 				var amount=quantity*rate;
 				
 				print_rate=print_rate+amount;
-				print_rate=round(print_rate,2);
 				$(".print_rate").val(print_rate);
 				i++;
 			});		

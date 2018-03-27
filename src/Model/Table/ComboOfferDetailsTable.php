@@ -63,7 +63,7 @@ class ComboOfferDetailsTable extends Table
         $validator
             ->integer('id')
             ->allowEmpty('id', 'create');
-
+		/*
         $validator
             ->decimal('quantity')
             ->requirePresence('quantity', 'create')
@@ -78,7 +78,7 @@ class ComboOfferDetailsTable extends Table
             ->decimal('amount')
             ->requirePresence('amount', 'create')
             ->notEmpty('amount');
-
+		*/
         return $validator;
     }
 

@@ -58,12 +58,26 @@ class ComboOffersController extends AppController
 
         $comboOffer = $this->ComboOffers->newEntity();
         if ($this->request->is('post')) {
+			$combo_offer_image=$this->request->data['combo_offer_image'];
+		
+			$combo_offer_error=$combo_offer_image['error'];
+			
             $comboOffer = $this->ComboOffers->patchEntity($comboOffer, $this->request->getData());
+			if(empty($combo_offer_error))
+			{
+				$combo_offer_ext=explode('/',$combo_offer_image['type']);
+				$comboOffer->combo_offer_image='combo_offer'.time().'.'.$combo_offer_ext[1];
+			}
+			
+			$comboOffer->city_id=$city_id;
+			$comboOffer->created_by=$user_id;
+			
             if ($this->ComboOffers->save($comboOffer)) {
                 $this->Flash->success(__('The combo offer has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
             }
+			
             $this->Flash->error(__('The combo offer could not be saved. Please, try again.'));
         }
 		$itemVariations = $this->ComboOffers->ComboOfferDetails->ItemVariations->find('all')->contain(['Items','UnitVariations'=>['Units']]);
