@@ -164,15 +164,15 @@ class ItemsController extends AppController
 		}
 		if($from_date!="1970-01-01")
 		{
-			$where['ItemLedgers.location_id']=$location_id;
+			$where['ItemLedgers.transaction_date >=']=$from_date;
 		}
 		if($to_date!="1970-01-01")
 		{ 
-			$where['ItemLedgers.seller_id']=$seller_id;
+			$where['ItemLedgers.transaction_date <=']=$to_date;
 		}
 		//pr($where); exit;
 		$showItems=[];
-		if($location_id || $seller_id){
+		if($where){
 			 $Items = $this->Items->find()->toArray();
 				foreach($Items as  $Item){
 					if($Item->item_maintain_by=="itemwise"){
@@ -198,7 +198,14 @@ class ItemsController extends AppController
 			
 		}
 		//pr($showItems); exit;
-		
+		if($from_date=="1970-01-01")
+		{
+			$from_date=date("d-m-Y");
+		}
+		if($to_date=="1970-01-01")
+		{ 
+			$to_date=date("d-m-Y");;
+		}
 		$Locations = $this->Items->Locations->find('list');
 		$Cities = $this->Items->Cities->find('list');
 		$Sellers = $this->Items->Sellers->find('list');
