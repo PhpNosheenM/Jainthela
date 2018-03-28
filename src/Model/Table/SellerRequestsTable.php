@@ -49,6 +49,12 @@ class SellerRequestsTable extends Table
         $this->hasMany('SellerRequestRows', [
             'foreignKey' => 'seller_request_id'
         ]);
+		$this->hasMany('Items', [
+            'foreignKey' => 'item_id'
+        ]);
+		$this->hasMany('GstFigures', [
+            'foreignKey' => 'gst_figure_id'
+        ]);
     }
 
     /**

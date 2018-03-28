@@ -172,7 +172,7 @@ class OrdersController extends AppController
 						$this->Orders->Grns->GrnRows->ItemLedgers->save($ItemLedger);
 						$ItemVariationData = $this->Orders->OrderDetails->ItemVariations->get($data->item_variation->id);
 						
-						$current_stock=$ItemVariationData->current_stock-$GrnRow->quantity;
+						/* $current_stock=$ItemVariationData->current_stock-$GrnRow->quantity;
 						$out_of_stock="No";
 						$ready_to_sale="Yes";
 						if($current_stock <= 0){
@@ -183,7 +183,7 @@ class OrdersController extends AppController
 						$query->update()
 						->set(['current_stock'=>$current_stock,'purchase_rate'=>$GrnRow->purchase_rate,'sales_rate'=>$GrnRow->sales_rate,'mrp'=>$GrnRow->mrp,'print_rate'=>$GrnRow->mrp,'update_on'=>$today_date,'out_of_stock'=>$out_of_stock,'ready_to_sale'=>$ready_to_sale])
 						->where(['item_id' => $Items->id,'id'=>$data->item_variation->id,'seller_id'=>$data->item_variation->seller_id])
-						->execute();
+						->execute(); */
 						
 				}
 			}

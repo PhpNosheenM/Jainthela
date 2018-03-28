@@ -14,7 +14,7 @@
 		<div class="col-md-12">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><strong>Item Request</strong></h3>
+					<h3 class="panel-title"><strong>Pending Item Request</strong></h3>
 				<div class="pull-right">
 			
 		</div> 	
@@ -25,8 +25,9 @@
 							<thead>
 								<tr>
 									<th><?= ('SNo.') ?></th>
-									<th><?= ('Voucher No') ?></th>
+									<th><?= ('Seller name') ?></th>
 									<th><?= ('status') ?></th>
+									<th><?= ('Action') ?></th>
 									 
 								</tr>
 							</thead>
@@ -36,10 +37,11 @@
 								  <?php foreach ($sellerRequests as $sellerRequest): ?>
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
-									<td><?= h('#'.str_pad($sellerRequest->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
-									
+									<td><?= h($sellerRequest->seller->name) ?></td>
 									<td><?= h($sellerRequest->status) ?></td>
-									 
+									<td> <?= $this->Html->link(__('<span class="">View</span>'), ['action' => 'View', $sellerRequest->id],['class'=>'btn btn-success btn-sm','escape'=>false]) ?>
+									<?= $this->Html->link(__('<span class="">Approve</span>'), ['action' => 'sellerRequestApprove', $sellerRequest->id],['class'=>'btn btn-success btn-sm','escape'=>false]) ?>
+									<?= $this->Html->link(__('<span class="">Un-Approve</span>'), ['action' => 'sellerRequestCancle', $sellerRequest->id],['class'=>'btn btn-danger btn-sm','escape'=>false]) ?></td>
 								</tr>
 								<?php endforeach; ?>
 							</tbody>
