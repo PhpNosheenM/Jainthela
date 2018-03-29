@@ -216,10 +216,15 @@ class OrdersController extends AppController
 
         $customer_address_id = $this->request->data['customer_address_id'];
 
-        $location_id = $this->Orders->CustomerAddresses->find()
+        $location_data = $this->Orders->CustomerAddresses->find()
         ->select(['location_id'])->where(['id'=>$customer_address_id]);
 
-        pr($location_id->toArray());exit;
+        if(!empty($location_data->toArray()))
+        {
+          foreach ($location_data as $value) {
+            $location_id = $value->location_id;
+          }
+        }
 
         $order = $this->Orders->newEntity();
     		$LocationData = $this->Orders->Locations->get($location_id);
@@ -240,6 +245,10 @@ class OrdersController extends AppController
     		$purchaseInvoiceVoucherNo='IN'.'/'.$year.''.$month.''.$day.'/'.$voucher_no;
     		$order_no=$LocationData->alise.'/'.$purchaseInvoiceVoucherNo;
         $order = $this->Orders->patchEntity($order, $this->request->getData());
+
+        pr($order);exit;
+
+
             if ($this->Orders->save($order)) {
                 $this->Flash->success(__('The order has been saved.'));
                 return $this->redirect(['action' => 'index']);
