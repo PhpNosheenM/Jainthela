@@ -424,13 +424,13 @@ class CustomersController extends AppController
           $exists = $this->Customers->CustomerAddresses->exists(['id'=>$customer_address_id,'customer_id'=>$customer_id]);
             if($exists == 0)
             {
-              $query = $this->Customers->CustomerAddresses->query();
-              $result = $query->update()->set(['default_address' => 0])
-                        ->where(['customer_id' =>$customer_id])->execute();
-
+                /*  $query = $this->Customers->CustomerAddresses->query();
+                  $result = $query->update()->set(['default_address' => 0])
+                            ->where(['customer_id' =>$customer_id])->execute();
+                */
               $customerAddress = $this->Customers->CustomerAddresses->newEntity();
               $customerAddress = $this->Customers->CustomerAddresses->patchEntity($customerAddress, $this->request->getData());
-              $customerAddress->default_address = 1;
+            //  $customerAddress->default_address = 1;
               if ($this->Customers->CustomerAddresses->save($customerAddress)) {
                   $success=true;
                   $message="Inserted Successfully";
@@ -446,7 +446,7 @@ class CustomersController extends AppController
                     if ($this->Customers->CustomerAddresses->save($customerAddress)) {
                       $success=true;
                       $message="Update Successfully";
-                    }else{  pr($customerAddress);exit;
+                    }else{
                       $success = false;
                       $message = 'something wrong while updating address';
                     }

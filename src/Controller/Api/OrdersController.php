@@ -26,8 +26,6 @@ class OrdersController extends AppController
   			{
   				$grand_total1+=$order->total_amount;
   			}
-
-
   			$grand_total=number_format(round($grand_total1), 2);
   			$payableAmount = $payableAmount + $grand_total1;
 
@@ -47,14 +45,20 @@ class OrdersController extends AppController
   			}
   			$payableAmount = number_format($payableAmount,2);
 
+        foreach($orders_data as $order)
+        {
+          $order->grand_total = $grand_total;
+          $order->delivery_charge_amount = $delivery_charge_amount;
+          $order->payableAmount = $payableAmount;
+        }
         $success = true;
         $message = 'Data found successfully';
       }else{
         $success = false;
         $message = 'No data found';
       }
-      $this->set(compact('success','message','grand_total','delivery_charge_amount','payableAmount','orders_data'));
-      $this->set('_serialize', ['success','message','grand_total','delivery_charge_amount','payableAmount','orders_data']);
+      $this->set(compact('success','message','orders_data'));
+      $this->set('_serialize', ['success','message','orders_data']);
     }
 
     public function OrderDetail()
