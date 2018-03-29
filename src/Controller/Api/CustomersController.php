@@ -19,9 +19,6 @@ class CustomersController extends AppController
         $this->Auth->allow(['add', 'login','send_otp','verify']);
     }
 
-
-
-
 	public function my_account(){
 
 		$customer_id=@$this->request->query['customer_id'];
@@ -315,7 +312,7 @@ class CustomersController extends AppController
 
                $customer->edited_by = $id;
                $exists = $this->Customers->exists(['Customers.email'=>$customer->email,'Customers.id !='=>$id]);
-               
+
                if($exists == 0)
                {
                  if ($customer_data = $this->Customers->save($customer)) {
@@ -381,6 +378,87 @@ class CustomersController extends AppController
        $message = 'Empty Customer Id or Token';
      }
      $this->set(['success' => $success,'message'=>$message,'customer' => $customer,'_serialize' => ['success','message','customer']]);
+   }
+
+   public function customerAddresses($customer_id=null,$token=null)
+   {
+       $customer_id = @$this->request->query['customer_id'];
+       $token = @$this->request->query['token'];
+       if(!empty($customer_id) && !empty($token))
+       {
+         // checkToken function is avaliable in app controller for checking token in customer table
+         $isValidToken = $this->checkToken($token);
+         if($isValidToken == 0)
+          {
+            $customerAddress = $this->Customers->CustomerAddresses->find()->where(['customer_id'=>$customer_id]);
+               if(!empty($customerAddress->toArray()))
+               {
+                 $success = true;
+                 $message = 'Data Found Successfully';
+               }
+               else {
+                     $success = false;
+                     $message = 'Record not found';
+               }
+          }
+         else
+          {
+             $success = false;
+             $message = 'Invalid Token';
+          }
+      }
+      else
+      {
+         $success = false;
+         $message = 'Empty Customer Id or Token';
+      }
+        $this->set(['success' => $success,'message'=>$message,'customerAddress' => $customerAddress,'_serialize' => ['success','message','customerAddress']]);
+   }
+
+   public function addAddress()
+   {
+     $customer_id = $this->request->data['customer_id'];
+     $customer_address_id = $this->request->data['id'];
+     if(!empty($customer_id))
+       {
+          $exists = $this->Customers->CustomerAddresses->exists(['id'=>$customer_address_id,'customer_id'=>$customer_id]);
+            if($exists == 0)
+            {
+              $query = $this->Customers->CustomerAddresses->query();
+              $result = $query->update()->set(['default_address' => 0])
+                        ->where(['customer_id' =>$customer_id])->execute();
+
+              $customerAddress = $this->Customers->CustomerAddresses->newEntity();
+              $customerAddress = $this->Customers->CustomerAddresses->patchEntity($customerAddress, $this->request->getData());
+              $customerAddress->default_address = 1;
+              if ($this->Customers->CustomerAddresses->save($customerAddress)) {
+                  $success=true;
+                  $message="Inserted Successfully";
+                }else {
+                    $success = false;
+                    $message = 'something wrong while inserting address';
+                }
+            }
+            else {
+                  $customerAddress =  $this->Customers->CustomerAddresses->get($customer_address_id);
+                if ($this->request->is(['patch', 'post', 'put'])) {
+                    $customerAddress = $this->Customers->CustomerAddresses->patchEntity($customerAddress, $this->request->getData());
+                    if ($this->Customers->CustomerAddresses->save($customerAddress)) {
+                      $success=true;
+                      $message="Update Successfully";
+                    }else{  pr($customerAddress);exit;
+                      $success = false;
+                      $message = 'something wrong while updating address';
+                    }
+                }
+             }
+      }
+      else
+      {
+         $success = false;
+         $message = 'Empty Customer Id';
+      }
+        $this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
    }
 
 

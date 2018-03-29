@@ -284,10 +284,6 @@ class CartsController extends AppController
 		{
 			$customer_id = $this->request->query('customer_id');
 			$city_id = $this->request->query('city_id');
-
-
-
-
 			$categories = $this->Carts->find()
 			->where(['customer_id' => $customer_id])
 			->contain(['ItemVariations'=>['Items'=>['Categories']]]);
