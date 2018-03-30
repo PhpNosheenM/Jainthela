@@ -250,10 +250,14 @@ class OrdersController extends AppController
 
 
             if ($this->Orders->save($order)) {
-                $this->Flash->success(__('The order has been saved.'));
-                return $this->redirect(['action' => 'index']);
+                $message='Order placed successfully';
+          			$success=true;
+            }else
+            {
+              $message='Order not placed';
+        			$success=false;
             }
-            $this->Flash->error(__('The order could not be saved. Please, try again.'));
+
         }
 
     		$partyParentGroups = $this->Orders->AccountingGroups->find()

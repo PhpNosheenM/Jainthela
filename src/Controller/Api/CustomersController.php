@@ -390,7 +390,8 @@ class CustomersController extends AppController
          $isValidToken = $this->checkToken($token);
          if($isValidToken == 0)
           {
-            $customerAddress = $this->Customers->CustomerAddresses->find()->where(['customer_id'=>$customer_id]);
+            $customerAddress = $this->Customers->CustomerAddresses->find()
+            ->contain(['Cities'])->where(['customer_id'=>$customer_id]);
                if(!empty($customerAddress->toArray()))
                {
                  $success = true;
@@ -418,16 +419,21 @@ class CustomersController extends AppController
    public function addAddress()
    {
      $customer_id = $this->request->data['customer_id'];
+     $default_address_value = $this->request->data['default_address'];
      $customer_address_id = $this->request->data['id'];
      if(!empty($customer_id))
        {
           $exists = $this->Customers->CustomerAddresses->exists(['id'=>$customer_address_id,'customer_id'=>$customer_id]);
             if($exists == 0)
             {
-                /*  $query = $this->Customers->CustomerAddresses->query();
+                if($default_address_value == 1)
+                {
+                  $query = $this->Customers->CustomerAddresses->query();
                   $result = $query->update()->set(['default_address' => 0])
                             ->where(['customer_id' =>$customer_id])->execute();
-                */
+                }
+
+
               $customerAddress = $this->Customers->CustomerAddresses->newEntity();
               $customerAddress = $this->Customers->CustomerAddresses->patchEntity($customerAddress, $this->request->getData());
             //  $customerAddress->default_address = 1;
@@ -440,6 +446,12 @@ class CustomersController extends AppController
                 }
             }
             else {
+                  if($default_address_value == 1)
+                  {
+                    $query = $this->Customers->CustomerAddresses->query();
+                    $result = $query->update()->set(['default_address' => 0])
+                              ->where(['customer_id' =>$customer_id])->execute();
+                  }
                   $customerAddress =  $this->Customers->CustomerAddresses->get($customer_address_id);
                 if ($this->request->is(['patch', 'post', 'put'])) {
                     $customerAddress = $this->Customers->CustomerAddresses->patchEntity($customerAddress, $this->request->getData());
