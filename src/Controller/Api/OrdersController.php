@@ -112,14 +112,16 @@ class OrdersController extends AppController
               }
 
               foreach ($category as $key => $value) {
-                $order_details[] = ['category_name'=>$category_arr[$key],'category_wise'=>$value];
-                }
+                $order_details[] = ['category_name'=>$category_arr[$key],'category'=>$value];
+              }
 
-              foreach ($orders_details_data as $order_data) {
-                $order_data->order_details = array_replace($order_data->order_details,$order_details);
+              foreach($orders_details_data as $order_data) {
+                $order_data->order_details = $order_details;
                 $orders_details_data = $order_data;
                 $grand_total1 += $order_data->total_amount;
               }
+
+			 // pr($orders_details_data);exit; array_replace($order_data->order_details,$order_details)
 
           			$grand_total=number_format(round($grand_total1), 2);
           			$payableAmount = $payableAmount + $grand_total1;
@@ -127,16 +129,16 @@ class OrdersController extends AppController
                 $delivery_charges=$this->Orders->DeliveryCharges->find()->where(['city_id'=>$city_id]);
           			if(!empty($delivery_charges->toArray()))
           			{
-          					foreach ($delivery_charges as $delivery_charge) {
-          							if($delivery_charge->amount >= $grand_total)
-          							{
-          								 $delivery_charge_amount = "$delivery_charge->charge";
-          								 $payableAmount = $payableAmount + $delivery_charge->charge;
-          							}else
-          							{
-          								$delivery_charge_amount = "free";
-          							}
-          					}
+      						foreach ($delivery_charges as $delivery_charge) {
+      							if($delivery_charge->amount >= $grand_total)
+      							{
+      								 $delivery_charge_amount = "$delivery_charge->charge";
+      								 $payableAmount = $payableAmount + $delivery_charge->charge;
+      							}else
+      							{
+      								$delivery_charge_amount = "free";
+      							}
+      						}
           			}
           			$payableAmount = number_format($payableAmount,2);
 
