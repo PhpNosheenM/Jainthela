@@ -397,6 +397,7 @@ class CartsController extends AppController
 
 			$generate_order_no=uniqid();
 			$customer_addresses=$this->Carts->Customers->CustomerAddresses->find()
+			->contain(['Cities'])
 			->where(['CustomerAddresses.customer_id' => $customer_id, 'CustomerAddresses.default_address'=>'1'])->first();
 
 			$Customers = $this->Carts->Customers->get($customer_id, [

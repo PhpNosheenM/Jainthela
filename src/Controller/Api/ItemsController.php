@@ -191,6 +191,38 @@ class ItemsController extends AppController
                       $averageRating = number_format($ratingarr->averageRating,1);
                     }
 
+                    $star1 = $this->Items->ItemReviewRatings->find()->where(['ItemReviewRatings.item_id'=>$item_id,'ItemReviewRatings.status'=>0,'rating >='=>1,'rating <'=>1.9])->all();
+                    $star1count = $star1->count();
+                    $star2 = $this->Items->ItemReviewRatings->find()->where(['ItemReviewRatings.item_id'=>$item_id,'ItemReviewRatings.status'=>0,'rating >='=>2,'rating <'=>2.9])->all();
+                    $star2count = $star2->count();
+                    $star3 = $this->Items->ItemReviewRatings->find()->where(['ItemReviewRatings.item_id'=>$item_id,'ItemReviewRatings.status'=>0,'rating >='=>3,'rating <'=>3.9])->all();
+                    $star3count = $star3->count();
+                    $star4 = $this->Items->ItemReviewRatings->find()->where(['ItemReviewRatings.item_id'=>$item_id,'ItemReviewRatings.status'=>0,'rating >='=>4,'rating <'=>4.9])->all();
+                    $star4count = $star4->count();
+                    $star5 = $this->Items->ItemReviewRatings->find()->where(['ItemReviewRatings.item_id'=>$item_id,'ItemReviewRatings.status'=>0,'rating'=>5])->all();
+                    $star5count = $star5->count();
+                    $star1 = $star1count;
+                    $star2 = $star2count;
+                    $star3 = $star3count;
+                    $star4 = $star4count;
+                    $star5 = $star5count;
+                    $tot_stars = $star1count + $star2count + $star3count + $star4count + $star5count;
+                    $allpercentage =array();
+
+                    for ($i=5;$i >=1; --$i) {
+                     $var = "star$i";
+                     $count = $$var;
+                     if($count>0){
+                      $percent = $count * 100 / $tot_stars;
+                     }
+                     else
+                     {
+                      $percent=0;
+                     }
+                     $percentage = round($percent,2);
+                     $allpercentage[] = array("rating"=>$i,"percentage"=>$percentage);
+                     $percentage = '';
+                    }
                     $success = true;
                     $message = 'Data Found Successfully';
                   } else {
@@ -206,7 +238,7 @@ class ItemsController extends AppController
             $success = false;
             $message = 'Empty City Id';
           }
-        $this->set(['success' => $success,'message'=>$message,'averageRating'=>$averageRating,'ratingLists' => $ratingLists,'_serialize' => ['success','message','averageRating','ratingLists']]);
+        $this->set(['success' => $success,'message'=>$message,'averageRating'=>$averageRating,'ratingLists' => $ratingLists,'percentage'=>$allpercentage,'_serialize' => ['success','message','averageRating','ratingLists','percentage']]);
       }
 
       public function addItemRating()
