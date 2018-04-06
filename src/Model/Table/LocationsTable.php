@@ -64,16 +64,16 @@ class LocationsTable extends Table
         $this->hasMany('AccountingGroups', [
             'foreignKey' => 'location_id'
         ]);
-		$this->hasMany('FinancialYears', [
+		    $this->hasMany('FinancialYears', [
             'foreignKey' => 'location_id'
         ]);
-		$this->hasMany('GstFigures', [
+		    $this->hasMany('GstFigures', [
             'foreignKey' => 'location_id'
         ]);
-		$this->hasMany('Ledgers', [
+		   $this->hasMany('Ledgers', [
             'foreignKey' => 'location_id'
         ]);
-		$this->hasMany('AccountingEntries', [
+		    $this->hasMany('AccountingEntries', [
             'foreignKey' => 'location_id'
         ]);
         $this->hasMany('AccountingGroups', [

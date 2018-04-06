@@ -20,13 +20,13 @@ class HomeScreensController extends AppController
         $this->Auth->allow(['homescreen','current_api_version']);
     }
 
-	
+
 	public function current_api_version(){
 		//$data=[];
 		$api_version=@$this->request->query['version'];
 		if(!empty($api_version)){
 			$ApiVersions=$this->HomeScreens->ApiVersions->find()->where(['version'=>$api_version]);
-			
+
 			if($ApiVersions->toArray()){
 				$success=true;
 				$message="data found";
@@ -35,15 +35,15 @@ class HomeScreensController extends AppController
 				$success=false;
 				$message="data not found";
 			  }
-		
+
 		}else{
 			$success=false;
 			$message="version is empty";
-			
+
 		}
 		$this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
 	}
-	
+
 	 public function homescreen(){
 		$city_id=@$this->request->query['city_id'];
 		if(!empty($city_id)){
@@ -51,8 +51,8 @@ class HomeScreensController extends AppController
 			$SubCategories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'	section_show'=>'yes','status'=>'Active']);
 			$Categories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'status'=>'Active','parent_id IS'=>Null]);
 			*/
-			$HomeScreens=$this->HomeScreens->find()->where(['screen_type'=>'Home','section_show'=>'Yes','city_id'=>$city_id])->order(['preference'=>'ASC']); 
-			
+			$HomeScreens=$this->HomeScreens->find()->where(['screen_type'=>'Home','section_show'=>'Yes','city_id'=>$city_id])->order(['preference'=>'ASC']);
+
 		if($HomeScreens->toArray())
 		{		$dynamic=[];
 				$Express =[];
@@ -77,7 +77,7 @@ class HomeScreensController extends AppController
 								$Brand=[];
 							}
 						}
-						
+
 						if($HomeScreen->model_name=='Banners'){
 								$Banners=$this->HomeScreens->Banners->find()->where(['city_id'=>$city_id,'status'=>'Active']);
 								if($Banners->toArray()){
@@ -87,7 +87,7 @@ class HomeScreensController extends AppController
 									$Banner=[];
 								}
 							}
-							
+
 						if($HomeScreen->model_name=='SubCategory'){
 							$SubCategories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'	section_show'=>'yes','status'=>'Active']);
 							if($SubCategories->toArray()){
@@ -107,7 +107,7 @@ class HomeScreensController extends AppController
 							}
 						}
 
-				
+
 					if($HomeScreen->model_name=='Category'){
 							$Items=$this->HomeScreens->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])->contain(['ItemActive'=>['ItemsVariations'=>['UnitVariations'=>['Units']]]]);
 							if($Items){
@@ -118,10 +118,10 @@ class HomeScreensController extends AppController
 								$Item=[];
 							}
 						}
-						
+
 						if($HomeScreen->model_name=='Combooffer'){
 							$Combooffers=$this->HomeScreens->ComboOffers->find()->where(['status'=>'Active','city_id'=>$city_id])->limit(3);
-							
+
 							if($Combooffers){
 								$Combooffer=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$Combooffers);
 								array_push($dynamic,$Combooffer);
@@ -130,9 +130,9 @@ class HomeScreensController extends AppController
 								$Combooffer=[];
 							}
 						}
-						
-						
-						
+
+
+
 						if($HomeScreen->model_name=='Categorytwoitem'){
 							$Singleimagetwoitems=$this->HomeScreens->Categories->find()
 							->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])
@@ -141,7 +141,7 @@ class HomeScreensController extends AppController
 								->limit(2)
 								->contain(['ItemsVariations'=>['UnitVariations'=>['Units']]]);
 							}]);
-						
+
 							if($Singleimagetwoitems){
 								$Singleimagetwoitem=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,'Image'=>$HomeScreen->image,"HomeScreens"=>$Singleimagetwoitems);
 								array_push($dynamic,$Singleimagetwoitem);
@@ -150,9 +150,9 @@ class HomeScreensController extends AppController
 								$Singleimagetwoitem=[];
 							}
 						}
-						
-						
-						
+
+
+
 				}
 
 				//$dynamic=array($Express,$Brand);

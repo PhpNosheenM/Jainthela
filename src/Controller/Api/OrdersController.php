@@ -14,36 +14,138 @@ class OrdersController extends AppController
       $customer_id=$this->request->query('customer_id');
       $orders_data = $this->Orders->find()
       ->where(['Orders.customer_id' => $customer_id,'Orders.city_id'=>$city_id])
-      ->contain(['DeliveryCharges'])
       ->order(['Orders.order_date' => 'DESC'])
       ->autoFields(true);
 
+      $payableAmount = number_format(0, 2);
+      $grand_total1=0;
+
       if(!empty($orders_data->toArray()))
       {
+  			foreach($orders_data as $order)
+  			{
+  				$grand_total1+=$order->total_amount;
+  			}
+  			$grand_total=number_format(round($grand_total1), 2);
+  			$payableAmount = $payableAmount + $grand_total1;
+
+        $delivery_charges=$this->Orders->DeliveryCharges->find()->where(['city_id'=>$city_id]);
+  			if(!empty($delivery_charges->toArray()))
+  			{
+  					foreach ($delivery_charges as $delivery_charge) {
+  							if($delivery_charge->amount >= $grand_total)
+  							{
+  								 $delivery_charge_amount = "$delivery_charge->charge";
+  								 $payableAmount = $payableAmount + $delivery_charge->charge;
+  							}else
+  							{
+  								$delivery_charge_amount = "free";
+  							}
+  					}
+  			}
+  			$payableAmount = number_format($payableAmount,2);
+
+        foreach($orders_data as $order)
+        {
+          $order->grand_total = $grand_total;
+          $order->delivery_charge_amount = $delivery_charge_amount;
+          $order->payableAmount = $payableAmount;
+        }
         $success = true;
         $message = 'Data found successfully';
       }else{
         $success = false;
         $message = 'No data found';
       }
-      $this->set(compact('success', 'message','orders_data'));
-      $this->set('_serialize', ['success', 'message', 'orders_data']);
+      $this->set(compact('success','message','orders_data'));
+      $this->set('_serialize', ['success','message','orders_data']);
     }
 
     public function OrderDetail()
     {
         $customer_id=$this->request->query('customer_id');
     		$order_id=$this->request->query('order_id');
+        $city_id=$this->request->query('city_id');
+        $orders_details_data = $this->Orders->find()
+          ->contain(['OrderDetails'=>['ItemVariations'=>['Items','UnitVariations'=>['Units']]]])
+          ->where(['Orders.id'=>$order_id,'Orders.customer_id'=>$customer_id]);
 
-        $orders_details_data = $this->Orders->get($order_id, ['contain'=>['DeliveryCharges','OrderDetails'=>['ItemVariations'=>['Items','UnitVariations'=>['Units']]]]]);
+          $payableAmount = number_format(0, 2);
+          $grand_total1=0;
 
         if(!empty($orders_details_data->toArray()))
         {
-          $success = true;
-          $message = 'data found successfully';
-          $customer_address_id = $orders_details_data->customer_address_id;
+
+          foreach ($orders_details_data as  $orders_detail) {
+              $customer_address_id = $orders_detail->customer_address_id;
+          }
+
           $customer_addresses=$this->Orders->CustomerAddresses->find()
             ->where(['CustomerAddresses.customer_id' => $customer_id, 'CustomerAddresses.id'=>$customer_address_id])->first();
+
+
+          $categories = $this->Orders->find()
+          ->where(['customer_id' => $customer_id])
+          ->contain(['OrderDetails'=>['ItemVariations'=>['Items'=>['Categories']]]]);
+
+          if(!empty($categories->toArray()))
+          {
+              $category_arr = [];
+              foreach ($categories as $cat_date) {
+                foreach ($cat_date->order_details as $order_data) {
+                  $cat_name = $order_data->item_variation->item->category->name;
+                  $cat_id = $order_data->item_variation->item->category->id;
+                  $category_arr[$cat_id] = $cat_name;
+                }
+              }
+
+              foreach ($category_arr as $cat_key => $cat_value) {
+                foreach ($orders_details_data as $order_data) {
+                    foreach ($order_data->order_details as $data) {
+                        $order_category_id = $data->item_variation->item->category_id;
+                        if($cat_key == $order_category_id)
+                        {
+                          $category[$cat_key][] = $data;
+                        }
+                    }
+                }
+              }
+
+              foreach ($category as $key => $value) {
+                $order_details[] = ['category_name'=>$category_arr[$key],'category'=>$value];
+              }
+
+              foreach($orders_details_data as $order_data) {
+                $order_data->order_details = $order_details;
+                $orders_details_data = $order_data;
+                $grand_total1 += $order_data->total_amount;
+              }
+
+			 // pr($orders_details_data);exit; array_replace($order_data->order_details,$order_details)
+
+          			$grand_total=number_format(round($grand_total1), 2);
+          			$payableAmount = $payableAmount + $grand_total1;
+
+                $delivery_charges=$this->Orders->DeliveryCharges->find()->where(['city_id'=>$city_id]);
+          			if(!empty($delivery_charges->toArray()))
+          			{
+      						foreach ($delivery_charges as $delivery_charge) {
+      							if($delivery_charge->amount >= $grand_total)
+      							{
+      								 $delivery_charge_amount = "$delivery_charge->charge";
+      								 $payableAmount = $payableAmount + $delivery_charge->charge;
+      							}else
+      							{
+      								$delivery_charge_amount = "free";
+      							}
+      						}
+          			}
+          			$payableAmount = number_format($payableAmount,2);
+
+         }
+          $success = true;
+          $message = 'data found successfully';
+
         }else{
           $success = false;
           $message = 'No data found';
@@ -51,8 +153,8 @@ class OrdersController extends AppController
           $customer_addresses = [];
         }
         $cancellation_reasons=$this->Orders->CancelReasons->find();
-        $this->set(compact('success', 'message','orders_details_data','customer_addresses','cancellation_reasons'));
-        $this->set('_serialize', ['success', 'message', 'orders_details_data','customer_addresses','cancellation_reasons']);
+        $this->set(compact('success', 'message','grand_total','delivery_charge_amount','payableAmount','orders_details_data','customer_addresses','cancellation_reasons'));
+        $this->set('_serialize', ['success', 'message','grand_total','delivery_charge_amount','payableAmount','orders_details_data','customer_addresses','cancellation_reasons']);
     }
 
     public function CancelOrder()
@@ -112,399 +214,80 @@ class OrdersController extends AppController
 
     public function placeOrder()
     {
-      $jain_thela_admin_id=$this->request->data('jain_thela_admin_id');
-      $customer_id=$this->request->data('customer_id');
-      $wallet_amount=$this->request->data('wallet_amount');
-      $jain_cash_amount=$this->request->data('jain_cash_amount');
-      $customer_address_id=$this->request->data('customer_address_id');
-      $delivery_time_id=$this->request->data('delivery_time_id');
-      $online_amount=$this->request->data('online_amount');
-      $total_amount=$this->request->data('total_amount');
-      $delivery_charge1=$this->request->data('delivery_charge');
-      $delivery_charge_id=$this->request->data('delivery_charge_id');
-      $promo_code_amount=$this->request->data('promo_code_amount');
-      $promo_code_id=$this->request->data('promo_code_id');
-      $discount_percent=$this->request->data('discount_percent');
-      $order_type=$this->request->data('order_type');
-      $payment_status=$this->request->data('payment_status');
-      $order_no=$this->request->data('order_no');
-      $order_from=$this->request->data('order_from');
-      $warehouse_id=1;
-      $order = $this->Orders->newEntity();
-      $curent_date=date('Y-m-d');
-      $order_date=date('Y-m-d 00:00:00');
-      $order_time=date('h:i:s:a');
+      if ($this->request->is('post')) {
 
-      $order_no_counts=$this->Orders->find()->where(['transaction_order_no' => $order_no, 'status' => 'In Process'])->count();
-      if(empty($order_no_counts))
-      {
-        if($total_amount >=100)
+        $customer_address_id = $this->request->data['customer_address_id'];
+
+        $location_data = $this->Orders->CustomerAddresses->find()
+        ->select(['location_id'])->where(['id'=>$customer_address_id]);
+
+        if(!empty($location_data->toArray()))
         {
-          $delivery_charge=0;
-        }
-        else{
-          $delivery_charge=$delivery_charge1;
-        }
-
-        ///////////////////////GET TIME/////////////////
-        $delivery_time_data = $this->Orders->DeliveryTimes->find()
-        ->where(['DeliveryTimes.id'=>$delivery_time_id])->first();
-        $d_from=$delivery_time_data->time_from;
-        $d_to=$delivery_time_data->time_to;
-        $delivery_time=$d_from.$d_to;
-
-        ///////////////////////GET DELIVERY DATE/////////////////
-        $out_of_stock_data=$this->Orders->Carts->find()->where(['customer_id' => $customer_id]);
-        $counts=0;
-        foreach($out_of_stock_data as $fetch_data)
-        {
-          $item_id=$fetch_data->item_id;
-          $out_data=$this->Orders->Carts->Items->get($item_id);
-          $d=$out_data->out_of_stock;
-          $counts+=$d;
-        }
-        $current_timess1=date('h', time());
-        $current_timess2=date('i', time());
-        $dots='.';
-        $current_timess=$current_timess1.$dots.$current_timess2;
-        $current_ampm=date('a', time());
-        $start = "04";
-        $end = "12";
-        if($current_ampm=='pm' &&  $current_timess > $start  && $current_timess < $end || $counts>0)
-        {
-          $delivery_date=date('Y-m-d 00:00:00', strtotime('+1 day', strtotime($curent_date)));//$delivery_date='2017-10-21 00:00:00';
-        }
-        else{
-          $delivery_date=date('Y-m-d 00:00:00');//delivery_date///
-          //$delivery_date='2017-10-21 00:00:00';
+          foreach ($location_data as $value) {
+            $location_id = $value->location_id;
+          }
         }
 
-        ///////////////////////GET LAST ORDER NO/////////////////
-        $last_order_no = $this->Orders->find()
-        ->select(['get_auto_no'])
-        ->order(['get_auto_no'=>'DESC'])->where(['jain_thela_admin_id'=>$jain_thela_admin_id, 'curent_date'=>$curent_date])
-        ->first();
-
-        if(!empty($last_order_no)){
-          $get_auto_no = h(str_pad(number_format($last_order_no->get_auto_no+1),6, '0', STR_PAD_LEFT));
-        }else{
-          $get_auto_no=h(str_pad(number_format(1),6, '0', STR_PAD_LEFT));
-        }
-        $get_date=str_replace('-','',$curent_date);
-        $exact_order_no=h('W'.$get_date.$get_auto_no);//orderno///
-
-        ///////////////////////INSERTION IN ORDER/////////////////
-        $grand_total=$total_amount+$delivery_charge;
-        $pay_amount=$grand_total-($wallet_amount+$jain_cash_amount+$online_amount+$promo_code_amount);
-
-        $this->loadModel('Carts');
-        $carts_data=$this->Carts->find()->where(['customer_id'=>$customer_id])->contain(['Items']);
-        $i=0;
-        foreach($carts_data as $carts_data_fetch)
-        {
-          $amount=$carts_data_fetch->cart_count*$carts_data_fetch->item->sales_rate;
-          $this->request->data['order_details'][$i]['item_id']=$carts_data_fetch->item_id;
-          $this->request->data['order_details'][$i]['quantity']=$carts_data_fetch->quantity;
-          $this->request->data['order_details'][$i]['rate']=$carts_data_fetch->item->sales_rate;
-          $this->request->data['order_details'][$i]['amount']=$amount;
-          $this->request->data['order_details'][$i]['is_combo']=$carts_data_fetch->is_combo;
-          $i++;
-        }
+        $order = $this->Orders->newEntity();
+    		$LocationData = $this->Orders->Locations->get($location_id);
+    		$Voucher_no = $this->Orders->find()->select(['voucher_no'])->where(['Orders.location_id'=>$location_id])->order(['voucher_no' => 'DESC'])->first();
+    		$today_date=date("Y-m-d");
+    		$orderdate = explode('-', $today_date);
+    		$year = $orderdate[0];
+    		$month   = $orderdate[1];
+    		$day  = $orderdate[2];
+    		if($Voucher_no)
+    		{
+    			$voucher_no=$Voucher_no->voucher_no+1;
+    		}
+    		else
+    		{
+    			$voucher_no=1;
+    		}
+    		$purchaseInvoiceVoucherNo='IN'.'/'.$year.''.$month.''.$day.'/'.$voucher_no;
+    		$order_no=$LocationData->alise.'/'.$purchaseInvoiceVoucherNo;
         $order = $this->Orders->patchEntity($order, $this->request->getData());
-        $order->transaction_order_no=$order_no;
-        $order->order_no=$exact_order_no;
-        $order->customer_id=$customer_id;
-        $order->jain_thela_admin_id=$jain_thela_admin_id;
-        $order->amount_from_wallet=$wallet_amount;
-        $order->customer_address_id=$customer_address_id;
-        $order->amount_from_jain_cash=$jain_cash_amount;
-        $order->amount_from_promo_code=$promo_code_amount;
-        $order->total_amount=$total_amount;
-        $order->grand_total=$grand_total;
-        $order->pay_amount=$pay_amount;
-        $order->online_amount=$online_amount;
-        $order->delivery_charge=$delivery_charge;
-        $order->delivery_charge_id=$delivery_charge_id;
-        $order->promo_code_id=$promo_code_id;
-        $order->order_type=$order_type;
-        $order->discount_percent=$discount_percent;
-        $order->status='In Process';
-        $order->curent_date=$curent_date;
-        $order->get_auto_no=$get_auto_no;
-        $order->delivery_date=$delivery_date;
-        $order->payment_status=$payment_status;
-        $order->order_from=$order_from;
-        $order->warehouse_id=$warehouse_id;
-        $order->delivery_time=$delivery_time;
-        $order->delivery_time_id=$delivery_time_id;
-        $order->order_date=$order_date;
-        $order->order_time=date('h:i:s:a');
-        $this->Orders->save($order);
+
+        pr($order);exit;
 
 
+            if ($this->Orders->save($order)) {
+                $message='Order placed successfully';
+          			$success=true;
+            }else
+            {
+              $message='Order not placed';
+        			$success=false;
+            }
 
-        ///////////////////////DELETED CART/////////////////
-        $this->loadModel('Carts');
-        $query = $this->Carts->query();
-        $result = $query->delete()
-        ->where(['customer_id' => $customer_id])
-        ->execute();
-        ///////////////////////DELETED CART/////////////////
-
-        //////////WALLET UPDATION///////////////////
-        if($wallet_amount>0)
-        {
-          $wallet_data=$this->Orders->find()->where(['customer_id'=>$customer_id,'transaction_order_no'=>$order_no])
-          ->first();
-          $order_id=$wallet_data->id;
-          $wallet_query = $this->Orders->Wallets->query();
-          $wallet_query->insert(['order_id', 'consumed', 'customer_id'])
-          ->values([
-            'order_id' => $order_id,
-            'consumed' => $wallet_amount,
-            'customer_id' => $customer_id
-          ])
-          ->execute();
-        }
-        ///////////////////////WALLET UPDATION/////////////////
-
-
-        //////////SMS AND NOTIFICATIONS///////////////////
-
-        $get_data = $this->Orders->find()
-        ->order(['id'=>'DESC'])->where(['jain_thela_admin_id'=>$jain_thela_admin_id, 'customer_id'=>$customer_id])
-        ->first();
-        $delivery_day_date=date('D M j', strtotime($get_data->delivery_date));
-        $order_day_date=date('D M j, Y H:i a', strtotime($get_data->order_date));
-        $c_date=$curent_date;
-        $d_date=date('Y-m-d', strtotime($get_data->delivery_date));
-
-        if($c_date==$d_date)
-        {
-          $isOrderType='Today';
-        }
-        else{
-          $isOrderType='Next day';
         }
 
-        $result=array('order_date'=>$order_day_date,
-        'delivery_date'=>$delivery_day_date,
-        'order_no'=>$get_data->order_no,
-        'pay_amount'=>$get_data->pay_amount,
-        'order_type'=>$get_data->order_type,
-        'grand_total'=>$get_data->grand_total,
-        'order_day'=>$isOrderType
-      );
+    		$partyParentGroups = $this->Orders->AccountingGroups->find()
+    						->where(['AccountingGroups.purchase_invoice_party'=>'1']);
 
-      $customer_details=$this->Orders->Customers->find()
-      ->where(['Customers.id' => $customer_id])->first();
-      $mobile=$customer_details->mobile;
-      $API_ACCESS_KEY=$customer_details->notification_key;
-      $device_token=$customer_details->device_token;
-      $device_token1=rtrim($device_token);
-      $time1=date('Y-m-d G:i:s');
+    		$partyGroups=[];
+    		foreach($partyParentGroups as $partyParentGroup)
+    		{
+    			$accountingGroups = $this->Orders->AccountingGroups
+    			->find('children', ['for' => $partyParentGroup->id])->toArray();
+    			$partyGroups[]=$partyParentGroup->id;
+    			foreach($accountingGroups as $accountingGroup){
+    				$partyGroups[]=$accountingGroup->id;
+    			}
+    		}
+    		if($partyGroups)
+    		{
+    			$Partyledgers = $this->Orders->SellerLedgers->find()
+    							->where(['SellerLedgers.accounting_group_id IN' =>$partyGroups])
+    							->contain(['Sellers'=>['Locations'=>['Cities']]]);
+            }
+    		$partyOptions=[];
+    		foreach($Partyledgers as $Partyledger){
+    			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id,'city_id'=>$Partyledger->seller->city_id,'state_id'=>$Partyledger->seller->location->city->state_id,'bill_to_bill_accounting'=>$Partyledger->bill_to_bill_accounting,'seller_id'=>$Partyledger->seller_id];
+    		}
 
-      if(!empty($device_token1))
-      {
-
-        $msg = array
-        (
-          'message' 	=> 'Thank You, your order place successfully',
-          'image' 	=> '',
-          'button_text'	=> 'Track Your Order',
-          'link' => 'jainthela://track_order?id='.$get_data->id,
-          'notification_id'	=> 1,
-        );
-
-        $url = 'https://fcm.googleapis.com/fcm/send';
-        $fields = array
-        (
-          'registration_ids' 	=> array($device_token1),
-          'data'			=> $msg
-        );
-        $headers = array
-        (
-          'Authorization: key=' .$API_ACCESS_KEY,
-          'Content-Type: application/json'
-        );
-
-        //echo json_encode($fields);
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
-        $result001 = curl_exec($ch);
-        if ($result001 === FALSE) {
-          die('FCM Send Error: ' . curl_error($ch));
-        }
-        curl_close($ch);
-
-
-
-        /* $msg1 = array
-        (
-        'message' 	=> 'Due to festival season, our delivery is closed. We will resume our delivery services from 21st october 2017. Kindly place your order according to that. Team Jainthela',
-        'image' 	=> '',
-        'button_text'	=> 'Happy Diwali!',
-        'link' => 'jainthela://home',
-        'notification_id'	=> 1,
-      );
-
-      $url1 = 'https://fcm.googleapis.com/fcm/send';
-      $fields1 = array
-      (
-      'registration_ids' 	=> array($device_token1),
-      'data'			=> $msg1
-    );
-    $headers1 = array
-    (
-    'Authorization: key=' .$API_ACCESS_KEY,
-    'Content-Type: application/json'
-  );
-
-  //echo json_encode($fields);
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $url1);
-  curl_setopt($ch, CURLOPT_POST, true);
-  curl_setopt($ch, CURLOPT_HTTPHEADER, $headers1);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-  curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields1));
-  $result001 = curl_exec($ch);
-  if ($result001 === FALSE) {
-  die('FCM Send Error: ' . curl_error($ch));
-}
-curl_close($ch);
-*/
-}
-
-if($get_data->driver_id>0)
-{
-  $driver_warehouse_details=$this->Orders->Drivers->find()
-  ->where(['Drivers.id' => $driver_id])->first();
-  $API_ACCESS_KEY1=$driver_warehouse_details->notification_key;
-  $exact_device_token=$driver_warehouse_details->device_token;
-  $device_token0=rtrim($device_token1);
-}
-else if(($get_data->warehouse_id>0))
-{
-  $driver_warehouse_details=$this->Orders->Warehouses->find()
-  ->where(['Warehouses.id' => $get_data->warehouse_id])->first();
-  $API_ACCESS_KEY1=$driver_warehouse_details->notification_key;
-  $exact_device_token=$driver_warehouse_details->device_token;
-  $device_token0=rtrim($device_token1);
-}
-
-
-$customer_address_details=$this->Orders->CustomerAddresses->find()
-->where(['CustomerAddresses.id' => $get_data->customer_address_id])->first();
-$mobile_no=$customer_address_details->mobile;
-$billing_address=$customer_address_details->address;
-$billing_name=$customer_address_details->name;
-$billing_locality=$customer_address_details->locality;
-$billing_house_no=$customer_address_details->house_no;
-
-if(!empty($exact_device_token))
-{
-  $msg = array
-  (
-    'title' 	=> 'Jainthela',
-    'Message'	=> 'hello supplier',
-    'billing_address'	=> $billing_house_no.', '.$billing_address.', ' .$billing_locality,
-    'billing_name'	=> $billing_name,
-    'order_no'	=> $get_data->order_no,
-    'delivery_date'	=> $delivery_day_date,
-    'id'	=> $get_data->id,
-    'session_id'	=> $get_data->customer_id,
-    'time'	=> $time1,
-    'vibrate'	=> 1,
-    'sound'		=> 1,
-  );
-
-  $fields = array
-  (
-    'registration_ids' 	=> array($exact_device_token),
-    'data'			=> array("msg" =>$msg)
-  );
-  $headers = array
-  (
-    'Authorization: key=' .$API_ACCESS_KEY1,
-    'Content-Type: application/json'
-  );
-
-  $ch = curl_init();
-  curl_setopt( $ch,CURLOPT_URL, 'https://android.googleapis.com/gcm/send' );
-  curl_setopt( $ch,CURLOPT_POST, true );
-  curl_setopt( $ch,CURLOPT_HTTPHEADER, $headers );
-  curl_setopt( $ch,CURLOPT_RETURNTRANSFER, true );
-  curl_setopt( $ch,CURLOPT_SSL_VERIFYPEER, false );
-  curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode($fields) );
-  $result121 = curl_exec($ch );
-  curl_close($ch);
-}	 	$sms=str_replace(' ', '+', 'Thank You, Your order placed successfully. order no. is: '.$get_data->order_no.'.
-Your order will be delivered on '.$delivery_day_date.' at '.$get_data->delivery_time.'. Bill Amount '.$pay_amount.' Please note amount of order may vary depending on the actual quantity delivered to you.');
-
-/* $diwaliSms=str_replace(' ', '+', 'Due to festival season, our delivery is closed. We will resume our delivery services from 21st october 2017. Kindly place your order according to that. Team Jainthela'); */
-
-
-$working_key='A7a76ea72525fc05bbe9963267b48dd96';
-$sms_sender='JAINTE';
-$sms=str_replace(' ', '+', $sms);
-/* 	file_get_contents('http://alerts.sinfini.com/api/web2sms.php?workingkey='.$working_key.'&sender='.$sms_sender.'&to='.$mobile.'&message='.$sms.'');
-file_get_contents('http://alerts.sinfini.com/api/web2sms.php?workingkey='.$working_key.'&sender='.$sms_sender.'&to='.$mobile_no.'&message='.$sms.''); */
-
-/* file_get_contents('http://103.39.134.40/api/mt/SendSMS?user=phppoetsit&password=9829041695&senderid='.$sms_sender.'&channel=Trans&DCS=0&flashsms=0&number='.$mobile.'&text='.$diwaliSms.'&route=7');  */
-
-
-file_get_contents('http://103.39.134.40/api/mt/SendSMS?user=phppoetsit&password=9829041695&senderid='.$sms_sender.'&channel=Trans&DCS=0&flashsms=0&number='.$mobile.'&text='.$sms.'&route=7');
-
-file_get_contents('http://103.39.134.40/api/mt/SendSMS?user=phppoetsit&password=9829041695&senderid='.$sms_sender.'&channel=Trans&DCS=0&flashsms=0&number='.$mobile_no.'&text='.$sms.'&route=7');
-
-$status=true;
-$error="Thank You, Your order has been placed.";
-$this->set(compact('status', 'error','result'));
-$this->set('_serialize', ['status', 'error', 'result']);
-}else{
-
-  $get_data = $this->Orders->find()
-  ->order(['id'=>'DESC'])
-  ->first();
-  $delivery_day_date=date('D M j', strtotime($get_data->delivery_date));
-  $order_day_date=date('D M j, Y H:i a', strtotime($get_data->order_date));
-  $c_date=$curent_date;
-  $d_date=date('Y-m-d', strtotime($get_data->delivery_date));
-
-  if($c_date==$d_date)
-  {
-    $isOrderType='Today';
-  }
-  else{
-    $isOrderType='Next day';
-  }
-
-  $result=array('order_date'=>$order_day_date,
-  'delivery_date'=>$delivery_day_date,
-  'order_no'=>$get_data->order_no,
-  'pay_amount'=>$get_data->pay_amount,
-  'order_type'=>$get_data->order_type,
-  'grand_total'=>$get_data->grand_total,
-  'order_day'=>$isOrderType
-);
-$status=true;
-$error="Thank You, Your order has been placed.";
-$this->set(compact('status', 'error','result'));
-$this->set('_serialize', ['status', 'error', 'result']);
-
-}
-
-/////SMS AND NOTIFICATIONS///////////////////
-
-}
+            $this->set(compact('order', 'order_no'));
+    }
 
 
 }

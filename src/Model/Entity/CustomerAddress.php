@@ -8,6 +8,9 @@ use Cake\ORM\Entity;
  *
  * @property int $id
  * @property int $customer_id
+ * @property string $receiver_name
+ * @property string $gender
+ * @property string $mobile_no
  * @property int $city_id
  * @property int $location_id
  * @property int $pincode
@@ -37,6 +40,9 @@ class CustomerAddress extends Entity
      */
     protected $_accessible = [
         'customer_id' => true,
+        'receiver_name' => true,
+        'gender' => true,
+        'mobile_no' => true,
         'city_id' => true,
         'location_id' => true,
         'pincode' => true,

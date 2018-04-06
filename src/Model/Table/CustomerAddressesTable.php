@@ -67,43 +67,6 @@ class CustomerAddressesTable extends Table
         $validator
             ->integer('id')
             ->allowEmpty('id', 'create');
-		/*
-        $validator
-            ->requirePresence('pincode', 'create')
-            ->notEmpty('pincode');
-
-        $validator
-            ->scalar('house_no')
-            ->maxLength('house_no', 30)
-            ->requirePresence('house_no', 'create')
-            ->notEmpty('house_no');
-
-        $validator
-            ->scalar('address')
-            ->requirePresence('address', 'create')
-            ->notEmpty('address');
-
-        $validator
-            ->scalar('landmark')
-            ->requirePresence('landmark', 'create')
-            ->notEmpty('landmark');
-
-        $validator
-            ->scalar('latitude')
-            ->maxLength('latitude', 50)
-            ->requirePresence('latitude', 'create')
-            ->notEmpty('latitude');
-
-        $validator
-            ->scalar('longitude')
-            ->maxLength('longitude', 50)
-            ->requirePresence('longitude', 'create')
-            ->notEmpty('longitude');
-
-        $validator
-            ->requirePresence('default_address', 'create')
-            ->notEmpty('default_address');
-		*/
         return $validator;
     }
 

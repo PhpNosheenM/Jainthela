@@ -133,13 +133,12 @@ class CartsController extends AppController
 			$customer_id=$this->request->data('customer_id');
 			$city_id=$this->request->data('city_id');
 			$tag=$this->request->data('tag');
-
 			if(!empty($city_id) && !empty($customer_id))
 			{
 					$exists = $this->Carts->Customers->exists(['id'=>$customer_id]);
 				if($exists == 1)
 				{
-							if($tag=='add')
+						if($tag=='add')
 							{
 							  // addCartCommon for code reuseabilty in both function plusAddToCart and fetchCart
 							  $this->addCartCommon($customer_id,$city_id,$item_variation_id);
@@ -195,14 +194,8 @@ class CartsController extends AppController
 									    $carts[] = ['category_name'=>$category_arr[$key],'category'=>$value];
 									}
 
-									if(empty($carts_data)){ $carts=[]; }
-									$grand_total1=0;
-									foreach($carts_data as $cart_data)
-									{
-									  $grand_total1+=$cart_data->amount;
-									}
-
-									$grand_total=number_format(round($grand_total1), 2);
+									if(empty($carts_data))
+									{ $carts=[]; }
 
 
 									$Customers = $this->Carts->Customers->get($customer_id, [
@@ -226,9 +219,34 @@ class CartsController extends AppController
 									  }
 									}
 
-							}
 
-							$delivery_charges=$this->Carts->DeliveryCharges->find()->where(['city_id'=>$city_id]);
+									// Calculation
+									$payableAmount = number_format(0, 2);
+									$grand_total1=0;
+									foreach($carts_data as $cart_data)
+									{
+									  $grand_total1+=$cart_data->amount;
+									}
+
+									$grand_total=number_format(round($grand_total1), 2);
+									$payableAmount = $payableAmount + $grand_total1;
+
+									$delivery_charges=$this->Carts->DeliveryCharges->find()->where(['city_id'=>$city_id]);
+									if(!empty($delivery_charges->toArray()))
+									{
+											foreach ($delivery_charges as $delivery_charge) {
+													if($delivery_charge->amount >= $grand_total)
+													{
+														 $delivery_charge_amount = "$delivery_charge->charge";
+														 $payableAmount = $payableAmount + $delivery_charge->charge;
+													}else
+													{
+														$delivery_charge_amount = "free";
+													}
+											}
+									}
+									$payableAmount = number_format($payableAmount,2);
+							}
 
 							if(empty($carts_data))
 							{
@@ -241,8 +259,8 @@ class CartsController extends AppController
 							{
 							  $success = true;
 							  $message = 'Cart Data found';
-							  $this->set(compact('success', 'message','address_available','grand_total', 'remaining_wallet_amount', 'carts','item_in_cart','delivery_charges'));
-							  $this->set('_serialize', ['success', 'message','address_available','item_in_cart','grand_total', 'remaining_wallet_amount','carts','delivery_charges']);
+							  $this->set(compact('success', 'message','address_available','grand_total','delivery_charge_amount','payableAmount','remaining_wallet_amount', 'carts','item_in_cart'));
+							  $this->set('_serialize', ['success', 'message','remaining_wallet_amount','grand_total','delivery_charge_amount', 'payableAmount','item_in_cart','address_available','carts']);
 							}
 				}
 				else
@@ -266,16 +284,69 @@ class CartsController extends AppController
 		{
 			$customer_id = $this->request->query('customer_id');
 			$city_id = $this->request->query('city_id');
+			$categories = $this->Carts->find()
+			->where(['customer_id' => $customer_id])
+			->contain(['ItemVariations'=>['Items'=>['Categories']]]);
 
-			$carts=$this->Carts->find()
-			->where(['Carts.customer_id' => $customer_id,'Carts.city_id'=>$city_id])
-			->contain(['ItemVariations'=>['Items','UnitVariations'=>['Units']]])
-			->group('Carts.item_variation_id');
-
-			$grand_total1=0;
-			foreach($carts as $cart_data)
+			if(!empty($categories->toArray()))
 			{
-				$grand_total1+=$cart_data->amount;
+					$category_arr = [];
+
+					foreach ($categories as $cat_date) {
+							$cat_name = $cat_date->item_variation->item->category->name;
+							$cat_id = $cat_date->item_variation->item->category->id;
+							$category_arr[$cat_id] = $cat_name;
+					}
+
+					$carts_data=$this->Carts->find()
+					->where(['customer_id' => $customer_id])
+					->contain(['ItemVariations'=>['Items','UnitVariations'=>['Units']]])
+					->group('Carts.item_variation_id')->autoFields(true)->toArray();
+
+					foreach ($category_arr as $cat_key => $cat_value) {
+						foreach ($carts_data as $cart) {
+								$cart_category_id = $cart->item_variation->item->category_id;
+								if($cat_key == $cart_category_id)
+								{
+									$category[$cat_key][] = $cart;
+								}
+						}
+					}
+//pr($category);exit;
+					foreach ($category as $key => $value) {
+							$carts[] = ['category_name'=>$category_arr[$key],'category'=>$value];
+					}
+
+					if(empty($carts_data))
+					{ $carts=[]; }
+
+					$payableAmount = number_format(0, 2);
+					$grand_total1=0;
+					foreach($carts_data as $cart_data)
+					{
+						$grand_total1+=$cart_data->amount;
+					}
+
+					$grand_total=number_format(round($grand_total1), 2);
+					$payableAmount = $payableAmount + $grand_total1;
+
+					$delivery_charges=$this->Carts->DeliveryCharges->find()->where(['city_id'=>$city_id]);
+					if(!empty($delivery_charges->toArray()))
+					{
+							foreach ($delivery_charges as $delivery_charge) {
+									if($delivery_charge->amount >= $grand_total)
+									{
+										 $delivery_charge_amount = "$delivery_charge->charge";
+										 $payableAmount = $payableAmount + $delivery_charge->charge;
+									}else
+									{
+										$delivery_charge_amount = "free";
+									}
+							}
+					}
+					$payableAmount = number_format($payableAmount,2);
+
+
 			}
 
 			$delivery_dates = $this->Carts->DeliveryDates->find()->where(['city_id'=>$city_id]);
@@ -291,11 +362,6 @@ class CartsController extends AppController
 						}
 					}
 			}
-
-
-
-
-
 			$current_date = date('Y-m-d');
 			date_default_timezone_set("Asia/Calcutta");
 			$current_time =  strtotime(date('h:i a'));
@@ -329,9 +395,9 @@ class CartsController extends AppController
 				$all_dates[$i] = ['date' =>date('d-m-Y', strtotime("+".$i." days")),'delivery_time'=>$delivery_time->toArray()];
 			}
 
-			$grand_total=number_format(round($grand_total1), 2);
 			$generate_order_no=uniqid();
 			$customer_addresses=$this->Carts->Customers->CustomerAddresses->find()
+			->contain(['Cities'])
 			->where(['CustomerAddresses.customer_id' => $customer_id, 'CustomerAddresses.default_address'=>'1'])->first();
 
 			$Customers = $this->Carts->Customers->get($customer_id, [
@@ -356,8 +422,8 @@ class CartsController extends AppController
 			$success = true;
 			$message ='Data found';
 
-	    $this->set(compact('success', 'message','remaining_wallet_amount','generate_order_no','grand_total','customer_addresses','all_dates','carts'));
-	    $this->set('_serialize', ['success', 'message','remaining_wallet_amount','generate_order_no','grand_total','customer_addresses','all_dates','carts']);
+	    $this->set(compact('success', 'message','remaining_wallet_amount','generate_order_no','grand_total','delivery_charge_amount','payableAmount','customer_addresses','all_dates','carts'));
+	    $this->set('_serialize', ['success', 'message','remaining_wallet_amount','generate_order_no','grand_total','delivery_charge_amount','payableAmount','customer_addresses','all_dates','carts']);
 		}
 
 }

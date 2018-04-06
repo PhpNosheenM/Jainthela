@@ -59,7 +59,7 @@ class CitiesController extends AppController
 							]
 			]);
 		}
-       
+
         $cities = $this->paginate($cities);
 		$states = $this->Cities->States->find('list');
 		$paginate_limit=$this->paginate['limit'];
