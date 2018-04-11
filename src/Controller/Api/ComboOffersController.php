@@ -102,6 +102,7 @@ class ComboOffersController extends AppController
                 { $inWishList = true; }
                 else { $inWishList = false; }
 								  $count_value = 0;
+									$cart_count =0;
                 $count_cart = $this->ComboOffers->Carts->find()->select(['Carts.cart_count'])->where(['Carts.combo_offer_id'=>$offer_id,'Carts.customer_id'=>$customer_id]);
 								//pr($count_cart->toArray());exit;
 								if(!empty($count_cart->toArray()))

@@ -78,6 +78,9 @@ class WalletsController extends AppController
             }
           }
 
+          $plans = $this->Wallets->Plans->find()->where(['status'=>1]);
+          if(empty($plans)){ $plans = []; }
+
           if(empty($wallet_details->toArray()))
           {
             $success=false;
@@ -102,14 +105,10 @@ class WalletsController extends AppController
       $success = false;
       $message = 'Invalid Token';
     }
-    $this->set(compact('success', 'message','wallet_details', 'wallet_balance'));
-    $this->set('_serialize', ['success', 'message','wallet_balance','wallet_details']);
+    $this->set(compact('success', 'message','wallet_details', 'wallet_balance','plans'));
+    $this->set('_serialize', ['success', 'message','wallet_balance','wallet_details','plans']);
 
   }
-
-
-
-
 
   public function addMoney()
   {

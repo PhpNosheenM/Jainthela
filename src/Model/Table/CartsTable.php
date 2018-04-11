@@ -120,7 +120,7 @@ class CartsTable extends Table
         $rules->add($rules->existsIn(['customer_id'], 'Customers'));
         $rules->add($rules->existsIn(['item_variation_id'], 'ItemVariations'));
         $rules->add($rules->existsIn(['combo_offer_id'], 'ComboOffers'));
-        $rules->add($rules->existsIn(['unit_id'], 'Units'));
+      //  $rules->add($rules->existsIn(['unit_id'], 'Units'));
 
         return $rules;
     }

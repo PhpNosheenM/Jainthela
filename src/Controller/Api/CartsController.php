@@ -9,6 +9,40 @@ use Firebase\JWT\JWT;
 class CartsController extends AppController
 {
 
+	public function addToCartCombo($customer_id,$city_id,$combo_offer_id)
+	{
+		 // get combo Data
+		 $comboData = $this->Carts->ComboOffers->get($combo_offer_id);
+		 $sale_rate = $comboData->print_rate;
+		 $quantity = $comboData->print_quantity;
+
+		 // check avaliable item in cart
+  		$checkCartData = $this->Carts->find()->where(['city_id'=>$city_id,'customer_id' => $customer_id,'combo_offer_id' =>$combo_offer_id]);
+			if(empty($checkCartData->toArray()))
+			{
+				$amount = $sale_rate * $quantity;
+				$query = $this->Carts->query();
+				$query->insert(['city_id','customer_id','combo_offer_id','quantity','rate','amount','cart_count'])
+				->values(['city_id' =>$city_id,'customer_id' => $customer_id,'combo_offer_id' => $combo_offer_id,'quantity' => $quantity,'rate' => $sale_rate,'amount' => $amount,'cart_count' => 1])->execute();
+			}
+			else
+			{
+					foreach($checkCartData as $checkCart)
+					{
+						$update_id = $checkCart->id;
+						$exist_quantity = $checkCart->quantity;
+						$exist_count = $checkCart->cart_count;
+					}
+					$update_quantity = $quantity + $exist_quantity;
+					$update_count = $exist_count + 1;
+					$amount = $sale_rate * $update_quantity;
+					$query = $this->Carts->query();
+					$result = $query->update()
+					->set(['quantity' =>$update_quantity,'rate'=>$sale_rate,'amount' => $amount,'cart_count' => $update_count])
+					->where(['id' => $update_id])->execute();
+			}
+	}
+
 	public function addCartCommon($customer_id,$city_id,$item_variation_id)
 	{
 		// get item variations id
@@ -26,16 +60,8 @@ class CartsController extends AppController
 				$amount = $sale_rate * $item_add_quantity;
 				$query = $this->Carts->query();
 				$query->insert(['city_id','customer_id', 'item_variation_id','unit_id','quantity','rate','amount','cart_count'])
-				->values([
-					'city_id' =>$city_id,
-					'customer_id' => $customer_id,
-					'item_variation_id' => $item_variation_id,
-					'unit_id' => $item_add_unit_id,
-					'quantity' => $item_add_quantity,
-					'rate' => $sale_rate,
-					'amount' => $amount,
-					'cart_count' => 1
-					])->execute();
+				->values(['city_id' =>$city_id,'customer_id' => $customer_id,'item_variation_id' => $item_variation_id,'unit_id' => $item_add_unit_id,
+					'quantity' => $item_add_quantity,'rate' => $sale_rate,'amount' => $amount,'cart_count' => 1])->execute();
 			}else{
 					foreach($checkCartData as $checkCart)
 					{
@@ -51,6 +77,42 @@ class CartsController extends AppController
 					->set(['quantity' =>$update_quantity,'rate'=>$sale_rate,'amount' => $amount,'cart_count' => $update_count])
 					->where(['id' => $update_id])->execute();
 			}
+		}
+
+		public function removeCartCombo($customer_id,$city_id,$combo_offer_id)
+		{
+				// get combo Data
+	 		 $comboData = $this->Carts->ComboOffers->get($combo_offer_id);
+	 		 $sale_rate = $comboData->print_rate;
+	 		 $quantity = $comboData->print_quantity;
+	 		 // check avaliable item in cart
+	   		$checkCartData = $this->Carts->find()->where(['city_id'=>$city_id,'customer_id' => $customer_id,'combo_offer_id' =>$combo_offer_id]);
+				if(!empty($checkCartData->toArray()))
+	 			{
+						foreach($checkCartData as $checkCart)
+						{
+							$update_id = $checkCart->id;
+							$exist_quantity = $checkCart->quantity;
+							$exist_count = $checkCart->cart_count;
+						}
+
+						$update_quantity = $exist_quantity - $quantity;
+						$update_count = $exist_count - 1;
+
+						if($exist_count == 1)
+						{
+							$query = $this->Carts->query();
+							$result = $query->delete()
+							->where(['id' => $update_id])
+							->execute();
+						}else if($exist_count > 1){
+							$amount = $sale_rate * $update_quantity;
+							$query = $this->Carts->query();
+							$result = $query->update()
+							->set(['quantity' =>$update_quantity,'rate'=>$sale_rate,'amount' => $amount,'cart_count' => $update_count])
+							->where(['id' => $update_id])->execute();
+						}
+				}
 		}
 
 		public function removeCartCommon($customer_id,$city_id,$item_variation_id)
@@ -91,18 +153,27 @@ class CartsController extends AppController
 				}
 			}
 		}
-
-
 		public function plusAddToCart()
 		{
 			$customer_id=$this->request->data('customer_id');
 			$city_id=$this->request->data('city_id');
 			$item_variation_id=$this->request->data('item_variation_id');
-			// addCartCommon for code reuseabilty in both function plusAddtoCart and fetchCart
-			$this->addCartCommon($customer_id,$city_id,$item_variation_id);
+			$combo_offer_id = $this->request->data('combo_offer_id');
+			$isCombo = $this->request->data('isCombo');
 
-			$current_item = $this->Carts->find()->where(['Carts.city_id'=>$city_id,'Carts.customer_id' => $customer_id, 'Carts.item_variation_id' =>$item_variation_id])->contain(['ItemVariations'=>['Items','UnitVariations'=>['Units']]])->first();
-			if(empty($current_item)) { $current_item = []; }
+				// addToCartCombo (while adding combo offer) for code reuseabilty in both function plusAddtoCart and fetchCart
+				if($isCombo == true)
+				{
+				$this->addToCartCombo($customer_id,$city_id,$combo_offer_id);
+				$current_item = $this->Carts->find()->where(['Carts.city_id'=>$city_id,'Carts.customer_id' => $customer_id, 'Carts.combo_offer_id' =>$combo_offer_id])->contain(['ComboOffers'=>['ComboOfferDetails'=>['ItemVariations'=>['Items','UnitVariations'=>['Units']]]]])->first();
+				if(empty($current_item)) { $current_item = []; }
+			}else{
+				// addCartCommon (while adding items) for code reuseabilty in both function plusAddtoCart and fetchCart
+				$this->addCartCommon($customer_id,$city_id,$item_variation_id,$combo_offer_id,$isCombo);
+				$current_item = $this->Carts->find()->where(['Carts.city_id'=>$city_id,'Carts.customer_id' => $customer_id, 'Carts.item_variation_id' =>$item_variation_id])->contain(['ItemVariations'=>['Items','UnitVariations'=>['Units']]])->first();
+				if(empty($current_item)) { $current_item = []; }
+
+			}
 			$item_in_cart = $this->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])->count();
 			$success=true;
 			$message="Item Added Successfully";
@@ -115,10 +186,21 @@ class CartsController extends AppController
 			$customer_id=$this->request->data('customer_id');
 			$city_id=$this->request->data('city_id');
 			$item_variation_id=$this->request->data('item_variation_id');
-			// addCartCommon for code reuseabilty in both function removeFromCart and fetchCart
-			$this->removeCartCommon($customer_id,$city_id,$item_variation_id);
-			$current_item = $this->Carts->find()->where(['Carts.city_id'=>$city_id,'Carts.customer_id' => $customer_id, 'Carts.item_variation_id' =>$item_variation_id])->contain(['ItemVariations'=>['Items','UnitVariations'=>['Units']]])->first();
-			if(empty($current_item)) { $current_item = []; }
+			$combo_offer_id = $this->request->data('combo_offer_id');
+			$isCombo = $this->request->data('isCombo');
+			if($isCombo == true)
+			{
+				// removeCartCombo for code reuseabilty in both function removeFromCart and fetchCart
+				$this->removeCartCombo($customer_id,$city_id,$combo_offer_id);
+				$current_item = $this->Carts->find()->where(['Carts.city_id'=>$city_id,'Carts.customer_id' => $customer_id, 'Carts.combo_offer_id' =>$combo_offer_id])->contain(['ComboOffers'=>['ComboOfferDetails'=>['ItemVariations'=>['Items','UnitVariations'=>['Units']]]]])->first();
+				if(empty($current_item)) { $current_item = []; }
+			}
+			else{
+				// removeCartCommon for code reuseabilty in both function removeFromCart and fetchCart
+				$this->removeCartCommon($customer_id,$city_id,$item_variation_id);
+				$current_item = $this->Carts->find()->where(['Carts.city_id'=>$city_id,'Carts.customer_id' => $customer_id, 'Carts.item_variation_id' =>$item_variation_id])->contain(['ItemVariations'=>['Items','UnitVariations'=>['Units']]])->first();
+				if(empty($current_item)) { $current_item = []; }
+			}
 			$item_in_cart = $this->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])->count();
 			$success=true;
 			$message="Item Remove Successfully";
@@ -132,6 +214,9 @@ class CartsController extends AppController
 			$item_variation_id=$this->request->data('item_variation_id');
 			$customer_id=$this->request->data('customer_id');
 			$city_id=$this->request->data('city_id');
+			$combo_offer_id = $this->request->data('combo_offer_id');
+			$isCombo = $this->request->data('isCombo');
+
 			$tag=$this->request->data('tag');
 			if(!empty($city_id) && !empty($customer_id))
 			{
@@ -141,12 +226,12 @@ class CartsController extends AppController
 						if($tag=='add')
 							{
 							  // addCartCommon for code reuseabilty in both function plusAddToCart and fetchCart
-							  $this->addCartCommon($customer_id,$city_id,$item_variation_id);
+							  $this->addCartCommon($customer_id,$city_id,$item_variation_id,$combo_offer_id,$isCombo);
 							}
 							else if($tag=='minus')
 							{
 							  // removeCartCommon for code reuseabilty in both function removeFromCart and fetchCart
-							  $this->removeCartCommon($customer_id,$city_id,$item_variation_id);
+							  $this->removeCartCommon($customer_id,$city_id,$item_variation_id,$combo_offer_id,$isCombo);
 							}
 
 							$item_in_cart = $this->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])->count();
@@ -167,6 +252,13 @@ class CartsController extends AppController
 
 							if(!empty($categories->toArray()))
 							{
+								$comboData = $this->Carts->find()
+									->where(['customer_id' => $customer_id])
+									->contain(['ComboOffers'=>['ComboOfferDetails']])
+									->group('Carts.combo_offer_id')->autoFields(true)->toArray();
+								
+								if(empty($comboData)) { $comboData = []; }
+								
 									$category_arr = [];
 
 									foreach ($categories as $cat_date) {
@@ -197,6 +289,7 @@ class CartsController extends AppController
 									if(empty($carts_data))
 									{ $carts=[]; }
 
+								
 
 									$Customers = $this->Carts->Customers->get($customer_id, [
 									  'contain' => ['Wallets'=>function($query){
@@ -259,8 +352,8 @@ class CartsController extends AppController
 							{
 							  $success = true;
 							  $message = 'Cart Data found';
-							  $this->set(compact('success', 'message','address_available','grand_total','delivery_charge_amount','payableAmount','remaining_wallet_amount', 'carts','item_in_cart'));
-							  $this->set('_serialize', ['success', 'message','remaining_wallet_amount','grand_total','delivery_charge_amount', 'payableAmount','item_in_cart','address_available','carts']);
+							  $this->set(compact('success', 'message','address_available','grand_total','delivery_charge_amount','payableAmount','remaining_wallet_amount','carts','item_in_cart','comboData'));
+							  $this->set('_serialize', ['success', 'message','remaining_wallet_amount','grand_total','delivery_charge_amount', 'payableAmount','item_in_cart','address_available','carts','comboData']);
 							}
 				}
 				else
@@ -290,6 +383,14 @@ class CartsController extends AppController
 
 			if(!empty($categories->toArray()))
 			{
+
+					$comboData = $this->Carts->find()
+						->where(['customer_id' => $customer_id])
+						->contain(['ComboOffers'=>['ComboOfferDetails']])
+						->group('Carts.combo_offer_id')->autoFields(true)->toArray();
+					
+					if(empty($comboData)) { $comboData = []; }		
+		
 					$category_arr = [];
 
 					foreach ($categories as $cat_date) {
@@ -422,8 +523,8 @@ class CartsController extends AppController
 			$success = true;
 			$message ='Data found';
 
-	    $this->set(compact('success', 'message','remaining_wallet_amount','generate_order_no','grand_total','delivery_charge_amount','payableAmount','customer_addresses','all_dates','carts'));
-	    $this->set('_serialize', ['success', 'message','remaining_wallet_amount','generate_order_no','grand_total','delivery_charge_amount','payableAmount','customer_addresses','all_dates','carts']);
+	    $this->set(compact('success', 'message','remaining_wallet_amount','generate_order_no','grand_total','delivery_charge_amount','payableAmount','customer_addresses','all_dates','carts','comboData'));
+	    $this->set('_serialize', ['success', 'message','remaining_wallet_amount','generate_order_no','grand_total','delivery_charge_amount','payableAmount','customer_addresses','all_dates','carts','comboData']);
 		}
 
 }
