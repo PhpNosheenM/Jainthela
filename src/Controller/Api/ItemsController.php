@@ -135,13 +135,13 @@ class ItemsController extends AppController
               $HomeScreens=$this->Items->HomeScreens->find()->where(['screen_type'=>'Product Detail','section_show'=>'Yes','city_id'=>$city_id]);
               foreach($HomeScreens as $HomeScreen){
                 if($HomeScreen->model_name=='Items'){
-              /*    $reletedItem = $this->Items->find()->contain(['ItemsVariations'=>['UnitVariations']])
+                  /*    $reletedItem = $this->Items->find()->contain(['ItemsVariations'=>['UnitVariations']])
                   ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.category_id'=>$category_id,'Items.city_id'=>$city_id,'Items.id !='=>$item_id]);
                   */
 
                   $dynamic = [];
                   $Itemc = [];
-                    $reletedItem = $this->Items->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$category_id])->contain(['ItemActive'=>['ItemsVariations'=>['UnitVariations'=>['Units']]]]);
+                  $reletedItem = $this->Items->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$category_id])->contain(['ItemActive'=>['ItemsVariations'=>['UnitVariations'=>['Units']]]]);
                   if(!empty($reletedItem->toArray()))
                   {
                     $Itemc = array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$reletedItem);
@@ -178,75 +178,75 @@ class ItemsController extends AppController
         $item_id = @$this->request->query['item_id'];
         $city_id = @$this->request->query['city_id'];
         $averageRating = number_format(0,1);
-          if(!empty($city_id))
+        if(!empty($city_id))
+        {
+          // CheckAvabiltyOfCity function is avaliable in app controller for checking city_id in cities table
+          $isValidCity = $this->CheckAvabiltyOfCity($city_id);
+          if($isValidCity == 0)
           {
-            // CheckAvabiltyOfCity function is avaliable in app controller for checking city_id in cities table
-            $isValidCity = $this->CheckAvabiltyOfCity($city_id);
-            if($isValidCity == 0)
+            $ratingLists = $this->Items->ItemReviewRatings->find()
+            ->contain(['Customers'=>function($q){ return $q->select(['name']);  } ])
+            ->where(['ItemReviewRatings.item_id'=>$item_id,'ItemReviewRatings.status'=>0,'ItemReviewRatings.comment !='=>'']);
+            if(!empty($ratingLists->toArray()))
             {
-                $ratingLists = $this->Items->ItemReviewRatings->find()
-                ->contain(['Customers'=>function($q){ return $q->select(['name']);  } ])
-                ->where(['ItemReviewRatings.item_id'=>$item_id,'ItemReviewRatings.status'=>0,'ItemReviewRatings.comment !='=>'']);
-                  if(!empty($ratingLists->toArray()))
-                  {
-                    $rating = $this->Items->ItemReviewRatings->find();
-                    $rating->select(['averageRating' => $rating->func()->avg('rating')])
-                    ->where(['ItemReviewRatings.item_id'=>$item_id,'ItemReviewRatings.status'=>0]);
+              $rating = $this->Items->ItemReviewRatings->find();
+              $rating->select(['averageRating' => $rating->func()->avg('rating')])
+              ->where(['ItemReviewRatings.item_id'=>$item_id,'ItemReviewRatings.status'=>0]);
 
-                    foreach ($rating as $ratingarr) {
-                      $averageRating = number_format($ratingarr->averageRating,1);
-                    }
+              foreach ($rating as $ratingarr) {
+                $averageRating = number_format($ratingarr->averageRating,1);
+              }
 
-                    $success = true;
-                    $message = 'Data Found Successfully';
-                  } else {
-                    $success = true;
-                    $message = 'No data found';
-                  }
-
-                  $star1 = $this->Items->ItemReviewRatings->find()->where(['ItemReviewRatings.item_id'=>$item_id,'ItemReviewRatings.status'=>0,'rating >='=>1,'rating <'=>1.9])->all();
-                  $star1count = $star1->count();
-                  $star2 = $this->Items->ItemReviewRatings->find()->where(['ItemReviewRatings.item_id'=>$item_id,'ItemReviewRatings.status'=>0,'rating >='=>2,'rating <'=>2.9])->all();
-                  $star2count = $star2->count();
-                  $star3 = $this->Items->ItemReviewRatings->find()->where(['ItemReviewRatings.item_id'=>$item_id,'ItemReviewRatings.status'=>0,'rating >='=>3,'rating <'=>3.9])->all();
-                  $star3count = $star3->count();
-                  $star4 = $this->Items->ItemReviewRatings->find()->where(['ItemReviewRatings.item_id'=>$item_id,'ItemReviewRatings.status'=>0,'rating >='=>4,'rating <'=>4.9])->all();
-                  $star4count = $star4->count();
-                  $star5 = $this->Items->ItemReviewRatings->find()->where(['ItemReviewRatings.item_id'=>$item_id,'ItemReviewRatings.status'=>0,'rating'=>5])->all();
-                  $star5count = $star5->count();
-                  $star1 = $star1count;
-                  $star2 = $star2count;
-                  $star3 = $star3count;
-                  $star4 = $star4count;
-                  $star5 = $star5count;
-                  $tot_stars = $star1count + $star2count + $star3count + $star4count + $star5count;
-                  $allpercentage =array();
-
-                  for ($i=5;$i >=1; --$i) {
-                   $var = "star$i";
-                   $count = $$var;
-                   if($count>0){
-                    $percent = $count * 100 / $tot_stars;
-                   }
-                   else
-                   {
-                    $percent=0;
-                   }
-                   $percentage = round($percent,2);
-                   $allpercentage[] = array("rating"=>$i,"percentage"=>$percentage);
-                   $percentage = '';
-                  }
-
-
+              $success = true;
+              $message = 'Data Found Successfully';
+            } else {
+              $success = true;
+              $message = 'No data found';
             }
-            else {
-                  $success = false;
-                  $message = 'Invalid City';
-                }
-          }else {
-            $success = false;
-            $message = 'Empty City Id';
+
+            $star1 = $this->Items->ItemReviewRatings->find()->where(['ItemReviewRatings.item_id'=>$item_id,'ItemReviewRatings.status'=>0,'rating >='=>1,'rating <'=>1.9])->all();
+            $star1count = $star1->count();
+            $star2 = $this->Items->ItemReviewRatings->find()->where(['ItemReviewRatings.item_id'=>$item_id,'ItemReviewRatings.status'=>0,'rating >='=>2,'rating <'=>2.9])->all();
+            $star2count = $star2->count();
+            $star3 = $this->Items->ItemReviewRatings->find()->where(['ItemReviewRatings.item_id'=>$item_id,'ItemReviewRatings.status'=>0,'rating >='=>3,'rating <'=>3.9])->all();
+            $star3count = $star3->count();
+            $star4 = $this->Items->ItemReviewRatings->find()->where(['ItemReviewRatings.item_id'=>$item_id,'ItemReviewRatings.status'=>0,'rating >='=>4,'rating <'=>4.9])->all();
+            $star4count = $star4->count();
+            $star5 = $this->Items->ItemReviewRatings->find()->where(['ItemReviewRatings.item_id'=>$item_id,'ItemReviewRatings.status'=>0,'rating'=>5])->all();
+            $star5count = $star5->count();
+            $star1 = $star1count;
+            $star2 = $star2count;
+            $star3 = $star3count;
+            $star4 = $star4count;
+            $star5 = $star5count;
+            $tot_stars = $star1count + $star2count + $star3count + $star4count + $star5count;
+            $allpercentage =array();
+
+            for ($i=5;$i >=1; --$i) {
+              $var = "star$i";
+              $count = $$var;
+              if($count>0){
+                $percent = $count * 100 / $tot_stars;
+              }
+              else
+              {
+                $percent=0;
+              }
+              $percentage = round($percent,2);
+              $allpercentage[] = array("rating"=>$i,"percentage"=>$percentage);
+              $percentage = '';
+            }
+
+
           }
+          else {
+            $success = false;
+            $message = 'Invalid City';
+          }
+        }else {
+          $success = false;
+          $message = 'Empty City Id';
+        }
         $this->set(['success' => $success,'message'=>$message,'averageRating'=>$averageRating,'ratingLists' => $ratingLists,'percentage'=>$allpercentage,'_serialize' => ['success','message','averageRating','ratingLists','percentage']]);
       }
 

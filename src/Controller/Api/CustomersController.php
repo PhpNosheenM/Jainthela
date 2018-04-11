@@ -331,6 +331,7 @@ class CustomersController extends AppController
                      $success = false;
                      $message = 'Update Failed';
                    }
+                $users = $this->Customers->get($id);
                }
                else {
                  $success = false;
@@ -343,7 +344,7 @@ class CustomersController extends AppController
                $message = 'Invalid Token';
              }
         }
-        $this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
+        $this->set(['success' => $success,'message'=>$message,'users'=>$users,'_serialize' => ['success','message','users']]);
    }
 
    public function viewProfile($id=null,$token=null)
@@ -391,7 +392,8 @@ class CustomersController extends AppController
          if($isValidToken == 0)
           {
             $customerAddress = $this->Customers->CustomerAddresses->find()
-            ->contain(['Cities'])->where(['customer_id'=>$customer_id]);
+            ->contain(['Cities'])->where(['customer_id'=>$customer_id,'is_deleted'=>0]);
+
                if(!empty($customerAddress->toArray()))
                {
                  $success = true;
@@ -473,5 +475,14 @@ class CustomersController extends AppController
         $this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
    }
 
+   public function removeAddress($id=null)
+   {
+      $id = $this->request->query['id'];
+      $query = $this->Customers->CustomerAddresses->query();
+      $result = $query->update()->set(['is_deleted' => 1])->where(['id' =>$id])->execute();
+      $success = true;
+      $message = 'Removed Successfully';
+      $this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
+   }
 
 }

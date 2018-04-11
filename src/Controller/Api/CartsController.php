@@ -23,33 +23,33 @@ class CartsController extends AppController
 		$checkCartData = $this->Carts->find()->where(['city_id'=>$city_id,'customer_id' => $customer_id, 'item_variation_id' =>$item_variation_id]);
 		if(empty($checkCartData->toArray()))
 		{
-			$amount = $sale_rate * $item_add_quantity;
-			$query = $this->Carts->query();
-			$query->insert(['city_id','customer_id', 'item_variation_id','unit_id','quantity','rate','amount','cart_count'])
-			->values([
-				'city_id' =>$city_id,
-				'customer_id' => $customer_id,
-				'item_variation_id' => $item_variation_id,
-				'unit_id' => $item_add_unit_id,
-				'quantity' => $item_add_quantity,
-				'rate' => $sale_rate,
-				'amount' => $amount,
-				'cart_count' => 1
-				])->execute();
-			}else{
-				foreach($checkCartData as $checkCart)
-				{
-					$update_id = $checkCart->id;
-					$exist_quantity = $checkCart->quantity;
-					$exist_count = $checkCart->cart_count;
-				}
-				$update_quantity = $item_add_quantity + $exist_quantity;
-				$update_count = $exist_count + 1;
-				$amount = $sale_rate * $update_quantity;
+				$amount = $sale_rate * $item_add_quantity;
 				$query = $this->Carts->query();
-				$result = $query->update()
-				->set(['quantity' =>$update_quantity,'rate'=>$sale_rate,'amount' => $amount,'cart_count' => $update_count])
-				->where(['id' => $update_id])->execute();
+				$query->insert(['city_id','customer_id', 'item_variation_id','unit_id','quantity','rate','amount','cart_count'])
+				->values([
+					'city_id' =>$city_id,
+					'customer_id' => $customer_id,
+					'item_variation_id' => $item_variation_id,
+					'unit_id' => $item_add_unit_id,
+					'quantity' => $item_add_quantity,
+					'rate' => $sale_rate,
+					'amount' => $amount,
+					'cart_count' => 1
+					])->execute();
+			}else{
+					foreach($checkCartData as $checkCart)
+					{
+						$update_id = $checkCart->id;
+						$exist_quantity = $checkCart->quantity;
+						$exist_count = $checkCart->cart_count;
+					}
+					$update_quantity = $item_add_quantity + $exist_quantity;
+					$update_count = $exist_count + 1;
+					$amount = $sale_rate * $update_quantity;
+					$query = $this->Carts->query();
+					$result = $query->update()
+					->set(['quantity' =>$update_quantity,'rate'=>$sale_rate,'amount' => $amount,'cart_count' => $update_count])
+					->where(['id' => $update_id])->execute();
 			}
 		}
 

@@ -76,8 +76,8 @@ class WishListItemsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['wish_list_id'], 'WishLists'));
-        $rules->add($rules->existsIn(['item_id'], 'Items'));
-        $rules->add($rules->existsIn(['item_variation_id'], 'ItemVariations'));
+    //    $rules->add($rules->existsIn(['item_id'], 'Items'));
+    //    $rules->add($rules->existsIn(['item_variation_id'], 'ItemVariations'));
 
         return $rules;
     }

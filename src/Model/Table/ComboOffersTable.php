@@ -55,6 +55,11 @@ class ComboOffersTable extends Table
         $this->hasMany('ComboOfferDetails', [
             'foreignKey' => 'combo_offer_id'
         ]);
+        $this->hasMany('WishListItems', [
+            'foreignKey' => 'combo_offer_id'
+        ]);
+
+
         $this->hasMany('OrderDetails', [
             'foreignKey' => 'combo_offer_id'
         ]);
@@ -164,7 +169,7 @@ class ComboOffersTable extends Table
         @$data['start_date'] = trim(date('Y-m-d',strtotime(@$data['start_date'])));
 		@$data['end_date'] = trim(date('Y-m-d',strtotime(@$data['end_date'])));
     }
-	
+
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.
@@ -172,8 +177,8 @@ class ComboOffersTable extends Table
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-	 
-	 
+
+
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['city_id'], 'Cities'));

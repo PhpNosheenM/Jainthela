@@ -140,13 +140,13 @@ class ItemsController extends AppController
 		//pr($unitVariations->toArray());exit;
 		$this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities','unitVariations','gstFigures','unit_option'));
     }
-	
+
 	public function stockReport($id = null)
     {
-		$city_id=$this->Auth->User('city_id'); 
+		$city_id=$this->Auth->User('city_id');
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('admin_portal');
-		
+
 		$city_id=$this->request->query('city_id');
 		$location_id=$this->request->query('location_id');
 		$seller_id=$this->request->query('seller_id');
@@ -159,7 +159,7 @@ class ItemsController extends AppController
 			$where['ItemLedgers.location_id']=$location_id;
 		}
 		if(!empty($seller_id))
-		{ 
+		{
 			$where['ItemLedgers.seller_id']=$seller_id;
 		}
 		if($from_date!="1970-01-01")
@@ -167,7 +167,7 @@ class ItemsController extends AppController
 			$where['ItemLedgers.transaction_date >=']=$from_date;
 		}
 		if($to_date!="1970-01-01")
-		{ 
+		{
 			$where['ItemLedgers.transaction_date <=']=$to_date;
 		}
 		//pr($where); exit;
@@ -181,7 +181,7 @@ class ItemsController extends AppController
 							$UnitRateSerialItem = $this->itemWiseReport($Item->id,$where);
 							$showItems[$Item->id]=['item_name'=>$Item->name,'stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem['unit_rate']];
 						}
-						
+
 					}else{
 						$ItemsVariations=$this->Items->ItemsVariations->find()->contain(['UnitVariations'=>['Units']])->where(['item_id'=>$Item->id])->toArray();
 						foreach($ItemsVariations as $ItemsVariation){
@@ -189,13 +189,13 @@ class ItemsController extends AppController
 							$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$Item->id,'city_id'=>$city_id])->toArray();
 							if($ItemLedgers){
 							$UnitRateSerialItem = $this->itemVariationWiseReport($ItemsVariation->id,$transaction_date,$city_id);
-							
+
 							$showItems[$Item->id]=['item_name'=>$merge,'stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem['unit_rate']];
 							}
 						}
 					}
 				}
-			
+
 		}
 		//pr($showItems); exit;
 		if($from_date=="1970-01-01")
@@ -203,7 +203,7 @@ class ItemsController extends AppController
 			$from_date=date("d-m-Y");
 		}
 		if($to_date=="1970-01-01")
-		{ 
+		{
 			$to_date=date("d-m-Y");;
 		}
 		$Locations = $this->Items->Locations->find('list');
@@ -212,30 +212,30 @@ class ItemsController extends AppController
 		$this->set(compact('Locations','Cities','showItems','city_id','location_id','Sellers','seller_id','from_date','to_date'));
 	}
 
-	public function itemVariationWiseReport($item_variation_id=null,$transaction_date,$city_id){ 
+	public function itemVariationWiseReport($item_variation_id=null,$transaction_date,$city_id){
 		$this->viewBuilder()->layout('admin_portal');
-		//$city_id=$this->Auth->User('city_id'); 
-		$location_id=$this->Auth->User('location_id'); 
-		
+		//$city_id=$this->Auth->User('city_id');
+		$location_id=$this->Auth->User('location_id');
+
 		$StockLedgers =  $this->Items->ItemLedgers->find()->where(['item_variation_id'=>$item_variation_id,'transaction_date <='=>$transaction_date])->order(['ItemLedgers.transaction_date'=>'ASC'])->toArray();
-		
+
 		 $stockNew=[];
-		foreach($StockLedgers as $StockLedger){  
-			if($StockLedger->status=='In'){ 
+		foreach($StockLedgers as $StockLedger){
+			if($StockLedger->status=='In'){
 				$stockNew[]=['qty'=>$StockLedger->quantity,'rate'=>$StockLedger->rate];
 			}
 		}
-		
+
 		foreach($StockLedgers as $StockLedger){
-			if($StockLedger->status=='Out'){	
+			if($StockLedger->status=='Out'){
 				/* if(sizeof(@$stock) > 0){
-					$stock= array_slice($stock, $StockLedger->quantity*100); 	
+					$stock= array_slice($stock, $StockLedger->quantity*100);
 				} */
-				
+
 				if(sizeof(@$stockNew)==0){
 				break;
 				}
-				
+
 				$outQty=$StockLedger->quantity;
 				a:
 				if(sizeof(@$stockNew)==0){
@@ -257,45 +257,45 @@ class ItemsController extends AppController
 				}
 			}
 		}
-		
+
 		$closingValue=0;
 		$total_stock=0;
 		$total_amt=0;
 		foreach($stockNew as $qw){
 			$total_stock+=$qw['qty'];
 			$total_amt+=$qw['rate']*$qw['qty'];
-		} 
-		if($total_amt > 0 && $total_stock > 0){
-			 $unit_rate = $total_amt/$total_stock; 
 		}
-		
+		if($total_amt > 0 && $total_stock > 0){
+			 $unit_rate = $total_amt/$total_stock;
+		}
+
 		$Data=['stock'=>$total_stock,'unit_rate'=>$unit_rate];
 		return $Data;
 		exit;
 	}
-	public function itemWiseReport($item_id=null,$where=null){ 
+	public function itemWiseReport($item_id=null,$where=null){
 		$this->viewBuilder()->layout('admin_portal');
-		//$city_id=$this->Auth->User('city_id'); 
-		$location_id=$this->Auth->User('location_id'); 
+		//$city_id=$this->Auth->User('city_id');
+		$location_id=$this->Auth->User('location_id');
 		//pr($where); exit;
 		$StockLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$item_id])->where($where)->order(['ItemLedgers.transaction_date'=>'ASC'])->toArray();
 		 $stockNew=[];
-		foreach($StockLedgers as $StockLedger){  
-			if($StockLedger->status=='In'){ 
+		foreach($StockLedgers as $StockLedger){
+			if($StockLedger->status=='In'){
 				$stockNew[]=['qty'=>$StockLedger->quantity,'rate'=>$StockLedger->rate];
 			}
 		}
-		
+
 		foreach($StockLedgers as $StockLedger){
-			if($StockLedger->status=='Out'){	
+			if($StockLedger->status=='Out'){
 				/* if(sizeof(@$stock) > 0){
-					$stock= array_slice($stock, $StockLedger->quantity*100); 	
+					$stock= array_slice($stock, $StockLedger->quantity*100);
 				} */
-				
+
 				if(sizeof(@$stockNew)==0){
 				break;
 				}
-				
+
 				$outQty=$StockLedger->quantity;
 				a:
 				if(sizeof(@$stockNew)==0){
@@ -317,18 +317,18 @@ class ItemsController extends AppController
 				}
 			}
 		}
-		
+
 		$closingValue=0;
 		$total_stock=0;
 		$total_amt=0;
 		foreach($stockNew as $qw){
 			$total_stock+=$qw['qty'];
 			$total_amt+=$qw['rate']*$qw['qty'];
-		} 
-		if($total_amt > 0 && $total_stock > 0){
-			 $unit_rate = $total_amt/$total_stock; 
 		}
-		
+		if($total_amt > 0 && $total_stock > 0){
+			 $unit_rate = $total_amt/$total_stock;
+		}
+
 		$Data=['stock'=>$total_stock,'unit_rate'=>$unit_rate];
 		return $Data;
 		exit;
