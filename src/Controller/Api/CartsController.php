@@ -227,11 +227,11 @@ class CartsController extends AppController
 							{
 							  // addCartCommon for code reuseabilty in both function plusAddToCart and fetchCart
 								//echo var_dump($isCombo);exit;
-								
+
 								if($isCombo == 'true')
-								{	
+								{
 									$this->addToCartCombo($customer_id,$city_id,$combo_offer_id);
-								}else{ 
+								}else{
 									// addCartCommon (while adding items) for code reuseabilty in both function plusAddtoCart and fetchCart
 									$this->addCartCommon($customer_id,$city_id,$item_variation_id);
 								}
@@ -399,7 +399,6 @@ class CartsController extends AppController
 
 			if(!empty($categories->toArray()))
 			{
-
 					$comboData = $this->Carts->find()
 						->where(['customer_id' => $customer_id])
 						->contain(['ComboOffers'=>['ComboOfferDetails']])

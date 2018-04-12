@@ -34,7 +34,7 @@ class BulkBookingLeadsController extends AppController
                   if(!empty($leadNo->toArray())){ $maxLead = $leadNo->lead_no + 1;}
                   else{ $maxLead = 1;}
                 if(!empty($rowsDatas))
-                  {
+                  { 
                     $i=0;
                       foreach ($rowsDatas as $rowsData) {
                         if($rowsData['image_name']['error'] == 0)
@@ -89,10 +89,15 @@ class BulkBookingLeadsController extends AppController
                         else
                         {
                           $success = false;
-                          $message = 'Something went wrong';
+                          $message = 'invalid data';
                         }
                   }
-              }
+                 
+              }else {
+                          $success = false;
+                          $message = 'Invalid Token';				  
+			  }
+			  
         }
         $this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
     }

@@ -18,7 +18,7 @@ class ItemsController extends AppController
   public function initialize()
   {
     parent::initialize();
-    $this->Auth->allow(['productDetail','itemList','addItemRating','ratingList']);
+    $this->Auth->allow(['productDetail','itemList','addItemRating','ratingList','search']);
   }
 
   public function itemList($category_id=null,$city_id=null,$page=null)
@@ -279,8 +279,39 @@ class ItemsController extends AppController
         $this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
       }
 
+      public function search($city_id=null,$item_name=null)
+      {
 
+        $city_id = $this->request->query('city_id');
+        $item_name = $this->request->query('item_name');
+        $ItemData = [];
 
+        if(!empty($item_name))
+        {
+            $items = $this->Items->find()
+            ->contain(['Categories'])
+            ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id])
+            ->where(['Items.name'=>$item_name]);
+            if(empty($items->toArray()))
+            {
+              $items = $this->Items->find()
+              ->contain(['Categories'])
+              ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id])
+              ->where(['Items.name Like' =>'%'.$item_name.'%']);
+            }
 
-
+            if(!empty($items->toArray())){
+              foreach ($items as $item) {
+                  $ItemData[] = ['id' =>$item->id,'name'=>$item->name .' in '. $item->category->name,'image' => $item->item_image];
+              }
+            }
+            $success = true;
+            $message = 'Data found';
+        }
+        else {
+          $success = false;
+          $message = 'Enter Item name';
+        }
+        $this->set(['success' => $success,'message'=>$message,'suggestion'=>$ItemData,'_serialize' => ['success','message','suggestion']]);
+      }
     }
