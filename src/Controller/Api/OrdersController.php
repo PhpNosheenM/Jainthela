@@ -115,7 +115,17 @@ class OrdersController extends AppController
                 $order_details[] = ['category_name'=>$category_arr[$key],'category'=>$value];
               }
 
+              $comboData =[];
+              $comboData = $this->Orders->OrderDetails->find()
+                ->innerJoinWith('ComboOffers')
+                ->where(['order_id' => $order_id])
+                ->contain(['ComboOffers'=>['ComboOfferDetails']])
+                ->group('OrderDetails.combo_offer_id')->autoFields(true)->toArray();
+
+              if(empty($comboData)) { $comboData = []; }
+            //  pr($comboData);exit;
               foreach($orders_details_data as $order_data) {
+                $order_data->comboData = $comboData;
                 $order_data->order_details = $order_details;
                 $orders_details_data = $order_data;
                 $grand_total1 += $order_data->total_amount;

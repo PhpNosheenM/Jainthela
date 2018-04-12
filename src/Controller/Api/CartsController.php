@@ -162,7 +162,7 @@ class CartsController extends AppController
 			$isCombo = $this->request->data('isCombo');
 
 				// addToCartCombo (while adding combo offer) for code reuseabilty in both function plusAddtoCart and fetchCart
-				if($isCombo == true)
+				if($isCombo == 'true')
 				{
 				$this->addToCartCombo($customer_id,$city_id,$combo_offer_id);
 				$current_item = $this->Carts->find()->where(['Carts.city_id'=>$city_id,'Carts.customer_id' => $customer_id, 'Carts.combo_offer_id' =>$combo_offer_id])->contain(['ComboOffers'=>['ComboOfferDetails'=>['ItemVariations'=>['Items','UnitVariations'=>['Units']]]]])->first();
@@ -188,7 +188,7 @@ class CartsController extends AppController
 			$item_variation_id=$this->request->data('item_variation_id');
 			$combo_offer_id = $this->request->data('combo_offer_id');
 			$isCombo = $this->request->data('isCombo');
-			if($isCombo == true)
+			if($isCombo == 'true')
 			{
 				// removeCartCombo for code reuseabilty in both function removeFromCart and fetchCart
 				$this->removeCartCombo($customer_id,$city_id,$combo_offer_id);
@@ -226,12 +226,28 @@ class CartsController extends AppController
 						if($tag=='add')
 							{
 							  // addCartCommon for code reuseabilty in both function plusAddToCart and fetchCart
-							  $this->addCartCommon($customer_id,$city_id,$item_variation_id,$combo_offer_id,$isCombo);
+								//echo var_dump($isCombo);exit;
+								
+								if($isCombo == 'true')
+								{	
+									$this->addToCartCombo($customer_id,$city_id,$combo_offer_id);
+								}else{ 
+									// addCartCommon (while adding items) for code reuseabilty in both function plusAddtoCart and fetchCart
+									$this->addCartCommon($customer_id,$city_id,$item_variation_id);
+								}
 							}
 							else if($tag=='minus')
 							{
 							  // removeCartCommon for code reuseabilty in both function removeFromCart and fetchCart
-							  $this->removeCartCommon($customer_id,$city_id,$item_variation_id,$combo_offer_id,$isCombo);
+								if($isCombo == 'true')
+								{
+									// removeCartCombo for code reuseabilty in both function removeFromCart and fetchCart
+									$this->removeCartCombo($customer_id,$city_id,$combo_offer_id);
+								}
+								else{
+									// removeCartCommon for code reuseabilty in both function removeFromCart and fetchCart
+									$this->removeCartCommon($customer_id,$city_id,$item_variation_id);
+								}
 							}
 
 							$item_in_cart = $this->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])->count();
@@ -256,9 +272,9 @@ class CartsController extends AppController
 									->where(['customer_id' => $customer_id])
 									->contain(['ComboOffers'=>['ComboOfferDetails']])
 									->group('Carts.combo_offer_id')->autoFields(true)->toArray();
-								
+
 								if(empty($comboData)) { $comboData = []; }
-								
+
 									$category_arr = [];
 
 									foreach ($categories as $cat_date) {
@@ -289,7 +305,7 @@ class CartsController extends AppController
 									if(empty($carts_data))
 									{ $carts=[]; }
 
-								
+
 
 									$Customers = $this->Carts->Customers->get($customer_id, [
 									  'contain' => ['Wallets'=>function($query){
@@ -388,9 +404,9 @@ class CartsController extends AppController
 						->where(['customer_id' => $customer_id])
 						->contain(['ComboOffers'=>['ComboOfferDetails']])
 						->group('Carts.combo_offer_id')->autoFields(true)->toArray();
-					
-					if(empty($comboData)) { $comboData = []; }		
-		
+
+					if(empty($comboData)) { $comboData = []; }
+
 					$category_arr = [];
 
 					foreach ($categories as $cat_date) {

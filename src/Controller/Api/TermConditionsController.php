@@ -27,6 +27,7 @@ class TermConditionsController extends AppController
            $aboutus = $this->TermConditions->find()->where(['TermConditions.term_name'=>'aboutus'])->first();
            $company_details = $this->TermConditions->CompanyDetails->find()->first();
            $supplier_areas = $this->TermConditions->SupplierAreas->find()->order(['name' => 'ASC']);
+           $returnpolicy = $this->TermConditions->find()->where(['TermConditions.term_name'=>'returnpolicy'])->first();
            $success=true;
            $message = 'Data found Successfully';
          }else {
@@ -38,7 +39,7 @@ class TermConditionsController extends AppController
          $message = 'City id empty';
        }
 
-       $this->set(compact('success','message','privacy', 'tcs', 'aboutus', 'company_details', 'supplier_areas'));
-       $this->set('_serialize', ['success', 'message','privacy', 'tcs', 'aboutus', 'company_details', 'supplier_areas']);
+       $this->set(compact('success','message','privacy', 'tcs', 'aboutus', 'company_details', 'supplier_areas','returnpolicy'));
+       $this->set('_serialize', ['success', 'message','privacy', 'tcs', 'aboutus', 'company_details', 'supplier_areas','returnpolicy']);
     }
 }

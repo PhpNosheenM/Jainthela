@@ -29,12 +29,71 @@ class BulkBookingLeadsController extends AppController
           $isValidToken = $this->checkToken($token);
             if($isValidToken == 0)
               {
-                  $bulkBookingLead = $this->BulkBookingLeads->patchEntity($bulkBookingLead, $this->request->getData());
-                  if ($this->BulkBookingLeads->save($bulkBookingLead)) {
+                  $rowsDatas = $this->request->getData('bulk_booking_lead_rows');
+                  $leadNo = $this->BulkBookingLeads->find()->select(['lead_no'])->order(['id' => 'DESC'])->first();
+                  if(!empty($leadNo->toArray())){ $maxLead = $leadNo->lead_no + 1;}
+                  else{ $maxLead = 1;}
+                if(!empty($rowsDatas))
+                  {
+                    $i=0;
+                      foreach ($rowsDatas as $rowsData) {
+                        if($rowsData['image_name']['error'] == 0)
+                         {
+                           $rowsData_ext=explode('/',$rowsData['image_name']['type']);
+                           $bulk_booking_lead_rows[$i]['image_name'] = 'Bulk_Booking'.time().rand().'.'.$rowsData_ext[1];
+                           $i++;
+                         }
+                      }
 
+                      $bulkBookingLead = $this->BulkBookingLeads->patchEntity($bulkBookingLead, $this->request->getData());
+                    //  pr($bulk_booking_lead_rows);exit;
+                      $j=0;
+                      foreach ($bulk_booking_lead_rows as $bulk_booking_lead_row) {
+                          $bulkBookingLeadRows = $this->BulkBookingLeads->BulkBookingLeadRows->newEntity();
+                          $bulkBookingLeadRows->image_name = $bulk_booking_lead_row['image_name'];
+                          $bulkBookingLead->bulk_booking_lead_rows[$j] = $bulkBookingLeadRows;
+                          $j++;
+                      }
+                      $bulkBookingLead->lead_no = $maxLead;
+                      $bulkBookingLead->delivery_date = date('Y-m-d',strtotime($this->request->getData('delivery_date')));
+                      if ($bulkBookingLeadData = $this->BulkBookingLeads->save($bulkBookingLead)) {
+
+                          foreach ($rowsDatas as $rowsData) {
+                            if($rowsData['image_name']['error'] == 0)
+                             {
+                               foreach ($bulkBookingLeadData->bulk_booking_lead_rows as $imageData) {
+
+                                 $deletekeyname = 'bulkbooking/customer/'.$bulkBookingLeadData->id;
+                                 $this->AwsFile->deleteMatchingObjects($deletekeyname);
+                                 $keyname = 'bulkbooking/customer/'.$bulkBookingLeadData->id.'/'.$imageData->image_name;
+                                 $this->AwsFile->putObjectFile($keyname,$rowsData['image_name']['tmp_name'],$rowsData['image_name']['type']);
+                               }
+                             }
+                          }
+                          $success = true;
+                          $message = 'Successfully Uploaded';
+                      }
+                      else{
+                        $success = false;
+                        $message = 'Something went wrong';
+                      }
+                  }else {
+                      $bulkBookingLead = $this->BulkBookingLeads->patchEntity($bulkBookingLead, $this->request->getData());
+                      $bulkBookingLead->lead_no = $maxLead;
+                      $bulkBookingLead->delivery_date = date('Y-m-d',strtotime($this->request->getData('delivery_date')));
+                        if($this->BulkBookingLeads->save($bulkBookingLead))
+                        {
+                          $success = true;
+                          $message = 'Successfully Added';
+                        }
+                        else
+                        {
+                          $success = false;
+                          $message = 'Something went wrong';
+                        }
                   }
               }
         }
-        $this->set(compact('bulkBookingLead'));
+        $this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
     }
 }
