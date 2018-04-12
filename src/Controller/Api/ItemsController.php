@@ -18,7 +18,7 @@ class ItemsController extends AppController
   public function initialize()
   {
     parent::initialize();
-    $this->Auth->allow(['productDetail','itemList','addItemRating','ratingList','search']);
+    $this->Auth->allow(['productDetail','itemList','addItemRating','ratingList','searchSuggestion','searchResult']);
   }
 
   public function itemList($category_id=null,$city_id=null,$page=null)
@@ -279,7 +279,7 @@ class ItemsController extends AppController
         $this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
       }
 
-      public function search($city_id=null,$item_name=null)
+      public function searchSuggestion($city_id=null,$item_name=null)
       {
 
         $city_id = $this->request->query('city_id');
@@ -313,5 +313,47 @@ class ItemsController extends AppController
           $message = 'Enter Item name';
         }
         $this->set(['success' => $success,'message'=>$message,'suggestion'=>$ItemData,'_serialize' => ['success','message','suggestion']]);
+      }
+
+      public function searchResult()
+      {
+          $city_id = $this->request->query('city_id');
+          $item_name = $this->request->query('item_name');
+          $Category = [];
+          $category_id = $this->request->query('category_id');
+          $where = '';
+          if(!empty($category_id))
+          { $where = ['category_id' => $category_id]; }
+          if(!empty($item_name))
+          {
+              $items = $this->Items->find()
+              ->contain(['Categories','ItemsVariations'=>['UnitVariations'=>['Units']]])
+              ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id])
+              ->where(['Items.name'=>$item_name])
+              ->where($where);
+              if(empty($items->toArray()))
+              {
+                $items = $this->Items->find()
+                ->contain(['Categories','ItemsVariations'=>['UnitVariations'=>['Units']]])
+                ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id])
+                ->where(['Items.name Like' =>'%'.$item_name.'%'])
+                ->where($where);
+              }
+
+              if(!empty($items->toArray())){
+                foreach ($items as $item) {
+                    $Category[] = ['id' =>$item->category->id,'name'=> $item->category->name];
+                }
+              }
+              else { $items = []; }
+
+              $success = true;
+              $message = 'Data found';
+          }
+          else {
+            $success = false;
+            $message = 'Enter Item name';
+          }
+          $this->set(['success' => $success,'message'=>$message,'category'=>$Category,'searchResult'=>$items,'_serialize' => ['success','message','category','searchResult']]);
       }
     }
