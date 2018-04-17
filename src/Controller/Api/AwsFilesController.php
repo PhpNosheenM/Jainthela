@@ -60,6 +60,12 @@ class AwsFilesController extends AppController
          $awsData = array("bucketName"=>$this->encrypt($this->bucketName),
                     "awsAccessKey"=>$this->encrypt($this->awsAccessKey),
                     "awsSecretAccessKey"=>$this->encrypt($this->awsSecretAccessKey));
+
+          $awsArr = array("bucketName"=>base64_encode($this->bucketName),
+                     "awsAccessKey"=>base64_encode($this->awsAccessKey),
+                     "awsSecretAccessKey"=>base64_encode($this->awsSecretAccessKey));
+
+
           if(!empty($awsData))
           {
               $success = true;
@@ -69,7 +75,7 @@ class AwsFilesController extends AppController
             $message = 'Data Not Found';
           }
           //pr($this->decrypt($awsData['bucketName'])); exit;
-         $this->set(['success' => $success,'message'=>$message,'awsData' => $awsData,'_serialize' => ['success','message','awsData']]);
+         $this->set(['success' => $success,'message'=>$message,'awsData' => $awsData,'awsArr'=>$awsArr,'_serialize' => ['success','message','awsData','awsArr']]);
    }
 
 

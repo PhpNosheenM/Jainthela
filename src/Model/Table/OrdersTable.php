@@ -117,11 +117,7 @@ class OrdersTable extends Table
             ->requirePresence('order_no', 'create')
             ->notEmpty('order_no');
 
-        $validator
-            ->scalar('ccavvenue_tracking_no')
-            ->maxLength('ccavvenue_tracking_no', 200)
-            ->requirePresence('ccavvenue_tracking_no', 'create')
-            ->notEmpty('ccavvenue_tracking_no');
+
 
         $validator
             ->decimal('amount_from_wallet')
@@ -165,11 +161,6 @@ class OrdersTable extends Table
             ->notEmpty('order_type');
 
         $validator
-            ->dateTime('delivery_date')
-            ->requirePresence('delivery_date', 'create')
-            ->notEmpty('delivery_date');
-
-        $validator
             ->scalar('order_status')
             ->maxLength('order_status', 30)
             ->requirePresence('order_status', 'create')
@@ -179,12 +170,6 @@ class OrdersTable extends Table
             ->dateTime('order_date')
             ->requirePresence('order_date', 'create')
             ->notEmpty('order_date');
-
-        $validator
-            ->scalar('payment_status')
-            ->maxLength('payment_status', 30)
-            ->requirePresence('payment_status', 'create')
-            ->notEmpty('payment_status');
 
         $validator
             ->scalar('order_from')

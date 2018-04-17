@@ -535,11 +535,12 @@ class CartsController extends AppController
 					$remaining_wallet_amount= number_format(round($wallet_total_add_amount-$wallet_total_used_amount), 2);
 				}
 			}
+			$order_no = uniqid();
 			$success = true;
 			$message ='Data found';
 
-	    $this->set(compact('success', 'message','remaining_wallet_amount','generate_order_no','grand_total','delivery_charge_amount','payableAmount','customer_addresses','all_dates','carts','comboData'));
-	    $this->set('_serialize', ['success', 'message','remaining_wallet_amount','generate_order_no','grand_total','delivery_charge_amount','payableAmount','customer_addresses','all_dates','carts','comboData']);
+	    $this->set(compact('success', 'message','order_no','remaining_wallet_amount','generate_order_no','grand_total','delivery_charge_amount','payableAmount','customer_addresses','all_dates','carts','comboData'));
+	    $this->set('_serialize', ['success', 'message','order_no','remaining_wallet_amount','generate_order_no','grand_total','delivery_charge_amount','payableAmount','customer_addresses','all_dates','carts','comboData']);
 		}
 
 public function moveToBag()

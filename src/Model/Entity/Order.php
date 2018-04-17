@@ -55,6 +55,7 @@ class Order extends Entity
      * @var array
      */
     protected $_accessible = [
+        'city_id' => true,
         'location_id' => true,
         'customer_id' => true,
         'driver_id' => true,

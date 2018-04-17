@@ -38,6 +38,11 @@ class WishListItemsTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
+        $this->belongsTo('ComboOffers', [
+            'foreignKey' => 'combo_offer_id',
+              'joinType' => 'INNER'
+        ]);
+
         $this->belongsTo('WishLists', [
             'foreignKey' => 'wish_list_id',
             'joinType' => 'INNER'

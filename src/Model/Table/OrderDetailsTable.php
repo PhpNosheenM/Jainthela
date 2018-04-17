@@ -41,7 +41,7 @@ class OrderDetailsTable extends Table
         $this->belongsTo('Orders', [
             'foreignKey' => 'order_id',
             'joinType' => 'INNER'
-        ]); 
+        ]);
         $this->belongsTo('ItemVariations', [
             'foreignKey' => 'item_variation_id'
         ]);
@@ -90,8 +90,8 @@ class OrderDetailsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['order_id'], 'Orders'));
-        $rules->add($rules->existsIn(['item_variation_id'], 'ItemVariations'));
-        $rules->add($rules->existsIn(['combo_offer_id'], 'ComboOffers'));
+      //  $rules->add($rules->existsIn(['item_variation_id'], 'ItemVariations'));
+      //  $rules->add($rules->existsIn(['combo_offer_id'], 'ComboOffers'));
 
         return $rules;
     }

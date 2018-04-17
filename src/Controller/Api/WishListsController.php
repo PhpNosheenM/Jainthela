@@ -154,9 +154,12 @@ class WishListsController extends AppController
         if(!empty($customer_id))
         {
             $wishlist = $this->WishLists->find()
-                        ->contain(['WishListItems'=>['ItemVariations'=>['UnitVariations'=>['Units'],'Items']]])
+                      ->contain(['WishListItems'=>['ItemVariations'=>['UnitVariations'=>['Units'],'Items']]])
+                      ->where(['customer_id'=>$customer_id]);
+            $wishlistCombo = $this->WishLists->find()
+                        ->contain(['WishListItems'=>['ComboOffers'=>['ComboOfferDetails']]])
                         ->where(['customer_id'=>$customer_id]);
-            if(!empty($wishlist->toArray()))
+            if(!empty($wishlist->toArray()) || !empty($wishlistCombo->toArray()))
             {
               $success = true;
               $message = 'wish list found';
@@ -171,6 +174,6 @@ class WishListsController extends AppController
           $success = false;
           $message = 'customer id empty';
         }
-        $this->set(['success' => $success,'message'=>$message,'wishlist'=>$wishlist,'_serialize' => ['success','message','wishlist']]);
+        $this->set(['success' => $success,'message'=>$message,'wishlist'=>$wishlist,'wishlistcombo'=>$wishlistCombo,'_serialize' => ['success','message','wishlist','wishlistcombo']]);
     }
 }

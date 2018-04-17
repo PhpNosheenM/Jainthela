@@ -234,42 +234,46 @@ class OrdersController extends AppController
     public function placeOrder()
     {
       if ($this->request->is('post')) {
-
-        $customer_address_id = $this->request->data['customer_address_id'];
-
-        $location_data = $this->Orders->CustomerAddresses->find()
-        ->select(['location_id'])->where(['id'=>$customer_address_id]);
-
-        if(!empty($location_data->toArray()))
-        {
-          foreach ($location_data as $value) {
-            $location_id = $value->location_id;
-          }
-        }
-
-        $order = $this->Orders->newEntity();
-    		$LocationData = $this->Orders->Locations->get($location_id);
-    		$Voucher_no = $this->Orders->find()->select(['voucher_no'])->where(['Orders.location_id'=>$location_id])->order(['voucher_no' => 'DESC'])->first();
-    		$today_date=date("Y-m-d");
-    		$orderdate = explode('-', $today_date);
-    		$year = $orderdate[0];
-    		$month   = $orderdate[1];
-    		$day  = $orderdate[2];
-    		if($Voucher_no)
-    		{
-    			$voucher_no=$Voucher_no->voucher_no+1;
-    		}
-    		else
-    		{
-    			$voucher_no=1;
-    		}
-    		$purchaseInvoiceVoucherNo='IN'.'/'.$year.''.$month.''.$day.'/'.$voucher_no;
-    		$order_no=$LocationData->alise.'/'.$purchaseInvoiceVoucherNo;
-        $order = $this->Orders->patchEntity($order, $this->request->getData());
-
-        pr($order);exit;
-
-
+          $customer_address_id = $this->request->data['customer_address_id'];
+          $customer_id = $this->request->data['customer_id'];
+          $location_data = $this->Orders->CustomerAddresses->find()
+          ->select(['location_id'])->where(['id'=>$customer_address_id]);
+            if(!empty($location_data->toArray()))
+            {
+              foreach ($location_data as $value) {
+                $location_id = $value->location_id;
+              }
+            }
+            $order = $this->Orders->newEntity();
+        		$LocationData = $this->Orders->Locations->get($location_id);
+        		$Voucher_no = $this->Orders->find()->select(['voucher_no'])->where(['Orders.location_id'=>$location_id])->order(['voucher_no' => 'DESC'])->first();
+        		if($Voucher_no){
+        			$voucher_no=$Voucher_no->voucher_no+1;
+        		}
+        		else
+        		{
+        			$voucher_no=1;
+        		}
+            $this->loadModel('Carts');
+            $carts_data=$this->Carts->find()->where(['customer_id'=>$customer_id])->contain(['ItemVariations']);
+            $i=0;
+              foreach($carts_data as $carts_data_fetch)
+              {
+                 $amount=$carts_data_fetch->cart_count * $carts_data_fetch->item_variation->sales_rate;
+                 $this->request->data['order_details'][$i]['item_variation_id']=$carts_data_fetch->item_variation_id;
+                $this->request->data['order_details'][$i]['combo_offer_id']=$carts_data_fetch->combo_offer_id;
+                $this->request->data['order_details'][$i]['quantity']=$carts_data_fetch->quantity;
+                $this->request->data['order_details'][$i]['rate']=$carts_data_fetch->item_variation->sales_rate;
+                $this->request->data['order_details'][$i]['amount']=$amount;
+                $i++;
+              }
+            $sales_ledgers = $this->Orders->Ledgers->find()->select(['id'])->where(['sales_account'=>1])->first()->toArray();
+            $cash_bank = $this->Orders->Ledgers->find()->select(['id'])->where(['cash'=>1])->first()->toArray();
+            $order = $this->Orders->patchEntity($order, $this->request->getData());
+            $order->voucher_no = $voucher_no;
+            $order->order_date = date('Y-m-d');
+            $order->location_id = $location_id;
+            $order->sales_ledger_id = $sales_ledgers['id'];
             if ($this->Orders->save($order)) {
                 $message='Order placed successfully';
           			$success=true;
@@ -278,35 +282,10 @@ class OrdersController extends AppController
               $message='Order not placed';
         			$success=false;
             }
-
         }
-
-    		$partyParentGroups = $this->Orders->AccountingGroups->find()
-    						->where(['AccountingGroups.purchase_invoice_party'=>'1']);
-
-    		$partyGroups=[];
-    		foreach($partyParentGroups as $partyParentGroup)
-    		{
-    			$accountingGroups = $this->Orders->AccountingGroups
-    			->find('children', ['for' => $partyParentGroup->id])->toArray();
-    			$partyGroups[]=$partyParentGroup->id;
-    			foreach($accountingGroups as $accountingGroup){
-    				$partyGroups[]=$accountingGroup->id;
-    			}
-    		}
-    		if($partyGroups)
-    		{
-    			$Partyledgers = $this->Orders->SellerLedgers->find()
-    							->where(['SellerLedgers.accounting_group_id IN' =>$partyGroups])
-    							->contain(['Sellers'=>['Locations'=>['Cities']]]);
-            }
-    		$partyOptions=[];
-    		foreach($Partyledgers as $Partyledger){
-    			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id,'city_id'=>$Partyledger->seller->city_id,'state_id'=>$Partyledger->seller->location->city->state_id,'bill_to_bill_accounting'=>$Partyledger->bill_to_bill_accounting,'seller_id'=>$Partyledger->seller_id];
-    		}
-
-            $this->set(compact('order', 'order_no'));
-    }
+        $this->set(compact('success', 'message'));
+        $this->set('_serialize', ['success', 'message']);
+}
 
 
 }
