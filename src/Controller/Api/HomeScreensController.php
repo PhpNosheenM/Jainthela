@@ -46,6 +46,7 @@ class HomeScreensController extends AppController
 
 	 public function homescreen(){
 		$city_id=@$this->request->query['city_id'];
+		$customer_id=@$this->request->query['customer_id'];
 		if(!empty($city_id)){
 			/* $Banners=$this->HomeScreens->Banners->find()->where(['city_id'=>$city_id,'status'=>'Active']);
 			$SubCategories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'	section_show'=>'yes','status'=>'Active']);
@@ -110,7 +111,24 @@ class HomeScreensController extends AppController
 
 					if($HomeScreen->model_name=='Category'){
 							$Items=$this->HomeScreens->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])->contain(['ItemActive'=>['ItemsVariations'=>['UnitVariations'=>['Units']]]]);
-							if($Items){
+							if(!empty($Items->toArray())){
+
+								foreach ($Items as $Item) {
+									foreach ($Item->item_active as $itemData) {
+
+										foreach ($itemData->items_variations as $items_variation) {
+											$count_cart = $this->HomeScreens->Carts->find()->select(['Carts.cart_count'])->where(['Carts.item_variation_id'=>$items_variation->id,'Carts.customer_id'=>$customer_id]);
+											$items_variation->cart_count = 0;
+											$count_value = 0;
+
+											foreach ($count_cart as $count) {
+			                  $count_value = $count->cart_count;
+			                }
+			                $items_variation->cart_count = $count_value;
+										}
+									}
+								}
+
 								$Itemc=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$Items);
 								array_push($dynamic,$Itemc);
 
@@ -123,6 +141,21 @@ class HomeScreensController extends AppController
 							$Combooffers=$this->HomeScreens->ComboOffers->find()->where(['status'=>'Active','city_id'=>$city_id])->limit(3);
 
 							if($Combooffers){
+								$count_value = 0;
+								$cart_count =0;
+									foreach ($Combooffers as $Combooffer) {
+										$count_cart = $this->HomeScreens->ComboOffers->Carts->find()->select(['Carts.cart_count'])->where(['Carts.combo_offer_id'=>$Combooffer->id,'Carts.customer_id'=>$customer_id]);
+										//pr($count_cart->toArray());exit;
+											if(!empty($count_cart->toArray()))
+											{
+													foreach ($count_cart as $count) {
+														$count_value = $count->cart_count;
+													}
+													$cart_count = $count_value;
+											}
+										$Combooffer->cart_count = $cart_count;
+									}
+
 								$Combooffer=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$Combooffers);
 								array_push($dynamic,$Combooffer);
 
@@ -141,8 +174,23 @@ class HomeScreensController extends AppController
 								->limit(2)
 								->contain(['ItemsVariations'=>['UnitVariations'=>['Units']]]);
 							}]);
-
+						//	pr($Singleimagetwoitems->toArray());exit;
 							if($Singleimagetwoitems){
+								foreach ($Singleimagetwoitems as $Item) {
+									foreach ($Item->items as $itemData) {
+
+										foreach ($itemData->items_variations as $items_variation) {
+											$count_cart = $this->HomeScreens->Carts->find()->select(['Carts.cart_count'])->where(['Carts.item_variation_id'=>$items_variation->id,'Carts.customer_id'=>$customer_id]);
+											$items_variation->cart_count = 0;
+											$count_value = 0;
+
+											foreach ($count_cart as $count) {
+			                  $count_value = $count->cart_count;
+			                }
+			                $items_variation->cart_count = $count_value;
+										}
+									}
+								}
 								$Singleimagetwoitem=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,'Image'=>$HomeScreen->image,"HomeScreens"=>$Singleimagetwoitems);
 								array_push($dynamic,$Singleimagetwoitem);
 
@@ -154,10 +202,10 @@ class HomeScreensController extends AppController
 
 
 				}
-
+				$cart_item_count = $this->HomeScreens->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])->count();
 				//$dynamic=array($Express,$Brand);
 				$data=array('dynamic'=>$dynamic);
-				$this->set(['success' => true,'message'=>'Data Found Successfully','data' => $data,'_serialize' => ['success','message','data']]);
+				$this->set(['success' => true,'message'=>'Data Found Successfully','total_count'=>$cart_item_count,'data' => $data,'_serialize' => ['success','message','total_count','data']]);
 			}else{
 				$data=[];
 				$this->set(['success' => false,'message'=>'Data Not Found','data' => $data,'_serialize' => ['success','message','data']]);

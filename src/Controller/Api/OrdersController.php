@@ -75,9 +75,18 @@ class OrdersController extends AppController
 
         if(!empty($orders_details_data->toArray()))
         {
-
+          //pr($orders_details_data->toArray());exit;
           foreach ($orders_details_data as  $orders_detail) {
               $customer_address_id = $orders_detail->customer_address_id;
+              foreach ($orders_detail->order_details as $data) {
+                  $count_cart = $this->Orders->Carts->find()->select(['Carts.cart_count'])->where(['Carts.item_variation_id'=>$data->item_variation->id,'Carts.customer_id'=>$customer_id]);
+                    $data->item_variation->cart_count = 0;
+                    $count_value = 0;
+                    foreach ($count_cart as $count) {
+                      $count_value = $count->cart_count;
+                    }
+                    $data->item_variation->cart_count = $count_value;
+              }
           }
 
           $customer_addresses=$this->Orders->CustomerAddresses->find()

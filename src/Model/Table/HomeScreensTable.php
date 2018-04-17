@@ -35,11 +35,12 @@ class HomeScreensTable extends Table
         $this->setTable('home_screens');
         $this->setDisplayField('title');
         $this->setPrimaryKey('id');
-		$this->belongsTo('Banners');
-		$this->belongsTo('Brands');
-		$this->belongsTo('ApiVersions');
-		$this->belongsTo('ExpressDeliveries');
-		$this->belongsTo('ComboOffers');
+        $this->belongsTo('Carts');
+        $this->belongsTo('Banners');
+    		$this->belongsTo('Brands');
+    		$this->belongsTo('ApiVersions');
+    		$this->belongsTo('ExpressDeliveries');
+    		$this->belongsTo('ComboOffers');
         $this->belongsTo('Categories', [
             'foreignKey' => 'category_id',
             'joinType' => 'INNER'

@@ -51,6 +51,8 @@ class ItemsTable extends Table
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
+          $this->belongsTo('Filters');
+
         $this->belongsTo('Categories', [
             'foreignKey' => 'category_id',
             'joinType' => 'INNER'
@@ -108,12 +110,12 @@ class ItemsTable extends Table
             'foreignKey' => 'item_id',
 			       'saveStrategy'=>'replace'
         ]);
-        
+
 		 $this->hasMany('ItemVariations', [
             'foreignKey' => 'item_id',
 			'saveStrategy'=>'replace'
         ]);
-		
+
 		$this->hasMany('PromotionDetails', [
             'foreignKey' => 'item_id'
         ]);
@@ -135,7 +137,7 @@ class ItemsTable extends Table
 		$this->hasMany('SellerItems')
             ->setForeignKey('item_id')
             ->setJoinType('INNER');
-			
+
         $this->hasMany('LeftItemReviewRatings', [
             'className'  =>'ItemReviewRatings',
             'foreignKey' => 'item_id',
@@ -155,7 +157,7 @@ class ItemsTable extends Table
 		  $this->hasMany('ItemsVariations', [
             'className' => 'ItemVariations',
 			      'foreignKey' => 'item_id'
-        ])->setConditions(['section_show'=>'Yes']);
+        ])->setConditions(['ItemsVariations.section_show'=>'Yes']);
 
         // HomeScreen Model used in Item (product detail) api
 
@@ -163,8 +165,8 @@ class ItemsTable extends Table
             'foreignKey' => 'item_id',
             'joinType' => 'INNER'
         ]);
-		
-		$this->belongsTo('WishListItems', [
+
+		    $this->belongsTo('WishListItems', [
             'foreignKey' => 'item_id',
             'joinType' => 'INNER'
         ]);

@@ -142,7 +142,7 @@ class WishListsController extends AppController
 			 }
 		  }else{
 			  $success = false;
-              $message = 'empty id';
+        $message = 'empty id';
 
 		  }
 		$this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);

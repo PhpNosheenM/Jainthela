@@ -64,6 +64,7 @@ class CartsTable extends Table
         $this->belongsTo('DeliveryCharges');
         $this->belongsTo('DeliveryDates');
         $this->belongsTo('DeliveryTimes');
+        $this->belongsTo('WishLists');
 
     }
 

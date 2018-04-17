@@ -87,6 +87,8 @@ class ComboOffersController extends AppController
 							$sales_rate=$ComboOffer->sales_rate;
 							$combo_offer_image=$ComboOffer->combo_offer_image;
 							$combo_offer_detail=$ComboOffer->combo_offer_details;
+							$maximum_quantity_purchase = $ComboOffer->maximum_quantity_purchase;
+							$out_of_stock = $ComboOffer->out_of_stock;
 							//pr($combo_offer_detail);
 							$item_names=[]; $quantitys=0;$item_name='';
 							foreach($combo_offer_detail as $combo_offer){
@@ -112,9 +114,7 @@ class ComboOffersController extends AppController
 		                }
 		                $cart_count = $count_value;
 								}
-
-
-							$offer[]=array('inWishList'=>$inWishList,'cart_count'=>$cart_count,"offer_id"=>$offer_id,"offer_name"=>$offer_name,"print_rate"=>$print_rate,"discount_per"=>$discount_per,"sales_rate"=>$sales_rate,"item_name"=>$item_name,"quantity"=>$quantitys,"combo_offer_image"=>$combo_offer_image);
+							$offer[]=array('inWishList'=>$inWishList,'cart_count'=>$cart_count,"offer_id"=>$offer_id,"offer_name"=>$offer_name,"print_rate"=>$print_rate,"discount_per"=>$discount_per,"sales_rate"=>$sales_rate,"item_name"=>$item_name,"quantity"=>$quantitys,"combo_offer_image"=>$combo_offer_image,"maximum_quantity_purchase"=>$maximum_quantity_purchase,"out_of_stock"=>$out_of_stock);
 						}
 
 
