@@ -47,6 +47,9 @@ class OrdersTable extends Table
 
         $this->belongsTo('Carts');
 
+        $this->belongsTo('GstFigures');
+        $this->belongsTo('AccountingEntries');
+
         $this->belongsTo('Locations', [
             'foreignKey' => 'location_id',
             'joinType' => 'INNER'

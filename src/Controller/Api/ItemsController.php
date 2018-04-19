@@ -55,7 +55,7 @@ class ItemsController extends AppController
         }else { $categoryWhere =''; }
 
         $items = $this->Items->find()
-        ->contain(['ItemsVariations' => function ($q) use($sellerWhere){ return $q->where($sellerWhere); }])
+        ->contain(['ItemsVariations' => function ($q) use($sellerWhere){ return $q->where($sellerWhere)->contain(['UnitVariations'=>['Units'],'Sellers']); } ])
         ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id])
         ->where($categoryWhere)
         ->where($brandWhere)

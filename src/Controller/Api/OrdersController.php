@@ -274,7 +274,29 @@ class OrdersController extends AppController
             $order->order_date = date('Y-m-d');
             $order->location_id = $location_id;
             $order->sales_ledger_id = $sales_ledgers['id'];
-            if ($this->Orders->save($order)) {
+
+            if ($orders = $this->Orders->save($order)) {
+
+
+            /*  foreach ($orders->order_details as $order_detail) {
+                  $rate = $order_detail->rate;
+                  $gstDatas = $this->Orders->OrderDetails->ItemVariations->find()
+                  ->contain(['Items'])->where(['ItemVariations.id'=>$order_detail->item_variation_id]);
+                  if(!empty($gstDatas))
+                  {
+                    foreach ($gstDatas as $gstData) {
+                      $gst_id = $gstData->item->gst_figure_id;
+                    }
+                  }
+
+                  $gstfigures = $this->Orders->GstFigures->find()->select(['id'])->where(['GstFigures.id'=>$gst_id]);
+                  $gstledgers = $this->Orders->Ledgers->find()->select(['id'])->where(['Ledgers.gst_figure_id'=>$gstfigures['id']]);
+
+                  $AccountingEntries = $this->Orders->AccountingEntries->newEntity();
+              } */
+
+
+
                 $message='Order placed successfully';
           			$success=true;
             }else
