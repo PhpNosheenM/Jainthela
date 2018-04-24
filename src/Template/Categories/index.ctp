@@ -72,8 +72,15 @@
 						<label>Category Image</label> 
 						<?php
 							$required=true;
-							$keyname = 'category/'.$category->id.'/app/'.$category->category_image;
-							$info = $awsFileLoad->doesObjectExistFile($keyname);
+							$keyname = $category->category_image_web;
+							if(!empty($keyname))
+							{
+								 $info = $awsFileLoad->doesObjectExistFile($keyname);
+							}
+							else
+							{
+								$info='';
+							}
 							if($info)
 							{
 								$required=false;
