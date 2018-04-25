@@ -49,7 +49,7 @@ class AwsFileComponent extends Component
 			'SourceFile'   => $sourceFile,
 			'ContentType'  => $contentType,
 			'ContentDisposition' => 'inline',
-			'ACL'          => 'public-read',
+			//'ACL'          => 'public-read',
 			'StorageClass' => 'REDUCED_REDUNDANCY'
 		));
 	}
@@ -64,7 +64,7 @@ class AwsFileComponent extends Component
 			'Body'   => $body,
 			'ContentType'  => $contentType,
 			'ContentDisposition' => 'inline',
-			'ACL'          => 'public-read',
+			//'ACL'          => 'public-read',
 			'StorageClass' => 'REDUCED_REDUNDANCY'
 		));
 	}

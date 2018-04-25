@@ -35,8 +35,16 @@
 							     <label>Banner Image</label> 
 									<?php
 										$required=true;
-										$keyname = 'banner/'.$banner->id.'/app/'.$banner->banner_image;
-										$info = $awsFileLoad->doesObjectExistFile($keyname);
+										$keyname = $banner->banner_image;
+										 
+										if(!empty($keyname))
+										{
+											 $info = $awsFileLoad->doesObjectExistFile($keyname);
+										}
+										else
+										{
+											$info='';
+										}
 										if($info)
 										{
 											$required=false;
