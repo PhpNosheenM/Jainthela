@@ -53,7 +53,8 @@ class ComboOffersTable extends Table
             'foreignKey' => 'combo_offer_id'
         ]);
         $this->hasMany('ComboOfferDetails', [
-            'foreignKey' => 'combo_offer_id'
+            'foreignKey' => 'combo_offer_id',
+			'saveStrategy'=>'replace'
         ]);
         $this->hasMany('WishListItems', [
             'foreignKey' => 'combo_offer_id'

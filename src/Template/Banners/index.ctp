@@ -35,7 +35,7 @@
 							     <label>Banner Image</label> 
 									<?php
 										$required=true;
-										$keyname = $banner->banner_image;
+										$keyname = $banner->banner_image_web;
 										 
 										if(!empty($keyname))
 										{

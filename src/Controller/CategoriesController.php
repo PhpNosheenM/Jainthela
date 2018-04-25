@@ -71,15 +71,20 @@ class CategoriesController extends AppController
 					
 					/* Resize Image */
 					$destination_url = WWW_ROOT . 'img/temp/'.$category_image_name;
-					$image = imagecreatefromjpeg($category_image['tmp_name']);
+					if($category_ext[1]=='png'){
+						$image = imagecreatefrompng($category_image['tmp_name']);
+					}else{
+						$image = imagecreatefromjpeg($category_image['tmp_name']); 
+					}
 					imagejpeg($image, $destination_url, 10);
+					
 
 					/* For App Image */
 					$deletekeyname = 'category/'.$category_data->id.'/app';
 					$this->AwsFile->deleteMatchingObjects($deletekeyname);
 					$keyname = 'category/'.$category_data->id.'/app/'.$category_image_name;
 					$this->AwsFile->putObjectFile($keyname,$destination_url,$category_image['type']);
-					$category_data->category_image_app=$keyname;
+					$category_data->category_image=$keyname;
 					$this->Categories->save($category_data);
 					
 					/* Delete Temp File */

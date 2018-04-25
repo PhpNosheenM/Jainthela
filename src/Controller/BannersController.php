@@ -27,6 +27,7 @@ class BannersController extends AppController
         $this->paginate = [
             'limit' => 20
         ];
+		
         $banners =$this->Banners->find()->where(['Banners.city_id'=>$city_id]);
 		
 		if($id)
@@ -59,14 +60,21 @@ class BannersController extends AppController
 					$this->AwsFile->deleteMatchingObjects($deletekeyname);
 					$keyname = 'banner/'.$banner_data->id.'/web/'.$banner_image_name;
 					$this->AwsFile->putObjectFile($keyname,$banner_image['tmp_name'],$banner_image['type']);
-					$banner_data->banner_image=$keyname;
+					$banner_data->banner_image_web=$keyname;
 					$this->Banners->save($banner_data);
 
 					/* Resize Image */
-					$destination_url = WWW_ROOT . 'img/temp/'.$banner_image_name;
-					$image = imagecreatefromjpeg($banner_image['tmp_name']);
-					imagejpeg($image, $destination_url, 10);
-
+					//$destination_url = WWW_ROOT . 'img/temp/'.$banner_image_name;
+					$tempdir=sys_get_temp_dir();
+					$destination_url = $tempdir . '/'.$banner_image_name;
+					if($banner_ext[1]=='png'){
+						$image = imagecreatefrompng($banner_image['tmp_name']);
+					}else{
+						$image = imagecreatefromjpeg($banner_image['tmp_name']); 
+					}
+					$im = imagejpeg($image, $destination_url, 10);
+					
+					
 					/* For App Image */
 					$deletekeyname = 'banner/'.$banner_data->id.'/app';
 					$this->AwsFile->deleteMatchingObjects($deletekeyname);
@@ -75,7 +83,7 @@ class BannersController extends AppController
 					$banner_data->banner_image=$keyname;
 					$this->Banners->save($banner_data);
 
-					/* Delete Temp File */
+					 
 					$file = new File(WWW_ROOT . $destination_url, false, 0777);
 					$file->delete();
 				}
