@@ -74,7 +74,31 @@
 							<div class="form-group">                                        
 								<label class="col-md-3 control-label">Units</label>
 								<div class="col-md-9 col-xs-12">
-									<?php echo $this->Form->control('unit_variations._ids', ['label' => false,'options' =>$unit_option,'multiple' => 'checkbox']); ?>
+									<?php
+					
+									foreach ($unit_option as $data) {
+										echo '<div class="checkbox">';
+											echo '<label>';
+										 		echo $this->Form->checkbox('unit_variation[]',['value'=>$data['value'], 'hiddenField' => false,'label' => false]);
+										 		echo $data['text']; 
+										 	echo '</label>';
+										 	?>
+										 	<?= $this->Form->control('item_image',['type'=>'file','label'=>false,'id' => 'item_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>true]) ?>
+									<label id="item_image-error" class="error" for="item_image"></label>
+										 	<?php
+										 echo '</div>';
+									}
+									?>
+									<?php //echo $this->Form->control('unit_variations._ids', ['label' => false,'options' =>$unit_option,'multiple' => 'checkbox']); 
+									
+									?>
+								</div>
+								<div class="form-group" id="web_image_data">
+									
+									<div class="col-md-9 col-xs-12"> 
+									<?= $this->Form->control('item_image',['type'=>'file','label'=>false,'id' => 'item_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>true]) ?>
+									<label id="item_image-error" class="error" for="item_image"></label>
+									</div>
 								</div>
 							</div>
 							<div class="form-group">    
@@ -112,7 +136,7 @@
 									<?= $this->Form->control('description',['class'=>'form-control','placeholder'=>'Description','label'=>false,'rows'=>'4']) ?>
 								</div>
 							</div>
-						<div class="form-group" id="web_image_data">
+							<div class="form-group" id="web_image_data">
 								<label class="col-md-3 control-label">Web Image</label> 
 								<div class="col-md-9 col-xs-12"> 
 								<?= $this->Form->control('item_image',['type'=>'file','label'=>false,'id' => 'item_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>true]) ?>
