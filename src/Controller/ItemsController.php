@@ -104,20 +104,14 @@ class ItemsController extends AppController
 							$item_item_image='item'.time().'.'.$item_ext[1];
 						}
 
-						$item_data=$this->Items->ItemVariationMasters->newEntity();
-				        $item_data->item_id=$item_data->id;
-				        $item_data->unit_variation_id=$value['unit_variation_id'];
-				        $item_data->created_by= $user_id;
-				        $item_data=$this->Items->ItemVariationMasters->save($item_data);
-        				$lastInsertId=$item_data->id;
-					    $query = $this->Items->ItemVariationMasters->query();
-					    $query->update()
-						   	->set([
-						   		'item_image' => $item_item_image,
-						   		'item_image_web' => $item_item_image
-						   		])
-						    ->where(['id' => $lastInsertId])
-						    ->execute();
+						$item_data_variation=$this->Items->ItemVariationMasters->newEntity();
+				        $item_data_variation->item_id=$item_data->id;
+				        $item_data_variation->unit_variation_id=$value['unit_variation_id'];
+				        $item_data_variation->created_by= $user_id;
+				        $item_data_variation=$this->Items->ItemVariationMasters->save($item_data_variation);
+        				$lastInsertId=$item_data_variation->id;
+
+					   
 
 						if(empty($item_error))
 						{
@@ -129,14 +123,27 @@ class ItemsController extends AppController
 
 							/* Resize Image */
 							$destination_url = WWW_ROOT . 'img/temp/'.$item_item_image;
-							$image = imagecreatefromjpeg($item_image['tmp_name']);
+							if($item_ext[1]=='png'){
+								$image = imagecreatefrompng($item_image['tmp_name']);
+							}else{
+								$image = imagecreatefromjpeg($item_image['tmp_name']); 
+							}
 							imagejpeg($image, $destination_url, 10);
 
 							/* For App Image */
 							$deletekeyname = 'item/'.$lastInsertId.'/app';
 							$this->AwsFile->deleteMatchingObjects($deletekeyname);
-							$keyname = 'item/'.$lastInsertId.'/app/'.$item_item_image;
-							$this->AwsFile->putObjectFile($keyname,$destination_url,$item_image['type']);
+							$keyname1 = 'item/'.$lastInsertId.'/app/'.$item_item_image;
+							$this->AwsFile->putObjectFile($keyname1,$destination_url,$item_image['type']);
+
+							 $query = $this->Items->ItemVariationMasters->query();
+					    	$query->update()
+						   	->set([
+						   		'item_image' => $keyname1,
+						   		'item_image_web' => $keyname
+						   		])
+						    ->where(['id' => $lastInsertId])
+						    ->execute();
 
 							/* Delete Temp File */
 							$file = new File(WWW_ROOT . $destination_url, false, 0777);
