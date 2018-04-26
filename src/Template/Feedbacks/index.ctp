@@ -1,61 +1,95 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\Feedback[]|\Cake\Collection\CollectionInterface $feedbacks
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('New Feedback'), ['action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Customers'), ['controller' => 'Customers', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Customer'), ['controller' => 'Customers', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Cities'), ['controller' => 'Cities', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New City'), ['controller' => 'Cities', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="feedbacks index large-9 medium-8 columns content">
-    <h3><?= __('Feedbacks') ?></h3>
-    <table cellpadding="0" cellspacing="0">
-        <thead>
-            <tr>
-                <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('customer_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('city_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('name') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('email') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('mobile_no') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('created_on') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($feedbacks as $feedback): ?>
-            <tr>
-                <td><?= $this->Number->format($feedback->id) ?></td>
-                <td><?= $feedback->has('customer') ? $this->Html->link($feedback->customer->name, ['controller' => 'Customers', 'action' => 'view', $feedback->customer->id]) : '' ?></td>
-                <td><?= $feedback->has('city') ? $this->Html->link($feedback->city->name, ['controller' => 'Cities', 'action' => 'view', $feedback->city->id]) : '' ?></td>
-                <td><?= h($feedback->name) ?></td>
-                <td><?= h($feedback->email) ?></td>
-                <td><?= h($feedback->mobile_no) ?></td>
-                <td><?= h($feedback->created_on) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['action' => 'view', $feedback->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $feedback->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $feedback->id], ['confirm' => __('Are you sure you want to delete # {0}?', $feedback->id)]) ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
-    </div>
+<?php $this->set('title', 'Feedbacks'); ?>
+<div class="page-content-wrap">
+	<div class="page-title">                    
+		<h2><span class="fa fa-arrow-circle-o-left"></span> Feedback</h2>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">List Of Feedback</h3>
+				<div class="pull-right">
+					<div class="pull-left">
+					<?= $this->Form->create('Search',['type'=>'GET']) ?>
+						<div class="form-group" style="display:inline-table">
+							<div class="input-group">
+								<div class="input-group-addon">
+									<span class="fa fa-search"></span>
+								</div>
+								<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
+								<div class="input-group-btn">
+									<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
+								</div>
+							</div>
+						</div>
+						<?= $this->Form->end() ?>
+					</div> 
+				</div>   
+			</div>
+				
+		    <div class="panel-body">
+				<?php $page_no=$this->Paginator->current('delivery_charges'); $page_no=($page_no-1)*20; ?>
+			    <div class="table-responsive">
+				        <table class="table table-bordered">
+								<thead>
+									<tr>
+										<th><?= ('SN.') ?></th>
+										<th><?= ('Customer') ?></th>
+										<th><?= ('Name') ?></th>
+										<th><?= ('Email') ?></th>
+										<th><?= ('Mobile No.') ?></th>
+										<th><?= ('Comment') ?></th>
+										<th><?= ('Created On') ?></th>
+									</tr>
+								</thead>
+					       <tbody>                                            
+							    <?php 
+								$i = $paginate_limit*($this->Paginator->counter('{{page}}')-1);
+								foreach ($feedbacks as $data): ?>
+								<tr>
+									<td><?= $this->Number->format(++$i) ?></td>
+									<td><?= h($data->customer->name) ?></td>
+									<td><?= h($data->name) ?></td>
+									<td><?= h($data->email) ?></td>
+									<td><?= h($data->mobile_no) ?></td>
+									<td><?= h($data->comment) ?></td>
+									<td><?= h($data->created_on) ?></td>
+								</tr>
+					            <?php endforeach; ?>
+					       </tbody>
+				    </table>
+				</div>	 	 
+            </div>      
+               <div class="panel-footer">
+						<div class="paginator pull-right">
+								<ul class="pagination">
+								<?= $this->Paginator->first(__('First')) ?>
+								<?= $this->Paginator->prev(__('Previous')) ?>
+								<?= $this->Paginator->numbers() ?>
+								<?= $this->Paginator->next(__('Next')) ?>
+								<?= $this->Paginator->last(__('Last')) ?>
+								</ul>
+								<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+						</div>
+               </div> 			   
+			</div>
+		</div>
+	</div>
 </div>
+
+<?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
+<?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
+<?php
+   $js='var jvalidate = $("#jvalidate").validate({
+		ignore: [],
+		rules: {                                            
+				amount: {
+						required: true,
+				},
+				charge: {
+						required: true,
+				},
+			}                                        
+		});';  
+echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		
+?>

@@ -23,19 +23,19 @@
 						<div class="panel-body">
 						    <div class="form-group">
 									<label>Title</label>
-									<?= $this->Form->control('name',['class'=>'form-control','placeholder'=>'Name','label'=>false]) ?>
+									<?= $this->Form->control('title',['class'=>'form-control','placeholder'=>'Title','label'=>false]) ?>
 									<span class="help-block"></span>
 					        </div>
 							<div class="form-group">
 									<label>Contain</label>
-									<?= $this->Form->control('link_name',['class'=>'form-control','placeholder'=>'Link Name','label'=>false]) ?>
+									<?= $this->Form->control('content_data',['class'=>'form-control','placeholder'=>'Content Data','label'=>false]) ?>
 									<span class="help-block"></span>
 					        </div>
 							<div class="form-group" id="web_image_data">
 							     <label>Express Deliveries Image</label> 
 									<?php
 										$required=true;
-										$keyname = $expressDeliverie->banner_image_web;
+										$keyname = $expressDeliverie->icon_web;
 										 
 										if(!empty($keyname))
 										{
@@ -50,7 +50,7 @@
 											$required=false;
 										}
 									?>
-										<?= $this->Form->control('banner_image',['type'=>'file','label'=>false,'id' => 'banner_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>$required]) ?>
+										<?= $this->Form->control('icon',['type'=>'file','label'=>false,'id' => 'banner_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>$required]) ?>
 										<label id="banner_image-error" class="error" for="banner_image"></label>
 										<?php  
 										if($info)
@@ -115,8 +115,8 @@
 								<thead>
 									<tr>
 										<th><?= ('SN.') ?></th>
-										<th><?= ('Name') ?></th>
-										<th><?= ('Link Name') ?></th>
+										<th><?= ('Title') ?></th>
+										<th><?= ('Content Data') ?></th>
 										<th><?= ('Status') ?></th>
 										<th scope="col" class="actions"><?= __('Actions') ?></th>
 									</tr>

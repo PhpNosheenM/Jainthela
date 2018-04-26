@@ -18,11 +18,45 @@ class TermConditionsController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    public function index($id=null)
     {
-        $termConditions = $this->paginate($this->TermConditions);
-
-        $this->set(compact('termConditions'));
+       $user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$this->viewBuilder()->layout('admin_portal');
+		$this->paginate = [
+			'limit' => 20,
+         ];
+		$termCondition1=$this->TermConditions->find();
+		if($id)
+		{
+		   $termCondition = $this->TermConditions->get($id);
+		}
+		else
+		{
+			$termCondition = $this->TermConditions->newEntity();
+		}
+		
+        if ($this->request->is(['post','put'])) {
+            $termCondition = $this->TermConditions->patchEntity($termCondition, $this->request->getData());
+			 
+            if ($this->TermConditions->save($termCondition)) {
+                $this->Flash->success(__('The cancel reason has been saved.'));
+				return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The cancel reason could not be saved. Please, try again.'));
+        }
+		else if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$termCondition1->where([
+							'OR' => [
+									'TermConditions.term_name LIKE' => $search.'%',
+									'TermConditions.term LIKE' => $search.'%'
+							]
+			]);
+		}
+		$termConditions = $this->paginate($termCondition1);
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('termConditions','termCondition','paginate_limit'));
     }
 
     /**

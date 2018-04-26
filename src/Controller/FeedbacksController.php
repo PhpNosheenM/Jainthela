@@ -20,12 +20,31 @@ class FeedbacksController extends AppController
      */
     public function index()
     {
+		
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$this->viewBuilder()->layout('admin_portal');
         $this->paginate = [
-            'contain' => ['Customers', 'Cities']
+			'limit' => 20
         ];
-        $feedbacks = $this->paginate($this->Feedbacks);
-
-        $this->set(compact('feedbacks'));
+        $feedback = $this->Feedbacks->find()->where(['Feedbacks.city_id'=>$city_id])->contain(['Customers']);
+		 
+		if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$feedback->where([
+							'OR' => [
+									'Feedbacks.name LIKE' => $search.'%',
+									'Feedbacks.email LIKE' => $search.'%',
+									'Feedbacks.mobile_no LIKE' => $search.'%',
+									'Feedbacks.comment LIKE' => $search.'%'
+							]
+			]);
+		}
+		$feedbacks=$this->paginate($feedback);
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('feedbacks','paginate_limit'));
+		   
+        
     }
 
     /**

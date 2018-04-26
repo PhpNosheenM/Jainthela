@@ -42,7 +42,8 @@
 	<!-- START CONTENT FRAME LEFT -->
 	<div class="content-frame-left">
 		<div class="panel panel-default">
-			<?= $this->Form->create($brand,['id'=>"jvalidate"]) ?>
+			<?= $this->Form->create($brand,['id'=>"jvalidate",'type'=>'file']) ?>
+			<?php $js=''; ?>
 				<div class="panel-body">
 					<div class="form-group">
 						<label>Brand Name</label>
@@ -54,6 +55,44 @@
 						<?php $options['Deactive'] = 'Deactive'; ?>
 						<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
 					</div>
+					<div class="form-group" id="web_image_data">
+							     <label>Brand Image</label> 
+									<?php
+										$required=true;
+										$keyname = $brand->brand_image_web;
+										 
+										if(!empty($keyname))
+										{
+											 $info = $awsFileLoad->doesObjectExistFile($keyname);
+										}
+										else
+										{
+											$info='';
+										}
+										if($info)
+										{
+											$required=false;
+										}
+									?>
+										<?= $this->Form->control('brand_image',['type'=>'file','label'=>false,'id' => 'brand_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>$required]) ?>
+										<label id="banner_image-error" class="error" for="banner_image"></label>
+										<?php  
+										if($info)
+										{
+											$result=$awsFileLoad->getObjectFile($keyname);
+											$app_image_view='<img src="data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'" alt="" style="width: 200px; height: 160px;" class="file-preview-image"/>';
+											
+											$js.=' $( document ).ready(function() {
+														$("#web_image_data").find("div.file-input-new").removeClass("file-input-new");
+														$("#web_image_data").find("div.file-preview-thumbnails").html("<div data-template=image class=file-preview-frame><div class=kv-file-content><img src=data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'></div></div>");
+														$("#web_image_data").find("div.file-preview-frame").addClass("file-preview-frame krajee-default  kv-preview-thumb");
+													
+														$("#web_image_data").find("img").addClass("file-preview-image kv-preview-data rotate-1");
+													});
+											';
+										}
+									?>
+							</div>
 				</div>
 				<div class="panel-footer">
 					<center>
@@ -116,6 +155,7 @@
 	<!-- END CONTENT FRAME BODY -->
 </div>
 <!-- END CONTENT FRAME -->
+<?= $this->Html->script('plugins/fileinput/fileinput.min.js',['block'=>'jsFileInput']) ?>
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
 <?php
@@ -133,6 +173,20 @@
 				},
 			   
 			}                                        
-		});';  
+		});
+		$("#brand_image").fileinput({
+            showUpload: false,
+            showCaption: false,
+            showCancel: false,
+            browseClass: "btn btn-danger",
+			allowedFileExtensions: ["jpg", "png"],
+			maxFileSize: 1024,
+		}); 
+		
+		
+		$(document).on("click", ".fileinput-remove-button", function(){
+			$(this).closest("div.file-input").find("input[type=file]").attr("required",true);
+		});
+		';    
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		
 ?>
