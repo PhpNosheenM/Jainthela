@@ -94,7 +94,31 @@ Router::prefix('api', function ($routes) {
     $routes->resources('WishLists');
     $routes->resources('Carts');
     $routes->resources('Orders');
-    $routes->fallbacks('InflectedRoute');
+
+	$routes->resources(
+			'Customers', [
+			   'map' => [
+				   'profile_edit' => [
+					   'action' => 'profile_edit',
+					   'method' => 'POST'
+					   ]
+				]
+			]
+		);    
+
+	$routes->resources(
+			'BulkBookingLeads', [
+			   'map' => [
+				   'add' => [
+					   'action' => 'add',
+					   'method' => 'POST'
+					   ]
+				]
+			]
+		); 		
+	
+	$routes->fallbacks('InflectedRoute');
+	
 
 });
 
