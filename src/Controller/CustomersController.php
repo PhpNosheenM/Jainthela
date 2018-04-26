@@ -2,6 +2,8 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Event\Event;
+use Cake\View\View;
 
 /**
  * Customers Controller
@@ -12,6 +14,12 @@ use App\Controller\AppController;
  */
 class CustomersController extends AppController
 {
+
+	public function beforeFilter(Event $event)
+	{
+		parent::beforeFilter($event);
+		//$this->Security->setConfig('unlockedActions', ['add']);
+	}
 
     /**
      * Index method

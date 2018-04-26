@@ -5,6 +5,8 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\Event\Event;
+use ArrayObject;
 
 /**
  * Promotions Model
@@ -48,7 +50,10 @@ class PromotionsTable extends Table
             'joinType' => 'INNER'
         ]);
         $this->hasMany('PromotionDetails', [
-            'foreignKey' => 'promotion_id'
+            'foreignKey' => 'promotion_id',
+			'dependent' => true,
+			'cascadeCallbacks' => true,
+			'saveStrategy' => 'replace'
         ]);
         $this->hasMany('Wallets', [
             'foreignKey' => 'promotion_id'
@@ -73,35 +78,22 @@ class PromotionsTable extends Table
             ->requirePresence('offer_name', 'create')
             ->notEmpty('offer_name');
 
-        $validator
-            ->scalar('description')
-            ->requirePresence('description', 'create')
-            ->notEmpty('description');
-
-        $validator
-            ->dateTime('start_date')
-            ->requirePresence('start_date', 'create')
-            ->notEmpty('start_date');
-
-        $validator
-            ->dateTime('end_date')
-            ->requirePresence('end_date', 'create')
-            ->notEmpty('end_date');
-
-        $validator
-            ->dateTime('created_on')
-            ->requirePresence('created_on', 'create')
-            ->notEmpty('created_on');
-
-        $validator
-            ->scalar('status')
-            ->maxLength('status', 10)
-            ->requirePresence('status', 'create')
-            ->notEmpty('status');
+        
 
         return $validator;
     }
-
+	
+	public function beforeMarshal(Event $event, ArrayObject $data)
+    {
+        if(!empty($data['start_date']))
+		{
+			$data['start_date'] = date('Y-m-d',strtotime($data['start_date'])); 
+		}
+		if(!empty($data['end_date']))
+		{
+			$data['end_date'] = date('Y-m-d',strtotime($data['end_date'])); 
+		}
+    }
     /**
      * Returns a rules checker object that will be used for validating
      * application integrity.

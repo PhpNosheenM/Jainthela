@@ -1,67 +1,91 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\Promotion[]|\Cake\Collection\CollectionInterface $promotions
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('New Promotion'), ['action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Admins'), ['controller' => 'Admins', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Admin'), ['controller' => 'Admins', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Cities'), ['controller' => 'Cities', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New City'), ['controller' => 'Cities', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Promotion Details'), ['controller' => 'PromotionDetails', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Promotion Detail'), ['controller' => 'PromotionDetails', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Wallets'), ['controller' => 'Wallets', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Wallet'), ['controller' => 'Wallets', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="promotions index large-9 medium-8 columns content">
-    <h3><?= __('Promotions') ?></h3>
-    <table cellpadding="0" cellspacing="0">
-        <thead>
-            <tr>
-                <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('admin_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('city_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('offer_name') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('start_date') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('end_date') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('created_on') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('status') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($promotions as $promotion): ?>
-            <tr>
-                <td><?= $this->Number->format($promotion->id) ?></td>
-                <td><?= $promotion->has('admin') ? $this->Html->link($promotion->admin->name, ['controller' => 'Admins', 'action' => 'view', $promotion->admin->id]) : '' ?></td>
-                <td><?= $promotion->has('city') ? $this->Html->link($promotion->city->name, ['controller' => 'Cities', 'action' => 'view', $promotion->city->id]) : '' ?></td>
-                <td><?= h($promotion->offer_name) ?></td>
-                <td><?= h($promotion->start_date) ?></td>
-                <td><?= h($promotion->end_date) ?></td>
-                <td><?= h($promotion->created_on) ?></td>
-                <td><?= h($promotion->status) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['action' => 'view', $promotion->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $promotion->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $promotion->id], ['confirm' => __('Are you sure you want to delete # {0}?', $promotion->id)]) ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
-    </div>
+<style>
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    border-color: transparent;
+    padding: 8px 8px !important; 
+    background: #F0F4F9;
+    color: #656C78;
+    font-size: 13px;
+}
+</style>
+<?php $this->set('title', 'Payments'); ?><!-- PAGE CONTENT WRAPPER -->
+<div class="page-content-wrap">
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title"><strong>Payments</strong></h3>
+				<div class="pull-right">
+			<div class="pull-left">
+				<?= $this->Form->create('Search',['type'=>'GET']) ?>
+					<div class="form-group" style="display:inline-table">
+						<div class="input-group">
+							<div class="input-group-addon">
+								<span class="fa fa-search"></span>
+							</div>
+							<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false,'value'=>@$search]) ?>
+							<div class="input-group-btn">
+								<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
+							</div>
+						</div>
+					</div>
+				<?= $this->Form->end() ?>
+			</div> 
+		</div> 	
+				</div>
+				<div class="panel-body">    
+					<div class="table-responsive">
+						<table class="table table-bordered">
+							<thead>
+								<tr>
+									<th><?= ('SNo.') ?></th>
+									<th><?= ('Offer Name') ?></th>
+									<th><?= ('Admin') ?></th>
+									<th><?= ('City') ?></th>
+									<th><?= ('Start Date') ?></th>
+									<th><?= ('End Date') ?></th>
+									<th><?= ('Status') ?></th>
+									<th scope="col" class="actions"><?= __('Actions') ?></th>
+								</tr>
+							</thead>
+							<tbody>                                            
+								<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); ?>
+								
+								  <?php foreach ($promotions as $promotion) : ?>
+								<tr>
+									<td><?= $this->Number->format(++$i) ?></td>
+									<td><?= h($promotion->offer_name) ?></td>
+									<td><?= h($promotion->admin->name) ?></td>
+									<td><?= h($promotion->city->name) ?></td>
+									<td><?= h(date("d-m-Y",strtotime($promotion->start_date))) ?></td>
+									<td><?= h(date("d-m-Y",strtotime($promotion->end_date))) ?></td>
+									<td><?= h($promotion->status) ?></td>
+									<td class="actions">
+										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'edit', $promotion->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+										<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $promotion->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $promotion->id),'escape'=>false]) ?>
+									
+									</td>
+								</tr>
+								<?php endforeach; ?>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="panel-footer">
+					<div class="paginator pull-right">
+						<ul class="pagination">
+							<?= $this->Paginator->first(__('First')) ?>
+							<?= $this->Paginator->prev(__('Previous')) ?>
+							<?= $this->Paginator->numbers() ?>
+							<?= $this->Paginator->next(__('Next')) ?>
+							<?= $this->Paginator->last(__('Last')) ?>
+						</ul>
+						<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+	</div>                    
+	
 </div>
