@@ -37,14 +37,57 @@ class BrandsController extends AppController
 			$brand = $this->Brands->newEntity();
 		}
         if ($this->request->is(['post','put'])) { 
+		
+			$brand_image=$this->request->data['brand_image'];
+			$brand_error=$brand_image['error'];
+			
 			$brand = $this->Brands->patchEntity($brand, $this->request->getData());
+			if(empty($brand_error))
+			{
+				$banner_ext=explode('/',$brand_image['type']);
+				$brand_image_name='brand'.time().'.'.$banner_ext[1];
+			}
+			
 			$brand->city_id=$city_id;
 			$brand->created_by=$user_id;
 			if($id)
 			{
 				$brand->id=$id;
 			}
-			if ($this->Brands->save($brand)) {
+			if ($brand_data=$this->Brands->save($brand)) {
+				
+				if(empty($brand_error))
+				{
+					/* For Web Image */
+					$deletekeyname = 'brand/'.$brand_data->id.'/web';
+					$this->AwsFile->deleteMatchingObjects($deletekeyname);
+					$keyname = 'brand/'.$brand_data->id.'/web/'.$brand_image_name;
+					$this->AwsFile->putObjectFile($keyname,$brand_image['tmp_name'],$brand_image['type']);
+					$brand_data->brand_image_web=$keyname;
+					$this->Brands->save($brand_data);
+
+					/* Resize Image */
+					//$destination_url = WWW_ROOT . 'img/temp/'.$brand_image_name;
+					$tempdir=sys_get_temp_dir();
+					$destination_url = $tempdir . '/'.$brand_image_name;
+					if($banner_ext[1]=='png'){
+						$image = imagecreatefrompng($brand_image['tmp_name']);
+					}else{
+						$image = imagecreatefromjpeg($brand_image['tmp_name']); 
+					}
+					$im = imagejpeg($image, $destination_url, 10);
+					
+					
+					/* For App Image */
+					$deletekeyname = 'brand/'.$brand_data->id.'/app';
+					$this->AwsFile->deleteMatchingObjects($deletekeyname);
+					$keyname = 'brand/'.$brand_data->id.'/app/'.$brand_image_name;
+					$this->AwsFile->putObjectFile($keyname,$brand_image['tmp_name'],$brand_image['type']);
+					$brand_data->brand_image=$keyname;
+					$this->Brands->save($brand_data);
+ 
+				}
+				
 				$this->Flash->success(__('The brand has been saved.'));
 
 				return $this->redirect(['action' => 'index']);

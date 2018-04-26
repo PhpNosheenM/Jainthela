@@ -38,14 +38,14 @@ class ExpressDeliveriesController extends AppController
 		}
 	
         if ($this->request->is(['post','put'])) {
-			$express_image=$this->request->data['banner_image'];
+			$express_image=$this->request->data['icon'];
 			$express_error=$express_image['error'];
 			
             $expressDeliverie = $this->ExpressDeliveries->patchEntity($expressDeliverie, $this->request->getData());
 			if(empty($express_error))
 			{
 				$express_ext=explode('/',$express_image['type']);
-				$express_image_name='banner'.time().'.'.$banner_ext[1];
+				$express_image_name='express'.time().'.'.$express_ext[1];
 			}
 
 			$expressDeliverie->city_id=$city_id;
@@ -58,18 +58,18 @@ class ExpressDeliveriesController extends AppController
 					$deletekeyname = 'express_delivery/'.$express_data->id.'/web';
 					$this->AwsFile->deleteMatchingObjects($deletekeyname);
 					$keyname = 'express_delivery/'.$express_data->id.'/web/'.$express_image_name;
-					$this->AwsFile->putObjectFile($keyname,$banner_image['tmp_name'],$banner_image['type']);
-					$express_data->banner_image_web=$keyname;
+					$this->AwsFile->putObjectFile($keyname,$express_image['tmp_name'],$express_image['type']);
+					$express_data->icon_web=$keyname;
 					$this->ExpressDeliveries->save($express_data);
 
 					/* Resize Image */
 					//$destination_url = WWW_ROOT . 'img/temp/'.$express_image_name;
 					$tempdir=sys_get_temp_dir();
 					$destination_url = $tempdir . '/'.$express_image_name;
-					if($banner_ext[1]=='png'){
-						$image = imagecreatefrompng($banner_image['tmp_name']);
+					if($express_ext[1]=='png'){
+						$image = imagecreatefrompng($express_image['tmp_name']);
 					}else{
-						$image = imagecreatefromjpeg($banner_image['tmp_name']); 
+						$image = imagecreatefromjpeg($express_image['tmp_name']); 
 					}
 					$im = imagejpeg($image, $destination_url, 10);
 					
@@ -78,13 +78,10 @@ class ExpressDeliveriesController extends AppController
 					$deletekeyname = 'express_delivery/'.$express_data->id.'/app';
 					$this->AwsFile->deleteMatchingObjects($deletekeyname);
 					$keyname = 'express_delivery/'.$express_data->id.'/app/'.$express_image_name;
-					$this->AwsFile->putObjectFile($keyname,$destination_url,$banner_image['type']);
-					$express_data->banner_image=$keyname;
+					$this->AwsFile->putObjectFile($keyname,$express_image['tmp_name'],$express_image['type']);
+					$express_data->icon=$keyname;
 					$this->ExpressDeliveries->save($express_data);
-
-					 
-					$file = new File(WWW_ROOT . $destination_url, false, 0777);
-					$file->delete();
+ 
 				}
                 $this->Flash->success(__('The banner has been saved.'));
 
@@ -92,7 +89,16 @@ class ExpressDeliveriesController extends AppController
             }
             $this->Flash->error(__('The banner could not be saved. Please, try again.'));
         }
-		 
+		 else if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$expressDeliveries->where([
+							'OR' => [
+									'ExpressDeliveries.title LIKE' => $search.'%',
+									'ExpressDeliveries.content_data LIKE' => $search.'%',
+									'ExpressDeliveries.status LIKE' => $search.'%'
+							]
+			]);
+		}
 
         $expressDeliveries = $this->paginate($expressDeliveries);
 		$paginate_limit=$this->paginate['limit'];
