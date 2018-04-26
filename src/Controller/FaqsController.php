@@ -18,14 +18,48 @@ class FaqsController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    public function index($id=null)
     {
-        $this->paginate = [
-            'contain' => ['Cities']
-        ];
-        $faqs = $this->paginate($this->Faqs);
-
-        $this->set(compact('faqs'));
+        $user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$this->viewBuilder()->layout('admin_portal');
+		$this->paginate = [
+			'limit' => 20,
+         ];
+       $faqs1 =  $this->Faqs->find()->where(['Faqs.status'=>0,'Faqs.city_id'=>$city_id])->contain(['Cities']);
+		if($id)
+		{
+		   $faq = $this->Faqs->get($id);
+		}
+		else
+		{
+			  $faq = $this->Faqs->newEntity();
+		}
+		
+        if ($this->request->is(['post','put'])) {
+            $faq = $this->Faqs->patchEntity($faq, $this->request->getData());
+			$faq->city_id=$city_id;
+            if ($this->Faqs->save($faq)) {
+                $this->Flash->success(__('The Faq has been saved.'));
+				return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The Faq could not be saved. Please, try again.'));
+        }
+		else if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$faqs1->where([
+							'OR' => [
+									'Faqs.question LIKE' => $search.'%',
+									'Faqs.answer LIKE' => $search.'%'
+							]
+			]);
+		}
+		 
+		
+		$faqs=$this->paginate($faqs1);
+		$cities=$this->Faqs->Cities->find('list');
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('cities', 'faqs','faq','paginate_limit'));
     }
 
     /**
@@ -99,9 +133,10 @@ class FaqsController extends AppController
      */
     public function delete($id = null)
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['patch', 'post', 'put']);
         $faq = $this->Faqs->get($id);
-        if ($this->Faqs->delete($faq)) {
+		$faq->status=1;
+        if ($this->Faqs->save($faq)) {
             $this->Flash->success(__('The faq has been deleted.'));
         } else {
             $this->Flash->error(__('The faq could not be deleted. Please, try again.'));

@@ -16,8 +16,7 @@ class AdminsController extends AppController
 	public function initialize()
 	{
 		parent::initialize();
-		$this->loadComponent('Security');
-        $this->loadComponent('Csrf');
+      
 		$this->Security->setConfig('blackHoleCallback', 'blackhole');		
 	}
 	

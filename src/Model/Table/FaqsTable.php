@@ -64,9 +64,9 @@ class FaqsTable extends Table
             ->requirePresence('answer', 'create')
             ->notEmpty('answer');
 
-        $validator
+       /*  $validator
             ->requirePresence('status', 'create')
-            ->notEmpty('status');
+            ->notEmpty('status'); */
 
         return $validator;
     }
