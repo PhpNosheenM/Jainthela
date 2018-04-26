@@ -94,6 +94,9 @@
 							   <?php 
 						$i = $paginate_limit*($this->Paginator->counter('{{page}}')-1);
 						foreach ($units as $unit): ?>
+						<?php
+						$unit_id = $EncryptingDecrypting->encryptData($unit->id);
+						?>
 						<tr>
 							<td><?= $this->Number->format(++$i) ?></td>
 							<td><?= h($unit->unit_name) ?></td>
@@ -101,8 +104,8 @@
 							<td><?= h($unit->shortname) ?></td>
 							<td><?= h($unit->status) ?></td>
 							<td class="actions">
-								<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $unit->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
-								<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $unit->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $unit->id),'escape'=>false]) ?>
+								<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $unit_id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+								<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $unit_id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?'),'escape'=>false]) ?>
 									</td>
 								</tr>
 					            <?php endforeach; ?>

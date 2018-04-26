@@ -19,6 +19,8 @@ class UnitsController extends AppController
      */
     public function index($id = null)
     {  
+
+    	
 		$city_id=$this->Auth->User('city_id'); 
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('admin_portal');
@@ -29,6 +31,7 @@ class UnitsController extends AppController
 		
 		if($id)
 		{
+		   $id = $this->EncryptingDecrypting->decryptData($id);
 		   $unit = $this->Units->get($id);
 		}
 		else

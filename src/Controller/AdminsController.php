@@ -49,7 +49,18 @@ class AdminsController extends AppController
 				$user['city_id']=$city->id;
 				$state = $this->Admins->Locations->Cities->get($city->id);
 				$user['state_id']=$state->id;
-				
+				$characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                $charactersLength = strlen($characters);
+                $randomString = '';
+                $randomStrings = '';
+                $length = 2;
+                for ($i = 0; $i < $length; $i++) {
+                    $randomString .= $characters[rand(0, $charactersLength - 1)];
+                }
+                for ($i = 0; $i < $length; $i++) {
+                    $randomStrings .= $characters[rand(0, $charactersLength - 1)];
+                }
+                $user['pass_key']='wt1U5MA'.$randomString.'JFTXGenFoZoiLwQGrLgdb'.$randomString;
 				$this->Auth->setUser($user);
 				return $this->redirect(['controller'=>'Admins','action' => 'index']);
             }
