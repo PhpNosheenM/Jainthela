@@ -106,6 +106,8 @@ class RecursiveCategoriesHelper extends Helper
 							foreach($item['item_variation_masters'] as $item_variation_master)
 							{ 
 								echo '<input name="'.$i.'[item_id]" type="checkbox"  value="'.$item['id'].'" class="entity_variation'.$item_variation_master['unit_variation']['id'].'" style="display:none;">';
+
+								echo '<input name="'.$i.'[item_variation_master_id]" type="textbox"  value="'.$item_variation_master['id'].'" class="entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'].'" disabled="disabled">';
 								
 								echo '<label style="margin-left:30px;"><input name="'.$i.'[unit_variation_id]" type="checkbox"  value="'.$item_variation_master['unit_variation']['id'].'" class="single_item variation'.$item['id'].'" disabled="disabled">&nbsp;&nbsp;'.$item_variation_master['unit_variation']['quantity_variation'].' '.$item_variation_master['unit_variation']['unit']['longname'].'</label>';
 								

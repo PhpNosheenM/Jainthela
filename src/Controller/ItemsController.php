@@ -3,7 +3,8 @@ namespace App\Controller;
 use Cake\Filesystem\Folder;
 use Cake\Filesystem\File;
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\View\View;
 /**
  * Items Controller
  *
@@ -13,6 +14,12 @@ use App\Controller\AppController;
  */
 class ItemsController extends AppController
 {
+	public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Security->setConfig('unlockedActions', ['add']);
+
+    }
 
     /**
      * Index method

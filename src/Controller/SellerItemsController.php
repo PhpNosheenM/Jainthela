@@ -2,7 +2,8 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\View\View;
 /**
  * SellerItems Controller
  *
@@ -13,6 +14,12 @@ use App\Controller\AppController;
 class SellerItemsController extends AppController
 {
 
+    public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Security->setConfig('unlockedActions', ['add','itemVariation']);
+
+    }
     /**
      * Index method
      *
@@ -104,6 +111,7 @@ class SellerItemsController extends AppController
 			}
 			
 			$itemVariation = $this->SellerItems->ItemVariations->newEntities($arr);
+
 			 if ($this->SellerItems->ItemVariations->saveMany($itemVariation)) {
                 $this->Flash->success(__('The seller item has been saved.'));
 

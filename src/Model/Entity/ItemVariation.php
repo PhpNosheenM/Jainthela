@@ -52,6 +52,7 @@ class ItemVariation extends Entity
         'item' => true,
         'commission' => true,
         'order_details' => true,
-        'seller_id' => true
+        'seller_id' => true,
+        'item_variation_master_id' => true
     ];
 }
