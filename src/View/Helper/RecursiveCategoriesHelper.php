@@ -107,8 +107,8 @@ class RecursiveCategoriesHelper extends Helper
 							{ 
 								echo '<input name="'.$i.'[item_id]" type="checkbox"  value="'.$item['id'].'" class="entity_variation'.$item_variation_master['unit_variation']['id'].'" style="display:none;">';
 
-								echo '<input name="'.$i.'[item_variation_master_id]" type="textbox"  value="'.$item_variation_master['id'].'" class="entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'].'" disabled="disabled">';
-								
+								echo '<input name="'.$i.'[item_variation_master_id]" type="textbox"  value="'.$item_variation_master['id'].'" class="entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'].'" disabled="disabled" style="display:none;>';
+
 								echo '<label style="margin-left:30px;"><input name="'.$i.'[unit_variation_id]" type="checkbox"  value="'.$item_variation_master['unit_variation']['id'].'" class="single_item variation'.$item['id'].'" disabled="disabled">&nbsp;&nbsp;'.$item_variation_master['unit_variation']['quantity_variation'].' '.$item_variation_master['unit_variation']['unit']['longname'].'</label>';
 								
 								echo $html->control($i.'[maximum_quantity_purchase]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Maximum Quantity Purchase','class'=>'form-control entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;width: 15%;float:none;','disabled'=>true]);
