@@ -27,8 +27,23 @@ class ComboOffersController extends AppController
             'contain' => ['Cities', 'Admins'],
 			'limit' => 20
         ];
-        $comboOffers = $this->paginate($this->ComboOffers->find()->where(['ComboOffers.city_id'=>$city_id]));
-		
+        $comboOffer = $this->ComboOffers->find()->where(['ComboOffers.city_id'=>$city_id]);
+		if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$comboOffer->where([
+							'OR' => [
+									'ComboOffers.name LIKE' => $search.'%',
+									'ComboOffers.print_rate LIKE' => $search.'%',
+									'ComboOffers.discount_per LIKE' => $search.'%',
+									'ComboOffers.sales_rate LIKE' => $search.'%',
+									'ComboOffers.maximum_quantity_purchase LIKE' => $search.'%',
+									'ComboOffers.ready_to_sale LIKE' => $search.'%',
+									'ComboOffers.status LIKE' => $search.'%',
+									'ComboOffers.end_date LIKE' => date('Y-m-d', strtotime($search)).'%'
+							]
+			]);
+		}
+		$comboOffers=$this->paginate($comboOffer);
 		$paginate_limit=$this->paginate['limit'];
         $this->set(compact('comboOffers','paginate_limit'));
     }

@@ -26,7 +26,7 @@ class CancelReasonsController extends AppController
 		$this->paginate = [
 			'limit' => 20,
          ];
-       
+       $CancelReason1=$this->CancelReasons->find();
 		if($id)
 		{
 		   $cancelReason = $this->CancelReasons->get($id);
@@ -45,7 +45,16 @@ class CancelReasonsController extends AppController
             }
             $this->Flash->error(__('The cancel reason could not be saved. Please, try again.'));
         }
-		$cancelReasons = $this->paginate($this->CancelReasons);
+		else if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$CancelReason1->where([
+							'OR' => [
+									'CancelReasons.reason LIKE' => $search.'%',
+									'CancelReasons.status LIKE' => $search.'%'
+							]
+			]);
+		}
+		$cancelReasons = $this->paginate($CancelReason1);
 		$paginate_limit=$this->paginate['limit'];
         $this->set(compact('cancelReasons','cancelReason','paginate_limit'));
     }

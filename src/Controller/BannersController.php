@@ -79,7 +79,7 @@ class BannersController extends AppController
 					$deletekeyname = 'banner/'.$banner_data->id.'/app';
 					$this->AwsFile->deleteMatchingObjects($deletekeyname);
 					$keyname = 'banner/'.$banner_data->id.'/app/'.$banner_image_name;
-					$this->AwsFile->putObjectFile($keyname,$destination_url,$banner_image['type']);
+					$this->AwsFile->putObjectFile($keyname,$banner_image['tmp_name'],$banner_image['type']);
 					$banner_data->banner_image=$keyname;
 					$this->Banners->save($banner_data);
 

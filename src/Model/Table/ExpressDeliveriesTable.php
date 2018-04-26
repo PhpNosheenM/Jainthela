@@ -54,8 +54,8 @@ class ExpressDeliveriesTable extends Table
             ->notEmpty('title');
 
         $validator
-            ->scalar('icon')
-            ->maxLength('icon', 50)
+            //->scalar('icon')
+            //->maxLength('icon', 50)
             ->requirePresence('icon', 'create')
             ->notEmpty('icon');
 
