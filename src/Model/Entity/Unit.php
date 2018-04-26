@@ -39,6 +39,7 @@ class Unit extends Entity
         'created_on' => true,
         'status' => true,
         'combo_offer_details' => true,
-        'item_variations' => true
+        'item_variations' => true,
+        'division_factor' => true
     ];
 }
