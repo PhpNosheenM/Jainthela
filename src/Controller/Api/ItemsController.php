@@ -89,7 +89,7 @@ class ItemsController extends AppController
             $message = 'Record not found';
           }
 
-
+          $brandArr = [];
           $Brands = $this->Items->find()->contain(['Brands'])->where($categoryWhere)->toArray();
           if(!empty($Brands))
           {

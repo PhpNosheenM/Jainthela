@@ -18,24 +18,29 @@ class BulkBookingLeadsController extends AppController
     {
         $bulkBookingLead = $this->BulkBookingLeads->newEntity();
         if ($this->request->is('post')) {
+			//pr(getallheaders());exit;
+			$token = '';
           foreach(getallheaders() as $key => $value) {
-             if($key == 'Authorization')
+             if($key == 'Authorization' || $key == 'authorization')
              {
                $token = $value;
              }
           }
+		//  echo $token;exit;
           // checkToken function is avaliable in app controller for checking token in customer table
          $token = str_replace("Bearer ","",$token);
           $isValidToken = $this->checkToken($token);
+		   
             if($isValidToken == 0)
               {
                   $rowsDatas = $this->request->getData('bulk_booking_lead_rows');
                   $leadNo = $this->BulkBookingLeads->find()->select(['lead_no'])->order(['id' => 'DESC'])->first();
-                  if(!empty($leadNo->toArray())){ $maxLead = $leadNo->lead_no + 1;}
+                  if(!empty($leadNo)){ $maxLead = $leadNo->lead_no + 1;}
                   else{ $maxLead = 1;}
                 if(!empty($rowsDatas))
                   { 
                     $i=0;
+					$bulk_booking_lead_rows = [];
                       foreach ($rowsDatas as $rowsData) {
                         if($rowsData['image_name']['error'] == 0)
                          {
@@ -56,6 +61,10 @@ class BulkBookingLeadsController extends AppController
                       }
                       $bulkBookingLead->lead_no = $maxLead;
                       $bulkBookingLead->delivery_date = date('Y-m-d',strtotime($this->request->getData('delivery_date')));
+					  
+					  
+					  
+					//  pr($bulkBookingLead);exit;
                       if ($bulkBookingLeadData = $this->BulkBookingLeads->save($bulkBookingLead)) {
 
                           foreach ($rowsDatas as $rowsData) {
@@ -73,7 +82,7 @@ class BulkBookingLeadsController extends AppController
                           $success = true;
                           $message = 'Successfully Uploaded';
                       }
-                      else{
+                      else{ //pr($bulkBookingLead);exit;
                         $success = false;
                         $message = 'Something went wrong';
                       }
@@ -81,6 +90,7 @@ class BulkBookingLeadsController extends AppController
                       $bulkBookingLead = $this->BulkBookingLeads->patchEntity($bulkBookingLead, $this->request->getData());
                       $bulkBookingLead->lead_no = $maxLead;
                       $bulkBookingLead->delivery_date = date('Y-m-d',strtotime($this->request->getData('delivery_date')));
+					 
                         if($this->BulkBookingLeads->save($bulkBookingLead))
                         {
                           $success = true;
@@ -91,6 +101,7 @@ class BulkBookingLeadsController extends AppController
                           $success = false;
                           $message = 'invalid data';
                         }
+                 
                   }
                  
               }else {

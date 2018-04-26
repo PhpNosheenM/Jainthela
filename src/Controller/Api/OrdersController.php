@@ -274,7 +274,7 @@ class OrdersController extends AppController
             $order->order_date = date('Y-m-d');
             $order->location_id = $location_id;
             $order->sales_ledger_id = $sales_ledgers['id'];
-
+            $order->order_status = 'placed';
             if ($orders = $this->Orders->save($order)) {
 
 
