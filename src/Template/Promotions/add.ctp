@@ -6,6 +6,10 @@
     color: #656C78;
     font-size: 13px;
 }
+.table > thead > tr > th{
+	text-align:center;
+	vertical-align: top !important;
+}
 </style>
 <?php $this->set('title', 'Promotion'); ?>
 <!-- PAGE CONTENT WRAPPER -->
@@ -28,9 +32,9 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="col-md-3 control-label">Description</label>
+								<label class="col-md-3 control-label">City</label>
 								<div class="col-md-9 col-xs-12"> 
-									<?= $this->Form->control('description',['class'=>'form-control','placeholder'=>'Offer Description','label'=>false,'rows'=>'4']) ?>
+									<?= $this->Form->select('city_id',$cities,['class'=>'form-control select','placeholder'=>'Select...','label'=>false,'empty'=>"--Select--"]) ?>
 								</div>
 							</div>
 						</div>
@@ -45,50 +49,92 @@
 									</div>
 								</div>
 							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">Description</label>
+								<div class="col-md-9 col-xs-12"> 
+									<?= $this->Form->control('description',['class'=>'form-control','placeholder'=>'Offer Description','label'=>false,'rows'=>'4']) ?>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
 				<div class="panel-body">    
 					<div class="row">
-						<div class="table-responsive">
-							<table class="table table-bordered main_table">
-								<thead>
-									<tr>
-										<th><?= ('Category.') ?></th>
-										<th><?= ('Address') ?></th>
-										<th><?= ('Landmark') ?></th>
-										<th><?= ('Pincode') ?></th>
-										<th><?= ('default') ?></th>
-										<th  class="actions"><?= __('Actions') ?></th>
-									</tr>
-								</thead>
-								<tbody class="MainTbody">  
-									<tr class="MainTr">
-			
-										<td width="" valign="top">
-											<?= $this->Form->control('categories',['class'=>'form-control house_no','label'=>false]) ?>
-										</td>
-										<td width="30%" valign="top">
-											<?= $this->Form->control('address',['class'=>'form-control address','label'=>false,'rows'=>3]) ?>
-										</td>
-										<td width="20%" valign="top">
-											<?= $this->Form->control('landmark',['class'=>'form-control landmark','label'=>false,'rows'=>3]) ?>
-										</td>
-										<td width="10%" valign="top">
-											<?= $this->Form->control('pincode',['class'=>'form-control pincode','label'=>false]) ?>
-										</td>
-										
-										<td valign="top">
-											<?= $this->Form->control('default_address',['class'=>'default_address', 'label'=>false,'hiddenField'=>false,'type'=>'checkbox','checked'=>'checked','templates' => ['inputContainer' => '{{content}}']]) ?>
-										</td>
-										
-										<td valign="top"  >
-											<a class="btn btn-primary  btn-condensed btn-sm add_row" href="#" role="button" ><i class="fa fa-plus"></i></a>
-											<a class="btn btn-danger  btn-condensed btn-sm delete_row " href="#" role="button" ><i class="fa fa-times"></i></a>
-										</td>
-									</tr>
-								</tbody>
-							</table>
+						<div class="panel-body panel-body-table">
+							<div class="table-responsive">
+								<table class="table table-bordered main_table" >
+								<?php
+									$option[]=['value'=>'No','text'=>'No'];
+									$option[]=['value'=>'Yes','text'=>'Yes'];
+								?>
+									<thead>
+										<tr>
+											<th rowspan='2'><?= ('Coupon Name') ?></th>
+											<th rowspan='2'><?= ('Coupon Code') ?></th>
+											<th rowspan='2'><?= ('Category.') ?></th>
+											<th rowspan='2'><?= ('Items') ?></th>
+											<th colspan='2'><?= ('Discount') ?></th>
+											<th rowspan='2' ><?= ('Discount Of Max Amount') ?></th>
+											<th rowspan='2'><?= ('Buy Quntity') ?></th>
+											<th rowspan='2'><?= ('Get Quntity') ?></th>
+											<th rowspan='2'><?= ('Get Item') ?></th>
+											<th rowspan='2'><?= ('In Wallet') ?></th>
+											<th rowspan='2'><?= ('Free Shipping') ?></th>
+											<th  rowspan='2' class="actions"><?= __('Actions') ?></th>
+										</tr>
+										<tr>
+											<th><?= ('( % )') ?></th>
+											<th><?= ('( Amt )') ?></th>
+										</tr>
+									</thead>
+									<tbody class="MainTbody">  
+										<tr class="MainTr">
+											<td valign="top">
+												<?= $this->Form->control('coupan_name',['class'=>'form-control','label'=>false,'style'=>'width:200px;']) ?>
+											</td>
+											<td valign="top">
+												<?= $this->Form->control('coupan_code',['class'=>'form-control','label'=>false,'style'=>'width:150px;']) ?>
+											</td>
+											<td valign="top">
+												<?= $this->Form->select('category_id',$categories,['class'=>'form-control ','placeholder'=>'Select...','label'=>false,'style'=>'width:120px;']) ?>
+											</td>
+											<td  valign="top">
+												<?= $this->Form->select('item_id',$items,['class'=>'form-control select','placeholder'=>'Select...','label'=>false,'style'=>'width:150px;']) ?>
+											</td>
+											<td valign="top">
+												<?= $this->Form->control('discount_in_percentage',['class'=>'form-control','label'=>false,'style'=>'width:65px;']) ?>
+											</td>
+											<td  valign="top">
+												<?= $this->Form->control('discount_in_amount',['class'=>'form-control','label'=>false,'style'=>'width:65px;']) ?>
+											</td>
+											<td valign="top">
+												<?= $this->Form->control('discount_of_max_amount',['class'=>'form-control', 'label'=>false]) ?>
+											</td>
+											<td valign="top">
+												<?= $this->Form->control('buy_quntity',['class'=>'form-control', 'label'=>false,'style'=>'width:90px;']) ?>
+											</td>
+											<td valign="top">
+												<?= $this->Form->control('get_quntity',['class'=>'form-control', 'label'=>false,'style'=>'width:90px;']) ?>
+											</td>
+											<td valign="top">
+												<?= $this->Form->select('get_item_id',$items,['class'=>'form-control select','placeholder'=>'Select...','label'=>false,'style'=>'width:150px;']) ?>
+											</td>
+											<td valign="top">
+												<?= $this->Form->select('in_wallet',$option,['class'=>'form-control select','placeholder'=>'Select...','label'=>false,'style'=>'width:90px;']) ?>
+											</td>
+											<td valign="top">
+												<?= $this->Form->select('is_free_shipping',$option,['class'=>'form-control select','placeholder'=>'Select...','label'=>false,'style'=>'width:90px;']) ?>
+											</td>
+											<td valign="top"  >
+											<div style='width:70px;'>
+												<a class="btn btn-primary  btn-condensed btn-sm add_row" href="#" role="button" ><i class="fa fa-plus"></i></a>
+												<a class="btn btn-danger  btn-condensed btn-sm delete_row " href="#" role="button" ><i class="fa fa-times"></i></a>
+											</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -107,29 +153,47 @@
 <table id="sampleTable" width="100%" style="display:none;">
 	<tbody class="sampleMainTbody">
 		<tr class="MainTr">
-			
-			<td width="" valign="top">
-				<input type="hidden" class="city_container" value="<?php echo $city_id; ?>" >
-				<input type="hidden" class="location_container" value="<?php echo $location_id; ?>">
-				<?= $this->Form->control('house_no',['class'=>'form-control house_no','label'=>false]) ?>
-			</td>
-			<td width="30%" valign="top">
-				<?= $this->Form->control('address',['class'=>'form-control address','label'=>false,'rows'=>3]) ?>
-			</td>
-			<td width="20%" valign="top">
-				<?= $this->Form->control('landmark',['class'=>'form-control landmark','label'=>false,'rows'=>3]) ?>
-			</td>
-			<td width="10%" valign="top">
-				<?= $this->Form->control('pincode',['class'=>'form-control pincode','label'=>false]) ?>
-			</td>
-			
 			<td valign="top">
-				<?= $this->Form->control('default_address',['class'=>'default_address', 'label'=>false,'hiddenField'=>false,'type'=>'checkbox','checked'=>'','templates' => ['inputContainer' => '{{content}}']]) ?>
+				<?= $this->Form->control('coupan_name',['class'=>'form-control','label'=>false,'style'=>'width:200px;']) ?>
 			</td>
-			
+			<td valign="top">
+				<?= $this->Form->control('coupan_code',['class'=>'form-control','label'=>false,'style'=>'width:150px;']) ?>
+			</td>
+			<td valign="top">
+				<?= $this->Form->control('category_id',['class'=>'form-control house_no','label'=>false,'style'=>'width:120px;','empty'=>'--select--']) ?>
+			</td>
+			<td  valign="top">
+				<?= $this->Form->control('item_id',['class'=>'form-control house_no','label'=>false,'style'=>'width:150px;','empty'=>'--select--']) ?>
+			</td>
+			<td valign="top">
+				<?= $this->Form->control('discount_in_percentage',['class'=>'form-control','label'=>false,'style'=>'width:65px;']) ?>
+			</td>
+			<td  valign="top">
+				<?= $this->Form->control('discount_in_amount',['class'=>'form-control','label'=>false,'style'=>'width:65px;']) ?>
+			</td>
+			<td valign="top">
+				<?= $this->Form->control('discount_of_max_amount',['class'=>'form-control', 'label'=>false]) ?>
+			</td>
+			<td valign="top">
+				<?= $this->Form->control('buy_quntity',['class'=>'form-control', 'label'=>false,'style'=>'width:90px;']) ?>
+			</td>
+			<td valign="top">
+				<?= $this->Form->control('get_quntity',['class'=>'form-control', 'label'=>false,'style'=>'width:90px;']) ?>
+			</td>
+			<td valign="top">
+				<?= $this->Form->input('get_item_id',array('options' => $items,'class'=>'form-control select2','empty' => '--Select--','label'=>false,'style'=>'width:150px;')) ?>
+			</td>
+			<td valign="top">
+				<?= $this->Form->input('in_wallet',array('options' => $option,'class'=>'form-control select2','label'=>false,'style'=>'width:90px;')) ?>
+			</td>
+			<td valign="top">
+				<?= $this->Form->input('is_free_shipping',array('options' => $option,'class'=>'form-control select2','label'=>false,'style'=>'width:90px;')) ?>
+			</td>
 			<td valign="top"  >
+			<div style='width:70px;'>
 				<a class="btn btn-primary  btn-condensed btn-sm add_row" href="#" role="button" ><i class="fa fa-plus"></i></a>
-				<a class="btn btn-danger  btn-condensed btn-sm delete_row " href="#" role="button" ><i class="fa fa-times"></i></a>
+				<a class="btn btn-danger  btn-condensed btn-sm delete_row" href="#" role="button" ><i class="fa fa-times"></i></a>
+			</div>
 			</td>
 		</tr>
 	</tbody>
@@ -143,23 +207,25 @@
    $js='var jvalidate = $("#jvalidate").validate({
 		ignore: [],
 			rules: {                                            
-					name: {
+					offer_name: {
 							required: true,
 					},
 					
-					email: {
+					city_id: {
 							required: true,
 					},
-					username: {
+					start_date: {
 							required: true,
 					},
-					
+					end_date: {
+							required: true,
+					},
 			}	                                  
 		});
 		
 		$(document).on("click",".add_row",function(){
 			addMainRow();
-			renameRows();
+			//renameRows();
 		});
 		
 		//addMainRow();
@@ -171,7 +237,7 @@
 			
 		}
 		
-		$(document).on("click",".delete_row",function(){
+		$(document).on("click",".delete_row",function(){ 
 			var t=$(this).closest("tr").remove();
 			renameRows();
 		});
@@ -189,31 +255,23 @@
 				var i=0; 
 				$(".main_table tbody tr").each(function(){
 						$(this).attr("row_no",i);
-						$(this).find("td:nth-child(1) input.city_container").attr({name:"customer_addresses["+i+"][city_id]",id:"customer_addresses-"+i+"-city_container"})
-						$(this).find("td:nth-child(1) input.location_container").attr({name:"customer_addresses["+i+"][location_id]",id:"customer_addresses-"+i+"-location_container"})
-						$(this).find("td:nth-child(1) input.house_no").attr({name:"customer_addresses["+i+"][house_no]",id:"customer_addresses-"+i+"-house_no"}).rules("add", "required");
-						$(this).find("td:nth-child(2) textarea.address").attr({name:"customer_addresses["+i+"][address]",id:"customer_addresses-"+i+"-address"}).rules("add", "required");
-						$(this).find("td:nth-child(3) textarea.landmark").attr({name:"customer_addresses["+i+"][landmark]",id:"customer_addresses-"+i+"-landmark"}).rules("add", "required");
-						$(this).find("td:nth-child(4) input.pincode").attr({name:"customer_addresses["+i+"][pincode]",id:"customer_addresses-"+i+"-pincode"}).rules("add", "required");
-						$(this).find("td:nth-child(5) input.default_address").attr({name:"customer_addresses["+i+"][default_address]",id:"customer_addresses-"+i+"-default_address"});
+						$(this).find("td:nth-child(1) input").attr({name:"promotion_details["+i+"][coupon_name]",id:"promotion_details-"+i+"-coupon_name"}).rules("add", "required");
+						$(this).find("td:nth-child(2) input").attr({name:"promotion_details["+i+"][coupon_code]",id:"promotion_details-"+i+"-coupon_code"}).rules("add", "required");
+						$(this).find("td:nth-child(3) select").attr({name:"promotion_details["+i+"][category_id]",id:"promotion_details-"+i+"-category_id"});
+						$(this).find("td:nth-child(4) select").attr({name:"promotion_details["+i+"][item_id]",id:"promotion_details-"+i+"-item_id"});
+						$(this).find("td:nth-child(5) input").attr({name:"promotion_details["+i+"][discount_in_percentage]",id:"promotion_details-"+i+"-discount_in_percentage"});
+						$(this).find("td:nth-child(6) input").attr({name:"promotion_details["+i+"][discount_in_amount]",id:"promotion_details-"+i+"-discount_in_amount"});
+						$(this).find("td:nth-child(7) input").attr({name:"promotion_details["+i+"][discount_of_max_amount]",id:"promotion_details-"+i+"-discount_of_max_amount"});
+						$(this).find("td:nth-child(8) input").attr({name:"promotion_details["+i+"][buy_quntity]",id:"promotion_details-"+i+"-buy_quntity"});
+						$(this).find("td:nth-child(9) input").attr({name:"promotion_details["+i+"][get_quntity]",id:"promotion_details-"+i+"-get_quntity"});
+						$(this).find("td:nth-child(10) select").attr({name:"promotion_details["+i+"][get_item_id]",id:"promotion_details-"+i+"-get_item_id"});
+						$(this).find("td:nth-child(11) select").attr({name:"promotion_details["+i+"][in_wallet]",id:"promotion_details-"+i+"-in_wallet"});
+						$(this).find("td:nth-child(12) select").attr({name:"promotion_details["+i+"][is_free_shipping]",id:"promotion_details-"+i+"-is_free_shipping"});
 						i++;
 			});
 		}
 
-		$(document).on("blur", ".gst", function()
-		{ 
-			var mdl=$(this).val();
-			var numbers = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
-			if(mdl.match(numbers))
-			{
-				
-			}
-			else
-			{
-				$(this).val("");
-				return false;
-			}
-		});
+		
 	
 		';  
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		

@@ -30,7 +30,7 @@ class BulkBookingLeadsController extends AppController
           // checkToken function is avaliable in app controller for checking token in customer table
          $token = str_replace("Bearer ","",$token);
           $isValidToken = $this->checkToken($token);
-		   
+
             if($isValidToken == 0)
               {
                   $rowsDatas = $this->request->getData('bulk_booking_lead_rows');
@@ -38,7 +38,7 @@ class BulkBookingLeadsController extends AppController
                   if(!empty($leadNo)){ $maxLead = $leadNo->lead_no + 1;}
                   else{ $maxLead = 1;}
                 if(!empty($rowsDatas))
-                  { 
+                  {
                     $i=0;
 					$bulk_booking_lead_rows = [];
                       foreach ($rowsDatas as $rowsData) {
@@ -61,19 +61,18 @@ class BulkBookingLeadsController extends AppController
                       }
                       $bulkBookingLead->lead_no = $maxLead;
                       $bulkBookingLead->delivery_date = date('Y-m-d',strtotime($this->request->getData('delivery_date')));
-					  
-					  
-					  
+
+
+
 					//  pr($bulkBookingLead);exit;
                       if ($bulkBookingLeadData = $this->BulkBookingLeads->save($bulkBookingLead)) {
 
                           foreach ($rowsDatas as $rowsData) {
                             if($rowsData['image_name']['error'] == 0)
                              {
+                            //   $deletekeyname = 'bulkbooking/customer/'.$bulkBookingLeadData->id;
+                        //       $this->AwsFile->deleteMatchingObjects($deletekeyname);
                                foreach ($bulkBookingLeadData->bulk_booking_lead_rows as $imageData) {
-
-                                 $deletekeyname = 'bulkbooking/customer/'.$bulkBookingLeadData->id;
-                                 $this->AwsFile->deleteMatchingObjects($deletekeyname);
                                  $keyname = 'bulkbooking/customer/'.$bulkBookingLeadData->id.'/'.$imageData->image_name;
                                  $this->AwsFile->putObjectFile($keyname,$rowsData['image_name']['tmp_name'],$rowsData['image_name']['type']);
                                }
@@ -90,7 +89,7 @@ class BulkBookingLeadsController extends AppController
                       $bulkBookingLead = $this->BulkBookingLeads->patchEntity($bulkBookingLead, $this->request->getData());
                       $bulkBookingLead->lead_no = $maxLead;
                       $bulkBookingLead->delivery_date = date('Y-m-d',strtotime($this->request->getData('delivery_date')));
-					 
+
                         if($this->BulkBookingLeads->save($bulkBookingLead))
                         {
                           $success = true;
@@ -101,14 +100,14 @@ class BulkBookingLeadsController extends AppController
                           $success = false;
                           $message = 'invalid data';
                         }
-                 
+
                   }
-                 
+
               }else {
                           $success = false;
-                          $message = 'Invalid Token';				  
+                          $message = 'Invalid Token';
 			  }
-			  
+
         }
         $this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
     }

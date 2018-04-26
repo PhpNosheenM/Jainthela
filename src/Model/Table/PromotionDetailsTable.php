@@ -73,53 +73,7 @@ class PromotionDetailsTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
-        $validator
-            ->decimal('discount_in_percentage')
-            ->requirePresence('discount_in_percentage', 'create')
-            ->notEmpty('discount_in_percentage');
-
-        $validator
-            ->decimal('discount_in_amount')
-            ->requirePresence('discount_in_amount', 'create')
-            ->notEmpty('discount_in_amount');
-
-        $validator
-            ->decimal('discount_of_max_amount')
-            ->requirePresence('discount_of_max_amount', 'create')
-            ->notEmpty('discount_of_max_amount');
-
-        $validator
-            ->scalar('coupan_name')
-            ->maxLength('coupan_name', 100)
-            ->requirePresence('coupan_name', 'create')
-            ->notEmpty('coupan_name');
-
-        $validator
-            ->integer('coupan_code')
-            ->requirePresence('coupan_code', 'create')
-            ->notEmpty('coupan_code');
-
-        $validator
-            ->decimal('buy_quntity')
-            ->requirePresence('buy_quntity', 'create')
-            ->notEmpty('buy_quntity');
-
-        $validator
-            ->decimal('get_quntity')
-            ->requirePresence('get_quntity', 'create')
-            ->notEmpty('get_quntity');
-
-        $validator
-            ->scalar('in_wallet')
-            ->maxLength('in_wallet', 10)
-            ->requirePresence('in_wallet', 'create')
-            ->notEmpty('in_wallet');
-
-        $validator
-            ->scalar('is_free_shipping')
-            ->maxLength('is_free_shipping', 10)
-            ->requirePresence('is_free_shipping', 'create')
-            ->notEmpty('is_free_shipping');
+        
 
         return $validator;
     }
@@ -134,9 +88,9 @@ class PromotionDetailsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['promotion_id'], 'Promotions'));
-        $rules->add($rules->existsIn(['category_id'], 'Categories'));
-        $rules->add($rules->existsIn(['item_id'], 'Items'));
-        $rules->add($rules->existsIn(['get_item_id'], 'GetItems'));
+        //$rules->add($rules->existsIn(['category_id'], 'Categories'));
+        //$rules->add($rules->existsIn(['item_id'], 'Items'));
+        //$rules->add($rules->existsIn(['get_item_id'], 'GetItems'));
 
         return $rules;
     }
