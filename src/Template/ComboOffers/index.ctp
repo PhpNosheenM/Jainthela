@@ -1,91 +1,99 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\ComboOffer[]|\Cake\Collection\CollectionInterface $comboOffers
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('New Combo Offer'), ['action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Cities'), ['controller' => 'Cities', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New City'), ['controller' => 'Cities', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Admins'), ['controller' => 'Admins', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Admin'), ['controller' => 'Admins', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Carts'), ['controller' => 'Carts', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Cart'), ['controller' => 'Carts', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Combo Offer Details'), ['controller' => 'ComboOfferDetails', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Combo Offer Detail'), ['controller' => 'ComboOfferDetails', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Order Details'), ['controller' => 'OrderDetails', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Order Detail'), ['controller' => 'OrderDetails', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="comboOffers index large-9 medium-8 columns content">
-    <h3><?= __('Combo Offers') ?></h3>
-    <table cellpadding="0" cellspacing="0">
-        <thead>
-            <tr>
-                <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('city_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('admin_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('name') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('print_rate') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('discount_per') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('sales_rate') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('quantity_factor') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('print_quantity') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('maximum_quantity_purchase') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('start_date') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('end_date') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('stock_in_quantity') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('stock_out_quantity') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('created_on') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('edited_on') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('ready_to_sale') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('status') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('combo_offer_image') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($comboOffers as $comboOffer): ?>
-            <tr>
-                <td><?= $this->Number->format($comboOffer->id) ?></td>
-                <td><?= $comboOffer->has('city') ? $this->Html->link($comboOffer->city->name, ['controller' => 'Cities', 'action' => 'view', $comboOffer->city->id]) : '' ?></td>
-                <td><?= $comboOffer->has('admin') ? $this->Html->link($comboOffer->admin->name, ['controller' => 'Admins', 'action' => 'view', $comboOffer->admin->id]) : '' ?></td>
-                <td><?= h($comboOffer->name) ?></td>
-                <td><?= $this->Number->format($comboOffer->print_rate) ?></td>
-                <td><?= $this->Number->format($comboOffer->discount_per) ?></td>
-                <td><?= $this->Number->format($comboOffer->sales_rate) ?></td>
-                <td><?= $this->Number->format($comboOffer->quantity_factor) ?></td>
-                <td><?= $this->Number->format($comboOffer->print_quantity) ?></td>
-                <td><?= $this->Number->format($comboOffer->maximum_quantity_purchase) ?></td>
-                <td><?= h($comboOffer->start_date) ?></td>
-                <td><?= h($comboOffer->end_date) ?></td>
-                <td><?= $this->Number->format($comboOffer->stock_in_quantity) ?></td>
-                <td><?= $this->Number->format($comboOffer->stock_out_quantity) ?></td>
-                <td><?= h($comboOffer->created_on) ?></td>
-                <td><?= h($comboOffer->edited_on) ?></td>
-                <td><?= h($comboOffer->ready_to_sale) ?></td>
-                <td><?= h($comboOffer->status) ?></td>
-                <td><?= h($comboOffer->combo_offer_image) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['action' => 'view', $comboOffer->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $comboOffer->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $comboOffer->id], ['confirm' => __('Are you sure you want to delete # {0}?', $comboOffer->id)]) ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
-    </div>
+<style>
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    border-color: transparent;
+    padding: 8px 8px !important; 
+    background: #F0F4F9;
+    color: #656C78;
+    font-size: 13px;
+}
+</style>
+<?php $this->set('title', 'Combo Offer'); ?>
+<div class="page-content-wrap">
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title"><strong>Combo Offer</strong></h3>
+				<div class="pull-right">
+			<div class="pull-left">
+				<?= $this->Form->create('Search',['type'=>'GET']) ?>
+					<div class="form-group" style="display:inline-table">
+						<div class="input-group">
+							<div class="input-group-addon">
+								<span class="fa fa-search"></span>
+							</div>
+							<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
+							<div class="input-group-btn">
+								<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
+							</div>
+						</div>
+					</div>
+				<?= $this->Form->end() ?>
+			</div> 
+		</div> 	
+				</div>
+				<div class="panel-body">    
+					<div class="table-responsive">
+						<table class="table table-bordered">
+							<thead>
+								<tr>
+									<th><?= ('SNo.') ?></th>
+									<th><?= ('Name') ?></th>
+									<th><?= ('Print Rate') ?></th>
+									<th><?= ('Discount %') ?></th>
+									<th><?= ('Sales Rate') ?></th>
+									<th><?= ('Max Purchase') ?></th>
+									<th><?= ('Valid Till') ?></th>
+									<th><?= ('Ready To Sale') ?></th>
+									<th><?= ('Status') ?></th>
+									<th scope="col" class="actions"><?= __('Actions') ?></th>
+								</tr>
+							</thead>
+							<tbody>                                            
+								<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); ?>
+								
+								  <?php foreach ($comboOffers as $comboOffer): 
+								  
+											$valid_till=date('d-M-Y', strtotime($comboOffer->end_date));
+								  ?>
+								<tr>
+									<td><?= $this->Number->format(++$i) ?></td>
+									<td><?= h($comboOffer->name) ?></td>
+									<td><?= h($comboOffer->print_rate) ?></td>
+									<td><?= h(@$comboOffer->discount_per) ?> %</td>
+									<td><?= h(@$comboOffer->sales_rate) ?></td>
+									<td><?= h($comboOffer->maximum_quantity_purchase) ?></td>
+									<td><?= h($valid_till) ?></td>
+									<td><?= h($comboOffer->ready_to_sale) ?></td>
+									<td><?= h($comboOffer->status) ?></td>
+									
+									<td class="actions">
+										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'edits', $comboOffer->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+										<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $comboOffer->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $comboOffer->id),'escape'=>false]) ?>
+									
+									</td>
+								</tr>
+								<?php endforeach; ?>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="panel-footer">
+					<div class="paginator pull-right">
+						<ul class="pagination">
+							<?= $this->Paginator->first(__('First')) ?>
+							<?= $this->Paginator->prev(__('Previous')) ?>
+							<?= $this->Paginator->numbers() ?>
+							<?= $this->Paginator->next(__('Next')) ?>
+							<?= $this->Paginator->last(__('Last')) ?>
+						</ul>
+						<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+	</div>                    
+	
 </div>

@@ -74,7 +74,26 @@
 							<div class="form-group">                                        
 								<label class="col-md-3 control-label">Units</label>
 								<div class="col-md-9 col-xs-12">
-									<?php echo $this->Form->control('unit_variations._ids', ['label' => false,'options' =>$unit_option,'multiple' => 'checkbox']); ?>
+									<?php
+									$i=0;
+									foreach ($unit_option as $data) {
+										 
+										echo '<div class="checkbox">';
+											echo '<label>';
+										 		echo $this->Form->checkbox('item_variation_row['.$i.'][unit_variation_id]',['value'=>$data['value'], 'hiddenField' => false,'label' => false]);
+										 		echo $data['text']; 
+										 	echo '</label>';
+										 	?>
+										 	<?= $this->Form->control('item_variation_row['.$i.'][item_image_web]',['type'=>'file','label'=>false,'id' => 'item_image_'.$i,'data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>false]) ?>
+											<label id="item_image-error" class="error" for="item_image"></label>
+										 	<?php
+										 echo '</div>';
+										$i++;
+									}
+									?>
+									<?php //echo $this->Form->control('unit_variations._ids', ['label' => false,'options' =>$unit_option,'multiple' => 'checkbox']); 
+									
+									?>
 								</div>
 							</div>
 							<div class="form-group">    
@@ -112,15 +131,7 @@
 									<?= $this->Form->control('description',['class'=>'form-control','placeholder'=>'Description','label'=>false,'rows'=>'4']) ?>
 								</div>
 							</div>
-						<div class="form-group" id="web_image_data">
-								<label class="col-md-3 control-label">Web Image</label> 
-								<div class="col-md-9 col-xs-12"> 
-								<?= $this->Form->control('item_image',['type'=>'file','label'=>false,'id' => 'item_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>true]) ?>
-								<label id="item_image-error" class="error" for="item_image"></label>
-								</div>
-							</div>
-						
-					</div>
+						</div>
 				
 				</div>
 				<div class="panel-footer">
@@ -148,21 +159,23 @@
 				},
 				
 			}                                        
-		});
+		});';
 	
+		$i=0;
+		foreach ($unit_option as $data) {
 		
-		
-		$("#item_image").fileinput({
+		$js.='$("#item_image_'.$i.'").fileinput({
             showUpload: false,
             showCaption: false,
             showCancel: false,
             browseClass: "btn btn-danger",
 			allowedFileExtensions: ["jpg", "png"],
 			maxFileSize: 1024,
-		}); 
+		});';
+		$i++;
+		}
 		
-		
-		$(document).on("click", ".fileinput-remove-button", function(){
+		$js.='$(document).on("click", ".fileinput-remove-button", function(){
 			$(this).closest("div.file-input").find("input[type=file]").attr("required",true);
 		});
 		

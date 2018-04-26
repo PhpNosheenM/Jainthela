@@ -46,7 +46,7 @@ class CategoriesController extends AppController
 			if(empty($category_error))
 			{
 				$category_ext=explode('/',$category_image['type']);
-				$category->category_image='category'.time().'.'.$category_ext[1];
+				$category_image_name='category'.time().'.'.$category_ext[1];
 			}
 
 			$category->city_id=$city_id;
@@ -63,20 +63,30 @@ class CategoriesController extends AppController
 					/* For Web Image */
 					$deletekeyname = 'category/'.$category_data->id.'/web';
 					$this->AwsFile->deleteMatchingObjects($deletekeyname);
-					$keyname = 'category/'.$category_data->id.'/web/'.$category_data->category_image;
+					$keyname = 'category/'.$category_data->id.'/web/'.$category_image_name;
 					$this->AwsFile->putObjectFile($keyname,$category_image['tmp_name'],$category_image['type']);
-
+					$category_data->category_image_web=$keyname;
+					$this->Categories->save($category_data);
+					
+					
 					/* Resize Image */
-					$destination_url = WWW_ROOT . 'img/temp/'.$category_data->category_image;
-					$image = imagecreatefromjpeg($category_image['tmp_name']);
+					$destination_url = WWW_ROOT . 'img/temp/'.$category_image_name;
+					if($category_ext[1]=='png'){
+						$image = imagecreatefrompng($category_image['tmp_name']);
+					}else{
+						$image = imagecreatefromjpeg($category_image['tmp_name']); 
+					}
 					imagejpeg($image, $destination_url, 10);
+					
 
 					/* For App Image */
 					$deletekeyname = 'category/'.$category_data->id.'/app';
 					$this->AwsFile->deleteMatchingObjects($deletekeyname);
-					$keyname = 'category/'.$category_data->id.'/app/'.$category_data->category_image;
+					$keyname = 'category/'.$category_data->id.'/app/'.$category_image_name;
 					$this->AwsFile->putObjectFile($keyname,$destination_url,$category_image['type']);
-
+					$category_data->category_image=$keyname;
+					$this->Categories->save($category_data);
+					
 					/* Delete Temp File */
 					$file = new File(WWW_ROOT . $destination_url, false, 0777);
 					$file->delete();

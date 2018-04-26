@@ -77,50 +77,82 @@ class ItemsController extends AppController
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('admin_portal');
         $item = $this->Items->newEntity();
-        if ($this->request->is('post')) {
-			$item_image=$this->request->data['item_image'];
-			$item_error=$item_image['error'];
-			//$item_variation_masters=$this->request->data['item_variation_masters'];
 
+
+        if ($this->request->is('post')) {
+			
             $item = $this->Items->patchEntity($item, $this->request->getData());
 
-			if(empty($item_error))
-			{
-				$item_ext=explode('/',$item_image['type']);
-				$item->item_image='item'.time().'.'.$item_ext[1];
-			}
 
 			$item->city_id=$city_id;
 			$item->created_by=$user_id;
 
             if ($item_data=$this->Items->save($item)) {
-			//pr($item->toArray()); exit;
-				if(empty($item_error))
-				{
-					/* For Web Image */
-					$deletekeyname = 'item/'.$item_data->id.'/web';
-					$this->AwsFile->deleteMatchingObjects($deletekeyname);
-					$keyname = 'item/'.$item_data->id.'/web/'.$item_data->item_image;
-					$this->AwsFile->putObjectFile($keyname,$item_image['tmp_name'],$item_image['type']);
+				
+				
 
-					/* Resize Image */
-					$destination_url = WWW_ROOT . 'img/temp/'.$item_data->item_image;
-					$image = imagecreatefromjpeg($item_image['tmp_name']);
-					imagejpeg($image, $destination_url, 10);
+				foreach ($this->request->getData('item_variation_row') as $value) {
+        		
+        			if(!empty($value['unit_variation_id']))
+        			{
 
-					/* For App Image */
-					$deletekeyname = 'item/'.$item_data->id.'/app';
-					$this->AwsFile->deleteMatchingObjects($deletekeyname);
-					$keyname = 'item/'.$item_data->id.'/app/'.$item_data->item_image;
-					$this->AwsFile->putObjectFile($keyname,$destination_url,$item_image['type']);
+						$item_image=$value['item_image_web'];
+						$item_error=$item_image['error'];
+						if(empty($item_error))
+						{
+							$item_ext=explode('/',$item_image['type']);
+							$item_item_image='item'.time().'.'.$item_ext[1];
+						}
 
-					/* Delete Temp File */
-					$file = new File(WWW_ROOT . $destination_url, false, 0777);
-					$file->delete();
+						$item_data_variation=$this->Items->ItemVariationMasters->newEntity();
+				        $item_data_variation->item_id=$item_data->id;
+				        $item_data_variation->unit_variation_id=$value['unit_variation_id'];
+				        $item_data_variation->created_by= $user_id;
+				        $item_data_variation=$this->Items->ItemVariationMasters->save($item_data_variation);
+        				$lastInsertId=$item_data_variation->id;
+
+					   
+
+						if(empty($item_error))
+						{
+							/* For Web Image */
+							$deletekeyname = 'item/'.$lastInsertId.'/web';
+							$this->AwsFile->deleteMatchingObjects($deletekeyname);
+							$keyname = 'item/'.$lastInsertId.'/web/'.$item_item_image;
+							$this->AwsFile->putObjectFile($keyname,$item_image['tmp_name'],$item_image['type']);
+
+							/* Resize Image */
+							$destination_url = WWW_ROOT . 'img/temp/'.$item_item_image;
+							if($item_ext[1]=='png'){
+								$image = imagecreatefrompng($item_image['tmp_name']);
+							}else{
+								$image = imagecreatefromjpeg($item_image['tmp_name']); 
+							}
+							imagejpeg($image, $destination_url, 10);
+
+							/* For App Image */
+							$deletekeyname = 'item/'.$lastInsertId.'/app';
+							$this->AwsFile->deleteMatchingObjects($deletekeyname);
+							$keyname1 = 'item/'.$lastInsertId.'/app/'.$item_item_image;
+							$this->AwsFile->putObjectFile($keyname1,$destination_url,$item_image['type']);
+
+							 $query = $this->Items->ItemVariationMasters->query();
+					    	$query->update()
+						   	->set([
+						   		'item_image' => $keyname1,
+						   		'item_image_web' => $keyname
+						   		])
+						    ->where(['id' => $lastInsertId])
+						    ->execute();
+
+							/* Delete Temp File */
+							$file = new File(WWW_ROOT . $destination_url, false, 0777);
+							$file->delete();
+						}
+					}
+
 				}
-
-
-				//pr($item);exit;
+				
                 $this->Flash->success(__('The item has been saved.'));
 
                 return $this->redirect(['action' => 'index']);

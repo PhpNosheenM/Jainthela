@@ -67,8 +67,8 @@ class BannersTable extends Table
             ->notEmpty('name');
 
         $validator
-            ->scalar('banner_image')
-            ->maxLength('banner_image', 100)
+             //->scalar('banner_image')
+            //->maxLength('banner_image', 100)
             ->requirePresence('banner_image', 'create')
             ->notEmpty('banner_image');
 
