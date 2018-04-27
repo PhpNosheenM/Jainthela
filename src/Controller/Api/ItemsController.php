@@ -55,7 +55,7 @@ class ItemsController extends AppController
         }else { $categoryWhere =''; }
 
         $items = $this->Items->find()
-        ->contain(['ItemsVariations' => function ($q) use($sellerWhere){ return $q->where($sellerWhere)->contain(['UnitVariations'=>['Units'],'Sellers']); } ])
+        ->contain(['ItemsVariations' => function ($q) use($sellerWhere){ return $q->where($sellerWhere)->contain(['UnitVariations'=>['Units'],'Sellers','ItemVariationMasters']); } ])
         ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id])
         ->where($categoryWhere)
         ->where($brandWhere)
@@ -164,7 +164,7 @@ class ItemsController extends AppController
           {
             $items = $this->Items->find();
             $items->select(['AverageReviewRatings.item_id','ItemAverageRating' => $items->func()->avg('AverageReviewRatings.rating')])
-            ->contain(['Categories','Brands','Cities','ItemsVariations'=>['UnitVariations'=>['Units'],'Sellers'],'LeftItemReviewRatings'])
+            ->contain(['Categories','Brands','Cities','ItemsVariations'=>['UnitVariations'=>['Units'],'Sellers','ItemVariationMasters'],'LeftItemReviewRatings'])
             ->leftJoinWith('AverageReviewRatings')
             ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.id'=>$item_id,'Items.city_id'=>$city_id,'Items.category_id'=>$category_id])
             ->autoFields(true);
@@ -396,14 +396,14 @@ class ItemsController extends AppController
           if(!empty($item_name))
           {
               $items = $this->Items->find()
-              ->contain(['Categories','ItemsVariations'=>['UnitVariations'=>['Units']]])
+              ->contain(['Categories','ItemsVariations'=>['ItemVariationMasters','UnitVariations'=>['Units']]])
               ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id])
               ->where(['Items.name'=>$item_name])
               ->where($where);
               if(empty($items->toArray()))
               {
                 $items = $this->Items->find()
-                ->contain(['Categories','ItemsVariations'=>['UnitVariations'=>['Units']]])
+                ->contain(['Categories','ItemsVariations'=>['ItemVariationMasters','UnitVariations'=>['Units']]])
                 ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id])
                 ->where(['Items.name Like' =>'%'.$item_name.'%'])
                 ->where($where);
@@ -467,7 +467,7 @@ class ItemsController extends AppController
             ->matching('ItemsVariations', function ($q) use($sellerWhere) {
                return $q->where($sellerWhere);
             })
-            ->contain(['ItemsVariations'])
+            ->contain(['ItemsVariations'=>['ItemVariationMasters']])
             ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id])
             ->limit($limit)->page($page);
             if(!empty($items->toArray()))

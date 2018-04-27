@@ -47,13 +47,19 @@ class HomeScreensController extends AppController
 	 public function homescreen(){
 		$city_id=@$this->request->query['city_id'];
 		$customer_id=@$this->request->query['customer_id'];
+		$screen_type=@$this->request->query['screen_type'];
 		if(!empty($city_id)){
 			/* $Banners=$this->HomeScreens->Banners->find()->where(['city_id'=>$city_id,'status'=>'Active']);
 			$SubCategories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'	section_show'=>'yes','status'=>'Active']);
 			$Categories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'status'=>'Active','parent_id IS'=>Null]);
 			*/
-			$HomeScreens=$this->HomeScreens->find()->where(['screen_type'=>'Home','section_show'=>'Yes','city_id'=>$city_id])->order(['preference'=>'ASC']);
-
+			$HomeScreens=$this->HomeScreens->find()->where(['screen_type'=>'Home','section_show'=>'Yes','city_id'=>$city_id]);
+			if($screen_type=='web'){
+				$HomeScreens->order(['web_preference'=>'ASC']);
+			}else{
+				
+				$HomeScreens->order(['preference'=>'ASC']);
+			}
 		if($HomeScreens->toArray())
 		{		$dynamic=[];
 				$Express =[];
@@ -90,7 +96,7 @@ class HomeScreensController extends AppController
 							}
 
 						if($HomeScreen->model_name=='SubCategory'){
-							$SubCategories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'	section_show'=>'yes','status'=>'Active']);
+							$SubCategories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'	section_show'=>'yes','status'=>'Active','parent_id IS NOT'=>Null]);
 							if($SubCategories->toArray()){
 								$SubCategory=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$SubCategories);
 								array_push($dynamic,$SubCategory);

@@ -26,7 +26,7 @@ class ComboOffersController extends AppController
 			$customer_id = @$this->request->query['customer_id'];
 				$cart_item_count = $this->ComboOffers->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])->count();
 			if(!empty($offer_id)){
-				$offerDetails=$this->ComboOffers->get($offer_id,['contain'=>['ComboOfferDetails'=>['ItemVariations'=>['Items','UnitVariations'=>['Units']]]]]);
+				$offerDetails=$this->ComboOffers->get($offer_id,['contain'=>['ComboOfferDetails'=>['ItemVariations'=>['ItemVariationMasters','Items','UnitVariations'=>['Units']]]]]);
 
 				if(!empty($offerDetails->toArray()))
 				{
@@ -75,7 +75,7 @@ class ComboOffersController extends AppController
 						$cart_item_count = $this->ComboOffers->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])->count();
 						$ComboOffers=$this->ComboOffers->find()
 						->where(['status'=>'Active','city_id'=>$city_id])
-						->contain(['ComboOfferDetails'=>['ItemVariations'=>['Items']]]);
+						->contain(['ComboOfferDetails'=>['ItemVariations'=>['ItemVariationMasters','Items']]]);
 
 					if($ComboOffers->toArray()){
 
