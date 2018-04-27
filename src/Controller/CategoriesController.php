@@ -21,7 +21,7 @@ class CategoriesController extends AppController
      */
     public function index($id = null, $category_image_name_data = null)
     {
-    	$dir='';
+    	/*$dir='';
     	if(!empty($category_image_name_data))
     	{
 	    	$category_image_name_data = $this->EncryptingDecrypting->decryptData($category_image_name_data);
@@ -30,7 +30,8 @@ class CategoriesController extends AppController
 			{
 				$dir->delete();	
 			}
-		}
+		}*/
+		
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
 		$this->viewBuilder()->layout('admin_portal');
@@ -102,7 +103,7 @@ class CategoriesController extends AppController
 				///////////////////////////////
                 $this->Flash->success(__('The category has been saved.'));
 
-                return $this->redirect(['action' => 'index',$dir]);
+               return $this->redirect(['action' => 'delete_file',$dir]);
             }
             $this->Flash->error(__('The category could not be saved. Please, try again.'));
         }
@@ -123,7 +124,17 @@ class CategoriesController extends AppController
 		$paginate_limit=$this->paginate['limit'];
         $this->set(compact('categories','category', 'parentCategories','paginate_limit'));
     }
-
+    public function deleteFile($dir)
+    {
+    	$dir = $this->EncryptingDecrypting->decryptData($dir);
+    	$dir  = new File($dir);				
+		if ($dir->exists()) 
+		{
+			$dir->delete();	
+		}
+		 return $this->redirect(['action' => 'index']);
+    	exit;
+    }
 
     /**
      * Delete method
