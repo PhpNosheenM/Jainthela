@@ -19,8 +19,18 @@ class CategoriesController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index($id = null)
+    public function index($id = null, $category_image_name_data = null)
     {
+    	$dir='';
+    	if(!empty($category_image_name_data))
+    	{
+	    	$category_image_name_data = $this->EncryptingDecrypting->decryptData($category_image_name_data);
+	    	$dir  = new File(WWW_ROOT .  'img'.DS.'temp'.DS.$category_image_name_data, true, 0777);				
+			if ($dir->exists()) 
+			{
+				$dir->delete();	
+			}
+		}
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
 		$this->viewBuilder()->layout('admin_portal');
@@ -78,7 +88,7 @@ class CategoriesController extends AppController
 					}
 					imagejpeg($image, $destination_url, 10);
 					
-
+					imagedestroy($image);
 					/* For App Image */
 					$deletekeyname = 'category/'.$category_data->id.'/app';
 					$this->AwsFile->deleteMatchingObjects($deletekeyname);
@@ -86,15 +96,13 @@ class CategoriesController extends AppController
 					$this->AwsFile->putObjectFile($keyname,$destination_url,$category_image['type']);
 					$category_data->category_image=$keyname;
 					$this->Categories->save($category_data);
-					
-					/* Delete Temp File */
-					$file = new File(WWW_ROOT . $destination_url, false, 0777);
-					$file->delete();
+					$dir  = WWW_ROOT .  'img'.DS.'temp'.DS.$category_image_name;
+					$dir = $this->EncryptingDecrypting->encryptData($dir);
 				}
 				///////////////////////////////
                 $this->Flash->success(__('The category has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'index',$dir]);
             }
             $this->Flash->error(__('The category could not be saved. Please, try again.'));
         }
