@@ -49,6 +49,10 @@ class ItemVariationMastersTable extends Table
 			'bindingKey'=>'item_id',
 			'foreignKey'=>'item_id'
         ]);
+		
+		 $this->hasMany('ItemVariations', [
+            'foreignKey' => 'item_variation_master_id'
+        ]);
     }
 
     /**
