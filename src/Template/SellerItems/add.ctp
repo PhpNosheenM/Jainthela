@@ -14,14 +14,13 @@
 							<div class="form-group">
 								<label class="col-md-3 control-label">Seller Name</label>
 								<div class="col-md-9">                                            
-									<?= $this->Form->select('seller_id',$sellers,['class'=>'form-control select','label'=>false]) ?>
+									<?= $this->Form->select('seller_id',$sellers,['class'=>'form-control select seller_change','label'=>false, 'data-live-search'=>true,'empty'=>'--Select--']) ?>
+									
 								</div>
 							</div>
 							<div class="form-group">
-								<div class="col-md-12">    
-									<div class="panel-group accordion accordion-dc">								
-										<?= $this->RecursiveCategories->categoryItems($categories) ?>
-									</div>
+								<div class="col-md-12" id="attach">    
+									
 								</div>
 							</div>
 						</div>
@@ -40,12 +39,13 @@
 		</div>
 	</div>                    	
 </div>
+<?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?php
 $js='
-		$(document).on("change",".check_all",function(){
+		$(document).on("change",".check_all",function(){ 
 			if($(this).is(":checked"))
 			{
-				$(this).closest(".panel").find("input[type=checkbox]").prop("checked",true);
+				$(this).closest(".spanel").find("input[type=checkbox]").prop("checked",true);
 				$(this).closest(".panel").find("input[type=text]").prop("disabled",false);
 			}
 			else
@@ -54,7 +54,7 @@ $js='
 				$(this).closest(".panel").find("input[type=text]").prop("disabled",true);
 			}
 		});
-		$(document).on("change",".single_item",function(){
+		$(document).on("change",".single_item",function(){ 
 			var item_id = $(this).val();
 			if($(this).is(":checked"))
 			{
@@ -67,6 +67,23 @@ $js='
 		});
 		$(document).on("keyup",".commission_all",function(){
 			$(this).closest(".panel").find("input[type=text]").val($(this).val());
+		});
+		$(document).on("change",".seller_change",function(){
+			var seller_id =$(this).val(); 
+			if(seller_id!="")
+			{
+				$("#attach").html("<b> Loading... </b>");	
+				var url =   "'.$this->Url->build(["controller"=>"SellerItems","action"=>"getSellerItems"]).'";
+				url =   url+"?id="+seller_id;	
+				
+				$.ajax({
+								url: url,
+				}).done(function(response){ 
+							   $("#attach").html(response);
+							   $(".panel-body").show();
+				});
+			}else{$("#attach").html(" ");}
+			
 		});
 ';
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 	

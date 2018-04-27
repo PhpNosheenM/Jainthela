@@ -65,7 +65,7 @@ class SellerItemsController extends AppController
         $sellerItem = $this->SellerItems->newEntity();
         if ($this->request->is('post')) {
 			$commissions=$this->request->getData('commissions');
-			$item_ids=$this->request->getData('item_ids');
+			$item_ids=$this->request->getData('item_ids'); 
 			$seller_id=$this->request->getData('seller_id');
 			//pr($this->request->getData());
 			//exit;
@@ -189,4 +189,12 @@ class SellerItemsController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+	
+	public function getSellerItems()
+	{
+		$seller_id= $this->request->query('id');
+		$categories = $this->SellerItems->Categories->find('threaded')->contain(['Items'=>['SellerItems'=>function ($q) use($seller_id){return $q->where(['SellerItems.id'=>@$seller_id]);}]]);
+		
+		$this->set(compact('getSellerItems','categories'));
+	}
 }
