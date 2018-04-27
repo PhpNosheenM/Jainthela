@@ -66,27 +66,47 @@ class SellerItemsController extends AppController
         if ($this->request->is('post')) {
 			$commissions=$this->request->getData('commissions');
 			$item_ids=$this->request->getData('item_ids'); 
+			$ids=$this->request->getData('ids'); 
 			$seller_id=$this->request->getData('seller_id');
 			//pr($this->request->getData());
 			//exit;
 			$total_rows = sizeof($item_ids);
 			
 			$query = $this->SellerItems->query();
-			$query->insert(['seller_id', 'item_id','commission_percentage']);
+			
 			for($i=0; $i<$total_rows; $i++)
 			{
-				$query->values([
-					'seller_id' => $seller_id,
-					'item_id' => $item_ids[$i],
-					'commission_percentage' => $commissions[$i]
-				]);
+				$isExist = $this->SellerItems->find()->where(['seller_id'=>$seller_id,'item_id'=>$item_ids[$i]])->count();
+				
+				if($isExist>0)
+				{
+					$query1 = $this->SellerItems->query();
+					  $query1->update()
+					  ->set(['commission_percentage' =>$commissions[$i]])
+					  ->where(['seller_id'=>$seller_id,'item_id'=>$item_ids[$i]])
+					  ->execute();
+					  
+				}
+				else
+				{ 
+					$query->insert(['seller_id', 'item_id','commission_percentage']);
+					$query->values([
+						'seller_id' => $seller_id,
+						'item_id' => $item_ids[$i],
+						'commission_percentage' => $commissions[$i]
+					]);
+					$query->execute();
+					
+				}
 			}
-            if ($query->execute()) {
-                $this->Flash->success(__('The seller item has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The seller item could not be saved. Please, try again.'));
+            if($i!=0)
+			{
+				$this->Flash->success(__('The seller item has been saved.'));
+				return $this->redirect(['action' => 'index']);
+			}
+			else{
+				$this->Flash->error(__('The seller item could not be saved. Please, try again.'));
+			}
         }
         $categories = $this->SellerItems->Categories->find('threaded')->contain(['Items']);
         $sellers = $this->SellerItems->Sellers->find('list');
