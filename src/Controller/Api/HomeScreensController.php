@@ -105,7 +105,7 @@ class HomeScreensController extends AppController
 							}
 						}
 						if($HomeScreen->model_name=='MainCategory'){
-							$Categories=$this->HomeScreens->Categories->find()->where(['city_id'=>$city_id,'status'=>'Active','parent_id IS'=>Null]);
+							$Categories=$this->HomeScreens->Categories->find('threaded')->where(['city_id'=>$city_id,'status'=>'Active','parent_id IS'=>Null]);
 							if($Categories->toArray()){
 								$Category=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$Categories);
 								array_push($dynamic,$Category);
