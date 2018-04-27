@@ -80,11 +80,11 @@
 										 
 										echo '<div class="checkbox">';
 											echo '<label>';
-										 		echo $this->Form->checkbox('item_variation_row['.$i.'][unit_variation_id]',['value'=>$data['value'], 'hiddenField' => false,'label' => false]);
+										 		echo $this->Form->checkbox('item_variation_row['.$i.'][unit_variation_id]',['value'=>$data['value'], 'hiddenField' => false,'label' => false,'class'=>'chk_class','id'=>'class'.$i.'']);
 										 		echo $data['text']; 
 										 	echo '</label>';
 										 	?>
-										 	<?= $this->Form->control('item_variation_row['.$i.'][item_image_web]',['type'=>'file','label'=>false,'id' => 'item_image_'.$i,'data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>false]) ?>
+										 	<?= $this->Form->control('item_variation_row['.$i.'][item_image_web]',['type'=>'file','label'=>false,'id' => 'item_image_'.$i,'data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>false,'class'=>'class'.$i.'']) ?>
 											<label id="item_image-error" class="error" for="item_image"></label>
 										 	<?php
 										 echo '</div>';
@@ -96,14 +96,7 @@
 									?>
 								</div>
 							</div>
-							<div class="form-group">    
-								<label class="col-md-3 control-label">Status</label>
-								<div class="col-md-9 col-xs-12">
-									<?php $options['Active'] = 'Active'; ?>
-									<?php $options['Deactive'] = 'Deactive'; ?>
-									<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
-								</div>
-							</div>
+							
 						</div>
 						<div class="col-md-6">
 							<div class="form-group">
@@ -129,6 +122,14 @@
 								<label class="col-md-3 control-label">Description</label>
 								<div class="col-md-9 col-xs-12"> 
 									<?= $this->Form->control('description',['class'=>'form-control','placeholder'=>'Description','label'=>false,'rows'=>'4']) ?>
+								</div>
+							</div>
+							<div class="form-group">    
+								<label class="col-md-3 control-label">Status</label>
+								<div class="col-md-9 col-xs-12">
+									<?php $options['Active'] = 'Active'; ?>
+									<?php $options['Deactive'] = 'Deactive'; ?>
+									<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
 						</div>
@@ -175,10 +176,21 @@
 		$i++;
 		}
 		
+		
 		$js.='$(document).on("click", ".fileinput-remove-button", function(){
 			$(this).closest("div.file-input").find("input[type=file]").attr("required",true);
 		});
 		
+		$(document).on("click", ".chk_class", function(){
+			var className = $(this).attr("id"); 
+			if (this.checked) {
+				$("."+className).attr("required", "true");
+			}
+			else
+			{
+				$("."+className).removeAttr("required");
+			}
+		});
 		';  
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		
 ?>
