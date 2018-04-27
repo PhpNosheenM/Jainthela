@@ -18,14 +18,56 @@ class PlansController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    public function index($id=null)
     {
-        $this->paginate = [
-            'contain' => ['Admins', 'Cities']
+		$city_id=$this->Auth->User('city_id'); 
+		$user_id=$this->Auth->User('id');
+		$this->viewBuilder()->layout('admin_portal');
+		 $this->paginate = [
+            'contain' => [],
+			'limit' =>20
         ];
-        $plans = $this->paginate($this->Plans);
+		
+		$plans1 = $this->Plans->find()->where(['Plans.city_id'=>$city_id,'Plans.admin_id'=>$user_id]);
+        if($id)
+		{
+		    $plan = $this->Plans->get($id);
+		}
+		else
+		{
+			 $plan = $this->Plans->newEntity();
+		}
 
-        $this->set(compact('plans'));
+        if ($this->request->is(['post','put'])) {
+            $plan = $this->Plans->patchEntity($plan, $this->request->getData());
+			$plan->admin_id=$user_id;
+			$plan->city_id=$city_id;
+			if($id)
+			{
+				$plan->id=$id;
+			}
+            if ($this->Plans->save($plan)) {
+                $this->Flash->success(__('The plan has been saved.'));
+				return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The plan could not be saved. Please, try again.'));
+        }
+		else if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$plans1->where([
+							'OR' => [
+									'Plans.name LIKE' => $search.'%',
+									'Plans.amount LIKE' => $search.'%',
+									'Plans.benifit_per LIKE' => $search.'%',
+									'Plans.total_amount LIKE' => $search.'%',
+									'Plans.status LIKE' => $search.'%'
+							]
+			]);
+		}
+
+        $plans = $this->paginate($plans1);
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('plans','plan','states','paginate_limit'));
     }
 
     /**

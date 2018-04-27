@@ -82,11 +82,11 @@ class PlansTable extends Table
             ->decimal('total_amount')
             ->requirePresence('total_amount', 'create')
             ->notEmpty('total_amount');
-
+/* 
         $validator
             ->dateTime('created_on')
             ->requirePresence('created_on', 'create')
-            ->notEmpty('created_on');
+            ->notEmpty('created_on'); */
 
         $validator
             ->requirePresence('status', 'create')

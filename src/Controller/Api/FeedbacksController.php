@@ -54,7 +54,7 @@ class FeedbacksController extends AppController
 						//$data=$Feedbacks_data;
 
 					}else{
-
+						//pr($Feedbacks);exit;
 						$success=false;
 						$message="data has not been saved";
 					}

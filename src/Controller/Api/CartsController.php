@@ -165,12 +165,12 @@ class CartsController extends AppController
 				if($isCombo == 'true')
 				{
 				$this->addToCartCombo($customer_id,$city_id,$combo_offer_id);
-				$current_item = $this->Carts->find()->where(['Carts.city_id'=>$city_id,'Carts.customer_id' => $customer_id, 'Carts.combo_offer_id' =>$combo_offer_id])->contain(['ComboOffers'=>['ComboOfferDetails'=>['ItemVariations'=>['Items','UnitVariations'=>['Units']]]]])->first();
+				$current_item = $this->Carts->find()->where(['Carts.city_id'=>$city_id,'Carts.customer_id' => $customer_id, 'Carts.combo_offer_id' =>$combo_offer_id])->contain(['ComboOffers'=>['ComboOfferDetails'=>['ItemVariations'=>['Items','ItemVariationMasters','UnitVariations'=>['Units']]]]])->first();
 				if(empty($current_item)) { $current_item = []; }
 			}else{
 				// addCartCommon (while adding items) for code reuseabilty in both function plusAddtoCart and fetchCart
 				$this->addCartCommon($customer_id,$city_id,$item_variation_id,$combo_offer_id,$isCombo);
-				$current_item = $this->Carts->find()->where(['Carts.city_id'=>$city_id,'Carts.customer_id' => $customer_id, 'Carts.item_variation_id' =>$item_variation_id])->contain(['ItemVariations'=>['Items','UnitVariations'=>['Units']]])->first();
+				$current_item = $this->Carts->find()->where(['Carts.city_id'=>$city_id,'Carts.customer_id' => $customer_id, 'Carts.item_variation_id' =>$item_variation_id])->contain(['ItemVariations'=>['Items','ItemVariationMasters','UnitVariations'=>['Units']]])->first();
 				if(empty($current_item)) { $current_item = []; }
 
 			}
@@ -192,13 +192,13 @@ class CartsController extends AppController
 			{
 				// removeCartCombo for code reuseabilty in both function removeFromCart and fetchCart
 				$this->removeCartCombo($customer_id,$city_id,$combo_offer_id);
-				$current_item = $this->Carts->find()->where(['Carts.city_id'=>$city_id,'Carts.customer_id' => $customer_id, 'Carts.combo_offer_id' =>$combo_offer_id])->contain(['ComboOffers'=>['ComboOfferDetails'=>['ItemVariations'=>['Items','UnitVariations'=>['Units']]]]])->first();
+				$current_item = $this->Carts->find()->where(['Carts.city_id'=>$city_id,'Carts.customer_id' => $customer_id, 'Carts.combo_offer_id' =>$combo_offer_id])->contain(['ComboOffers'=>['ComboOfferDetails'=>['ItemVariations'=>['Items','ItemVariationMasters','UnitVariations'=>['Units']]]]])->first();
 				if(empty($current_item)) { $current_item = []; }
 			}
 			else{
 				// removeCartCommon for code reuseabilty in both function removeFromCart and fetchCart
 				$this->removeCartCommon($customer_id,$city_id,$item_variation_id);
-				$current_item = $this->Carts->find()->where(['Carts.city_id'=>$city_id,'Carts.customer_id' => $customer_id, 'Carts.item_variation_id' =>$item_variation_id])->contain(['ItemVariations'=>['Items','UnitVariations'=>['Units']]])->first();
+				$current_item = $this->Carts->find()->where(['Carts.city_id'=>$city_id,'Carts.customer_id' => $customer_id, 'Carts.item_variation_id' =>$item_variation_id])->contain(['ItemVariations'=>['Items','ItemVariationMasters','UnitVariations'=>['Units']]])->first();
 				if(empty($current_item)) { $current_item = []; }
 			}
 			$item_in_cart = $this->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])->count();
@@ -264,7 +264,7 @@ class CartsController extends AppController
 
 							$categories = $this->Carts->find()
 							->where(['customer_id' => $customer_id])
-							->contain(['ItemVariations'=>['Items'=>['Categories']]]);
+							->contain(['ItemVariations'=>['ItemVariationMasters','Items'=>['Categories']]]);
 
 							if(!empty($categories->toArray()))
 							{
@@ -285,7 +285,7 @@ class CartsController extends AppController
 
 									$carts_data=$this->Carts->find()
 									->where(['customer_id' => $customer_id])
-									->contain(['ItemVariations'=>['Items','UnitVariations'=>['Units']]])
+									->contain(['ItemVariations'=>['ItemVariationMasters','Items','UnitVariations'=>['Units']]])
 									->group('Carts.item_variation_id')->autoFields(true)->toArray();
 
 									foreach ($category_arr as $cat_key => $cat_value) {
@@ -395,7 +395,7 @@ class CartsController extends AppController
 			$city_id = $this->request->query('city_id');
 			$categories = $this->Carts->find()
 			->where(['customer_id' => $customer_id])
-			->contain(['ItemVariations'=>['Items'=>['Categories']]]);
+			->contain(['ItemVariations'=>['ItemVariationMasters','Items'=>['Categories']]]);
 
 			if(!empty($categories->toArray()))
 			{
@@ -416,7 +416,7 @@ class CartsController extends AppController
 
 					$carts_data=$this->Carts->find()
 					->where(['customer_id' => $customer_id])
-					->contain(['ItemVariations'=>['Items','UnitVariations'=>['Units']]])
+					->contain(['ItemVariations'=>['ItemVariationMasters','Items','UnitVariations'=>['Units']]])
 					->group('Carts.item_variation_id')->autoFields(true)->toArray();
 
 					foreach ($category_arr as $cat_key => $cat_value) {
