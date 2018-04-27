@@ -18,11 +18,47 @@ class DeliveryDatesController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    public function index($id=null)
     {
-        $deliveryDates = $this->paginate($this->DeliveryDates);
+		
+		$city_id=$this->Auth->User('city_id'); 
+		$user_id=$this->Auth->User('id');
+		$this->viewBuilder()->layout('admin_portal');
+		$this->paginate = [
+			'limit' => 20,
+         ];
+	     $deliverydates = $this->DeliveryDates->find()->where(['city_id'=>$city_id]);
+		
+		if($id)
+		{
+		   $deliverydate = $this->DeliveryDates->get($id);
+		}
+		else
+		{
+			$deliverydate = $this->DeliveryDates->newEntity();
+		}
 
-        $this->set(compact('deliveryDates'));
+        if ($this->request->is(['post','put'])) {
+			 
+            $deliverydate = $this->DeliveryDates->patchEntity($deliverydate, $this->request->getData());
+			$deliverydate->city_id=$city_id;
+			if($id)
+			{
+				$deliverydate->id=$id;
+			}
+            if ($this->DeliveryDates->save($deliverydate)) {
+                $this->Flash->success(__('The delivery charge has been saved.'));
+                return $this->redirect(['action' => 'index']);
+            }
+		 
+            $this->Flash->error(__('The delivery charge could not be saved. Please, try again.'));
+			
+        }
+	
+        $deliverydates = $this->paginate($deliverydates);
+        $paginate_limit=$this->paginate['limit'];
+        $this->set(compact('deliverydates','deliverydate','paginate_limit'));
+		 
     }
 
     /**
