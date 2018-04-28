@@ -289,8 +289,8 @@ class SellerItemsController extends AppController
 	public function getSellerItems()
 	{
 		$seller_id= $this->request->query('id');
-		$categories = $this->SellerItems->Categories->find('threaded')->contain(['Items'=>['SellerItems'=>function ($q) use($seller_id){return $q->where(['SellerItems.id'=>@$seller_id]);}]]);
-		
+		$categories = $this->SellerItems->Categories->find('threaded')->contain(['Items'=>['SellerItems'=>function ($q) use($seller_id){return $q->where(['SellerItems.seller_id'=>@$seller_id]);}]]);
+		//pr($categories->toArray());exit;
 		$this->set(compact('getSellerItems','categories'));
 	}
 }

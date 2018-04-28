@@ -57,7 +57,7 @@ class RecursiveCategoriesHelper extends Helper
 								$chk ="checked"; $disabled="";
 							}else{$chk ="";$disabled="disabled";}
 							echo '<label><input name="item_ids[]" type="checkbox"  value="'.$item['id'].'" class="single_item" '.$chk.'>&nbsp;&nbsp;'.$item['name'].'</label>';
-							echo $html->control('commissions[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Commission in %','class'=>'form-control','style'=>'display:inline !important;width: 15%;float:none;',$disabled,'item_id'=>$item['id'],'value'=>$item->seller_items[0]->commission_percentage]);
+							echo $html->control('commissions[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Commission in %','class'=>'form-control','style'=>'display:inline !important;width: 15%;float:none;margin: 1%;',$disabled,'item_id'=>$item['id'],'value'=>@$item->seller_items[0]->commission_percentage]);
 							echo '<br/>';
 						}
 						
