@@ -39,6 +39,10 @@
             <td><?= h($bulkBookingLead->mobile) ?></td>
         </tr>
         <tr>
+            <th scope="row"><?= __('Delivery Time') ?></th>
+            <td><?= h($bulkBookingLead->delivery_time) ?></td>
+        </tr>
+        <tr>
             <th scope="row"><?= __('Status') ?></th>
             <td><?= h($bulkBookingLead->status) ?></td>
         </tr>
@@ -53,10 +57,6 @@
         <tr>
             <th scope="row"><?= __('Delivery Date') ?></th>
             <td><?= h($bulkBookingLead->delivery_date) ?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?= __('Delivery Time') ?></th>
-            <td><?= h($bulkBookingLead->delivery_time) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Created On') ?></th>

@@ -134,7 +134,7 @@ class ComboOffersController extends AppController
 		$itemVariations = $this->ComboOffers->ComboOfferDetails->ItemVariations->find('all')->contain(['Items','UnitVariations'=>['Units']]);
 		$itemVariation_option=[];
 		$i=0; foreach($itemVariations as $itemVariation){
-			$itemVariation_option[]=['text'=>$itemVariation->item->name .' ' .$itemVariation->unit_variation->quantity_variation .' ' .$itemVariation->unit_variation->unit->unit_name,'value'=>$itemVariation->id,'rate'=>$itemVariation->print_rate ];
+			$itemVariation_option[]=['text'=>$itemVariation->item->name .' ' .$itemVariation->unit_variation->quantity_variation .' '.$itemVariation->unit_variation->unit->unit_name,'value'=>$itemVariation->id,'rate'=>$itemVariation->print_rate ];
 		}
 		//pr($itemVariations->toArray()); exit;
         $this->set(compact('comboOffer', 'cities', 'itemVariation_option'));
