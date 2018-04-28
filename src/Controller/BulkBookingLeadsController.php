@@ -57,16 +57,18 @@ class BulkBookingLeadsController extends AppController
 			$bulkBookingLead->city_id=$city_id;
 			$bulkBookingLead->delivery_date=$org_delivery_date;
 			$bulkBookingLead->lead_no=$new_lead_no;
-			 $bulk_booking_lead_row=$this->request->data['bulk_booking_lead_rows'];
+			 $bulk_booking_lead_row=$this->request->data['bulk_booking_lead_row'];
+			
             if ($bulk_data=$this->BulkBookingLeads->save($bulkBookingLead)) {
 			 
 			 foreach($bulk_booking_lead_row as $data1){
+			 
 				 $bulk_booking_lead_row1=$this->BulkBookingLeads->BulkBookingLeadRows->newEntity();
 				 $bulk_booking_lead_row1->bulk_booking_lead_id=$bulk_data->id;
 				 $bulk_rows=$this->BulkBookingLeads->BulkBookingLeadRows->save($bulk_booking_lead_row1);
         		 $lastInsertId=$bulk_rows->id;
 					
-				 @$image_name=$data1->image_name;
+				 @$image_name=$data1['image_name'];
 				 $img_error=$image_name['error'];
 					if(empty($img_error))
 					{
@@ -80,8 +82,8 @@ class BulkBookingLeadsController extends AppController
 					$this->AwsFile->putObjectFile($keyname,$image_name['tmp_name'],$image_name['type']);
 					$bulk_image_web=$keyname;;
 					
-						
-						
+				
+					
 					$tempdir=sys_get_temp_dir();
 					$destination_url = $tempdir . '/'.$img_image_name;
 					if($img_ext[1]=='png'){
@@ -102,8 +104,8 @@ class BulkBookingLeadsController extends AppController
 					 $query = $this->BulkBookingLeads->BulkBookingLeadRows->query();
 					    	$query->update()
 						   	->set([
-						   		'BulkBookingLeadRows.image_name_web' => $bulk_image_web,
-						   		'BulkBookingLeadRows.image_name' => $bulk_image_app
+						   		'image_name_web' => $bulk_image_web,
+						   		'image_name' => $bulk_image_app
 						   		])
 						    ->where(['id' => $lastInsertId])
 						    ->execute();
@@ -118,8 +120,7 @@ class BulkBookingLeadsController extends AppController
 
                 return $this->redirect(['action' => 'index']);
             }
-			pr($bulkBookingLead);
-			exit;
+			 
             $this->Flash->error(__('The bulkBookingLead could not be saved. Please, try again.'));
         }
 		else if ($this->request->is(['get'])){

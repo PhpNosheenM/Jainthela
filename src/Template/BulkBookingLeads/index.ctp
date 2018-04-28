@@ -194,7 +194,7 @@
 				var i=0; 
 				$(".main_table tbody tr").each(function(){
 						  
-						$(this).find("td:nth-child(1) .image_name").attr({name:"bulk_booking_lead_rows["+i+"][image_name]"}).rules("add", "required");
+						$(this).find("td:nth-child(1) .image_name").attr({name:"bulk_booking_lead_row["+i+"][image_name]"}).rules("add", "required");
 						$(this).find("td:nth-child(1) .image_name").attr({id:"image_name"+i});
 						
 						$("#image_name"+i).fileinput({
