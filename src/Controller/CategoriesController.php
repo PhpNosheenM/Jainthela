@@ -67,7 +67,7 @@ class CategoriesController extends AppController
 			}else{
 				$category->edited_by=$user_id;
 			}
-			pr($category); exit;
+			
             if ($category_data=$this->Categories->save($category)) {
 				///////////////// S3 Upload //////////////
 				if(empty($category_error))
