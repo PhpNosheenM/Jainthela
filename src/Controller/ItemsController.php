@@ -77,7 +77,7 @@ class ItemsController extends AppController
      * Add method
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
-     */
+     */ 
     public function add()
     {
 		$city_id=$this->Auth->User('city_id');
