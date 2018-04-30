@@ -13,10 +13,12 @@
 				$status[] =['value'=>'Deactive','text'=>'Deactive']; 
 				$status[] =['value'=>'Active','text'=>'Active']; 
 		?>
-		<?php $i=0; foreach ($itemVariations as $itemVariation): ?>
+		<?php
+		
+		$i=0; foreach ($itemVariations as $itemVariation): ?>
 		<tr>
 			<td><?= $this->Number->format(++$i) ?></td>
-			<td><?= h($itemVariation->item->name) ?></td>
+			<td width="40%"><?= h($itemVariation->item->name) ?></td>
 			<td><?= h(@$itemVariation->unit_variation->unit->longname) ?></td>
 			<td><?= h($itemVariation->maximum_quantity_purchase) ?></td>
 			<td class="actions">

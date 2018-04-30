@@ -312,9 +312,10 @@ class SellerItemsController extends AppController
 						  ->execute();
 				$i++;
 			}
+			
 			if($i>0)
 			{
-				$this->Flash->success(__('The seller item has been approved.'));
+				$this->Flash->success(__('The seller item has been approved.'));	
 				return $this->redirect(['action' => 'sellerItemApproval']);
 			}
         }

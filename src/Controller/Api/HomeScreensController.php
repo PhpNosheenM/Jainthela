@@ -116,7 +116,20 @@ class HomeScreensController extends AppController
 
 
 					if($HomeScreen->model_name=='Category'){
-							$Items=$this->HomeScreens->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])->contain(['ItemActive'=>['ItemsVariations'=>['UnitVariations'=>['Units']]]]);
+							//$Items=$this->HomeScreens->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])->contain(['ItemActive'=>['ItemsVariations'=>['ItemVariationMasters','UnitVariations'=>['Units']]]]);
+							
+							/* $Items=$this->HomeScreens->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])->contain(['ItemActive'=>['ItemsVariations'=>function($q){
+								return  $q->where(['ItemsVariations.status'=>'Active','ItemsVariations.section_show'=>'Yes']);
+							}]]); */
+							
+							$Items=$this->HomeScreens->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])->contain(['ItemActive'=>['ItemsVariations'=>['ItemVariationMasters','UnitVariations'=>['Units']]]]);
+							
+							$Items->innerJoinWith('ItemsVariations', function ($q) {
+    return  $q->where(['ItemsVariations.status'=>'Active','ItemsVariations.section_show'=>'Yes']);
+});
+							
+							pr($Items->toArray()); exit;
+							
 							if(!empty($Items->toArray())){
 
 								foreach ($Items as $Item) {
@@ -178,7 +191,7 @@ class HomeScreensController extends AppController
 							->contain(['Items'=>function($q){
 								return $q->where(['status'=>'Active','section_show'=>'Yes'])
 								->limit(2)
-								->contain(['ItemsVariations'=>['UnitVariations'=>['Units']]]);
+								->contain(['ItemsVariations'=>['ItemVariationMasters','UnitVariations'=>['Units']]]);
 							}]);
 						//	pr($Singleimagetwoitems->toArray());exit;
 							if($Singleimagetwoitems){

@@ -80,11 +80,13 @@
 						url: url,
 				}).done(function(response){ 
 							 $(".table-responsive").html(response);  
+							 $(".show_hide").show();
 				});
-				$(".show_hide").show();
+				
 			}
 			else
 			{
+				$(".table-responsive").html("");
 				$(".show_hide").hide();
 			}
 		});
