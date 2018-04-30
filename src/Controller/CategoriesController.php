@@ -103,8 +103,14 @@ class CategoriesController extends AppController
 				}
 				///////////////////////////////
                 $this->Flash->success(__('The category has been saved.'));
-
-               return $this->redirect(['action' => 'delete_file',$dir]);
+                if(empty($category_error))
+                {
+              	 return $this->redirect(['action' => 'delete_file',$dir]);
+                }
+                else
+                {
+                	return $this->redirect(['action' => 'index']);
+                }
             }
             $this->Flash->error(__('The category could not be saved. Please, try again.'));
         }
