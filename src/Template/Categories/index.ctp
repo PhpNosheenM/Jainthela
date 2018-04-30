@@ -198,7 +198,7 @@
             showCaption: false,
             showCancel: false,
             browseClass: "btn btn-danger",
-			allowedFileExtensions: ["jpg", "png"],
+			allowedFileExtensions: ["jpeg", "jpg", "png"],
 			maxFileSize: 1024,
 		}); 
 		
