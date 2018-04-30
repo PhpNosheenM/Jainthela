@@ -18,14 +18,65 @@ class WalletsController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    public function index($id=null)
     {
-        $this->paginate = [
+		$city_id=$this->Auth->User('city_id'); 
+		$user_id=$this->Auth->User('id');
+		$this->viewBuilder()->layout('admin_portal');
+		 $this->paginate = [
+            'contain' => ['Customers',   'Plans' ],
+			'limit' =>20
+        ];
+		
+		$wallets1 = $this->Wallets->find()->where(['Wallets.city_id'=>$city_id]);
+        if($id)
+		{
+		    $wallet = $this->Wallets->get($id);
+		}
+		else
+		{
+			 $wallet = $this->Wallets->newEntity();
+		}
+
+        if ($this->request->is(['post','put'])) {
+            $wallet = $this->Wallets->patchEntity($wallet, $this->request->getData());
+			$wallet->admin_id=$user_id;
+			$wallet->city_id=$city_id;
+			if($id)
+			{
+				$wallet->id=$id;
+			}
+            if ($this->Wallets->save($wallet)) {
+                $this->Flash->success(__('The wallet has been saved.'));
+				return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The wallet could not be saved. Please, try again.'));
+        }
+		/* else if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$wallets1->where([
+							'OR' => [
+									'Plans.name LIKE' => $search.'%',
+									'Plans.amount LIKE' => $search.'%',
+									'Plans.benifit_per LIKE' => $search.'%',
+									'Plans.total_amount LIKE' => $search.'%',
+									'Plans.status LIKE' => $search.'%'
+							]
+			]);
+		} */
+
+        $wallets = $this->paginate($wallets1);
+		pr($wallets); exit;
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('wallets','wallet','states','paginate_limit'));
+		
+		
+     /*    $this->paginate = [
             'contain' => ['Customers', 'Orders', 'Plans', 'Promotions', 'ReturnOrders']
         ];
         $wallets = $this->paginate($this->Wallets);
 
-        $this->set(compact('wallets'));
+        $this->set(compact('wallets')); */
     }
 
     /**
