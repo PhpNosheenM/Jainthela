@@ -86,10 +86,10 @@ class AppMenusController extends AppController
 				array_push($dynamic,array("header_name"=>'Menu','title'=>$menus));
 				array_push($dynamic,array("header_name"=>'My Information',"title"=>$MyInformation));
 				array_push($dynamic,array("header_name"=>'Other',"title"=>$Other));
-				
+				$Categories = $this->AppMenus->Categories->find()->select(['id','name'])->where(['city_id'=>$city_id,'section_show'=>'Yes','status'=>'Active'])->contain(['ChildCategories'=>function($q){
+					return $q->select(['ChildCategories.parent_id','ChildCategories.id','ChildCategories.name']);
 				$Categories = $this->AppMenus->Categories->find()->select(['id','name','link'])->where(['city_id'=>$city_id,'section_show'=>'Yes','status'=>'Active'])->contain(['ChildCategories'=>function($q){
-					return $q->select(['ChildCategories.parent_id','ChildCategories.id','ChildCategories.name','ChildCategories.link']);
-				}]);
+					return $q->select(['ChildCategories.parent_id','ChildCategories.id','ChildCategories.name','ChildCategories.link']);}]);
 				
 			    //array_push($dynamic,array("header_name"=>'Shop By Category',"title"=>$Categories));
 

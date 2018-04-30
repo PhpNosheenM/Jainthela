@@ -58,6 +58,7 @@ class ItemVariationsTable extends Table
         $this->hasMany('OrderDetails', [
             'foreignKey' => 'item_variation_id'
         ]);
+ 
 		
 		//$this->belongsToMany('Units');
 	/* 	
@@ -66,6 +67,17 @@ class ItemVariationsTable extends Table
             'targetForeignKey'=>'unit_variation_id',
             'joinTable' => 'item_variation_masters'
         ]); */
+ 
+
+        $this->belongsTo('ItemVariationMasters');
+
+        /* $this->belongsToMany('UnitVariations', [
+            'foreignKey' => 'item_id',
+            'targetForeignKey'=>'unit_variation_id',
+            'joinTable' => 'item_variation_masters'
+        ])->setConditions(['status' => 'Active']); */
+        
+ 
     }
 
     /**
@@ -79,7 +91,7 @@ class ItemVariationsTable extends Table
         $validator
             ->integer('id')
             ->allowEmpty('id', 'create');
-			
+
 		$validator
             ->decimal('item_id')
             ->requirePresence('item_id', 'create')

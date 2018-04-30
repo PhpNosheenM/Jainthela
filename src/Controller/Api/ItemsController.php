@@ -206,7 +206,7 @@ class ItemsController extends AppController
 
                   $dynamic = [];
                   $Itemc = [];
-                  $reletedItem = $this->Items->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$category_id])->contain(['ItemActive'=>['ItemsVariations'=>['UnitVariations'=>['Units']]]]);
+                  $reletedItem = $this->Items->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$category_id])->contain(['ItemActive'=>['ItemsVariations'=>['ItemVariationMasters','UnitVariations'=>['Units']]]]);
                   if(!empty($reletedItem->toArray()))
                   {
                     $Itemc = array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$reletedItem);

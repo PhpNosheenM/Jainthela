@@ -17,7 +17,7 @@ class ItemsController extends AppController
 	public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->Security->setConfig('unlockedActions', ['add']);
+        $this->Security->setConfig('unlockedActions', ['add','edit']);
 
     }
 
@@ -115,6 +115,7 @@ class ItemsController extends AppController
 				        $item_data_variation->item_id=$item_data->id;
 				        $item_data_variation->unit_variation_id=$value['unit_variation_id'];
 				        $item_data_variation->created_by= $user_id;
+				        $item_data_variation->status= 'Active';
 				        $item_data_variation=$this->Items->ItemVariationMasters->save($item_data_variation);
         				$lastInsertId=$item_data_variation->id;
 
@@ -385,11 +386,23 @@ class ItemsController extends AppController
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('admin_portal');
         $item = $this->Items->get($id, [
-            'contain' => ['ItemVariationMasters'=>['UnitVariations']]
+            'contain' => ['ItemVariationMasters'=>function ($q){
+				return $q->where(['ItemVariationMasters.status'=>'Active'])->contain(['UnitVariations']);
+			}]
         ]);
-		//pr($item->toArray()); exit;
-        if ($this->request->is(['patch', 'post', 'put'])) {
-			$item_image=$this->request->data['item_image'];
+		if(sizeof($item->item_variation_masters)>0)
+		{
+			$VariationMasterArr = [];
+			$img = [];
+			foreach($item->item_variation_masters as $item_variation_master)
+			{
+				$VariationMasterArr[$item_variation_master->unit_variation_id]='exist';
+				$img[$item_variation_master->unit_variation_id]=$item_variation_master->item_image_web; 
+			}
+		}
+		//pr($VariationMasterArr); exit;
+        if ($this->request->is(['patch', 'post', 'put'])) { 
+			/* $item_image=$this->request->data['item_image_web'];
 			$item_error=$item_image['error'];
 
             $item = $this->Items->patchEntity($item, $this->request->getData());
@@ -397,32 +410,97 @@ class ItemsController extends AppController
 			{
 				$item_ext=explode('/',$item_image['type']);
 				$item->item_image='item'.time().'.'.$item_ext[1];
-			}
+			} */
 			if ($item_data=$this->Items->save($item)) {
-				if(empty($item_error))
+				$unitVariationIds=[];
+				foreach ($this->request->getData('item_variation_row') as $value) {
+					$unitVariationIds[]=$value['unit_variation_id'];
+        			if(!empty($value['unit_variation_id']))
+        			{
+
+						$item_image=$value['item_image_web'];
+						$item_error=$item_image['error'];
+						if(empty($item_error))
+						{
+							$item_ext=explode('/',$item_image['type']);
+							$item_item_image='item'.time().'.'.$item_ext[1];
+						}
+						$is_exist = $this->Items->ItemVariationMasters->find()->where(['ItemVariationMasters.item_id'=>$item_data->id,'ItemVariationMasters.unit_variation_id'=>$value['unit_variation_id']])->first(); 
+						if(sizeof($is_exist)<1)
+						{ 
+							$item_data_variation=$this->Items->ItemVariationMasters->newEntity();
+							$item_data_variation->item_id=$item_data->id;
+							$item_data_variation->unit_variation_id=$value['unit_variation_id'];
+							$item_data_variation->created_by= $user_id;
+							$item_data_variation->status= 'Active';
+							$item_data_variation=$this->Items->ItemVariationMasters->save($item_data_variation);
+							$lastInsertId=$item_data_variation->id;
+						}else
+						{
+							$lastInsertId=$is_exist->id; 
+						}
+						
+					
+						if(empty($item_error))
+						{
+							/* For Web Image */
+							$deletekeyname = 'item/'.$lastInsertId.'/web';
+							$this->AwsFile->deleteMatchingObjects($deletekeyname);
+							$keyname = 'item/'.$lastInsertId.'/web/'.$item_item_image;
+							$this->AwsFile->putObjectFile($keyname,$item_image['tmp_name'],$item_image['type']);
+
+							/* Resize Image */
+							$destination_url = WWW_ROOT . 'img/temp/'.$item_item_image;
+							if($item_ext[1]=='png'){
+								$image = imagecreatefrompng($item_image['tmp_name']);
+							}else{
+								$image = imagecreatefromjpeg($item_image['tmp_name']); 
+							}
+							imagejpeg($image, $destination_url, 10);
+
+							/* For App Image */
+							$deletekeyname = 'item/'.$lastInsertId.'/app';
+							$this->AwsFile->deleteMatchingObjects($deletekeyname);
+							$keyname1 = 'item/'.$lastInsertId.'/app/'.$item_item_image;
+							$this->AwsFile->putObjectFile($keyname1,$destination_url,$item_image['type']);
+
+							 $query = $this->Items->ItemVariationMasters->query();
+					    	$query->update()
+						   	->set([
+						   		'item_image' => $keyname1,
+						   		'item_image_web' => $keyname
+						   		])
+						    ->where(['id' => $lastInsertId])
+						    ->execute();
+						
+							/* Delete Temp File */
+							$file = new File(WWW_ROOT . $destination_url, false, 0777);
+							$file->delete();
+						}
+					}
+
+				} 
+				$checkUnitVaritations= $this->Items->ItemVariationMasters->find()->where(['ItemVariationMasters.item_id'=>$item_data->id]);
+				if(sizeof($checkUnitVaritations)>0)
 				{
-
-
-					/* For Web Image */
-					$deletekeyname = 'item/'.$item_data->id.'/web';
-					$this->AwsFile->deleteMatchingObjects($deletekeyname);
-					$keyname = 'item/'.$item_data->id.'/web/'.$item_data->item_image;
-					$this->AwsFile->putObjectFile($keyname,$item_image['tmp_name'],$item_image['type']);
-
-					/* Resize Image */
-					$destination_url = WWW_ROOT . 'img/temp/'.$item_data->item_image;
-					$image = imagecreatefromjpeg($item_image['tmp_name']);
-					imagejpeg($image, $destination_url, 10);
-
-					/* For App Image */
-					$deletekeyname = 'item/'.$item_data->id.'/app';
-					$this->AwsFile->deleteMatchingObjects($deletekeyname);
-					$keyname = 'item/'.$item_data->id.'/app/'.$item_data->item_image;
-					$this->AwsFile->putObjectFile($keyname,$destination_url,$item_image['type']);
-
-					/* Delete Temp File */
-					$file = new File(WWW_ROOT . $destination_url, false, 0777);
-					$file->delete();
+					foreach($checkUnitVaritations as $checkUnitVaritation)
+					{
+						if(!in_array($checkUnitVaritation->unit_variation_id,$unitVariationIds))
+						{
+							$query1 = $this->Items->ItemVariationMasters->query();
+							  $query1->update()
+							  ->set(['status' =>'Deactive'])
+							  ->where(['unit_variation_id'=>$checkUnitVaritation->unit_variation_id,'item_id'=>$item_data->id])
+							  ->execute();
+						}else{
+							
+							$query1 = $this->Items->ItemVariationMasters->query();
+							  $query1->update()
+							  ->set(['status' =>'Active'])
+							  ->where(['unit_variation_id'=>$checkUnitVaritation->unit_variation_id,'item_id'=>$item_data->id])
+							  ->execute();
+						}
+					}
 				}
                 $this->Flash->success(__('The item has been saved.'));
 
@@ -441,7 +519,7 @@ class ItemsController extends AppController
         $brands = $this->Items->Brands->find('list')->where(['Brands.city_id'=>$city_id]);
 
 		$gstFigures =  $this->Items->GstFigures->find('list');
-        $this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities','unit_option','gstFigures'));
+        $this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities','unit_option','gstFigures','id','VariationMasterArr','img'));
     }
 
     /**
@@ -463,4 +541,33 @@ class ItemsController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+	
+	public function checkItemExistance()
+	{
+		$itemName= $this->request->query('itemName');
+		$category= $this->request->query('category');
+		$edit_id = $this->request->query('edit_id');
+		if(!empty($itemName))
+		{
+			$where['Items.name LIKE']='%'.$itemName.'%';
+		}
+		if(!empty($category))
+		{
+			$where['Items.category_id']=$category;
+		}
+		if(!empty($edit_id))
+		{
+			$where['Items.id !=']=$edit_id;
+		}
+		$isExist = $this->Items->find()->where(@$where)->count();
+		if($isExist>0)
+		{
+			echo 'exist'; 
+		}
+		else
+		{
+			echo 'not_exist';
+		}
+		exit;
+	}
 }
