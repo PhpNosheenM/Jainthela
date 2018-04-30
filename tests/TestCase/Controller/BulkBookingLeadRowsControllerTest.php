@@ -1,13 +1,13 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
-use App\Controller\BulkBookingLeadsController;
+use App\Controller\BulkBookingLeadRowsController;
 use Cake\TestSuite\IntegrationTestCase;
 
 /**
- * App\Controller\BulkBookingLeadsController Test Case
+ * App\Controller\BulkBookingLeadRowsController Test Case
  */
-class BulkBookingLeadsControllerTest extends IntegrationTestCase
+class BulkBookingLeadRowsControllerTest extends IntegrationTestCase
 {
 
     /**
@@ -16,6 +16,7 @@ class BulkBookingLeadsControllerTest extends IntegrationTestCase
      * @var array
      */
     public $fixtures = [
+        'app.bulk_booking_lead_rows',
         'app.bulk_booking_leads',
         'app.cities',
         'app.states',
@@ -108,8 +109,7 @@ class BulkBookingLeadsControllerTest extends IntegrationTestCase
         'app.verify_otps',
         'app.delivery_dates',
         'app.company_details',
-        'app.supplier_areas',
-        'app.bulk_booking_lead_rows'
+        'app.supplier_areas'
     ];
 
     /**

@@ -51,7 +51,10 @@ class ItemVariationsTable extends Table
             'foreignKey' => 'seller_id',
             'joinType' => 'INNER'
         ]);
-
+		$this->belongsTo('ItemVariationMasters', [
+					'foreignKey' => 'item_variation_master_id',
+					'joinType' => 'INNER'
+				]);
         $this->hasMany('OrderDetails', [
             'foreignKey' => 'item_variation_id'
         ]);
@@ -63,6 +66,7 @@ class ItemVariationsTable extends Table
             'targetForeignKey'=>'unit_variation_id',
             'joinTable' => 'item_variation_masters'
         ])->setConditions(['status' => 'Active']); */
+        
     }
 
     /**

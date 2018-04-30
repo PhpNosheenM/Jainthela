@@ -51,9 +51,13 @@ class RecursiveCategoriesHelper extends Helper
 					echo '<div class="panel-body" id="accOneColOne'.$vals['id'].'" style="margin-left:20px;">';
 					$i=0;
 						foreach($vals['items'] as $item)
-						{
-							echo '<label><input name="item_ids[]" type="checkbox"  value="'.$item['id'].'" class="single_item">&nbsp;&nbsp;'.$item['name'].'</label>';
-							echo $html->control('commissions[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Commission in %','class'=>'form-control','style'=>'display:inline !important;width: 15%;float:none;','disabled'=>true,'item_id'=>$item['id']]);
+						{ 
+						    if(!empty($item->seller_items[0]->commission_percentage))
+							{
+								$chk ="checked"; $disabled="";
+							}else{$chk ="";$disabled="disabled";}
+							echo '<label><input name="item_ids[]" type="checkbox"  value="'.$item['id'].'" class="single_item" '.$chk.'>&nbsp;&nbsp;'.$item['name'].'</label>';
+							echo $html->control('commissions[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Commission in %','class'=>'form-control','style'=>'display:inline !important;width: 15%;float:none;margin: 1%;',$disabled,'item_id'=>$item['id'],'value'=>@$item->seller_items[0]->commission_percentage]);
 							echo '<br/>';
 						}
 						
@@ -91,27 +95,43 @@ class RecursiveCategoriesHelper extends Helper
 					echo '<div class="panel-body" id="accOneColOne'.$vals['id'].'" style="margin-left:20px;">';
 					
 						foreach($vals['items'] as $item)
-						{
+						{   $checked="";$style="";
+							foreach($item['item_variation_masters'] as $item_variation_master)
+							{ 
+								if(!empty($item_variation_master->item_variations[0]->maximum_quantity_purchase))
+								{
+									$checked="checked";$style="display:block";
+								}
+							}
 							echo '<div class="item_variation">
 									<div class="">
 										<h4 class="panel-title" style="width: 100%;">
-											<input type="checkbox" class="check_all_item" value="'.$item['id'].'">
+											<input type="checkbox" class="check_all_item" value="'.$item['id'].'" '.$checked.'>
 											<a href="#itemshow'.$item['id'].'">
 												'.$item['name'].'
 											</a>';
 									echo	'</h4>
 									</div>';
 							
-							echo '<div class="panel-body" id="itemshow'.$item['id'].'" style="padding: 0px !important;">';
+							echo '<div class="panel-body" id="itemshow'.$item['id'].'" style="padding: 0px !important;'.$style.'" >';
 							foreach($item['item_variation_masters'] as $item_variation_master)
-							{ 
-								echo '<input name="'.$i.'[item_id]" type="checkbox"  value="'.$item['id'].'" class="entity_variation'.$item_variation_master['unit_variation']['id'].'" style="display:none;">';
+							{  
+								if(!empty($item_variation_master->item_variations[0]->maximum_quantity_purchase))
+								{
+									$chk="checked";$disabled='';
+								}
+								else
+								{
+									$chk="";$disabled='disabled';
+								}
+								
+								echo '<input name="'.$i.'[item_id]" type="checkbox"  value="'.$item['id'].'" class="entity_variation'.$item_variation_master['unit_variation']['id'].'" style="display:none;" '.$chk.'>';
 
-								echo '<input name="'.$i.'[item_variation_master_id]" type="textbox"  value="'.$item_variation_master['id'].'" class="entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'].'" disabled="disabled">';
+								echo '<input name="'.$i.'[item_variation_master_id]" type="textbox"  value="'.$item_variation_master['id'].'" class="entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'].'" '.$disabled.' style="display:none;>';
+
+								echo '<label style="margin-left:30px;"><input name="'.$i.'[unit_variation_id]" type="checkbox"  value="'.$item_variation_master['unit_variation']['id'].'" class="single_item variation'.$item['id'].'" '.$disabled.'" '.$chk.'>&nbsp;&nbsp;'.$item_variation_master['unit_variation']['quantity_variation'].' '.$item_variation_master['unit_variation']['unit']['longname'].'</label>';
 								
-								echo '<label style="margin-left:30px;"><input name="'.$i.'[unit_variation_id]" type="checkbox"  value="'.$item_variation_master['unit_variation']['id'].'" class="single_item variation'.$item['id'].'" disabled="disabled">&nbsp;&nbsp;'.$item_variation_master['unit_variation']['quantity_variation'].' '.$item_variation_master['unit_variation']['unit']['longname'].'</label>';
-								
-								echo $html->control($i.'[maximum_quantity_purchase]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Maximum Quantity Purchase','class'=>'form-control entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;width: 15%;float:none;','disabled'=>true]);
+								echo $html->control($i.'[maximum_quantity_purchase]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Maximum Quantity Purchase','class'=>'form-control entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;width: 15%;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->maximum_quantity_purchase]);
 								
 								$i++;
 							}

@@ -36,8 +36,9 @@ class DeliveryChargesController extends AppController
 		{
 			$deliveryCharge = $this->DeliveryCharges->newEntity();
 		}
-        if ($this->request->is('post','put')) {
-			
+
+        if ($this->request->is(['post','put'])) {
+			 
             $deliveryCharge = $this->DeliveryCharges->patchEntity($deliveryCharge, $this->request->getData());
 			$deliveryCharge->city_id=$city_id;
 			$deliveryCharge->created_by=$user_id;
@@ -49,10 +50,11 @@ class DeliveryChargesController extends AppController
                 $this->Flash->success(__('The delivery charge has been saved.'));
                 return $this->redirect(['action' => 'index']);
             }
+			 
             $this->Flash->error(__('The delivery charge could not be saved. Please, try again.'));
 			
         }
-		
+	 
         $deliveryCharges = $this->paginate($deliveryCharges);
         $paginate_limit=$this->paginate['limit'];
         $this->set(compact('deliveryCharges','deliveryCharge','paginate_limit'));

@@ -96,7 +96,7 @@
 												<?= $this->Form->control('coupan_code',['class'=>'form-control','label'=>false,'style'=>'width:150px;']) ?>
 											</td>
 											<td valign="top">
-												<?= $this->Form->select('category_id',$categories,['class'=>'form-control ','placeholder'=>'Select...','label'=>false,'style'=>'width:120px;']) ?>
+												<?= $this->Form->select('category_id',$categories,['class'=>'form-control select','placeholder'=>'Select...','label'=>false,'style'=>'width:120px;']) ?>
 											</td>
 											<td  valign="top">
 												<?= $this->Form->select('item_id',$items,['class'=>'form-control select','placeholder'=>'Select...','label'=>false,'style'=>'width:150px;']) ?>
@@ -160,10 +160,10 @@
 				<?= $this->Form->control('coupan_code',['class'=>'form-control','label'=>false,'style'=>'width:150px;']) ?>
 			</td>
 			<td valign="top">
-				<?= $this->Form->control('category_id',['class'=>'form-control house_no','label'=>false,'style'=>'width:120px;','empty'=>'--select--']) ?>
+				<?= $this->Form->select('category_id',$categories,['class'=>'form-control select','placeholder'=>'Select...','label'=>false,'style'=>'width:120px;']) ?>
 			</td>
 			<td  valign="top">
-				<?= $this->Form->control('item_id',['class'=>'form-control house_no','label'=>false,'style'=>'width:150px;','empty'=>'--select--']) ?>
+				<?= $this->Form->select('item_id',$items,['class'=>'form-control select','placeholder'=>'Select...','label'=>false,'style'=>'width:150px;']) ?>
 			</td>
 			<td valign="top">
 				<?= $this->Form->control('discount_in_percentage',['class'=>'form-control','label'=>false,'style'=>'width:65px;']) ?>
@@ -181,18 +181,18 @@
 				<?= $this->Form->control('get_quntity',['class'=>'form-control', 'label'=>false,'style'=>'width:90px;']) ?>
 			</td>
 			<td valign="top">
-				<?= $this->Form->input('get_item_id',array('options' => $items,'class'=>'form-control select2','empty' => '--Select--','label'=>false,'style'=>'width:150px;')) ?>
+				<?= $this->Form->select('get_item_id',$items,['class'=>'form-control select','placeholder'=>'Select...','label'=>false,'style'=>'width:150px;']) ?>
 			</td>
 			<td valign="top">
-				<?= $this->Form->input('in_wallet',array('options' => $option,'class'=>'form-control select2','label'=>false,'style'=>'width:90px;')) ?>
+				<?= $this->Form->select('in_wallet',$option,['class'=>'form-control select','placeholder'=>'Select...','label'=>false,'style'=>'width:90px;']) ?>
 			</td>
 			<td valign="top">
-				<?= $this->Form->input('is_free_shipping',array('options' => $option,'class'=>'form-control select2','label'=>false,'style'=>'width:90px;')) ?>
+				<?= $this->Form->select('is_free_shipping',$option,['class'=>'form-control select','placeholder'=>'Select...','label'=>false,'style'=>'width:90px;']) ?>
 			</td>
 			<td valign="top"  >
 			<div style='width:70px;'>
 				<a class="btn btn-primary  btn-condensed btn-sm add_row" href="#" role="button" ><i class="fa fa-plus"></i></a>
-				<a class="btn btn-danger  btn-condensed btn-sm delete_row" href="#" role="button" ><i class="fa fa-times"></i></a>
+				<a class="btn btn-danger  btn-condensed btn-sm delete_row " href="#" role="button" ><i class="fa fa-times"></i></a>
 			</div>
 			</td>
 		</tr>

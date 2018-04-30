@@ -1,14 +1,22 @@
 <?php
-namespace App\Test\TestCase\Controller;
+namespace App\Test\TestCase\Model\Table;
 
-use App\Controller\BulkBookingLeadsController;
-use Cake\TestSuite\IntegrationTestCase;
+use App\Model\Table\BulkBookingLeadRowsTable;
+use Cake\ORM\TableRegistry;
+use Cake\TestSuite\TestCase;
 
 /**
- * App\Controller\BulkBookingLeadsController Test Case
+ * App\Model\Table\BulkBookingLeadRowsTable Test Case
  */
-class BulkBookingLeadsControllerTest extends IntegrationTestCase
+class BulkBookingLeadRowsTableTest extends TestCase
 {
+
+    /**
+     * Test subject
+     *
+     * @var \App\Model\Table\BulkBookingLeadRowsTable
+     */
+    public $BulkBookingLeadRows;
 
     /**
      * Fixtures
@@ -16,6 +24,7 @@ class BulkBookingLeadsControllerTest extends IntegrationTestCase
      * @var array
      */
     public $fixtures = [
+        'app.bulk_booking_lead_rows',
         'app.bulk_booking_leads',
         'app.cities',
         'app.states',
@@ -55,8 +64,11 @@ class BulkBookingLeadsControllerTest extends IntegrationTestCase
         'app.sellers',
         'app.seller_ratings',
         'app.seller_item_variations',
-        'app.item_active',
-        'app.brands',
+        'app.order_details',
+        'app.orders',
+        'app.drivers',
+        'app.grns',
+        'app.grn_rows',
         'app.item_ledgers',
         'app.credit_notes',
         'app.credit_note_rows',
@@ -64,31 +76,28 @@ class BulkBookingLeadsControllerTest extends IntegrationTestCase
         'app.purchase_invoice_rows',
         'app.purchase_return_rows',
         'app.purchase_returns',
-        'app.grn_rows',
-        'app.grns',
-        'app.orders',
-        'app.drivers',
         'app.delivery_charges',
         'app.delivery_times',
         'app.cancel_reasons',
-        'app.order_details',
         'app.wallets',
         'app.plans',
         'app.return_orders',
         'app.orders_left',
         'app.plans_left',
         'app.promotions_left',
+        'app.wish_list_items',
+        'app.wish_lists',
+        'app.feedbacks',
+        'app.get_items',
+        'app.item_active',
+        'app.brands',
         'app.left_item_review_ratings',
         'app.average_review_ratings',
         'app.item_review_ratings',
         'app.items_variations',
-        'app.wish_lists',
-        'app.wish_list_items',
         'app.home_screens',
         'app.api_versions',
         'app.express_deliveries',
-        'app.feedbacks',
-        'app.get_items',
         'app.seller_ledgers',
         'app.debit_note_rows',
         'app.journal_voucher_rows',
@@ -108,56 +117,59 @@ class BulkBookingLeadsControllerTest extends IntegrationTestCase
         'app.verify_otps',
         'app.delivery_dates',
         'app.company_details',
-        'app.supplier_areas',
-        'app.bulk_booking_lead_rows'
+        'app.supplier_areas'
     ];
 
     /**
-     * Test index method
+     * setUp method
      *
      * @return void
      */
-    public function testIndex()
+    public function setUp()
+    {
+        parent::setUp();
+        $config = TableRegistry::exists('BulkBookingLeadRows') ? [] : ['className' => BulkBookingLeadRowsTable::class];
+        $this->BulkBookingLeadRows = TableRegistry::get('BulkBookingLeadRows', $config);
+    }
+
+    /**
+     * tearDown method
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        unset($this->BulkBookingLeadRows);
+
+        parent::tearDown();
+    }
+
+    /**
+     * Test initialize method
+     *
+     * @return void
+     */
+    public function testInitialize()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 
     /**
-     * Test view method
+     * Test validationDefault method
      *
      * @return void
      */
-    public function testView()
+    public function testValidationDefault()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 
     /**
-     * Test add method
+     * Test buildRules method
      *
      * @return void
      */
-    public function testAdd()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
-     * Test edit method
-     *
-     * @return void
-     */
-    public function testEdit()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
-     * Test delete method
-     *
-     * @return void
-     */
-    public function testDelete()
+    public function testBuildRules()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }

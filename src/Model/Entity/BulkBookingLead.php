@@ -14,7 +14,7 @@ use Cake\ORM\Entity;
  * @property string $mobile
  * @property string $lead_description
  * @property \Cake\I18n\FrozenDate $delivery_date
- * @property \Cake\I18n\FrozenTime $delivery_time
+ * @property string $delivery_time
  * @property \Cake\I18n\FrozenTime $created_on
  * @property string $status
  * @property string $reason
