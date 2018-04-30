@@ -18,7 +18,43 @@ class ItemsController extends AppController
   public function initialize()
   {
     parent::initialize();
-    $this->Auth->allow(['productDetail','itemList','addItemRating','ratingList','searchSuggestion','searchResult','sellerItem']);
+    $this->Auth->allow(['brandCategory','productDetail','itemList','addItemRating','ratingList','searchSuggestion','searchResult','sellerItem']);
+  }
+
+
+  public function brandCategory($brand_id=null,$city_id=null){
+    $brand_id = @$this->request->query['brand_id'];
+    $city_id = @$this->request->query['city_id'];
+    $category =[];
+    $categories = [];
+    if(empty($brand_id) || empty($city_id))
+    {
+      $success = false;
+      $message = 'Brand or City id empty';
+    }
+    else
+    {
+      $items = $this->Items->find()
+      ->contain(['Categories'])
+      ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id])
+      ->where(['brand_id' =>$brand_id]);
+
+      if(!empty($items))
+      {
+          $i = 0;
+          foreach ($items as $item_data) {
+            $categories[$item_data->category->id] = ['category_id' =>$item_data->category->id,'name'=>$item_data->category->name,'category_image_web'=>$item_data->category->category_image_web,'category_image'=>$item_data->category->category_image];
+            $i++;
+          }
+        $success = true;
+        $message = 'Data Found Successfully';
+      }
+      else {
+        $success = false;
+        $message = 'Data Not Found';
+      }
+    }
+    $this->set(['success' => $success,'message'=>$message,'category' => $categories,'_serialize' => ['success','message','category']]);
   }
 
   public function itemList($category_id=null,$city_id=null,$page=null,$brand_id=null,$seller_id=null)
@@ -164,7 +200,7 @@ class ItemsController extends AppController
           {
             $items = $this->Items->find();
             $items->select(['AverageReviewRatings.item_id','ItemAverageRating' => $items->func()->avg('AverageReviewRatings.rating')])
-            ->contain(['Categories','Brands','Cities','ItemsVariations'=>['UnitVariations'=>['Units'],'Sellers','ItemVariationMasters'],'LeftItemReviewRatings'])
+            ->contain(['Categories','Brands','Cities','ItemsVariations'=>['UnitVariations'=>['Units'],'Sellers','ItemVariationMasters'],'LeftItemReviewRatings'=>['Customers']])
             ->leftJoinWith('AverageReviewRatings')
             ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.id'=>$item_id,'Items.city_id'=>$city_id,'Items.category_id'=>$category_id])
             ->autoFields(true);
