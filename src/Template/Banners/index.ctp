@@ -7,7 +7,7 @@
     font-size: 13px;
 }
 
-</style><?php $this->set('title', 'banner'); ?>
+</style><?php $this->set('title', 'Banner'); ?>
 <div class="page-content-wrap">
         <div class="page-title">                    
 			<h2><span class="fa fa-arrow-circle-o-left"></span> Banner</h2>
@@ -166,7 +166,7 @@
             showCaption: false,
             showCancel: false,
             browseClass: "btn btn-danger",
-			allowedFileExtensions: ["jpg", "png"],
+			allowedFileExtensions: ["jpeg", "jpg", "png"],
 			maxFileSize: 1024,
 		}); 
 		
