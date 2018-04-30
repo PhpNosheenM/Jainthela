@@ -29,7 +29,7 @@
 		<?= $this->Form->create($comboOffer,['id'=>'jvalidate','class'=>'form-horizontal','type'=>'file']) ?>  
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><strong> Item</strong></h3>
+					<h3 class="panel-title"><strong> Combo Offer</strong></h3>
 				</div>
 			
 				<div class="panel-body">    
@@ -216,7 +216,7 @@
             showCaption: false,
             showCancel: false,
             browseClass: "btn btn-danger",
-			allowedFileExtensions: ["jpg", "png"],
+			allowedFileExtensions: ["jpeg", "jpg", "png"],
 			maxFileSize: 1024,
 		});
 		

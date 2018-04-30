@@ -161,7 +161,7 @@
 										if($info)
 										{
 											 $result=$awsFileLoad->getObjectFile($keyname);
-											echo $app_image_view='<img src="data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'" alt="" style="width: auto; height: 160px;" class="file-preview-image"/>';
+											
 											
 											$js.=' $( document ).ready(function() {
 														$("#web_image_data").find("div.file-input-new").removeClass("file-input-new");
@@ -253,7 +253,7 @@
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
 <?php
-   $js='var jvalidate = $("#jvalidate").validate({
+   $js.='var jvalidate = $("#jvalidate").validate({
 		ignore: [],
 		rules: {                                            
 				name: {
@@ -268,7 +268,7 @@
             showCaption: false,
             showCancel: false,
             browseClass: "btn btn-danger",
-			allowedFileExtensions: ["jpg", "png"],
+			allowedFileExtensions: ["jpeg", "jpg", "png"],
 			maxFileSize: 1024,
 		});
 		
