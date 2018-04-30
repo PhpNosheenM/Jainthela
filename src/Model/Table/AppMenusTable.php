@@ -77,12 +77,6 @@ class AppMenusTable extends Table
             ->notEmpty('name');
 
         $validator
-            ->scalar('link')
-            ->maxLength('link', 255)
-            ->requirePresence('link', 'create')
-            ->notEmpty('link');
-
-        $validator
             ->requirePresence('status', 'create')
             ->notEmpty('status');
 
