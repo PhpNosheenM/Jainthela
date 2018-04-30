@@ -28,13 +28,15 @@ class NotifiesController extends AppController
 			'limit' => 20
         ];
 
-		$notifies = $this->Notifies->find();
+		$notifies = $this->Notifies->find()->order(['Notifies.id'=>'DESC']);
 
 		if ($this->request->is(['get'])){
 			$search=$this->request->getQuery('search');
 			$notifies->where([
 							'OR' => [
-									'Notifies.send_flag LIKE' => $search.'%'
+									'Notifies.send_flag LIKE' => $search.'%',
+									'Items.name LIKE' => $search.'%',
+									'Customers.name LIKE' => $search.'%'
 							]
 			]);
 		}
