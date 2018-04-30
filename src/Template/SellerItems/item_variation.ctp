@@ -53,14 +53,14 @@ $js='
 			if($(this).is(":checked"))
 			{
 				$(this).closest(".item_variation").find("input[type=checkbox]").prop("checked",true);
-				$(this).closest(".panel").find("input.single_item[type=checkbox]").prop("disabled",false);
-				$(this).closest(".panel").find("input.entity_maximum").prop("disabled",false);
+				$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("disabled",false);
+				$(this).closest(".item_variation").find("input.entity_maximum").prop("disabled",false);
 			}
 			else
 			{
 				$(this).closest(".item_variation").find("input[type=checkbox]").prop("checked",false);
-				$(this).closest(".panel").find("input.single_item[type=checkbox]").prop("disabled",true);
-				$(this).closest(".panel").find("input.entity_maximum").prop("disabled",true);
+				$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("disabled",true);
+				$(this).closest(".item_variation").find("input.entity_maximum").prop("disabled",true);
 			}
 		});
 		$(document).on("change",".single_item",function(){

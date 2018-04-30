@@ -67,7 +67,7 @@ class CategoriesController extends AppController
 			}else{
 				$category->edited_by=$user_id;
 			}
-			
+			pr($category); exit;
             if ($category_data=$this->Categories->save($category)) {
 				///////////////// S3 Upload //////////////
 				if(empty($category_error))
@@ -103,14 +103,8 @@ class CategoriesController extends AppController
 				}
 				///////////////////////////////
                 $this->Flash->success(__('The category has been saved.'));
-                if(empty($category_error))
-                {
-              	 return $this->redirect(['action' => 'delete_file',$dir]);
-                }
-                else
-                {
-                	return $this->redirect(['action' => 'index']);
-                }
+
+               return $this->redirect(['action' => 'delete_file',$dir]);
             }
             $this->Flash->error(__('The category could not be saved. Please, try again.'));
         }

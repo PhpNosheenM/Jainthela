@@ -18,75 +18,14 @@ class WalletsController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index($id=null)
+    public function index()
     {
-		$city_id=$this->Auth->User('city_id'); 
-		$user_id=$this->Auth->User('id');
-		$this->viewBuilder()->layout('admin_portal');
-		 $this->paginate = [
-            'contain' => ['Customers',   'Plans' ],
-			'limit' =>20
-        ];
-		
-		$wallets1 = $this->Wallets->find()->where(['Wallets.city_id'=>$city_id]);
-        if($id)
-		{
-		    $wallet = $this->Wallets->get($id);
-		}
-		else
-		{
-			 $wallet = $this->Wallets->newEntity();
-		}
-
-        if ($this->request->is(['post','put'])) {
-            $wallet = $this->Wallets->patchEntity($wallet, $this->request->getData());
-			$wallet->amount_type="plan";
-			$wallet->transaction_type="Added";
-			$wallet->city_id=$city_id;
-			if($id)
-			{
-				$wallet->id=$id;
-			}
-            if ($this->Wallets->save($wallet)) {
-                $this->Flash->success(__('The wallet has been saved.'));
-				return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The wallet could not be saved. Please, try again.'));
-        }
-		/* else if ($this->request->is(['get'])){
-			$search=$this->request->getQuery('search');
-			$wallets1->where([
-							'OR' => [
-									'Plans.name LIKE' => $search.'%',
-									'Plans.amount LIKE' => $search.'%',
-									'Plans.benifit_per LIKE' => $search.'%',
-									'Plans.total_amount LIKE' => $search.'%',
-									'Plans.status LIKE' => $search.'%'
-							]
-			]);
-		} */
-
-        $wallets = $this->paginate($wallets1);
-		$customers=$this->Wallets->Customers->find('list');
-		$plans1=$this->Wallets->Plans->find();
-		$paginate_limit=$this->paginate['limit'];
-		
-		foreach($plans1 as $data){
-			$plan_name=$data->name;
-			$total_amount=$data->total_amount;
-			$amount=$data->amount;
-			$plans[]= ['value'=>$data->id,'text'=>$plan_name." (Rs-".$amount.")", 'total_amount'=>$total_amount];
-		}
-		
-        $this->set(compact('wallets','wallet','states','paginate_limit','customers','plans'));
-		
-		
-     /*    $this->paginate = [
+        $this->paginate = [
             'contain' => ['Customers', 'Orders', 'Plans', 'Promotions', 'ReturnOrders']
         ];
         $wallets = $this->paginate($this->Wallets);
 
-        $this->set(compact('wallets')); */
+        $this->set(compact('wallets'));
     }
 
     /**

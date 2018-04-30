@@ -93,10 +93,11 @@ class ItemsController extends AppController
 
 			$item->city_id=$city_id;
 			$item->created_by=$user_id;
+
             if ($item_data=$this->Items->save($item)) {
 				
 				
-            	$dir_name=[];
+
 				foreach ($this->request->getData('item_variation_row') as $value) {
         		
         			if(!empty($value['unit_variation_id']))
@@ -152,24 +153,17 @@ class ItemsController extends AppController
 						    ->where(['id' => $lastInsertId])
 						    ->execute();
 
-							$dir  = WWW_ROOT .  'img'.DS.'temp'.DS.$item_item_image;
-							$dir_name[] = $this->EncryptingDecrypting->encryptData($dir);
+							/* Delete Temp File */
+							$file = new File(WWW_ROOT . $destination_url, false, 0777);
+							$file->delete();
 						}
 					}
 
 				}
 				
                 $this->Flash->success(__('The item has been saved.'));
-                if(empty($dir_name))
-                {
-                	return $this->redirect(['action' => 'index']);
-                }
-                else
-                {
-                	$url = urlencode(serialize($dir_name));
-                	return $this->redirect(['action' => 'delete_file',$url]);
-                }
-                
+
+                return $this->redirect(['action' => 'index']);
             }
 
             $this->Flash->error(__('The item could not be saved. Please, try again.'));
@@ -186,22 +180,7 @@ class ItemsController extends AppController
 		//pr($unitVariations->toArray());exit;
 		$this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities','unitVariations','gstFigures','unit_option'));
     }
-    public function deleteFile($dir_name)
-    {
-    	$dir_name = unserialize(urldecode($dir_name));
-    	foreach ($dir_name as  $dir) {
-    		
-	    	$dir = $this->EncryptingDecrypting->decryptData($dir);
-	    	$dir  = new File($dir);				
-			if ($dir->exists()) 
-			{
-				$dir->delete();	
-			}
-		}
 
-		return $this->redirect(['action' => 'index']);
-    	exit;
-    }
 	public function stockReport($id = null)
     {
 		$city_id=$this->Auth->User('city_id');
@@ -421,11 +400,18 @@ class ItemsController extends AppController
 				$img[$item_variation_master->unit_variation_id]=$item_variation_master->item_image_web; 
 			}
 		}
-
+		//pr($VariationMasterArr); exit;
         if ($this->request->is(['patch', 'post', 'put'])) { 
-			
+			/* $item_image=$this->request->data['item_image_web'];
+			$item_error=$item_image['error'];
+
+            $item = $this->Items->patchEntity($item, $this->request->getData());
+			if(empty($item_error))
+			{
+				$item_ext=explode('/',$item_image['type']);
+				$item->item_image='item'.time().'.'.$item_ext[1];
+			} */
 			if ($item_data=$this->Items->save($item)) {
-				$dir_name=[];
 				$unitVariationIds=[];
 				foreach ($this->request->getData('item_variation_row') as $value) {
 					$unitVariationIds[]=$value['unit_variation_id'];
@@ -486,11 +472,10 @@ class ItemsController extends AppController
 						   		])
 						    ->where(['id' => $lastInsertId])
 						    ->execute();
-
-							$dir  = WWW_ROOT .  'img'.DS.'temp'.DS.$item_item_image;
-							$dir_name[] = $this->EncryptingDecrypting->encryptData($dir);
+						
 							/* Delete Temp File */
-							
+							$file = new File(WWW_ROOT . $destination_url, false, 0777);
+							$file->delete();
 						}
 					}
 
@@ -518,18 +503,8 @@ class ItemsController extends AppController
 					}
 				}
                 $this->Flash->success(__('The item has been saved.'));
-                if(empty($dir_name))
-                {
-                	return $this->redirect(['action' => 'index']);
-                }
-                else
-                {
-                	$url = urlencode(serialize($dir_name));
-                	return $this->redirect(['action' => 'delete_file',$url]);
-                }
-               
 
-                
+                return $this->redirect(['action' => 'index']);
             }
 			//spr($item); exit;
             $this->Flash->error(__('The item could not be saved. Please, try again.'));

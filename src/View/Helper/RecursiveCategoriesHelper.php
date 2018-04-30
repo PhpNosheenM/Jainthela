@@ -114,6 +114,7 @@ class RecursiveCategoriesHelper extends Helper
 									</div>';
 							
 							echo '<div class="panel-body" id="itemshow'.$item['id'].'" style="padding: 0px !important;'.$style.'" >';
+							echo '<table class="table table-bordered">';
 							foreach($item['item_variation_masters'] as $item_variation_master)
 							{  
 								if(!empty($item_variation_master->item_variations[0]->maximum_quantity_purchase))
@@ -124,23 +125,26 @@ class RecursiveCategoriesHelper extends Helper
 								{
 									$chk="";$disabled='disabled';
 								}
-								
+							echo '<tr>
+								  <td>';
 								echo '<input name="'.$i.'[item_id]" type="checkbox"  value="'.$item['id'].'" class="entity_variation'.$item_variation_master['unit_variation']['id'].'" style="display:none;" '.$chk.'>';
 
 								echo '<input name="'.$i.'[item_variation_master_id]" type="textbox"  value="'.$item_variation_master['id'].'" class="entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'].'" '.$disabled.' style="display:none;>';
 
 								echo '<label style="margin-left:30px;"><input name="'.$i.'[unit_variation_id]" type="checkbox"  value="'.$item_variation_master['unit_variation']['id'].'" class="single_item variation'.$item['id'].'" '.$disabled.'" '.$chk.'>&nbsp;&nbsp;'.$item_variation_master['unit_variation']['quantity_variation'].' '.$item_variation_master['unit_variation']['unit']['longname'].'</label>';
-								
-								echo $html->control($i.'[maximum_quantity_purchase]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Maximum Quantity Purchase','class'=>'form-control entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;width: 15%;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->maximum_quantity_purchase]);
-								
+							echo '</td><td>';
+								echo $html->control($i.'[maximum_quantity_purchase]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Maximum Quantity Purchase','class'=>'form-control entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;width: 100%;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->maximum_quantity_purchase]);
+							echo '</td><td>';
+								echo $html->control($i.'[current_stock]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Current Stock','class'=>'form-control','style'=>'display:inline !important;width: 100%;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->current_stock]);							
 								$i++;
 							}
+							echo '</td></table>';
 							echo '</div>';
 							echo '</div>';
 							
 						}
 						
-					echo '</div>';
+					echo '</table></div>';
 				}
 				
 				echo '</div>';  
