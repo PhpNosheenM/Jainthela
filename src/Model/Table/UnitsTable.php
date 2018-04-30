@@ -45,6 +45,8 @@ class UnitsTable extends Table
         $this->hasMany('ComboOfferDetails', [
             'foreignKey' => 'unit_id'
         ]);
+		 
+		
         $this->hasMany('ItemVariations', [
             'foreignKey' => 'unit_id'
         ]);
