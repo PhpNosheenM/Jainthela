@@ -288,7 +288,7 @@ class CustomersController extends AppController
        $customer = $this->Customers->get($id);
        if ($this->request->is(['patch', 'post', 'put'])) {
          foreach(getallheaders() as $key => $value) {
-            if($key == 'Authorization')
+            if($key == 'Authorization' || $key == 'authorization')
             {
               $token = $value;
             }

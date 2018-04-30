@@ -22,24 +22,24 @@ class AppMenusController extends AppController
         $this->Auth->allow(['myMenus','mysubMenus']);
     }
 
-
+	
 	 public function mysubMenus()
 		{
 			 $city_id = @$this->request->query['city_id'];
 			 $menu_id = @$this->request->query['menu_id'];
 			 $submenuData=[];
 			   if(!empty($city_id) and !empty($menu_id))
-				{
+				{	
 					 $isValidCity = $this->CheckAvabiltyOfCity($city_id);
 					 if($isValidCity == 0)
 					 {
 						 $submenuData = $this->AppMenus->find()->select(['id','name','link','title_content'])->where(['city_id'=>$city_id,'status'=>0,'parent_id'=>$menu_id]);
 						 if($submenuData->toArray()){
-
+							 
 							$success = true;
-							$message = 'Data Found Successfully';
+							$message = 'Data Found Successfully'; 
 						 }else {
-
+							 
 							$success = false;
 							$message = 'No Data Found';
 						 }
@@ -47,7 +47,7 @@ class AppMenusController extends AppController
 						$success = false;
 						$message = 'Invalid City';
 					 }
-
+			
 				}else{
 					$success = false;
 					$message = 'City Id or menu_id Empty';
@@ -67,11 +67,11 @@ class AppMenusController extends AppController
          if($isValidCity == 0)
          {
              $menuData = $this->AppMenus->find()->select(['id','name','link','title_content'])->where(['city_id'=>$city_id,'status'=>0,'parent_id IS'=>Null]);
-
+			
              if(!empty($menuData->toArray()))
              {
 				 foreach($menuData as $menu){
-
+					 
 					$title_content= $menu->title_content;
 					 if($title_content=='Menu'){
 						 $menus[]=$menu;
@@ -86,11 +86,11 @@ class AppMenusController extends AppController
 				array_push($dynamic,array("header_name"=>'Menu','title'=>$menus));
 				array_push($dynamic,array("header_name"=>'My Information',"title"=>$MyInformation));
 				array_push($dynamic,array("header_name"=>'Other',"title"=>$Other));
-
-				$Categories = $this->AppMenus->Categories->find()->select(['id','name','link'])->where(['city_id'=>$city_id,'section_show'=>'Yes','status'=>'Active'])->contain(['ChildCategories'=>function($q){
-					return $q->select(['ChildCategories.parent_id','ChildCategories.id','ChildCategories.name','ChildCategories.link']);
+				
+				$Categories = $this->AppMenus->Categories->find()->select(['id','name'])->where(['city_id'=>$city_id,'section_show'=>'Yes','status'=>'Active'])->contain(['ChildCategories'=>function($q){
+					return $q->select(['ChildCategories.parent_id','ChildCategories.id','ChildCategories.name']);
 				}]);
-
+				
 			    //array_push($dynamic,array("header_name"=>'Shop By Category',"title"=>$Categories));
 
                $success = true;

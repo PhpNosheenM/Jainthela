@@ -95,7 +95,7 @@ class OrdersController extends AppController
 
           $categories = $this->Orders->find()
           ->where(['customer_id' => $customer_id])
-          ->contain(['OrderDetails'=>['ItemVariations'=>['Items'=>['Categories']]]]);
+          ->contain(['OrderDetails'=>['ItemVariations'=>['ItemVariationMasters','Items'=>['Categories']]]]);
 
           if(!empty($categories->toArray()))
           {
