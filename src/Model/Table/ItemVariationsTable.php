@@ -58,12 +58,14 @@ class ItemVariationsTable extends Table
         $this->hasMany('OrderDetails', [
             'foreignKey' => 'item_variation_id'
         ]);
-
+		
+		//$this->belongsToMany('Units');
+	/* 	
         $this->belongsToMany('UnitVariations', [
             'foreignKey' => 'item_id',
             'targetForeignKey'=>'unit_variation_id',
             'joinTable' => 'item_variation_masters'
-        ]);
+        ]); */
     }
 
     /**

@@ -127,7 +127,7 @@
 		</div>
 	</div>
 	<!-- END CONTENT FRAME LEFT -->
-	
+
 	<!-- START CONTENT FRAME BODY -->
 	<div class="content-frame-body">
 		<div class="panel panel-default">

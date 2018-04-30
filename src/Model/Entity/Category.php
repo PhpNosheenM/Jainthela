@@ -52,6 +52,7 @@ class Category extends Entity
         'city' => true,
         'child_categories' => true,
         'items' => true,
+        'section_show' => true,
         'promotion_details' => true,
         'seller_items' => true
     ];
