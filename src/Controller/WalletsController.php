@@ -40,7 +40,8 @@ class WalletsController extends AppController
 
         if ($this->request->is(['post','put'])) {
             $wallet = $this->Wallets->patchEntity($wallet, $this->request->getData());
-			$wallet->admin_id=$user_id;
+			$wallet->amount_type="plan";
+			$wallet->transaction_type="Added";
 			$wallet->city_id=$city_id;
 			if($id)
 			{
@@ -66,9 +67,18 @@ class WalletsController extends AppController
 		} */
 
         $wallets = $this->paginate($wallets1);
-		pr($wallets); exit;
+		$customers=$this->Wallets->Customers->find('list');
+		$plans1=$this->Wallets->Plans->find();
 		$paginate_limit=$this->paginate['limit'];
-        $this->set(compact('wallets','wallet','states','paginate_limit'));
+		
+		foreach($plans1 as $data){
+			$plan_name=$data->name;
+			$total_amount=$data->total_amount;
+			$amount=$data->amount;
+			$plans[]= ['value'=>$data->id,'text'=>$plan_name." (Rs-".$amount.")", 'total_amount'=>$total_amount];
+		}
+		
+        $this->set(compact('wallets','wallet','states','paginate_limit','customers','plans'));
 		
 		
      /*    $this->paginate = [
