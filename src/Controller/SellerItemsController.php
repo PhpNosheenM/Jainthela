@@ -17,7 +17,7 @@ class SellerItemsController extends AppController
     public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->Security->setConfig('unlockedActions', ['add','itemVariation']);
+        $this->Security->setConfig('unlockedActions', ['add','itemVariation','sellerItemApproval']);
 
     }
     /**
@@ -292,5 +292,39 @@ class SellerItemsController extends AppController
 		$categories = $this->SellerItems->Categories->find('threaded')->contain(['Items'=>['SellerItems'=>function ($q) use($seller_id){return $q->where(['SellerItems.seller_id'=>@$seller_id]);}]]);
 		//pr($categories->toArray());exit;
 		$this->set(compact('getSellerItems','categories'));
+	}
+	public function sellerItemApproval()
+	{
+		$sellerItemApproval = $this->SellerItems->newEntity();
+		$this->viewBuilder()->layout('admin_portal');
+		$sellers = $this->SellerItems->Sellers->find('list')->where(['Sellers.status'=>'Active']);
+		if ($this->request->is('post')) {
+			$seller_id=$this->request->getData('seller_id'); 
+			$ids=$this->request->getData('ids'); 
+			$status=$this->request->getData('status');
+			$i=0;
+			foreach($ids as $id)
+			{
+				$query = $this->SellerItems->ItemVariations->query();
+						  $query->update()
+						  ->set(['status' => @$status[@$id]])
+						  ->where(['seller_id'=>$seller_id,'id'=>$id])
+						  ->execute();
+				$i++;
+			}
+			if($i>0)
+			{
+				$this->Flash->success(__('The seller item has been approved.'));
+				return $this->redirect(['action' => 'sellerItemApproval']);
+			}
+        }
+		$this->set(compact('sellers','sellerItemApproval'));
+	}
+	public function getItemVariationDetail()
+	{
+		$seller_id= $this->request->query('seller_id');
+		$itemVariations = $this->SellerItems->ItemVariations->find()->contain(['Items','UnitVariations'=>['Units']])->where(['ItemVariations.seller_id'=>$seller_id]);
+		
+		$this->set(compact('itemVariations'));
 	}
 }
