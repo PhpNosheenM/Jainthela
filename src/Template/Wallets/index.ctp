@@ -78,12 +78,8 @@
 										<tr>
 											<th><?= ('SN.') ?></th>
 											<th><?= ('Customer') ?></th>
-											<th><?= ('Plan') ?></th>
-											<th><?= ('Amount') ?></th>
-											<th><?= ('Narration') ?></th>
-											<th><?= ('Transaction') ?></th>
-											<th><?= ('Created On') ?></th>
-											<th scope="col" class="actions"><?= __('Actions') ?></th>
+											<th><?= ('Total Added Amount') ?></th>
+											<th><?= ('Total Used Amount') ?></th>
 										</tr>
 									</thead>
 									<tbody>                                            
@@ -92,12 +88,8 @@
 										<tr>
 											<td><?= $this->Number->format(++$i) ?></td>
 											<td><?= h($data->customer->name) ?></td>
-											<td><?= h($data->plan->name) ?></td>
-											<td><?= h($data->add_amount) ?></td>
-											<td><?= h($data->narration) ?></td>
-											<td><?= h($data->transaction_type) ?></td>
-											<td><?= h($data->created_on) ?></td>
-										 
+											<td><?= h($data->tot_add_amount) ?></td>
+											<td><?= h($data->tot_used_amount) ?></td>
 										</tr>
 										<?php endforeach; ?>
 									</tbody>

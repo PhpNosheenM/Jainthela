@@ -27,8 +27,13 @@ class WalletsController extends AppController
             'contain' => ['Customers',   'Plans' ],
 			'limit' =>20
         ];
-		
-		$wallets1 = $this->Wallets->find()->where(['Wallets.city_id'=>$city_id]);
+		 
+		$wallets1 = $this->Wallets->find();
+		 $wallets1->select([
+					'tot_add_amount' => $wallets1->func()->sum('add_amount'),
+					'tot_used_amount' => $wallets1->func()->sum('used_amount'),'customer_id',
+				])->group(['customer_id']);
+				pr($wallets1->toArray()); exit;
         if($id)
 		{
 		    $wallet = $this->Wallets->get($id);
