@@ -18,7 +18,11 @@
 					</div>
 					<div class="form-group">
 						<label>Term</label>
-						<?= $this->Form->control('term',['class'=>'form-control','placeholder'=>'Reason ','label'=>false]) ?>
+						<textarea class="summernote" style="display: none !important;" >
+						</textarea>
+						<textarea id="codeEditor">
+						</textarea>
+						<?php //$this->Form->control('term',['type'=>'textarea','class'=>'summernote','placeholder'=>'Reason ','label'=>false]) ?>
 						<span class="help-block"></span>
 					</div>
 					<div class="form-group">
@@ -110,6 +114,22 @@
 </div>
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
+ <?= $this->Html->script('plugins/summernote/summernote.js',['block'=>'jsValidate']) ?>
+       
+        <!-- END TEMPLATE -->
+        
+        <script>
+            var editor = CodeMirror.fromTextArea(document.getElementById("codeEditor"), {
+                lineNumbers: true,
+                matchBrackets: true,
+                mode: "application/x-httpd-php",
+                indentUnit: 4,
+                indentWithTabs: true,
+                enterMode: "keep",
+                tabMode: "shift"                                                
+            });
+            editor.setSize('100%','420px');
+        </script> 
 <?php
    $js='var jvalidate = $("#jvalidate").validate({
 		ignore: [],

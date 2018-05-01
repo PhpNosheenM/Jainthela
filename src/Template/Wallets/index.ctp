@@ -7,16 +7,16 @@
     font-size: 13px;
 }
 </style>
-<?php $this->set('title', 'Wallets'); ?>
+<?php $this->set('title', 'Money'); ?>
 <div class="page-content-wrap">
     <div class="page-title">                    
-			<h2><span class="fa fa-arrow-circle-o-left"></span>Wallets</h2>
+			<h2><span class="fa fa-arrow-circle-o-left"></span> Money</h2>
 	</div> 
 	 <div class="row">
 				<div class="col-md-4">
 					<div class="panel panel-default">
 									<div class="panel-heading">
-										<h3 class="panel-title">ADD Wallets</h3>
+										<h3 class="panel-title">ADD Money</h3>
 									</div>
 									<?= $this->Form->create($wallet,['id'=>"jvalidate"]) ?>
 							<div class="panel-body">
@@ -37,7 +37,7 @@
 								 
 								<div class="form-group">
 									<label>Narration</label>
-									<?= $this->Form->control('narration',['id'=>'narration','class'=>'form-control','placeholder'=>'Benifit Percentage','label'=>false]) ?>
+									<?= $this->Form->control('narration',['id'=>'narration','class'=>'form-control','placeholder'=>'Narration','label'=>false]) ?>
 									<span class="help-block"></span>
 								</div>
 								 
@@ -53,7 +53,7 @@
 				<div class="col-md-8">
 			       <div class="panel panel-default">
 				    <div class="panel-heading">
-						<h3 class="panel-title">LIST Wallets</h3>
+						<h3 class="panel-title">LIST Money</h3>
 					     <div class="pull-right">
 						    <div class="pull-left">
 								<?= $this->Form->create('Search',['type'=>'GET']) ?>

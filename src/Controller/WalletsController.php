@@ -23,18 +23,18 @@ class WalletsController extends AppController
 		$city_id=$this->Auth->User('city_id'); 
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('admin_portal');
-		 $this->paginate = [
-            'contain' => ['Customers',   'Plans' ],
+		  $this->paginate = [
+            'contain' => ['Customers'],
 			'limit' =>20
-        ];
+        ];  
 		 
 		$wallets1 = $this->Wallets->find();
-		 $wallets1->select([
+		$wallets1->select([
 					'tot_add_amount' => $wallets1->func()->sum('add_amount'),
-					'tot_used_amount' => $wallets1->func()->sum('used_amount'),'customer_id',
-				])->group(['customer_id']);
-				pr($wallets1->toArray()); exit;
-        if($id)
+					'tot_used_amount' => $wallets1->func()->sum('used_amount'),'customer_id'
+				])->contain(['Customers'])->group(['customer_id'])->autoFields(true);
+		 
+         if($id)
 		{
 		    $wallet = $this->Wallets->get($id);
 		}
