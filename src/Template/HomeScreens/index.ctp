@@ -6,123 +6,190 @@
     color: #656C78;
     font-size: 13px;
 }
-</style>
-<?php $this->set('title', 'Delivery Charges'); ?>
+
+</style><?php $this->set('title', 'Home Screens'); ?>
 <div class="page-content-wrap">
-    <div class="page-title">
-			<h2><span class="fa fa-arrow-circle-o-left"></span>Delivery Charges</h2>
-	</div>
-	 <div class="row">
+        <div class="page-title">                    
+			<h2><span class="fa fa-arrow-circle-o-left"></span> Home Screens</h2>
+		</div> 
+	<div class="row">
 				<div class="col-md-4">
 					<div class="panel panel-default">
-									<div class="panel-heading">
-										<h3 class="panel-title">ADD Delivery Charges</h3>
-									</div>
-									<?= $this->Form->create($plan,['id'=>"jvalidate"]) ?>
-							<div class="panel-body">
-								 
-								<div class="form-group">
-									<label>Amount</label>
-									<?= $this->Form->control('amount',['id'=>'amount','class'=>'form-control','placeholder'=>'Amount','label'=>false]) ?>
+						<div class="panel-heading">
+							<h3 class="panel-title">ADD Home Screens</h3>
+						</div>
+						<?= $this->Form->create($homeScreens,['id'=>"jvalidate",'type'=>'file']) ?>
+						<?php $js=''; ?>
+						<div class="panel-body">
+						    <div class="form-group">
+									<label>Title</label>
+									<?= $this->Form->control('title',['class'=>'form-control','placeholder'=>'Name','label'=>false]) ?>
 									<span class="help-block"></span>
-								</div>
-								<div class="form-group">
-									<label>Benifit Percentage</label>
-									<?= $this->Form->control('charges',['id'=>'charges','class'=>'form-control','placeholder'=>'Benifit Percentage','label'=>false]) ?>
+					        </div>
+							<div class="form-group">
+									<label>Layout</label>
+									<?php
+										$options2['banner'] = 'Banner';
+										$options2['circle'] = 'Circle';
+										$options2['combo_offer'] = 'Combo Offer';
+										$options2['horizontal'] = 'Horizontal';
+										$options2['rectangle'] = 'Rectangle';
+										$options2['store directory'] = 'Store Directory';
+										$options2['Single Image & two Item'] = 'Single Image & two Item';
+										$options2['tie up'] = 'tie up';
+									?>
+									<?= $this->Form->select('layout',$options2,['empty'=>'Select Layout','class'=>'form-control select','label'=>false]) ?>
 									<span class="help-block"></span>
-								</div>
-								<div class="form-group">
-									<label>Status</label>
-									<?php $options['Active'] = 'Active'; ?>
-									<?php $options['Deactive'] = 'Deactive'; ?>
-									<?= $this->Form->select('status',$options,['class'=>'form-control select','placeholder'=>'Select...','label'=>false]) ?>
-								</div>
+					        </div>
+							<div class="form-group">
+									<label>Categories</label>
+									<?= $this->Form->select('category_id',$categories,['empty'=>'Select Categories','class'=>'form-control select','label'=>false]) ?>
+									<span class="help-block"></span>
+					        </div>
+							<div class="form-group">
+									<label>Link Name</label>
+									<?php
+										$options1['product_description'] = 'Product Description';
+										$options1['combo_description'] = 'Combo Description';
+										$options1['category_wise'] = 'Product listing Category Wise';
+										$options1['item_wise'] = 'Product listing Item Wise';
+										$options1['category_wise_combo'] = 'Combo listing Category Wise';
+										$options1['item_wise_combo'] = 'Combo listing Item Wise';
+										$options1['refer'] = 'Refer And Earn';
+										$options1['wallet'] = 'Wallet Plans';
+										$options1['bulk_booking'] = 'Bulk Booking';
+										$options1['order'] = 'Order Detail';
+										$options1['cart'] = 'Cart Listing';
+										$options1['store'] = 'Store listing';
+										$options1['store_item_wise'] = 'Store Item listing';
+										$options1['webview_html'] = 'Webview Html';
+										$options1['webview_url'] = 'Webview Url'; 
+									?>
+									<?= $this->Form->select('link_name',$options1,['empty'=>'Select Link Name','class'=>'form-control select','label'=>false]) ?>
+									<?php //$this->Form->control('link_name',['class'=>'form-control','placeholder'=>'Link Name','label'=>false]) ?>
+									<span class="help-block"></span>
+					        </div>
+							<div class="form-group" id="web_image_data">
+							     <label>Banner Image</label> 
+									<?php
+										$required=true;
+										$keyname = $banner->banner_image_web;
+										 
+										if(!empty($keyname))
+										{
+											 $info = $awsFileLoad->doesObjectExistFile($keyname);
+										}
+										else
+										{
+											$info='';
+										}
+										if($info)
+										{
+											$required=false;
+										}
+									?>
+										<?= $this->Form->control('banner_image',['type'=>'file','label'=>false,'id' => 'banner_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>$required]) ?>
+										<label id="banner_image-error" class="error" for="banner_image"></label>
+										<?php  
+										if($info)
+										{
+											$result=$awsFileLoad->getObjectFile($keyname);
+											$app_image_view='<img src="data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'" alt="" style="width: auto; height: 160px;" class="file-preview-image"/>';
+											
+											$js.=' $( document ).ready(function() {
+														$("#web_image_data").find("div.file-input-new").removeClass("file-input-new");
+														$("#web_image_data").find("div.file-preview-thumbnails").html("<div data-template=image class=file-preview-frame><div class=kv-file-content><img src=data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'></div></div>");
+														$("#web_image_data").find("div.file-preview-frame").addClass("file-preview-frame krajee-default  kv-preview-thumb");
+													
+														$("#web_image_data").find("img").addClass("file-preview-image kv-preview-data rotate-1");
+													});
+											';
+										}
+									?>
 							</div>
-								<div class="panel-footer">
-									<div class="col-md-offset-3 col-md-4">
-									   <?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
-									</div>
-				                </div>
-			                     <?= $this->Form->end() ?>
-		            </div>
-	            </div>
-				<div class="col-md-8">
-			       <div class="panel panel-default">
-				    <div class="panel-heading">
-						<h3 class="panel-title">LIST Delivery Charges</h3>
-					     <div class="pull-right">
-						    <div class="pull-left">
-								<?= $this->Form->create('Search',['type'=>'GET']) ?>
-										<div class="form-group" style="display:inline-table">
-											<div class="input-group">
-												<div class="input-group-addon">
-													<span class="fa fa-search"></span>
-												</div>
-												<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
-												<div class="input-group-btn">
-														<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
-												</div>
-											</div>
+							<div class="form-group">
+								<label>Status</label>
+								<?php $options['Active'] = 'Active'; ?>
+								<?php $options['Deactive'] = 'Deactive'; ?>
+								<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
+					        </div>
+						</div>
+						
+					</div>
+					<div class="panel-footer">
+							 <center>
+									<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
+							 </center>
+					</div> 
+			            <?= $this->Form->end() ?>
+	            </div>	
+				
+	            <div class="col-md-8">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">LIST Home Screens</h3>
+						<div class="pull-right">
+						<div class="pull-left">
+							<?= $this->Form->create('Search',['type'=>'GET']) ?>
+								<div class="form-group" style="display:inline-table">
+									<div class="input-group">
+										<div class="input-group-addon">
+											<span class="fa fa-search"></span>
 										</div>
-									<?= $this->Form->end() ?>
-							</div> 	   
-					     </div> 
-					    <div class="panel-body">
-				            <div class="table-responsive">
-								<table class="table table-bordered">
-									<thead>
-										<tr>
-											<th><?= ('SN.') ?></th>
-											<th><?= ('Name') ?></th>
-											<th><?= ('Amount') ?></th>
-											<th><?= ('Benifit Per') ?></th>
-											<th><?= ('Total Amount') ?></th>
-											<th><?= ('Status') ?></th>
-											<th scope="col" class="actions"><?= __('Actions') ?></th>
-										</tr>
-									</thead>
-									<tbody>                                            
-										<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1);
-										foreach ($plans as $data): ?>
-										<tr>
-											<td><?= $this->Number->format(++$i) ?></td>
-											<td><?= h($data->name) ?></td>
-											<td><?= h($data->amount) ?></td>
-											<td><?= h($data->benifit_per) ?></td>
-											<td><?= h($data->total_amount) ?></td>
-											<td><?= h($data->status) ?></td>
-											<td class="actions">
-												<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $data->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
-												<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $data->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete ?', $data->id),'escape'=>false]) ?>
-											</td>
-										</tr>
-										<?php endforeach; ?>
-									</tbody>
-								</table>
-				            </div>
-			            </div>
-						<div class="panel-footer">
-									<div class="paginator pull-right">
-										<ul class="pagination">
-											<?= $this->Paginator->first(__('First')) ?>
-											<?= $this->Paginator->prev(__('Previous')) ?>
-											<?= $this->Paginator->numbers() ?>
-											<?= $this->Paginator->next(__('Next')) ?>
-											<?= $this->Paginator->last(__('Last')) ?>
-										</ul>
-										<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
-			 						</div>
-			            </div>
-				    </div>	
-				</div>
-            </div>
+										<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
+										<div class="input-group-btn">
+											<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
+										</div>
+									</div>
+								</div>
+							<?= $this->Form->end() ?>
+						</div> 
+						</div>
+					</div>
+				<div class="panel-body">
+						<?php $page_no=$this->Paginator->current('banners'); $page_no=($page_no-1)*20; ?>
+						<div class="table-responsive">
+                            <table class="table table-bordered">
+								<thead>
+									<tr>
+										<th><?= ('SN.') ?></th>
+										<th><?= ('Name') ?></th>
+										<th><?= ('Link Name') ?></th>
+										<th><?= ('Status') ?></th>
+										<th scope="col" class="actions"><?= __('Actions') ?></th>
+									</tr>
+								</thead>
+								<tbody>                                            
+								<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); ?>
+								
+								  <?php foreach ($banners as $banner): ?>
+								<tr>
+									<td><?= $this->Number->format(++$i) ?></td>
+									<td><?= h($banner->name) ?></td>
+									<td><?= h($banner->link_name) ?></td>
+									<td><?= h($banner->status) ?></td>
+									
+									<td class="actions">
+										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index',$banner->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+										<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $banner->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $banner->id),'escape'=>false]) ?>
+									
+									</td>
+								</tr>
+								<?php endforeach; ?>
+								</tbody>
+							</table>
+				        </div>
+			    </div>
+			</div>		
 		</div>
-</div>		
+	</div>
+</div>
+<!-- END CONTENT FRAME -->
 <?= $this->Html->script('plugins/fileinput/fileinput.min.js',['block'=>'jsFileInput']) ?>
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
 <?php
-   $js='var jvalidate = $("#jvalidate").validate({
+   $js.='var jvalidate = $("#jvalidate").validate({
 		ignore: [],
 		rules: {                                            
 				name: {
@@ -131,67 +198,20 @@
 				
 			}                                        
 		});
-		';     
+		
+		$("#banner_image").fileinput({
+            showUpload: false,
+            showCaption: false,
+            showCancel: false,
+            browseClass: "btn btn-danger",
+			allowedFileExtensions: ["jpeg", "jpg", "png"],
+			maxFileSize: 1024,
+		}); 
+		
+		
+		$(document).on("click", ".fileinput-remove-button", function(){
+			$(this).closest("div.file-input").find("input[type=file]").attr("required",true);
+		});
+		';  
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		
 ?>
-
-
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\HomeScreen[]|\Cake\Collection\CollectionInterface $homeScreens
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('New Home Screen'), ['action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Categories'), ['controller' => 'Categories', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Category'), ['controller' => 'Categories', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="homeScreens index large-9 medium-8 columns content">
-    <h3><?= __('Home Screens') ?></h3>
-    <table cellpadding="0" cellspacing="0">
-        <thead>
-            <tr>
-                <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('title') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('layout') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('section_show') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('preference') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('category_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('screen_type') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($homeScreens as $homeScreen): ?>
-            <tr>
-                <td><?= $this->Number->format($homeScreen->id) ?></td>
-                <td><?= h($homeScreen->title) ?></td>
-                <td><?= h($homeScreen->layout) ?></td>
-                <td><?= h($homeScreen->section_show) ?></td>
-                <td><?= $this->Number->format($homeScreen->preference) ?></td>
-                <td><?= $homeScreen->has('category') ? $this->Html->link($homeScreen->category->name, ['controller' => 'Categories', 'action' => 'view', $homeScreen->category->id]) : '' ?></td>
-                <td><?= h($homeScreen->screen_type) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['action' => 'view', $homeScreen->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $homeScreen->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $homeScreen->id], ['confirm' => __('Are you sure you want to delete # {0}?', $homeScreen->id)]) ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
-    </div>
-</div>
