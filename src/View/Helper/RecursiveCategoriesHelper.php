@@ -56,6 +56,7 @@ class RecursiveCategoriesHelper extends Helper
 							{
 								$chk ="checked"; $disabled="";
 							}else{$chk ="";$disabled="disabled";}
+							echo '<input name="category_ids[]" type="hidden"  value="'.$item['category_id'].'" >';
 							echo '<label><input name="item_ids[]" type="checkbox"  value="'.$item['id'].'" class="single_item" '.$chk.'>&nbsp;&nbsp;'.$item['name'].'</label>';
 							echo $html->control('commissions[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Commission in %','class'=>'form-control','style'=>'display:inline !important;width: 15%;float:none;margin: 1%;',$disabled,'item_id'=>$item['id'],'value'=>@$item->seller_items[0]->commission_percentage]);
 							echo '<br/>';
@@ -103,7 +104,10 @@ class RecursiveCategoriesHelper extends Helper
 							{ 
 								if(!empty($item_variation_master->item_variations[0]->maximum_quantity_purchase))
 								{
-									$checked="checked";$style="display:block";
+									if($item_variation_master->item_variations[0]->status=="Active")
+									{
+										$checked="checked";$style="display:block";
+									}else{$checked="";$style="display:none;";}
 								}
 							}
 							echo '<div class="item_variation">

@@ -19,7 +19,7 @@
         
         <!-- CSS INCLUDE -->        
         <?= $this->Html->css('theme-default.css') ?>
-		
+		  <?= $this->fetch('cssEditor')?>
         <!-- EOF CSS INCLUDE -->                                      
     </head>
     <body>
@@ -101,7 +101,9 @@
 		<?= $this->fetch('jsTimePicker') ?>
 		<?= $this->fetch('jsSelect') ?>
 		<?= $this->fetch('jsValidate') ?>
-		
+		  <?= $this->fetch('jsPluginEditor')?>
+            <?= $this->fetch('jsEditor')?>
+            <?= $this->fetch('jsEditor2')?>
         <!-- END THIS PAGE PLUGINS-->        
 
         <!-- START TEMPLATE -->

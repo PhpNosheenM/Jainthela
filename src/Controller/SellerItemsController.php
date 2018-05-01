@@ -66,6 +66,7 @@ class SellerItemsController extends AppController
         if ($this->request->is('post')) {
 			$commissions=$this->request->getData('commissions');
 			$item_ids=$this->request->getData('item_ids'); 
+			$category_ids=$this->request->getData('category_ids'); 
 			$ids=$this->request->getData('ids'); 
 			$seller_id=$this->request->getData('seller_id');
 			//pr($this->request->getData());
@@ -107,9 +108,10 @@ class SellerItemsController extends AppController
 				else
 				{ 
 					$query = $this->SellerItems->query();
-					$query->insert(['seller_id', 'item_id','commission_percentage']);
+					$query->insert(['seller_id','category_id', 'item_id','commission_percentage']);
 					$query->values([
 						'seller_id' => $seller_id,
+						'category_id' => $category_ids[$i],
 						'item_id' => $item_ids[$i],
 						'commission_percentage' => $commissions[$i]
 					]);
@@ -126,6 +128,7 @@ class SellerItemsController extends AppController
 			
         }
         $categories = $this->SellerItems->Categories->find('threaded')->contain(['Items']);
+		//pr($categories->toArray());exit;
         $sellers = $this->SellerItems->Sellers->find('list');
         $this->set(compact('sellerItem', 'categories', 'sellers'));
     }
@@ -140,7 +143,7 @@ class SellerItemsController extends AppController
 		{
 			$masterIds=[];$ItemIds=[];
 			$arr=$this->request->getData(); $i=1; 
-            //pr($this->request->getData());exit;
+            
 			
 			foreach($arr as $key => $csm)
 			{

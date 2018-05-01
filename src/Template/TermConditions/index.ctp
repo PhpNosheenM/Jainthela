@@ -18,7 +18,7 @@
 					</div>
 					<div class="form-group">
 						<label>Term</label>
-						<?= $this->Form->control('term',['class'=>'form-control','placeholder'=>'Reason ','label'=>false]) ?>
+						<?php echo $this->Form->textarea('term',['class'=>'form-control','label'=>false,'placeholder'=>'Term','style'=>'display:none','required'=>true,'id'=>'term']); ?>
 						<span class="help-block"></span>
 					</div>
 					<div class="form-group">
@@ -110,6 +110,15 @@
 </div>
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
+
+  <?php $this->Html->css('plugins/summernote/summernote.css', ['block' => 'cssEditor']); ?>
+ <?php $this->Html->script('plugins/summernote/summernote.min.js', ['block' => 'jsPluginEditor']); ?>
+  <?php $this->Html->script('plugins/summernotecomponent.js', ['block' => 'jsEditor']); ?>
+ <?php $this->Html->script('plugins/editor-summernote.js', ['block' => 'jsEditor2']); ?>
+       
+        <!-- END TEMPLATE -->
+        
+        
 <?php
    $js='var jvalidate = $("#jvalidate").validate({
 		ignore: [],
@@ -121,6 +130,24 @@
 						required: true,
 				},
 			}                                        
-		});';  
+		});'; 
+
+		$js.="$('#term').summernote({
+			toolbar: [
+				['style', ['style']],
+				['font', ['bold', 'italic', 'underline', 'clear']],
+				['para', ['ul', 'ol', 'paragraph']],
+				['height', ['height']],
+				['table', ['table']],
+				['insert', ['picture', 'hr']],
+				['help', ['help']]
+			]
+		});
+		$(document).on('click','#submitbtn',function(e){
+	 		var editvalue=$('.note-editable').html();
+	 		$('#term').val(editvalue);
+ 		});
+
+		";
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		
 ?>
