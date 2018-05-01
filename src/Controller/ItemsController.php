@@ -423,8 +423,8 @@ class ItemsController extends AppController
 		}
 
         if ($this->request->is(['patch', 'post', 'put'])) { 
-			
-			if ($item_data=$this->Items->save($item)) {
+			$item = $this->Items->patchEntity($item, $this->request->getData());
+			if ($item_data=$this->Items->save($item)) { 
 				$dir_name=[];
 				$unitVariationIds=[];
 				foreach ($this->request->getData('item_variation_row') as $value) {

@@ -33,8 +33,11 @@ class HomeScreen extends Entity
         'layout' => true,
         'section_show' => true,
         'preference' => true,
+        'web_preference' => true,
         'category_id' => true,
         'screen_type' => true,
+        'link_name' => true,
+        'model_name' => true,
         'category' => true
     ];
 }

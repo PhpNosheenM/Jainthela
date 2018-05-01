@@ -1,4 +1,9 @@
 <?php $this->set('title', 'Term Condition'); ?>
+<style>
+.note-editable{
+	height:200px;
+}
+</style>
 <div class="page-content-wrap">
          <div class="page-title">                    
 			<h2><span class="fa fa-arrow-circle-o-left"></span> Term Condition</h2>
@@ -30,7 +35,7 @@
                 </div>
                <div class="panel-footer">
                  <center>
-						<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
+						<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary','id'=>'submitbtn']) ?>
 				 </center>
                </div>
 			   <?= $this->Form->end() ?>
@@ -111,10 +116,10 @@
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
 
-  <?php $this->Html->css('plugins/summernote/summernote.css', ['block' => 'cssEditor']); ?>
+  <?php $this->Html->css('/js/plugins/summernote/summernote.css', ['block' => 'cssEditor']); ?>
  <?php $this->Html->script('plugins/summernote/summernote.min.js', ['block' => 'jsPluginEditor']); ?>
-  <?php $this->Html->script('plugins/summernotecomponent.js', ['block' => 'jsEditor']); ?>
- <?php $this->Html->script('plugins/editor-summernote.js', ['block' => 'jsEditor2']); ?>
+  <?php $this->Html->script('plugins/summernotecomponent.min.js', ['block' => 'jsEditor']); ?>
+ <?php $this->Html->script('plugins/summernote/editor-summernote.js', ['block' => 'jsEditor2']); ?>
        
         <!-- END TEMPLATE -->
         
