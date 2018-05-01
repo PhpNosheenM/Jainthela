@@ -140,7 +140,7 @@ class SellerItemsController extends AppController
 		{
 			$masterIds=[];$ItemIds=[];
 			$arr=$this->request->getData(); $i=1; 
-//pr($masterIds);exit;
+            //pr($this->request->getData());exit;
 			
 			foreach($arr as $key => $csm)
 			{
@@ -148,18 +148,19 @@ class SellerItemsController extends AppController
 				$SellerItemdata=$this->SellerItems->find()->where(['seller_id'=>$user_id, 'item_id'=>$arr[$key]['item_id']])->toArray();
 				$masterIds[$arr[$key]['item_id']][]=$csm['item_variation_master_id'];
 				$ItemIds[]=$arr[$key]['item_id'];
+				
 				$is_exist = $this->SellerItems->ItemVariations->find()->where(['seller_id'=>$user_id, 'item_id'=>@$arr[@$key]['item_id'],'item_variation_master_id'=>$arr[$key]['item_variation_master_id']])->count();
 				if($is_exist>0)
 				{
 					$query1 = $this->SellerItems->ItemVariations->query();
 					  $query1->update()
-					  ->set(['maximum_quantity_purchase' =>$csm['maximum_quantity_purchase'],'status'=>'Active'])
+					  ->set(['maximum_quantity_purchase' =>$csm['maximum_quantity_purchase'],'status'=>'Active','current_stock'=>$csm['current_stock'],'purchase_rate'=>$csm['purchase_rate'],'sales_rate'=>$csm['sales_rate'],'mrp'=>$csm['mrp'],'ready_to_sale'=>$csm['ready_to_sale']])
 					  ->where(['seller_id'=>$user_id,'item_id'=>$arr[$key]['item_id'],'item_variation_master_id'=>$csm['item_variation_master_id']])
 					  ->execute();
 					  unset($arr[$key]);
 				}
 				else{
-					$arr[$key]['seller_id'] = $user_id;
+					$arr[$key]['seller_id']  = $user_id;
 					$arr[$key]['commission'] = $SellerItemdata[0]->commission_percentage;
 				}
 				
@@ -203,9 +204,9 @@ class SellerItemsController extends AppController
 				}
 			}
 			if(sizeof($arr)>0)
-			{
-			$itemVariation = $this->SellerItems->ItemVariations->newEntities($arr);
-			
+			{ 
+			$itemVariation = $this->SellerItems->ItemVariations->newEntities(array_values($arr));
+			//pr($itemVariation);exit;
 				if ($this->SellerItems->ItemVariations->saveMany($itemVariation)) {
 					$this->Flash->success(__('The seller item has been saved.'));
 
@@ -230,7 +231,7 @@ class SellerItemsController extends AppController
 									return $q->where(['Items.id IN'=>$seller_item]);
 							})
 							->contain(['Items'=>function($q) use($user_id,$seller_item){
-								return $q->where(['Items.id IN'=>$seller_item])->contain(['ItemVariationMasters'=>['ItemVariations'=>function ($q){return $q->where(['status'=>'Active']);},'UnitVariations'=>['Units']]]);
+								return $q->where(['Items.id IN'=>$seller_item])->contain(['ItemVariationMasters'=>['ItemVariations','UnitVariations'=>['Units']]]);
 							}
 							])
 							->group(['Categories.id'])
