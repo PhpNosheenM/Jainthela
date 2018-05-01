@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
-
+use Cake\Filesystem\Folder;
+use Cake\Filesystem\File;
 use App\Controller\AppController;
 
 /**
@@ -67,9 +68,7 @@ class BrandsController extends AppController
 					$this->Brands->save($brand_data);
 
 					/* Resize Image */
-					//$destination_url = WWW_ROOT . 'img/temp/'.$brand_image_name;
-					$tempdir=sys_get_temp_dir();
-					$destination_url = $tempdir . '/'.$brand_image_name;
+					$destination_url = WWW_ROOT . 'img/temp/'.$brand_image_name;
 					if($banner_ext[1]=='png'){
 						$image = imagecreatefrompng($brand_image['tmp_name']);
 					}else{
@@ -85,12 +84,21 @@ class BrandsController extends AppController
 					$this->AwsFile->putObjectFile($keyname,$brand_image['tmp_name'],$brand_image['type']);
 					$brand_data->brand_image=$keyname;
 					$this->Brands->save($brand_data);
+                    $dir  = WWW_ROOT .  'img'.DS.'temp'.DS.$brand_image_name;
+                    $dir = $this->EncryptingDecrypting->encryptData($dir);
  
 				}
 				
 				$this->Flash->success(__('The brand has been saved.'));
 
-				return $this->redirect(['action' => 'index']);
+				if(empty($brand_error))
+                {
+                 return $this->redirect(['action' => 'delete_file',$dir]);
+                }
+                else
+                {
+                    return $this->redirect(['action' => 'index']);
+                }
 			}
 			$this->Flash->error(__('The unit could not be saved. Please, try again.'));
             
@@ -110,7 +118,17 @@ class BrandsController extends AppController
         $this->set(compact('brand','brands','paginate_limit'));
         
     }
-
+    public function deleteFile($dir)
+    {
+        $dir = $this->EncryptingDecrypting->decryptData($dir);
+        $dir  = new File($dir);             
+        if ($dir->exists()) 
+        {
+            $dir->delete(); 
+        }
+         return $this->redirect(['action' => 'index']);
+        exit;
+    }
     /**
      * View method
      *
