@@ -25,7 +25,7 @@ class ItemsController extends AppController
   public function brandCategory($brand_id=null,$city_id=null){
     $brand_id = @$this->request->query['brand_id'];
     $city_id = @$this->request->query['city_id'];
-    $category =[];
+    $category = [];
     $categories = [];
     if(empty($brand_id) || empty($city_id))
     {
@@ -42,10 +42,11 @@ class ItemsController extends AppController
       if(!empty($items))
       {
           $i = 0;
-          foreach ($items as $item_data) {
-            $categories[$item_data->category->id] = ['category_id' =>$item_data->category->id,'name'=>$item_data->category->name,'category_image_web'=>$item_data->category->category_image_web,'category_image'=>$item_data->category->category_image];
+          foreach ($items as $key=>$item_data) {
+            $categories[$i] =['category_id' =>$item_data->category->id,'name'=>$item_data->category->name,'category_image_web'=>$item_data->category->category_image_web,'category_image'=>$item_data->category->category_image];
             $i++;
           }
+        $category =   array_map("unserialize", array_unique(array_map("serialize",$categories)));
         $success = true;
         $message = 'Data Found Successfully';
       }
@@ -54,7 +55,7 @@ class ItemsController extends AppController
         $message = 'Data Not Found';
       }
     }
-    $this->set(['success' => $success,'message'=>$message,'category' => $categories,'_serialize' => ['success','message','category']]);
+    $this->set(['success' => $success,'message'=>$message,'category' => $category,'_serialize' => ['success','message','category']]);
   }
 
   public function itemList($category_id=null,$city_id=null,$page=null,$brand_id=null,$seller_id=null)
@@ -492,6 +493,7 @@ class ItemsController extends AppController
         $limit=10;
         $items = [];
         $filters = [];
+        $shopes = [];
         if(!empty($city_id) && (!empty($seller_id)) && (!empty($page)))
         {
           // CheckAvabiltyOfCity function is avaliable in app controller for checking city_id in cities table
@@ -499,39 +501,52 @@ class ItemsController extends AppController
           if($isValidCity == 0)
           {
             $cart_item_count = $this->Items->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])->count();
+
+            $sellerItems = $this->Items->SellerItems->find()
+            ->contain(['Items'=>['ItemsVariations'=>['ItemVariationMasters','UnitVariations'=>['Units']]]])
+            ->where(['SellerItems.seller_id'=>$seller_id])->limit($limit)->page($page);
+
+            $shopes = $this->Items->SellerItems->Sellers->find()
+						->select(['id','firm_name','firm_address','saller_image'])
+						->where(['id'=>$seller_id,'status'=>'Active']);
+
+
+            /* pr($items->toArray());exit;
+
             $items = $this->Items->find()
             ->matching('ItemsVariations', function ($q) use($sellerWhere) {
                return $q->where($sellerWhere);
             })
-            ->contain(['ItemsVariations'=>['ItemVariationMasters']])
+            ->contain([])
             ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id])
-            ->limit($limit)->page($page);
-            if(!empty($items->toArray()))
+            ; */
+
+            if(!empty($sellerItems->toArray()))
             {
               $count_value = 0;
               $inWishList = 0;
-              foreach($items as $key => $item){
-                  if(!empty($item->items_variations))
-                  {
-                      foreach ($item->items_variations as $items_variation_data) {
-                        $item_id=$item->id;
-                        $inWishList = $this->Items->WishListItems->find()->where(['item_id'=>$item_id])->contain(['WishLists'=>function($q) use($customer_id){
-                          return $q->select(['WishLists.customer_id'])->where(['customer_id'=>$customer_id]);}])->count();
-                          if($inWishList  == 1)
-                          { $items_variation_data->inWishList = true; }
-                          else { $items_variation_data->inWishList = false; }
+              foreach($sellerItems as $sellerItem) {
 
-                          $count_cart = $this->Items->Carts->find()->select(['Carts.cart_count'])->where(['Carts.item_variation_id'=>$items_variation_data->id,'Carts.customer_id'=>$customer_id]);
+                    if(!empty($sellerItem->item->items_variations))
+                    {
+                        foreach ($sellerItem->item->items_variations as $items_variation_data) {
+                          $item_id=$sellerItem->item->id;
+                          $inWishList = $this->Items->WishListItems->find()->where(['item_id'=>$item_id])->contain(['WishLists'=>function($q) use($customer_id){
+                            return $q->select(['WishLists.customer_id'])->where(['customer_id'=>$customer_id]);}])->count();
+                            if($inWishList  == 1)
+                            { $items_variation_data->inWishList = true; }
+                            else { $items_variation_data->inWishList = false; }
 
-                          foreach ($count_cart as $count) {
-                            $count_value = $count->cart_count;
+                            $count_cart = $this->Items->Carts->find()->select(['Carts.cart_count'])->where(['Carts.item_variation_id'=>$items_variation_data->id,'Carts.customer_id'=>$customer_id]);
+
+                            foreach ($count_cart as $count) {
+                              $count_value = $count->cart_count;
+                            }
+                            $items_variation_data->cart_count = $count_value;
                           }
-                          $items_variation_data->cart_count = $count_value;
-                        }
-                  }
-
-                }
-
+                    }
+                    $items[] = $sellerItem->item;
+              }
 
                 $success = true;
                 $message = 'Data Found Successfully';
@@ -548,7 +563,7 @@ class ItemsController extends AppController
             $success = false;
             $message = 'Empty city or seller id';
           }
-          $this->set(['success' => $success,'message'=>$message,'items' => $items,'cart_item_count'=>$cart_item_count,'_serialize' => ['success','message','cart_item_count','items']]);
+          $this->set(['success' => $success,'message'=>$message,'items' => $items,'shopes'=>$shopes,'cart_item_count'=>$cart_item_count,'_serialize' => ['success','message','cart_item_count','items','shopes']]);
         }
 
 
