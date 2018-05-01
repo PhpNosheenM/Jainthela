@@ -76,7 +76,7 @@ $js='
 			}
 		});
 		$(document).on("change",".single_item",function(){
-			var item_variation=$(this).val();
+			var item_variation=$(this).val(); alert(item_variation);
 			if($(this).is(":checked"))
 			{
 				$(this).closest("div").find("input.entity_variation"+item_variation).prop("checked",true);
