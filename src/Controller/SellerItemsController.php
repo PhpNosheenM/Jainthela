@@ -66,6 +66,7 @@ class SellerItemsController extends AppController
         if ($this->request->is('post')) {
 			$commissions=$this->request->getData('commissions');
 			$item_ids=$this->request->getData('item_ids'); 
+			$category_ids=$this->request->getData('category_ids'); 
 			$ids=$this->request->getData('ids'); 
 			$seller_id=$this->request->getData('seller_id');
 			//pr($this->request->getData());
@@ -107,9 +108,10 @@ class SellerItemsController extends AppController
 				else
 				{ 
 					$query = $this->SellerItems->query();
-					$query->insert(['seller_id', 'item_id','commission_percentage']);
+					$query->insert(['seller_id','category_id', 'item_id','commission_percentage']);
 					$query->values([
 						'seller_id' => $seller_id,
+						'category_id' => $category_ids[$i],
 						'item_id' => $item_ids[$i],
 						'commission_percentage' => $commissions[$i]
 					]);
@@ -126,6 +128,7 @@ class SellerItemsController extends AppController
 			
         }
         $categories = $this->SellerItems->Categories->find('threaded')->contain(['Items']);
+		//pr($categories->toArray());exit;
         $sellers = $this->SellerItems->Sellers->find('list');
         $this->set(compact('sellerItem', 'categories', 'sellers'));
     }
@@ -140,7 +143,7 @@ class SellerItemsController extends AppController
 		{
 			$masterIds=[];$ItemIds=[];
 			$arr=$this->request->getData(); $i=1; 
-//pr($masterIds);exit;
+            
 			
 			foreach($arr as $key => $csm)
 			{
@@ -148,18 +151,19 @@ class SellerItemsController extends AppController
 				$SellerItemdata=$this->SellerItems->find()->where(['seller_id'=>$user_id, 'item_id'=>$arr[$key]['item_id']])->toArray();
 				$masterIds[$arr[$key]['item_id']][]=$csm['item_variation_master_id'];
 				$ItemIds[]=$arr[$key]['item_id'];
+				
 				$is_exist = $this->SellerItems->ItemVariations->find()->where(['seller_id'=>$user_id, 'item_id'=>@$arr[@$key]['item_id'],'item_variation_master_id'=>$arr[$key]['item_variation_master_id']])->count();
 				if($is_exist>0)
 				{
 					$query1 = $this->SellerItems->ItemVariations->query();
 					  $query1->update()
-					  ->set(['maximum_quantity_purchase' =>$csm['maximum_quantity_purchase'],'status'=>'Active'])
+					  ->set(['maximum_quantity_purchase' =>$csm['maximum_quantity_purchase'],'status'=>'Active','current_stock'=>$csm['current_stock'],'purchase_rate'=>$csm['purchase_rate'],'sales_rate'=>$csm['sales_rate'],'mrp'=>$csm['mrp'],'ready_to_sale'=>$csm['ready_to_sale']])
 					  ->where(['seller_id'=>$user_id,'item_id'=>$arr[$key]['item_id'],'item_variation_master_id'=>$csm['item_variation_master_id']])
 					  ->execute();
 					  unset($arr[$key]);
 				}
 				else{
-					$arr[$key]['seller_id'] = $user_id;
+					$arr[$key]['seller_id']  = $user_id;
 					$arr[$key]['commission'] = $SellerItemdata[0]->commission_percentage;
 				}
 				
@@ -203,9 +207,9 @@ class SellerItemsController extends AppController
 				}
 			}
 			if(sizeof($arr)>0)
-			{
-			$itemVariation = $this->SellerItems->ItemVariations->newEntities($arr);
-			
+			{ 
+			$itemVariation = $this->SellerItems->ItemVariations->newEntities(array_values($arr));
+			//pr($itemVariation);exit;
 				if ($this->SellerItems->ItemVariations->saveMany($itemVariation)) {
 					$this->Flash->success(__('The seller item has been saved.'));
 
@@ -223,13 +227,14 @@ class SellerItemsController extends AppController
 		{
 			$seller_item[]=$sellerItem->item_id;
 		}
+		//$seller_item[]=8;
 		$categories = $this->SellerItems->Categories->find('threaded');
 							$categories->select(['total_item'=>$categories->func()->count('Items.id')])
 							->innerJoinWith('Items',function($q) use($user_id,$seller_item){
 									return $q->where(['Items.id IN'=>$seller_item]);
 							})
 							->contain(['Items'=>function($q) use($user_id,$seller_item){
-								return $q->where(['Items.id IN'=>$seller_item])->contain(['ItemVariationMasters'=>['ItemVariations'=>function ($q){return $q->where(['status'=>'Active']);},'SellerItems','UnitVariations'=>['Units']]]);
+								return $q->where(['Items.id IN'=>$seller_item])->contain(['ItemVariationMasters'=>['ItemVariations','UnitVariations'=>['Units']]]);
 							}
 							])
 							->group(['Categories.id'])

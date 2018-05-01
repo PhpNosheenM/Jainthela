@@ -111,8 +111,7 @@
 											if($info)
 											{
 											$result=$awsFileLoad->getObjectFile($keyname); 
-											//$app_image_view='<img src="data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'" alt="" style="width: auto; height: 160px;" class="file-preview-image"/>';
-							
+											
 											$js.=' $( document ).ready(function() {
 														$("#web_image_data'.$i.'").find("div.file-input-new").removeClass("file-input-new");
 														$("#web_image_data'.$i.'").find("div.file-preview-thumbnails").html("<div data-template=image class=file-preview-frame><div class=kv-file-content><img src=data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'></div></div>");

@@ -66,12 +66,12 @@ class BannersTable extends Table
             ->requirePresence('name', 'create')
             ->notEmpty('name');
 
-        $validator
+       /* $validator
              //->scalar('banner_image')
             //->maxLength('banner_image', 100)
             ->requirePresence('banner_image', 'create')
             ->notEmpty('banner_image');
-
+*/
         
         return $validator;
     }

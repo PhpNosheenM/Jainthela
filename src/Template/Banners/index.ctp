@@ -7,7 +7,7 @@
     font-size: 13px;
 }
 
-</style><?php $this->set('title', 'banner'); ?>
+</style><?php $this->set('title', 'Banner'); ?>
 <div class="page-content-wrap">
         <div class="page-title">                    
 			<h2><span class="fa fa-arrow-circle-o-left"></span> Banner</h2>
@@ -28,7 +28,25 @@
 					        </div>
 							<div class="form-group">
 									<label>Link Name</label>
-									<?= $this->Form->control('link_name',['class'=>'form-control','placeholder'=>'Link Name','label'=>false]) ?>
+									<?php
+										$options1['product_description'] = 'Product Description';
+										$options1['combo_description'] = 'Combo Description';
+										$options1['category_wise'] = 'Product listing Category Wise';
+										$options1['item_wise'] = 'Product listing Item Wise';
+										$options1['category_wise_combo'] = 'Combo listing Category Wise';
+										$options1['item_wise_combo'] = 'Combo listing Item Wise';
+										$options1['refer'] = 'Refer And Earn';
+										$options1['wallet'] = 'Wallet Plans';
+										$options1['bulk_booking'] = 'Bulk Booking';
+										$options1['order'] = 'Order Detail';
+										$options1['cart'] = 'Cart Listing';
+										$options1['store'] = 'Store listing';
+										$options1['store_item_wise'] = 'Store Item listing';
+										$options1['webview_html'] = 'Webview Html';
+										$options1['webview_url'] = 'Webview Url'; 
+									?>
+									<?= $this->Form->select('link_name',$options1,['empty'=>'Select Link Name','class'=>'form-control select','label'=>false]) ?>
+									<?php //$this->Form->control('link_name',['class'=>'form-control','placeholder'=>'Link Name','label'=>false]) ?>
 									<span class="help-block"></span>
 					        </div>
 							<div class="form-group" id="web_image_data">
@@ -166,7 +184,7 @@
             showCaption: false,
             showCancel: false,
             browseClass: "btn btn-danger",
-			allowedFileExtensions: ["jpg", "png"],
+			allowedFileExtensions: ["jpeg", "jpg", "png"],
 			maxFileSize: 1024,
 		}); 
 		

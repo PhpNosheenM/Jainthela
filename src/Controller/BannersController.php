@@ -64,9 +64,7 @@ class BannersController extends AppController
 					$this->Banners->save($banner_data);
 
 					/* Resize Image */
-					//$destination_url = WWW_ROOT . 'img/temp/'.$banner_image_name;
-					$tempdir=sys_get_temp_dir();
-					$destination_url = $tempdir . '/'.$banner_image_name;
+					$destination_url = WWW_ROOT . 'img/temp/'.$banner_image_name;
 					if($banner_ext[1]=='png'){
 						$image = imagecreatefrompng($banner_image['tmp_name']);
 					}else{
@@ -83,13 +81,19 @@ class BannersController extends AppController
 					$banner_data->banner_image=$keyname;
 					$this->Banners->save($banner_data);
 
-					 
-					$file = new File(WWW_ROOT . $destination_url, false, 0777);
-					$file->delete();
+					$dir  = WWW_ROOT .  'img'.DS.'temp'.DS.$banner_image_name;
+                    $dir = $this->EncryptingDecrypting->encryptData($dir);
 				}
                 $this->Flash->success(__('The banner has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+                if(empty($banner_error))
+                {
+                 return $this->redirect(['action' => 'delete_file',$dir]);
+                }
+                else
+                {
+                    return $this->redirect(['action' => 'index']);
+                }
             }
             $this->Flash->error(__('The banner could not be saved. Please, try again.'));
         }
@@ -108,7 +112,17 @@ class BannersController extends AppController
 		$paginate_limit=$this->paginate['limit'];
 		$this->set(compact('banners','banner','paginate_limit'));
     }
-
+    public function deleteFile($dir)
+    {
+        $dir = $this->EncryptingDecrypting->decryptData($dir);
+        $dir  = new File($dir);             
+        if ($dir->exists()) 
+        {
+            $dir->delete(); 
+        }
+         return $this->redirect(['action' => 'index']);
+        exit;
+    }
     /**
      * View method
      *

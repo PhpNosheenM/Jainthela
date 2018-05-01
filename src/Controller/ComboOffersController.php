@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
-
+use Cake\Filesystem\Folder;
+use Cake\Filesystem\File;
 use App\Controller\AppController;
 
 /**
@@ -105,9 +106,8 @@ class ComboOffersController extends AppController
 					$this->ComboOffers->save($combo_data);
 				
 					/* Resize Image */
-					//$destination_url = WWW_ROOT . 'img/temp/'.$banner_image_name;
-					$tempdir=sys_get_temp_dir();
-					$destination_url = $tempdir . '/'.$combo_offer_image_name;
+					$destination_url = WWW_ROOT . 'img/temp/'.$combo_offer_image_name;
+					
 					if($combo_offer_ext[1]=='png'){
 						$image = imagecreatefrompng($combo_offer_image['tmp_name']);
 					}else{
@@ -122,11 +122,19 @@ class ComboOffersController extends AppController
 					$this->AwsFile->putObjectFile($keyname,$combo_offer_image['tmp_name'],$combo_offer_image['type']);
 					$combo_data->combo_offer_image=$keyname;
 					$this->ComboOffers->save($combo_data);
+					$dir  = WWW_ROOT .  'img'.DS.'temp'.DS.$combo_offer_image_name;
+                    $dir = $this->EncryptingDecrypting->encryptData($dir);
 				
 				}
                 $this->Flash->success(__('The combo offer has been saved.'));
-
-                return $this->redirect(['action' => 'add']);
+                if(empty($combo_offer_error))
+                {
+                 return $this->redirect(['action' => 'delete_file',$dir]);
+                }
+                else
+                {
+                    return $this->redirect(['action' => 'add']);
+                }
             }
 			
             $this->Flash->error(__('The combo offer could not be saved. Please, try again.'));
@@ -139,7 +147,28 @@ class ComboOffersController extends AppController
 		//pr($itemVariations->toArray()); exit;
         $this->set(compact('comboOffer', 'cities', 'itemVariation_option'));
     }
-
+    public function deleteFile($dir)
+    {
+        $dir = $this->EncryptingDecrypting->decryptData($dir);
+        $dir  = new File($dir);             
+        if ($dir->exists()) 
+        {
+            $dir->delete(); 
+        }
+         return $this->redirect(['action' => 'add']);
+        exit;
+    }
+    public function deleteFileEdit($dir)
+    {
+        $dir = $this->EncryptingDecrypting->decryptData($dir);
+        $dir  = new File($dir);             
+        if ($dir->exists()) 
+        {
+            $dir->delete(); 
+        }
+         return $this->redirect(['action' => 'index']);
+        exit;
+    }
     /**
      * Edit method
      *
@@ -204,9 +233,7 @@ class ComboOffersController extends AppController
 					$this->ComboOffers->save($combo_data);
 				
 					/* Resize Image */
-					//$destination_url = WWW_ROOT . 'img/temp/'.$banner_image_name;
-					$tempdir=sys_get_temp_dir();
-					$destination_url = $tempdir . '/'.$combo_offer_image_name;
+					$destination_url = WWW_ROOT . 'img/temp/'.$combo_offer_image_name;
 					if($combo_offer_ext[1]=='png'){
 						$image = imagecreatefrompng($combo_offer_image['tmp_name']);
 					}else{
@@ -221,11 +248,20 @@ class ComboOffersController extends AppController
 					$this->AwsFile->putObjectFile($keyname,$combo_offer_image['tmp_name'],$combo_offer_image['type']);
 					$combo_data->combo_offer_image=$keyname;
 					$this->ComboOffers->save($combo_data);
+					$dir  = WWW_ROOT .  'img'.DS.'temp'.DS.$combo_offer_image_name;
+                    $dir = $this->EncryptingDecrypting->encryptData($dir);
 				
 				}
                 $this->Flash->success(__('The combo offer has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+                if(empty($combo_offer_error))
+                {
+                 return $this->redirect(['action' => 'delete_file_edit',$dir]);
+                }
+                else
+                {
+                    return $this->redirect(['action' => 'index']);
+                }
             }
             $this->Flash->error(__('The combo offer could not be saved. Please, try again.'));
         }

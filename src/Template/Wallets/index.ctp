@@ -7,16 +7,16 @@
     font-size: 13px;
 }
 </style>
-<?php $this->set('title', 'Wallets'); ?>
+<?php $this->set('title', 'Money'); ?>
 <div class="page-content-wrap">
     <div class="page-title">                    
-			<h2><span class="fa fa-arrow-circle-o-left"></span>Wallets</h2>
+			<h2><span class="fa fa-arrow-circle-o-left"></span> Money</h2>
 	</div> 
 	 <div class="row">
 				<div class="col-md-4">
 					<div class="panel panel-default">
 									<div class="panel-heading">
-										<h3 class="panel-title">ADD Wallets</h3>
+										<h3 class="panel-title">ADD Money</h3>
 									</div>
 									<?= $this->Form->create($wallet,['id'=>"jvalidate"]) ?>
 							<div class="panel-body">
@@ -37,7 +37,7 @@
 								 
 								<div class="form-group">
 									<label>Narration</label>
-									<?= $this->Form->control('narration',['id'=>'narration','class'=>'form-control','placeholder'=>'Benifit Percentage','label'=>false]) ?>
+									<?= $this->Form->control('narration',['id'=>'narration','class'=>'form-control','placeholder'=>'Narration','label'=>false]) ?>
 									<span class="help-block"></span>
 								</div>
 								 
@@ -53,7 +53,7 @@
 				<div class="col-md-8">
 			       <div class="panel panel-default">
 				    <div class="panel-heading">
-						<h3 class="panel-title">LIST Wallets</h3>
+						<h3 class="panel-title">LIST Money</h3>
 					     <div class="pull-right">
 						    <div class="pull-left">
 								<?= $this->Form->create('Search',['type'=>'GET']) ?>
@@ -78,12 +78,8 @@
 										<tr>
 											<th><?= ('SN.') ?></th>
 											<th><?= ('Customer') ?></th>
-											<th><?= ('Plan') ?></th>
-											<th><?= ('Amount') ?></th>
-											<th><?= ('Narration') ?></th>
-											<th><?= ('Transaction') ?></th>
-											<th><?= ('Created On') ?></th>
-											<th scope="col" class="actions"><?= __('Actions') ?></th>
+											<th><?= ('Total Added Amount') ?></th>
+											<th><?= ('Total Used Amount') ?></th>
 										</tr>
 									</thead>
 									<tbody>                                            
@@ -92,12 +88,8 @@
 										<tr>
 											<td><?= $this->Number->format(++$i) ?></td>
 											<td><?= h($data->customer->name) ?></td>
-											<td><?= h($data->plan->name) ?></td>
-											<td><?= h($data->add_amount) ?></td>
-											<td><?= h($data->narration) ?></td>
-											<td><?= h($data->transaction_type) ?></td>
-											<td><?= h($data->created_on) ?></td>
-										 
+											<td><?= h($data->tot_add_amount) ?></td>
+											<td><?= h($data->tot_used_amount) ?></td>
 										</tr>
 										<?php endforeach; ?>
 									</tbody>
