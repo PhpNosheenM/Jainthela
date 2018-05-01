@@ -18,11 +18,7 @@
 					</div>
 					<div class="form-group">
 						<label>Term</label>
-						<textarea class="summernote" style="display: none !important;" >
-						</textarea>
-						<textarea id="codeEditor">
-						</textarea>
-						<?php //$this->Form->control('term',['type'=>'textarea','class'=>'summernote','placeholder'=>'Reason ','label'=>false]) ?>
+						<?php echo $this->Form->textarea('term',['class'=>'form-control','label'=>false,'placeholder'=>'Term','style'=>'display:none','required'=>true,'id'=>'term']); ?>
 						<span class="help-block"></span>
 					</div>
 					<div class="form-group">
@@ -114,22 +110,15 @@
 </div>
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
- <?= $this->Html->script('plugins/summernote/summernote.js',['block'=>'jsValidate']) ?>
+
+  <?php $this->Html->css('plugins/summernote/summernote.css', ['block' => 'cssEditor']); ?>
+ <?php $this->Html->script('plugins/summernote/summernote.min.js', ['block' => 'jsPluginEditor']); ?>
+  <?php $this->Html->script('plugins/summernotecomponent.js', ['block' => 'jsEditor']); ?>
+ <?php $this->Html->script('plugins/editor-summernote.js', ['block' => 'jsEditor2']); ?>
        
         <!-- END TEMPLATE -->
         
-        <script>
-            var editor = CodeMirror.fromTextArea(document.getElementById("codeEditor"), {
-                lineNumbers: true,
-                matchBrackets: true,
-                mode: "application/x-httpd-php",
-                indentUnit: 4,
-                indentWithTabs: true,
-                enterMode: "keep",
-                tabMode: "shift"                                                
-            });
-            editor.setSize('100%','420px');
-        </script> 
+        
 <?php
    $js='var jvalidate = $("#jvalidate").validate({
 		ignore: [],
@@ -141,6 +130,24 @@
 						required: true,
 				},
 			}                                        
-		});';  
+		});'; 
+
+		$js.="$('#term').summernote({
+			toolbar: [
+				['style', ['style']],
+				['font', ['bold', 'italic', 'underline', 'clear']],
+				['para', ['ul', 'ol', 'paragraph']],
+				['height', ['height']],
+				['table', ['table']],
+				['insert', ['picture', 'hr']],
+				['help', ['help']]
+			]
+		});
+		$(document).on('click','#submitbtn',function(e){
+	 		var editvalue=$('.note-editable').html();
+	 		$('#term').val(editvalue);
+ 		});
+
+		";
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		
 ?>
