@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
-
+use Cake\Filesystem\Folder;
+use Cake\Filesystem\File;
 use App\Controller\AppController;
 
 /**
@@ -25,11 +26,12 @@ class HomeScreensController extends AppController
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('admin_portal');
         $this->paginate = [
+			'contain' => ['Categories'],
             'limit' => 20
         ];
 		
         $homeScreens =$this->HomeScreens->find()->where(['HomeScreens.city_id'=>$city_id]);
-		
+	 
 		if($id)
 		{
 			$homeScreen = $this->HomeScreens->get($id);
@@ -102,14 +104,20 @@ class HomeScreensController extends AppController
 		$categories=$this->HomeScreens->Categories->find('List');
         $homeScreens = $this->paginate($homeScreens);
 		$paginate_limit=$this->paginate['limit'];
-		$this->set(compact('HomeScreens','homeScreen','paginate_limit','categories'));
-		
-        $this->paginate = [
-            'contain' => ['Categories']
-        ];
-        $homeScreens = $this->paginate($this->HomeScreens);
-		
-        $this->set(compact('homeScreens'));
+		$this->set(compact('homeScreens','homeScreen','paginate_limit','categories'));
+		 
+    }
+	
+	  public function deleteFile($dir)
+    {
+        $dir = $this->EncryptingDecrypting->decryptData($dir);
+        $dir  = new File($dir);
+        if ($dir->exists()) 
+        {
+            $dir->delete(); 
+        }
+         return $this->redirect(['action' => 'index']);
+        exit;
     }
 
     /**

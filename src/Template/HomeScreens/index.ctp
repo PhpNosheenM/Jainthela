@@ -47,6 +47,31 @@
 									<span class="help-block"></span>
 					        </div>
 							<div class="form-group">
+									<label>Screen Type</label>
+									<?php
+										$options3['Home'] = 'Home';
+										$options3['Product Detail'] = 'Product Detail';
+										?>
+									<?= $this->Form->select('screen_type',$options3,['empty'=>'Select Screen Type','class'=>'form-control select','label'=>false]) ?>
+									<span class="help-block"></span>
+					        </div>
+							<div class="form-group">
+									<label>Model Name</label>
+									<?php
+										$options4['ExpressDeliveries'] = 'Express Deliveries';
+										$options4['Brands'] = 'Brands';
+										$options4['Category'] = 'Category';
+										$options4['Items'] = 'Items';
+										$options4['Banners'] = 'Banners';
+										$options4['SubCategory'] = 'Sub Category';
+										$options4['MainCategory'] = 'Main Category';
+										$options4['Combooffer'] = 'Combo Offer';
+										$options4['Categorytwoitem'] = 'Category Two Item';
+										?>
+									<?= $this->Form->select('model_name',$options4,['empty'=>'Select Model Name','class'=>'form-control select','label'=>false]) ?>
+									<span class="help-block"></span>
+					        </div>
+							<div class="form-group">
 									<label>Link Name</label>
 									<?php
 										$options1['product_description'] = 'Product Description';
@@ -70,10 +95,10 @@
 									<span class="help-block"></span>
 					        </div>
 							<div class="form-group" id="web_image_data">
-							     <label>Banner Image</label> 
+							     <label>Image</label> 
 									<?php
 										$required=true;
-										$keyname = $banner->banner_image_web;
+										$keyname = $homeScreen->image;
 										 
 										if(!empty($keyname))
 										{
@@ -88,7 +113,7 @@
 											$required=false;
 										}
 									?>
-										<?= $this->Form->control('banner_image',['type'=>'file','label'=>false,'id' => 'banner_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>$required]) ?>
+										<?= $this->Form->control('image',['type'=>'file','label'=>false,'id' => 'banner_image','data-show-upload'=>false, 'data-show-caption'=>false, 'required'=>$required]) ?>
 										<label id="banner_image-error" class="error" for="banner_image"></label>
 										<?php  
 										if($info)
@@ -107,11 +132,21 @@
 										}
 									?>
 							</div>
+							 <div class="form-group">
+									<label>Preference App</label>
+									<?= $this->Form->control('preference',['class'=>'form-control','placeholder'=>'Preference App','label'=>false]) ?>
+									<span class="help-block"></span>
+					        </div>
+							 <div class="form-group">
+									<label>Preference Web</label>
+									<?= $this->Form->control('web_preference',['type'=>'number','class'=>'form-control','placeholder'=>'Preference Web','label'=>false]) ?>
+									<span class="help-block"></span>
+					        </div>
 							<div class="form-group">
-								<label>Status</label>
-								<?php $options['Active'] = 'Active'; ?>
-								<?php $options['Deactive'] = 'Deactive'; ?>
-								<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
+								<label>Section Show</label>
+								<?php $options['Yes'] = 'Yes'; ?>
+								<?php $options['No'] = 'No'; ?>
+								<?= $this->Form->select('section_show',$options,['class'=>'form-control select','label'=>false]) ?>
 					        </div>
 						</div>
 						
@@ -153,25 +188,37 @@
 								<thead>
 									<tr>
 										<th><?= ('SN.') ?></th>
-										<th><?= ('Name') ?></th>
+										<th><?= ('Title') ?></th>
+										<th><?= ('Layout') ?></th>
+										<th><?= ('Category') ?></th>
+										<th><?= ('Screen Type') ?></th>
+										<th><?= ('Model Name') ?></th>
 										<th><?= ('Link Name') ?></th>
-										<th><?= ('Status') ?></th>
+										<th><?= ('Preference App') ?></th>
+										<th><?= ('Preference Web') ?></th>
+										<th><?= ('Section Show') ?></th>
 										<th scope="col" class="actions"><?= __('Actions') ?></th>
 									</tr>
 								</thead>
 								<tbody>                                            
 								<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); ?>
 								
-								  <?php foreach ($banners as $banner): ?>
+								  <?php foreach ($homeScreens as $data): ?>
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
-									<td><?= h($banner->name) ?></td>
-									<td><?= h($banner->link_name) ?></td>
-									<td><?= h($banner->status) ?></td>
+									<td><?= h($data->title) ?></td>
+									<td><?= h($data->layout) ?></td>
+									<td><?= h($data->category->name) ?></td>
+									<td><?= h($data->screen_type) ?></td>
+									<td><?= h($data->model_name) ?></td>
+									<td><?= h($data->link_name) ?></td>
+									<td><?= h($data->preference) ?></td>
+									<td><?= h($data->web_preference) ?></td>
+									<td><?= h($data->section_show) ?></td>
 									
 									<td class="actions">
-										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index',$banner->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
-										<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $banner->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $banner->id),'escape'=>false]) ?>
+										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index',$data->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+										<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $data->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $data->id),'escape'=>false]) ?>
 									
 									</td>
 								</tr>
