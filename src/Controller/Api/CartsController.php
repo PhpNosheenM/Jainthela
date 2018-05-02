@@ -13,8 +13,9 @@ class CartsController extends AppController
 	{
 		 // get combo Data
 		 $comboData = $this->Carts->ComboOffers->get($combo_offer_id);
-		 $sale_rate = $comboData->print_rate;
-		 $quantity = $comboData->print_quantity;
+		 $sale_rate = $comboData->sales_rate;
+		 //$quantity = $comboData->print_quantity;
+		 $quantity = 1;
 
 		 // check avaliable item in cart
   		$checkCartData = $this->Carts->find()->where(['city_id'=>$city_id,'customer_id' => $customer_id,'combo_offer_id' =>$combo_offer_id]);
@@ -51,7 +52,8 @@ class CartsController extends AppController
 		$unit_Variation = $itemVariationData->unit_variation_id;
 		// get quantity and unit id
 		$unit_VariationData = $this->Carts->ItemVariations->UnitVariations->get($unit_Variation);
-		$item_add_quantity =  $unit_VariationData->convert_unit_qty;
+		//$item_add_quantity =  $unit_VariationData->convert_unit_qty;
+		$item_add_quantity =  1;
 		$item_add_unit_id = $unit_VariationData->unit_id;
 		// check avaliable item in cart
 		$checkCartData = $this->Carts->find()->where(['city_id'=>$city_id,'customer_id' => $customer_id, 'item_variation_id' =>$item_variation_id]);
@@ -60,8 +62,7 @@ class CartsController extends AppController
 				$amount = $sale_rate * $item_add_quantity;
 				$query = $this->Carts->query();
 				$query->insert(['city_id','customer_id', 'item_variation_id','unit_id','quantity','rate','amount','cart_count'])
-				->values(['city_id' =>$city_id,'customer_id' => $customer_id,'item_variation_id' => $item_variation_id,'unit_id' => $item_add_unit_id,
-					'quantity' => $item_add_quantity,'rate' => $sale_rate,'amount' => $amount,'cart_count' => 1])->execute();
+				->values(['city_id' =>$city_id,'customer_id' => $customer_id,'item_variation_id' => $item_variation_id,'unit_id' => $item_add_unit_id,'quantity' => $item_add_quantity,'rate' => $sale_rate,'amount' => $amount,'cart_count' => 1])->execute();
 			}else{
 					foreach($checkCartData as $checkCart)
 					{
@@ -83,8 +84,9 @@ class CartsController extends AppController
 		{
 				// get combo Data
 	 		 $comboData = $this->Carts->ComboOffers->get($combo_offer_id);
-	 		 $sale_rate = $comboData->print_rate;
-	 		 $quantity = $comboData->print_quantity;
+	 		 $sale_rate = $comboData->sales_rate;
+	 		 //$quantity = $comboData->print_quantity;
+			 $quantity = 1;
 	 		 // check avaliable item in cart
 	   		$checkCartData = $this->Carts->find()->where(['city_id'=>$city_id,'customer_id' => $customer_id,'combo_offer_id' =>$combo_offer_id]);
 				if(!empty($checkCartData->toArray()))
@@ -123,7 +125,8 @@ class CartsController extends AppController
 			$unit_Variation = $itemVariationData->unit_variation_id;
 			// get quantity and unit id
 			$unit_VariationData = $this->Carts->ItemVariations->UnitVariations->get($unit_Variation);
-			$item_add_quantity =  $unit_VariationData->convert_unit_qty;
+			//$item_add_quantity =  $unit_VariationData->convert_unit_qty;
+			$item_add_quantity =  1;
 			$item_add_unit_id = $unit_VariationData->unit_id;
 			// check avaliable item in cart
 			$checkCartData = $this->Carts->find()->where(['city_id'=>$city_id,'customer_id' => $customer_id, 'item_variation_id' =>$item_variation_id]);
@@ -221,6 +224,7 @@ class CartsController extends AppController
 			$remaining_wallet_amount = 0.00;
 			$grand_total = 0.00;
 			$payableAmount = 0.00;
+			$Combototal = 0.00;	
 			$delivery_charge_amount = '0.00';
 			$tag=$this->request->data('tag');
 			if(!empty($city_id) && !empty($customer_id))
@@ -275,9 +279,14 @@ class CartsController extends AppController
 							->where(['customer_id' => $customer_id])
 							->contain(['ComboOffers'=>['ComboOfferDetails']])
 							->group('Carts.combo_offer_id')->autoFields(true)->toArray();
-								
-							if(empty($comboData)) { $comboData = []; }							
 							
+							if(empty($comboData)) { $comboData = []; }							
+							else {  $Combototal = number_format(0.00, 2);
+									foreach($comboData as $combo) 
+									{
+										$Combototal = number_format($Combototal + $combo->amount, 2);
+									}
+								} 
 							if(!empty($categories->toArray()))
 							{
 									$category_arr = [];
@@ -309,8 +318,7 @@ class CartsController extends AppController
 
 									if(empty($carts_data))
 									{ $carts=[]; }
-
-
+							}
 
 									$Customers = $this->Carts->Customers->get($customer_id, [
 									  'contain' => ['Wallets'=>function($query){
@@ -337,15 +345,28 @@ class CartsController extends AppController
 									// Calculation
 									$payableAmount = number_format(0, 2);
 									$grand_total1=0;
-									foreach($carts_data as $cart_data)
+									if(!empty($carts_data))
 									{
-									  $grand_total1+=$cart_data->amount;
+										foreach($carts_data as $cart_data)
+										{
+										  $grand_total1+=$cart_data->amount;
+										}										
 									}
+									
+									if(!empty($comboData))
+									{
+										foreach($comboData as $combo)
+										{
+											$grand_total1+=$combo->amount;
+										}
+									} 
 
+									
 									$grand_total=number_format(round($grand_total1), 2);
 									$payableAmount = $payableAmount + $grand_total1;
 
-									$delivery_charges=$this->Carts->DeliveryCharges->find()->where(['city_id'=>$city_id]);
+									$delivery_charges=$this->Carts->DeliveryCharges->find()->where(['city_id'=>$city_id,'status'=>'Active']);
+									
 									if(!empty($delivery_charges->toArray()))
 									{
 											foreach ($delivery_charges as $delivery_charge) {
@@ -359,9 +380,9 @@ class CartsController extends AppController
 													}
 											}
 									}
-									$payableAmount = number_format($payableAmount,2);
-							}
-
+									$payableAmount = number_format($payableAmount,2);							
+							
+							//pr($grand_total);exit;
 								
 							if(empty($carts_data) && empty($comboData))
 							{
@@ -374,8 +395,8 @@ class CartsController extends AppController
 							{
 							  $success = true;
 							  $message = 'Cart Data found';
-							  $this->set(compact('success', 'message','address_available','grand_total','delivery_charge_amount','payableAmount','remaining_wallet_amount','carts','item_in_cart','comboData'));
-							  $this->set('_serialize', ['success', 'message','remaining_wallet_amount','grand_total','delivery_charge_amount', 'payableAmount','item_in_cart','address_available','carts','comboData']);
+							  $this->set(compact('success', 'message','address_available','grand_total','delivery_charge_amount','payableAmount','remaining_wallet_amount','carts','item_in_cart','comboData','Combototal'));
+							  $this->set('_serialize', ['success', 'message','remaining_wallet_amount','grand_total','delivery_charge_amount', 'payableAmount','item_in_cart','address_available','carts','comboData','Combototal']);
 							}
 							
 				}

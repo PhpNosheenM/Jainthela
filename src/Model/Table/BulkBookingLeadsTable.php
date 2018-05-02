@@ -80,11 +80,11 @@ class BulkBookingLeadsTable extends Table
             ->requirePresence('mobile', 'create')
             ->notEmpty('mobile');
 
-        $validator
+/*         $validator
             ->scalar('lead_description')
             ->requirePresence('lead_description', 'create')
             ->notEmpty('lead_description');
-
+ */
         $validator
             ->date('delivery_date')
             ->requirePresence('delivery_date', 'create')
@@ -106,11 +106,11 @@ class BulkBookingLeadsTable extends Table
             ->maxLength('status', 10)
             ->requirePresence('status', 'create')
             ->notEmpty('status');
-
+ */
         $validator
             ->scalar('reason')
             ->requirePresence('reason', 'create')
-            ->notEmpty('reason'); */
+            ->notEmpty('reason');
 
         return $validator;
     }
