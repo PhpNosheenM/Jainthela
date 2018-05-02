@@ -149,15 +149,15 @@ class SellerItemsController extends AppController
 			{
 				
 				$SellerItemdata=$this->SellerItems->find()->where(['seller_id'=>$user_id, 'item_id'=>$arr[$key]['item_id']])->toArray();
-				$masterIds[$arr[$key]['item_id']][]=$csm['item_variation_master_id'];
-				$ItemIds[]=$arr[$key]['item_id'];
+				//$masterIds[$arr[$key]['item_id']][]=$csm['item_variation_master_id'];
+				//$ItemIds[]=$arr[$key]['item_id'];
 				
 				$is_exist = $this->SellerItems->ItemVariations->find()->where(['seller_id'=>$user_id, 'item_id'=>@$arr[@$key]['item_id'],'item_variation_master_id'=>$arr[$key]['item_variation_master_id']])->count();
 				if($is_exist>0)
 				{
 					$query1 = $this->SellerItems->ItemVariations->query();
 					  $query1->update()
-					  ->set(['maximum_quantity_purchase' =>$csm['maximum_quantity_purchase'],'status'=>'Active','current_stock'=>$csm['current_stock'],'purchase_rate'=>$csm['purchase_rate'],'sales_rate'=>$csm['sales_rate'],'mrp'=>$csm['mrp'],'ready_to_sale'=>$csm['ready_to_sale']])
+					  ->set(['maximum_quantity_purchase' =>$csm['maximum_quantity_purchase'],'current_stock'=>$csm['current_stock'],'purchase_rate'=>$csm['purchase_rate'],'sales_rate'=>$csm['sales_rate'],'mrp'=>$csm['mrp'],'ready_to_sale'=>$csm['ready_to_sale']])
 					  ->where(['seller_id'=>$user_id,'item_id'=>$arr[$key]['item_id'],'item_variation_master_id'=>$csm['item_variation_master_id']])
 					  ->execute();
 					  unset($arr[$key]);
@@ -170,7 +170,7 @@ class SellerItemsController extends AppController
 				$i++;
 			}
 
-			$is_exist_items = $this->SellerItems->ItemVariations->find()->where(['seller_id'=>$user_id]);
+			/* $is_exist_items = $this->SellerItems->ItemVariations->find()->where(['seller_id'=>$user_id]);
 			if(sizeof($is_exist_items)>0)
 			{
 					foreach($is_exist_items as $is_exist_item)
@@ -184,10 +184,10 @@ class SellerItemsController extends AppController
 							  ->execute();
 						}
 					}
-			}
+			} */
 			
 			//pr($masterIds);exit;
-			foreach($masterIds as $key => $masterId)
+			/* foreach($masterIds as $key => $masterId)
 			{
 				$Item_variations = $this->SellerItems->ItemVariations->find()->where(['seller_id'=>$user_id, 'item_id'=>$key]);
 				if(sizeof($Item_variations)>0)
@@ -205,7 +205,7 @@ class SellerItemsController extends AppController
 						
 					}
 				}
-			}
+			} */
 			if(sizeof($arr)>0)
 			{ 
 			$itemVariation = $this->SellerItems->ItemVariations->newEntities(array_values($arr));

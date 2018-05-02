@@ -102,13 +102,10 @@ class RecursiveCategoriesHelper extends Helper
 						{   $checked="";$style="";
 							foreach($item['item_variation_masters'] as $item_variation_master)
 							{ 
-								if(!empty($item_variation_master->item_variations[0]->maximum_quantity_purchase))
+								if(!empty($item_variation_master->item_variations[0]))
 								{
-									if($item_variation_master->item_variations[0]->status=="Active")
-									{
-										$checked="checked";$style="display:block";
-									}else{$checked="";$style="display:none;";}
-								}
+									$checked="checked";$style="display:block";
+								}else{$checked="";$style="display:none;";}
 							}
 							echo '<div class="item_variation">
 									<div class="">
@@ -137,25 +134,24 @@ class RecursiveCategoriesHelper extends Helper
 							<tbody>';
 							foreach($item['item_variation_masters'] as $item_variation_master)
 							{  
-								if(!empty($item_variation_master->item_variations[0]->status))
+								if(!empty($item_variation_master->item_variations[0]))
 								{
-									if($item_variation_master->item_variations[0]->status=="Active")
-									{
-										$chk="checked";$disabled='';
-									}
-									else{$chk="";$disabled='disabled';}
+									$chk="checked";$disabled=''; $style='display:none;';
 								}
 								else
 								{
-									$chk="";$disabled='disabled';
+									$chk="";$disabled='disabled';$style='';
 								}
 								echo '<tr>';
 								echo '<td style="width:10%">';
-								echo '<input name="'.$i.'[item_id]" type="checkbox"  value="'.$item['id'].'" class="entity_variation'.$item_variation_master['unit_variation']['id'].'" style="display:none;" '.$chk.'>';
+								echo '<input name="'.$i.'[item_id]" type="checkbox"  value="'.$item['id'].'" class="entity_variation'.$item_variation_master['unit_variation']['id'].'"  style="display:none;" '.$chk.'>';
 
 								echo '<input name="'.$i.'[item_variation_master_id]" type="textbox"  value="'.$item_variation_master['id'].'" class="entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'].'" '.$disabled.' style="display:none;>';
-
-								echo '<label style="margin-left:30px;"><input name="'.$i.'[unit_variation_id]" type="checkbox"   value="'.$item_variation_master['unit_variation']['id'].'" class="single_item variation'.$item['id'].'" '.$disabled.'" '.$chk.' >&nbsp;&nbsp;'.$item_variation_master['unit_variation']['quantity_variation'].' '.$item_variation_master['unit_variation']['unit']['longname'].'</label>';
+								if($style=='')
+								{
+									$class='single_item variation'.$item['id'];
+								}else{$class='';}
+								echo '<label style="margin-left:30px;"><input name="'.$i.'[unit_variation_id]" type="checkbox"   value="'.$item_variation_master['unit_variation']['id'].'" class="'.$class.'" '.$disabled.'" '.$chk.' style="'.$style.'">&nbsp;&nbsp;'.$item_variation_master['unit_variation']['quantity_variation'].' '.$item_variation_master['unit_variation']['unit']['longname'].'</label>';
 								echo '</td><td style="width:20%">';
 								echo $html->control($i.'[maximum_quantity_purchase]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Maximum Quantity Purchase','class'=>'form-control entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->maximum_quantity_purchase]);
 								echo '</td><td style="width:15%">';
