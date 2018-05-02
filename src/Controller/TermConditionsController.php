@@ -43,6 +43,8 @@ class TermConditionsController extends AppController
                 $this->Flash->success(__('The cancel reason has been saved.'));
 				return $this->redirect(['action' => 'index']);
             }
+            pr($termCondition);
+            exit;
             $this->Flash->error(__('The cancel reason could not be saved. Please, try again.'));
         }
 		else if ($this->request->is(['get'])){
