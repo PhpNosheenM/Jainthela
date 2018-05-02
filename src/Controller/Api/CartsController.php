@@ -216,7 +216,12 @@ class CartsController extends AppController
 			$city_id=$this->request->data('city_id');
 			$combo_offer_id = $this->request->data('combo_offer_id');
 			$isCombo = $this->request->data('isCombo');
-
+			$comboData = [];
+			$carts=[];
+			$remaining_wallet_amount = 0.00;
+			$grand_total = 0.00;
+			$payableAmount = 0.00;
+			$delivery_charge_amount = '0.00';
 			$tag=$this->request->data('tag');
 			if(!empty($city_id) && !empty($customer_id))
 			{
@@ -266,17 +271,17 @@ class CartsController extends AppController
 							->where(['customer_id' => $customer_id])
 							->contain(['ItemVariations'=>['ItemVariationMasters','Items'=>['Categories']]]);
 
+							$comboData = $this->Carts->find()
+							->where(['customer_id' => $customer_id])
+							->contain(['ComboOffers'=>['ComboOfferDetails']])
+							->group('Carts.combo_offer_id')->autoFields(true)->toArray();
+								
+							if(empty($comboData)) { $comboData = []; }							
+							
 							if(!empty($categories->toArray()))
 							{
-								$comboData = $this->Carts->find()
-									->where(['customer_id' => $customer_id])
-									->contain(['ComboOffers'=>['ComboOfferDetails']])
-									->group('Carts.combo_offer_id')->autoFields(true)->toArray();
-
-								if(empty($comboData)) { $comboData = []; }
-
 									$category_arr = [];
-
+									
 									foreach ($categories as $cat_date) {
 									    $cat_name = $cat_date->item_variation->item->category->name;
 									    $cat_id = $cat_date->item_variation->item->category->id;
@@ -357,7 +362,8 @@ class CartsController extends AppController
 									$payableAmount = number_format($payableAmount,2);
 							}
 
-							if(empty($carts_data))
+								
+							if(empty($carts_data) && empty($comboData))
 							{
 							  $success = false;
 							  $message ='Empty Cart';
@@ -371,6 +377,7 @@ class CartsController extends AppController
 							  $this->set(compact('success', 'message','address_available','grand_total','delivery_charge_amount','payableAmount','remaining_wallet_amount','carts','item_in_cart','comboData'));
 							  $this->set('_serialize', ['success', 'message','remaining_wallet_amount','grand_total','delivery_charge_amount', 'payableAmount','item_in_cart','address_available','carts','comboData']);
 							}
+							
 				}
 				else
 				{

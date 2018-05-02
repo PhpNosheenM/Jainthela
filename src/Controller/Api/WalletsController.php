@@ -26,7 +26,7 @@ class WalletsController extends AppController
     $isValidToken = $this->checkToken($token);
     if($isValidToken == 0)
     {
-      if(!empty($city_id) && !empty($page))
+      if(!empty($city_id))
       {
         // CheckAvabiltyOfCity function is avaliable in app controller for checking city_id in cities table
         $isValidCity = $this->CheckAvabiltyOfCity($city_id);
@@ -39,7 +39,6 @@ class WalletsController extends AppController
           $wallet_details->where(['Wallets.customer_id'=>$customer_id])
           ->contain(['PlansLeft','OrdersLeft','PromotionsLeft'])
           ->order(['Wallets.id'=>'DESC'])
-          ->limit($limit)->page($page)
           ->autoFields(true);
 
           //  pr($wallet_details->toArray());exit;
@@ -83,7 +82,7 @@ class WalletsController extends AppController
 
           if(empty($wallet_details->toArray()))
           {
-            $success=true;
+            $success=false;
             $message="No Transaction details";
           }
           else
