@@ -26,6 +26,38 @@ class ItemsController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
+	 public function index1()
+    {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$this->viewBuilder()->layout('admin_portal');
+        $this->paginate = [
+            'contain' => ['Categories', 'Brands'],
+			'limit' => 20
+        ];
+
+		$items = $this->Items->find()->where(['Items.city_id'=>$city_id]);
+
+		if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$items->where([
+							'OR' => [
+									'Items.name LIKE' => $search.'%',
+									'Items.alias_name LIKE' => $search.'%',
+									'Categories.name LIKE' => $search.'%',
+									'Brands.name LIKE' => $search.'%',
+									'Items.status LIKE' => $search.'%',
+									'Items.minimum_stock ' => $search.'%'
+							]
+			]);
+		}
+        $items = $this->paginate($items);
+
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('items','paginate_limit'));
+    }
+	
+	
     public function index()
     {
 		$user_id=$this->Auth->User('id');
