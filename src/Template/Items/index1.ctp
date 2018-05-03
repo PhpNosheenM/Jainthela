@@ -43,14 +43,13 @@
 									<th><?= ('alias name') ?></th>
 									<th><?= ('category') ?></th>
 									<th><?= ('brand') ?></th>
-									
 									<th><?= ('minimum stock') ?></th>
 									<th><?= ('out of stock') ?></th>
 									<th><?= ('Ready To Sale') ?></th>
 									<th><?= ('status') ?></th>
 								</tr>
 							</thead>
-							<tbody>                                            
+							<tbody>
 								<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); ?>
 								
 								  <?php foreach ($items as $item): ?>
