@@ -36,6 +36,11 @@ class BannersTable extends Table
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
+		 $this->belongsTo('Categories');
+		 $this->belongsTo('Items');
+		 $this->belongsTo('Sellers');
+		 $this->belongsTo('ComboOffers');
+		 
         $this->belongsTo('Cities', [
             'foreignKey' => 'city_id',
             'joinType' => 'INNER'

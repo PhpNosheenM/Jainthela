@@ -35,6 +35,10 @@ class Banner extends Entity
         'banner_image' => true,
         'created_on' => true,
         'status' => true,
+        'category_id' => true,
+        'item_id' => true,
+        'seller_id' => true,
+        'combo_offer_id' => true,
         'city' => true
     ];
 }

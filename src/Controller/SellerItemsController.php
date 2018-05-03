@@ -27,6 +27,16 @@ class SellerItemsController extends AppController
      */
     public function index()
     {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
+		$this->viewBuilder()->layout('admin_portal');
+        $this->paginate = [
+			'contain' => ['Items', 'Sellers'],
+			'limit' => 20
+        ];
+        $SellerItems = $this->SellerItems->find();
+		
         $this->paginate = [
             'contain' => ['Items', 'Sellers']
         ];
