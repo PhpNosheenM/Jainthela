@@ -144,7 +144,7 @@ class RecursiveCategoriesHelper extends Helper
 								}
 								echo '<tr>';
 								echo '<td style="width:10%">';
-								echo '<input name="'.$i.'[item_id]" type="checkbox"  value="'.$item['id'].'" class="entity_variation'.$item_variation_master['unit_variation']['id'].'"  style="display:none;" '.$chk.'>';
+								echo '<input name="'.$i.'[item_id]" type="checkbox"  value="'.$item['id'].'" class="entity_variation entity_variation'.$item_variation_master['unit_variation']['id'].'"  style="display:none;" '.$chk.'>';
 
 								echo '<input name="'.$i.'[item_variation_master_id]" type="textbox"  value="'.$item_variation_master['id'].'" class="entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'].'" '.$disabled.' style="display:none;>';
 								if($style=='')

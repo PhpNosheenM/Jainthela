@@ -2,7 +2,8 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\View\View;
 /**
  * Cities Controller
  *
@@ -12,12 +13,24 @@ use App\Controller\AppController;
  */
 class CitiesController extends AppController
 {
-
+    public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        //$this->Security->requireSecure();
+    }
     /**
      * Index method
      *
      * @return \Cake\Http\Response|void
      */
+    public function forceSSL($error = '', SecurityException $exception = null)
+    {
+        if ($exception instanceof SecurityException && $exception->getType() === 'secure') {
+            return $this->redirect('https://' . env('SERVER_NAME') . Router::url($this->request->getRequestTarget()));
+        }
+
+        throw $exception;
+    }
     public function index($id = null)
     {
 		$user_id=$this->Auth->User('id');

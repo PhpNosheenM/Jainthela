@@ -143,7 +143,8 @@ class SellerItemsController extends AppController
 		{
 			$masterIds=[];$ItemIds=[];
 			$arr=$this->request->getData(); $i=1; 
-            
+            pr($arr);
+            exit;
 			
 			foreach($arr as $key => $csm)
 			{
@@ -209,7 +210,7 @@ class SellerItemsController extends AppController
 			if(sizeof($arr)>0)
 			{ 
 			$itemVariation = $this->SellerItems->ItemVariations->newEntities(array_values($arr));
-			//pr($itemVariation);exit;
+			
 				if ($this->SellerItems->ItemVariations->saveMany($itemVariation)) {
 					$this->Flash->success(__('The seller item has been saved.'));
 
@@ -227,7 +228,7 @@ class SellerItemsController extends AppController
 		{
 			$seller_item[]=$sellerItem->item_id;
 		}
-		//$seller_item[]=8;
+		
 		$categories = $this->SellerItems->Categories->find('threaded');
 							$categories->select(['total_item'=>$categories->func()->count('Items.id')])
 							->innerJoinWith('Items',function($q) use($user_id,$seller_item){
