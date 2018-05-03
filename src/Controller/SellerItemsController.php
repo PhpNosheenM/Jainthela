@@ -143,9 +143,7 @@ class SellerItemsController extends AppController
 		{
 			$masterIds=[];$ItemIds=[];
 			$arr=$this->request->getData(); $i=1; 
-            pr($arr);
-            exit;
-			
+           
 			foreach($arr as $key => $csm)
 			{
 				
