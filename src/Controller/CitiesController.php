@@ -16,21 +16,13 @@ class CitiesController extends AppController
     public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        //$this->Security->requireSecure();
     }
     /**
      * Index method
      *
      * @return \Cake\Http\Response|void
      */
-    public function forceSSL($error = '', SecurityException $exception = null)
-    {
-        if ($exception instanceof SecurityException && $exception->getType() === 'secure') {
-            return $this->redirect('https://' . env('SERVER_NAME') . Router::url($this->request->getRequestTarget()));
-        }
-
-        throw $exception;
-    }
+   
     public function index($id = null)
     {
 		$user_id=$this->Auth->User('id');

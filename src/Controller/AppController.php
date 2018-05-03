@@ -46,7 +46,7 @@ class AppController extends Controller
 		
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
-        $this->loadComponent('Security', ['blackHoleCallback' => 'forceSSL']);
+        $this->loadComponent('Security');
         $this->loadComponent('Csrf');
 		$awsFileLoad=$this->loadComponent('AwsFile');
 		$this->loadComponent('SidebarMenu');
