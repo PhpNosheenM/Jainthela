@@ -18,7 +18,7 @@
 						<div class="panel-heading">
 							<h3 class="panel-title">ADD Home Screens</h3>
 						</div>
-						<?= $this->Form->create($homeScreens,['id'=>"jvalidate",'type'=>'file']) ?>
+						<?= $this->Form->create($homeScreen,['id'=>"jvalidate",'type'=>'file']) ?>
 						<?php $js=''; ?>
 						<div class="panel-body">
 						    <div class="form-group">

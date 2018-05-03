@@ -63,6 +63,7 @@ $js='
 			if($(this).is(":checked"))
 			{
 				$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("checked",true);
+				$(this).closest(".item_variation").find("input.entity_variation[type=checkbox]").prop("checked",true);
 				$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("disabled",false);
 				$(this).closest(".item_variation").find("input.entity_maximum").prop("disabled",false);
 				$(this).closest(".item_variation").find("select.entity_maximum").prop("disabled",false);
@@ -70,6 +71,7 @@ $js='
 			else
 			{
 				$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("checked",false);
+				$(this).closest(".item_variation").find("input.entity_variation[type=checkbox]").prop("checked",false);
 				$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("disabled",true);
 				$(this).closest(".item_variation").find("input.entity_maximum").prop("disabled",true);
 				$(this).closest(".item_variation").find("select.entity_maximum").prop("disabled",true);

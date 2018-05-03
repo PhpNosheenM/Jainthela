@@ -1,7 +1,8 @@
 <?php
 namespace App\Controller;
-
 use App\Controller\AppController;
+use Cake\Event\Event;
+use Cake\View\View;
 
 /**
  * Sellers Controller
@@ -12,6 +13,14 @@ use App\Controller\AppController;
  */
 class SellersController extends AppController
 {
+	
+	 public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Security->setConfig('unlockedActions', ['add']);
+
+    }
+	
 	public function initialize()
 	{
 		parent::initialize();
@@ -116,6 +125,7 @@ class SellersController extends AppController
 						
 					}
 				}
+			//pr($seller); exit;
 			 if ($this->Sellers->save($seller)) { 
 				
 				$accounting_group = $this->Sellers->Ledgers->AccountingGroups->find()->where(['supplier'=>1])->first();
@@ -156,7 +166,7 @@ class SellersController extends AppController
 
                 return $this->redirect(['action' => 'index']);
             }
-			//pr($seller); exit;
+			 
             $this->Flash->error(__('The seller could not be saved. Please, try again.'));
         }
 		//$categories = $this->Sellers->Categories->find('threaded')->contain(['Items']);
