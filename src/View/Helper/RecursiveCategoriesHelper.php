@@ -125,6 +125,7 @@ class RecursiveCategoriesHelper extends Helper
 								<th></th>
 								<th>Maximum Quantity Purchase</th>
 								<th>Current Stock</th>
+								<th>Add Stock</th>
 								<th>Rate</th>
 								<th>Sales Rate</th>
 								<th>MRP</th>
@@ -154,8 +155,10 @@ class RecursiveCategoriesHelper extends Helper
 								echo '<label style="margin-left:30px;"><input name="'.$i.'[unit_variation_id]" type="checkbox"   value="'.$item_variation_master['unit_variation']['id'].'" class="'.$class.'" '.$disabled.'" '.$chk.' style="'.$style.'">&nbsp;&nbsp;'.$item_variation_master['unit_variation']['quantity_variation'].' '.$item_variation_master['unit_variation']['unit']['longname'].'</label>';
 								echo '</td><td style="width:20%">';
 								echo $html->control($i.'[maximum_quantity_purchase]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Maximum Quantity Purchase','class'=>'form-control entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->maximum_quantity_purchase,'required']);
-								echo '</td><td style="width:15%">';
-								echo $html->control($i.'[current_stock]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Current Stock','class'=>'form-control entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->current_stock,'required']);
+								echo '</td><td style="width:10%">';
+								echo $html->control($i.'[current_stock]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Current Stock','class'=>'form-control cStock  entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->current_stock,'required','readonly']);
+								echo '</td><td style="width:10%">';
+								echo $html->control($i.'[add_stock]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Add Stock','class'=>'form-control addStock entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;float:none;',$disabled,'value'=>'']);
 								echo '</td><td style="width:15%">';
 								echo $html->control($i.'[purchase_rate]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Rate','class'=>'form-control entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->purchase_rate,'required']);
 								echo '</td><td style="width:15%">';
