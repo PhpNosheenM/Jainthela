@@ -39,6 +39,7 @@
 							<thead>
 								<tr>
 									<th><?= ('SNo.') ?></th>
+									<th><?= ('Category') ?></th>
 									<th><?= ('name') ?></th>
 									<th><?= ('alias name') ?></th>
 									<th><?= ('category') ?></th>
@@ -55,6 +56,7 @@
 								  <?php foreach ($items as $item): ?>
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
+									<td><?= h($item->category->name) ?></td>
 									<td><?= h($item->name) ?></td>
 									<td><?= h($item->alias_name) ?></td>
 									<td><?= h(@$item->category->name) ?></td>

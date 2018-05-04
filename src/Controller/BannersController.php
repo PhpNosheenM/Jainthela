@@ -3,7 +3,8 @@ namespace App\Controller;
 use Cake\Filesystem\Folder;
 use Cake\Filesystem\File;
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\View\View;
 /**
  * Banners Controller
  *
@@ -13,7 +14,12 @@ use App\Controller\AppController;
  */
 class BannersController extends AppController
 {
+	public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Security->setConfig('unlockedActions', ['index']);
 
+    }
     /**
      * Index method
      *
@@ -21,7 +27,7 @@ class BannersController extends AppController
      */
     public function index($id = null)
     {
-		$city_id=$this->Auth->User('city_id'); 
+		$city_id=$this->Auth->User('city_id');
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('admin_portal');
         $this->paginate = [
@@ -40,6 +46,7 @@ class BannersController extends AppController
 	
         if ($this->request->is(['post','put'])) {
 			$banner_image=$this->request->data['banner_image'];
+			 
 			$banner_error=$banner_image['error'];
 			
             $banner = $this->Banners->patchEntity($banner, $this->request->getData());
@@ -107,10 +114,26 @@ class BannersController extends AppController
 							]
 			]);
 		}
-
+		$categories=$this->Banners->Categories->find('list')->where(['Categories.status'=>'Active']);
+		$Items=$this->Banners->Items->find('list')->where(['Items.status'=>'Active']);
+		$Sellers=$this->Banners->Sellers->find('list')->where(['Sellers.status'=>'Active']);
+		$ComboOffers=$this->Banners->ComboOffers->find('list')->where(['ComboOffers.status'=>'Active']);
+		$ItemVariationMaster=$this->Banners->ItemVariationMasters->find()->where(['ItemVariationMasters.status'=>'Active'])->contain(['Items','UnitVariations'=>['Units']]);
+		 
+		foreach($ItemVariationMaster as $data){
+			$item_name=$data->item->name;
+			$item_id=$data->item->id;
+			$category_id=$data->item->category_id;
+			$convert_unit_qty=$data->unit_variation->convert_unit_qty;
+			$unit_name=$data->unit_variation->unit->unit_name;
+			$id=$data->id;
+			$show=$item_name.'('.$convert_unit_qty.'-'.$unit_name.')';
+			$variation_options[]=['value'=>$id,'text'=>$show, 'category_id'=>$category_id, 'item_id'=>$item_id];
+		}
+	 
         $banners = $this->paginate($banners);
 		$paginate_limit=$this->paginate['limit'];
-		$this->set(compact('banners','banner','paginate_limit'));
+		$this->set(compact('banners','banner','paginate_limit','categories','Items','Sellers','ComboOffers','ItemVariationMasters','variation_options'));
     }
     public function deleteFile($dir)
     {

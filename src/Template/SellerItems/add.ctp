@@ -76,7 +76,7 @@ $js='
 				$("#attach").html("<b> Loading... </b>");	
 				var url =   "'.$this->Url->build(["controller"=>"SellerItems","action"=>"getSellerItems"]).'";
 				url =   url+"?id="+seller_id;	
-				var js =  "'.$this->Url->build(["controller"=>"/js/actions.js"]).'";
+				var js =  "'.$this->Url->build(["controller"=>"/js/accordion.js"]).'";
 				$.ajax({
 								url: url,
 				}).done(function(response){ 

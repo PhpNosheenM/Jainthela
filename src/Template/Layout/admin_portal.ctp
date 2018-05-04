@@ -27,8 +27,7 @@
         <div class="page-container page-navigation-top-fixed page-navigation-toggled page-container-wide">
             
             <!-- START PAGE SIDEBAR -->
-            <div class="page-sidebar page-sidebar-fixed scroll" style="overflow-y: scroll;
-">
+            <div class="page-sidebar page-sidebar-fixed scroll">
                 <!-- START X-NAVIGATION -->
 				<?= $this->element('sidebar_menu') ?>
                 <!-- END X-NAVIGATION -->

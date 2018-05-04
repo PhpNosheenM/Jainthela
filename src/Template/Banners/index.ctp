@@ -49,8 +49,59 @@
 									<?php //$this->Form->control('link_name',['class'=>'form-control','placeholder'=>'Link Name','label'=>false]) ?>
 									<span class="help-block"></span>
 					        </div>
+									<div class="form-group">
+                                        <div class="col-md-4">
+                                            <label class="check"><input type="radio" id="cat" value="1" class="iradio" name="iradio" checked="checked" /> Category</label>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="check"><input type="radio" id="itm"  value="2"  class="iradio" name="iradio"/> Item</label>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="check"><input type="radio" id="slr"  value="3" class="iradio" name="iradio"/> Seller</label>
+                                        </div>
+										<div class="col-md-4">
+                                            <label class="check"><input type="radio" id="cmbo"  value="4" class="iradio" name="iradio"/> Combo</label>
+                                        </div>
+										<div class="col-md-4">
+                                            <label class="check"><input type="radio" id="vrtn"  value="5" class="iradio" name="iradio"/> Item Variation</label>
+                                        </div>
+                                    </div>
+									<br>
+									<br>
+									<br>
+									<br>
+									<div class="form-group" id="cat_id" >
+										<label>Category</label>
+										<?= $this->Form->select('category_id',$categories,['id'=>'category_id','empty'=>'Select Categories','class'=>'form-control select','label'=>false]) ?>
+										<?php //$this->Form->control('link_name',['class'=>'form-control','placeholder'=>'Link Name','label'=>false]) ?>
+										<span class="help-block"></span>
+									</div>
+									<div class="form-group" id="itm_id" style="display:none !important;">
+										<label>Item</label>
+										<?= $this->Form->select('item_id',$Items,['id'=>'item_id','empty'=>'Select Items','class'=>'form-control select','label'=>false]) ?>
+										<?php //$this->Form->control('link_name',['class'=>'form-control','placeholder'=>'Link Name','label'=>false]) ?>
+										<span class="help-block"></span>
+									</div>
+									<div class="form-group" id="slr_id" style="display:none !important;">
+										<label>Seller</label>
+										<?= $this->Form->select('seller_id',$Sellers,['id'=>'seller_id','empty'=>'Select Sellers','class'=>'form-control select','label'=>false]) ?>
+										<?php //$this->Form->control('link_name',['class'=>'form-control','placeholder'=>'Link Name','label'=>false]) ?>
+										<span class="help-block"></span>
+									</div>
+									<div class="form-group" id="combo_id" style="display:none !important;">
+										<label>Combo Offers</label>
+										<?= $this->Form->select('combo_offer_id',$ComboOffers,['id'=>'combo_offer_id','empty'=>'Select Combo Offers','class'=>'form-control select','label'=>false]) ?>
+										<?php //$this->Form->control('link_name',['class'=>'form-control','placeholder'=>'Link Name','label'=>false]) ?>
+										<span class="help-block"></span>
+									</div>
+									<div class="form-group" id="var_id" style="display:none !important;">
+										<label>Item Variation</label>
+										<?= $this->Form->select('variation_id',$variation_options,['id'=>'variation_id','empty'=>'Select Combo Offers','class'=>'form-control select','label'=>false]) ?>
+										<?php //$this->Form->control('link_name',['class'=>'form-control','placeholder'=>'Link Name','label'=>false]) ?>
+										<span class="help-block"></span>
+									</div>
 							<div class="form-group" id="web_image_data">
-							     <label>Banner Image</label> 
+							     <label>Banner Image</label>
 									<?php
 										$required=true;
 										$keyname = $banner->banner_image_web;
@@ -186,11 +237,87 @@
             browseClass: "btn btn-danger",
 			allowedFileExtensions: ["jpeg", "jpg", "png"],
 			maxFileSize: 1024,
+		}).after({
+			
 		}); 
 		
 		
 		$(document).on("click", ".fileinput-remove-button", function(){
 			$(this).closest("div.file-input").find("input[type=file]").attr("required",true);
+		});
+		
+		$(document).on("change", "#variation_id", function(){
+			var vari=$("option:selected", this).val();
+			var dummy_category_id=$("option:selected", this).attr("category_id");
+			var dummy_item_id=$("option:selected", this).attr("item_id");
+				$("#category_id").selectpicker("val",dummy_category_id);
+				$("#item_id").selectpicker("val",dummy_item_id);
+		});
+		
+		$(document).on("click", ".iradio", function(){
+			var radio_value=$("input[name=iradio]:checked").val(); 
+			if(radio_value==1){
+				$("#cat_id").show();
+				$("#itm_id").hide();
+				$("#slr_id").hide();
+				$("#combo_id").hide();
+				$("#var_id").hide();
+				 
+				$("#item_id").selectpicker("val","");
+				$("#seller_id").selectpicker("val","");
+				$("#combo_offer_id").selectpicker("val","");
+				$("#variation_id").selectpicker("val","");
+			}
+			else if(radio_value==2){
+				$("#cat_id").hide();
+				$("#itm_id").show();
+				$("#slr_id").hide();
+				$("#combo_id").hide();
+				$("#var_id").hide();
+				
+				$("#category_id").selectpicker("val","");
+				$("#seller_id").selectpicker("val","");
+				$("#combo_offer_id").selectpicker("val","");
+				$("#variation_id").selectpicker("val","");
+			}
+			else if(radio_value==3){
+				$("#cat_id").hide();
+				$("#itm_id").hide();
+				$("#slr_id").show();
+				$("#combo_id").hide();
+				$("#var_id").hide();
+				
+				$("#category_id").selectpicker("val","");
+				$("#item_id").selectpicker("val","");
+				$("#combo_offer_id").selectpicker("val","");
+				$("#variation_id").selectpicker("val","");
+			}
+			else if(radio_value==4){
+				$("#cat_id").hide();
+				$("#itm_id").hide();
+				$("#slr_id").hide();
+				$("#combo_id").show();
+				$("#var_id").hide();
+				
+				$("#category_id").selectpicker("val","");
+				$("#item_id").selectpicker("val","");
+				$("#seller_id").selectpicker("val","");
+				$("#variation_id").selectpicker("val","");
+			}
+			else if(radio_value==5){
+				$("#cat_id").hide();
+				$("#itm_id").hide();
+				$("#slr_id").hide();
+				$("#combo_id").hide();
+				$("#var_id").show();
+				
+				var dummy_category_id=$("#variation_id option:selected").attr("category_id");
+			    var dummy_item_id=$("#variation_id option:selected").attr("item_id");
+ 				$("#category_id").selectpicker("val",dummy_category_id);
+				$("#item_id").selectpicker("val",dummy_item_id);
+				$("#seller_id").selectpicker("val","");
+				$("#variation_id").selectpicker("val","");
+			}
 		});
 		';  
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		
