@@ -94,7 +94,7 @@ $js='
 			
 			if(!isNaN(stock) & !isNaN(oldStock))
 			{ 
-				var totalStock = stock+oldStock;alert(totalStock);
+				var totalStock = stock+oldStock;
 				$(this).closest("tr").find("td input.cStock").val(totalStock);
 			}
 			else{

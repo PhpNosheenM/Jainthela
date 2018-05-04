@@ -158,7 +158,7 @@ class RecursiveCategoriesHelper extends Helper
 								echo '</td><td style="width:10%">';
 								echo $html->control($i.'[current_stock]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Current Stock','class'=>'form-control cStock  entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->current_stock,'required','readonly']);
 								echo '</td><td style="width:10%">';
-								echo $html->control($i.'[add_stock]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Add Stock','class'=>'form-control addStock entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;float:none;',$disabled,'value'=>'','required']);
+								echo $html->control($i.'[add_stock]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Add Stock','class'=>'form-control addStock entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;float:none;',$disabled,'value'=>'']);
 								echo '</td><td style="width:15%">';
 								echo $html->control($i.'[purchase_rate]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Rate','class'=>'form-control entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->purchase_rate,'required']);
 								echo '</td><td style="width:15%">';
