@@ -88,6 +88,19 @@ $js='
 				}
 			}
 		});
+		$(document).on("keyup",".addStock",function(){
+			var stock    = parseFloat($(this).val()); 
+			var oldStock = parseFloat($(this).closest("tr").find("td input.cStock").val());
+			
+			if(!isNaN(stock) & !isNaN(oldStock))
+			{ 
+				var totalStock = stock+oldStock;
+				$(this).closest("tr").find("td input.cStock").val(totalStock);
+			}
+			else{
+				$(this).closest("tr").find("td input.cStock").val("");
+			}
+		});
 		$(document).on("change",".single_item",function(){
 			var item_variation=$(this).val(); 
 			

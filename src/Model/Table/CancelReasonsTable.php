@@ -57,7 +57,7 @@ class CancelReasonsTable extends Table
             ->scalar('reason')
             ->requirePresence('reason', 'create')
             ->notEmpty('reason');
-
+/* 
         $validator
             ->dateTime('created_on')
             ->requirePresence('created_on', 'create')
@@ -66,7 +66,7 @@ class CancelReasonsTable extends Table
         $validator
             ->integer('created_by')
             ->requirePresence('created_by', 'create')
-            ->notEmpty('created_by');
+            ->notEmpty('created_by'); */
 
         return $validator;
     }
