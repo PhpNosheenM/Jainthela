@@ -71,7 +71,7 @@ class RecursiveCategoriesHelper extends Helper
 		}
     }
 	function categoryItemVariations($array) {
-	   $i=0;
+	   
 	    $status[] =['value'=>'No','text'=>'No'];
 		$status[] =['value'=>'Yes','text'=>'Yes'];
 		$html = new FormHelper(new \Cake\View\View());
@@ -133,6 +133,7 @@ class RecursiveCategoriesHelper extends Helper
 							</tr>
 							</thead>
 							<tbody>';
+							$i=0;
 							foreach($item['item_variation_masters'] as $item_variation_master)
 							{  
 								if(!empty($item_variation_master->item_variations[0]))

@@ -161,10 +161,10 @@ class SellerItemsController extends AppController
 		$this->viewBuilder()->layout('admin_portal');
         $itemVariation = $this->SellerItems->ItemVariations->newEntity();
         if ($this->request->is('post')) 
-		{
+		{ 
 			$masterIds=[];$ItemIds=[];
 			$arr=$this->request->getData(); $i=1; 
-           
+           pr($arr);exit;
 			foreach($arr as $key => $csm)
 			{
 				
@@ -174,7 +174,7 @@ class SellerItemsController extends AppController
 				
 				$is_exist = $this->SellerItems->ItemVariations->find()->where(['seller_id'=>$user_id, 'item_id'=>@$arr[@$key]['item_id'],'item_variation_master_id'=>$arr[$key]['item_variation_master_id']])->count();
 				if($is_exist>0)
-				{
+				{ 
 					$query1 = $this->SellerItems->ItemVariations->query();
 					  $query1->update()
 					  ->set(['maximum_quantity_purchase' =>$csm['maximum_quantity_purchase'],'current_stock'=>$csm['current_stock'],'purchase_rate'=>$csm['purchase_rate'],'sales_rate'=>$csm['sales_rate'],'mrp'=>$csm['mrp'],'ready_to_sale'=>$csm['ready_to_sale']])
