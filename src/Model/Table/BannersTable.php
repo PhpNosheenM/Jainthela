@@ -40,6 +40,7 @@ class BannersTable extends Table
 		 $this->belongsTo('Items');
 		 $this->belongsTo('Sellers');
 		 $this->belongsTo('ComboOffers');
+		 $this->belongsTo('ItemVariationMasters');
 		 
         $this->belongsTo('Cities', [
             'foreignKey' => 'city_id',

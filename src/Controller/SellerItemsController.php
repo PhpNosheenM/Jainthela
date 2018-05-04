@@ -32,17 +32,28 @@ class SellerItemsController extends AppController
 		$location_id=$this->Auth->User('location_id'); 
 		$this->viewBuilder()->layout('admin_portal');
         $this->paginate = [
-			'contain' => ['Items', 'Sellers'],
+			'contain' => ['Items', 'Sellers','Categories'],
 			'limit' => 20
         ];
-        $SellerItems = $this->SellerItems->find();
 		
-        $this->paginate = [
-            'contain' => ['Items', 'Sellers']
-        ];
-        $sellerItems = $this->paginate($this->SellerItems);
-
-        $this->set(compact('sellerItems'));
+	/* 	if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$SellerItems->where([
+							'OR' => [
+									'Categories.name LIKE' => $search.'%',
+									'Items.link_name LIKE' => $search.'%',
+									'commission_percentage.link_name LIKE' => $search.'%',
+									'commission_created_on.link_name LIKE' => $search.'%',
+									'expiry_on_date.link_name LIKE' => $search.'%',
+									'Sellers.status LIKE' => $search.'%'
+							]
+			]);
+		} */
+		
+        $SellerItems = $this->SellerItems->find();
+        $SellerItems = $this->paginate($this->SellerItems);
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('SellerItems','paginate_limit'));
     }
 
     /**

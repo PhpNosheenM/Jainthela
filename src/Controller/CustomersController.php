@@ -18,7 +18,7 @@ class CustomersController extends AppController
 	public function beforeFilter(Event $event)
 	{
 		parent::beforeFilter($event);
-		//$this->Security->setConfig('unlockedActions', ['add']);
+		 $this->Security->setConfig('unlockedActions', ['add','index','edit','delete','view']);
 	}
 
     /**
@@ -102,7 +102,7 @@ class CustomersController extends AppController
 				$this->Flash->success(__('The customer has been saved.'));
 				return $this->redirect(['action' => 'index']);
             }
-
+  
             $this->Flash->error(__('The customer could not be saved. Please, try again.'));
         }
 		$this->set(compact('customer', 'city_id','location_id'));
@@ -128,6 +128,7 @@ class CustomersController extends AppController
 
             $customer = $this->Customers->patchEntity($customer, $this->request->getData());
 			         $customer->edited_by = $user_id;
+					 
             if ($this->Customers->save($customer)) {
                 $this->Flash->success(__('The customer has been saved.'));
 

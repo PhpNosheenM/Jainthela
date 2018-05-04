@@ -66,13 +66,13 @@
 							
 						</div>
 						<div class="col-md-6">
-							<div class="form-group">                                        
+							<div class="form-group">
 								<label class="col-md-3 control-label">GSTIN</label>
 								<div class="col-md-9 col-xs-12">
 									<?= $this->Form->control('gstin',['class'=>'form-control gst','placeholder'=>'Eg:22ASDFR0967W6Z5','label'=>false]) ?>
 								</div>
 							</div>
-							<div class="form-group">                                        
+							<div class="form-group">
 								<label class="col-md-3 control-label">GSTIN Holder</label>
 								<div class="col-md-9 col-xs-12">
 									<?= $this->Form->control('gstin_holder_name',['class'=>'form-control','placeholder'=>'GSTIN Holder Name','label'=>false]) ?>
@@ -85,7 +85,7 @@
 								</div>
 							</div>
 							
-							<div class="form-group">    
+							<div class="form-group">
 								<label class="col-md-3 control-label">Mobile</label>
 								<div class="col-md-9 col-xs-12">
 									<?= $this->Form->control('username',['class'=>'form-control','placeholder'=>'Mobile No','label'=>false]) ?>

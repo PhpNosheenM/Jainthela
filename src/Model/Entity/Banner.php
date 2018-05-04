@@ -38,6 +38,7 @@ class Banner extends Entity
         'category_id' => true,
         'item_id' => true,
         'seller_id' => true,
+        'variation_id' => true,
         'combo_offer_id' => true,
         'city' => true
     ];

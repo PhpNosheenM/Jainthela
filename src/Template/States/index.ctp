@@ -10,7 +10,7 @@
 <?php $this->set('title', 'State'); ?>
 <div class="page-content-wrap">
         <div class="page-title">                    
-			<h2><span class="fa fa-arrow-circle-o-left"></span>STATES</h2>
+			<h2><span class="fa fa-arrow-circle-o-left"></span> STATES</h2>
 		</div> 
 	<div class="row">
 				<div class="col-md-4">
