@@ -186,6 +186,8 @@
             browseClass: "btn btn-danger",
 			allowedFileExtensions: ["jpeg", "jpg", "png"],
 			maxFileSize: 1024,
+		}).after({
+			
 		}); 
 		
 		
