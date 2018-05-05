@@ -71,7 +71,7 @@ class RecursiveCategoriesHelper extends Helper
 		}
     }
 	function categoryItemVariations($array) {
-	   $i=0;
+	    $i=0;
 	    $status[] =['value'=>'No','text'=>'No'];
 		$status[] =['value'=>'Yes','text'=>'Yes'];
 		$html = new FormHelper(new \Cake\View\View());
@@ -89,7 +89,7 @@ class RecursiveCategoriesHelper extends Helper
 								</a>';
 						echo	'</h4>
 						</div>';
-				if (count($vals['children'])) {
+				if (count($vals['children'])) { echo $i;
 					echo '<div class="panel-body" id="accOneColOne'.$vals['id'].'">';
 						$this->categoryItemVariations($vals['children']);
 					echo '</div>';
@@ -107,6 +107,7 @@ class RecursiveCategoriesHelper extends Helper
 									$checked="checked";$style="display:block";
 								}else{$checked="";$style="display:none;";}
 							}
+
 							echo '<div class="item_variation">
 									<div class="">
 										<h4 class="panel-title" style="width: 100%;">
