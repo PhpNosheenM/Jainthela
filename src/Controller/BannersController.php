@@ -118,7 +118,7 @@ class BannersController extends AppController
 		$Items=$this->Banners->Items->find('list')->where(['Items.status'=>'Active']);
 		$Sellers=$this->Banners->Sellers->find('list')->where(['Sellers.status'=>'Active']);
 		$ComboOffers=$this->Banners->ComboOffers->find('list')->where(['ComboOffers.status'=>'Active']);
-		$ItemVariationMaster=$this->Banners->ItemVariationMasters->find()->where(['ItemVariationMasters.status'=>'Active'])->contain(['Items','UnitVariations'=>['Units']]);
+		$ItemVariationMaster=$this->Banners->ItemVariations->find()->where(['ItemVariations.status'=>'Active'])->contain(['Items','UnitVariations'=>['Units']]);
 		 
 		foreach($ItemVariationMaster as $data){
 			$item_name=$data->item->name;

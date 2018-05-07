@@ -15,7 +15,7 @@ class SellersController extends AppController
 	 public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->Security->setConfig('unlockedActions', ['add']);
+        $this->Security->setConfig('unlockedActions', ['add','edit']);
 
     }
 	
@@ -56,7 +56,7 @@ class SellersController extends AppController
         $this->paginate = [
 			'limit' => 20
         ];
-        $sellers = $this->Sellers->find()->where(['Sellers.location_id'=>$location_id]);
+        $sellers = $this->Sellers->find()->where(['Sellers.city_id'=>$city_id]);
 		if ($this->request->is(['get'])){
 			$search=$this->request->getQuery('search');
 			$sellers->where([
@@ -174,8 +174,11 @@ class SellersController extends AppController
      */
     public function edit($id = null)
     {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$this->viewBuilder()->layout('admin_portal');
         $seller = $this->Sellers->get($id, [
-            'contain' => []
+            'contain' => ['SellerDetails']
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $seller = $this->Sellers->patchEntity($seller, $this->request->getData());
@@ -186,10 +189,8 @@ class SellersController extends AppController
             }
             $this->Flash->error(__('The seller could not be saved. Please, try again.'));
         }
-        $cities = $this->Sellers->Cities->find('list', ['limit' => 200]);
-        $ledgers = $this->Sellers->Ledgers->find('list', ['limit' => 200]);
-        $locations = $this->Sellers->Locations->find('list', ['limit' => 200]);
-        $this->set(compact('seller', 'cities', 'ledgers', 'locations'));
+     
+        $this->set(compact('seller'));
     }
 
     /**

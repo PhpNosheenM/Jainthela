@@ -95,7 +95,7 @@
 								<label class="col-md-3 control-label">PAN No </label>
 								<div class="col-md-9"> 
 									<div class="input text required error" aria-required="true">
-										<?= $this->Form->control('pan_no',['class'=>'form-control','placeholder'=>'PAN No','label'=>false]) ?>
+										<?= $this->Form->control('pan',['class'=>'form-control','placeholder'=>'PAN No','label'=>false]) ?>
 									</div>
 								</div>
 							</div>
@@ -118,7 +118,7 @@
 							<div class="form-group">                                        
 								<label class="col-md-3 control-label">GSTIN Address</label>
 								<div class="col-md-9 col-xs-12">
-									<?= $this->Form->control('gstin_address',['class'=>'form-control','placeholder'=>'GSTIN Address','label'=>false,'rows'=>4]) ?>
+									<?= $this->Form->control('gstin_holder_address',['class'=>'form-control','placeholder'=>'GSTIN Address','label'=>false,'rows'=>4]) ?>
 								</div>
 							</div>
 							    

@@ -57,7 +57,7 @@ class SellersController extends AppController
         $this->paginate = [
 			'limit' => 20
         ];
-        $sellers = $this->Sellers->find()->where(['Sellers.location_id'=>$location_id]);
+        $sellers = $this->Sellers->find()->where(['Sellers.city_id'=>$city_id]);
 		if ($this->request->is(['get'])){
 			$search=$this->request->getQuery('search');
 			$sellers->where([
