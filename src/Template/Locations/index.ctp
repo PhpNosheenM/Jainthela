@@ -10,10 +10,16 @@
         <li><?= $this->Html->link(__('New Location'), ['action' => 'add']) ?></li>
         <li><?= $this->Html->link(__('List Cities'), ['controller' => 'Cities', 'action' => 'index']) ?></li>
         <li><?= $this->Html->link(__('New City'), ['controller' => 'Cities', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Accounting Entries'), ['controller' => 'AccountingEntries', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Accounting Entry'), ['controller' => 'AccountingEntries', 'action' => 'add']) ?></li>
         <li><?= $this->Html->link(__('List Accounting Groups'), ['controller' => 'AccountingGroups', 'action' => 'index']) ?></li>
         <li><?= $this->Html->link(__('New Accounting Group'), ['controller' => 'AccountingGroups', 'action' => 'add']) ?></li>
+        <li><?= $this->Html->link(__('List Financial Years'), ['controller' => 'FinancialYears', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New Financial Year'), ['controller' => 'FinancialYears', 'action' => 'add']) ?></li>
+        <li><?= $this->Html->link(__('List Gst Figures'), ['controller' => 'GstFigures', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New Gst Figure'), ['controller' => 'GstFigures', 'action' => 'add']) ?></li>
+        <li><?= $this->Html->link(__('List Ledgers'), ['controller' => 'Ledgers', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New Ledger'), ['controller' => 'Ledgers', 'action' => 'add']) ?></li>
+        <li><?= $this->Html->link(__('List Accounting Entries'), ['controller' => 'AccountingEntries', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New Accounting Entry'), ['controller' => 'AccountingEntries', 'action' => 'add']) ?></li>
         <li><?= $this->Html->link(__('List Admins'), ['controller' => 'Admins', 'action' => 'index']) ?></li>
         <li><?= $this->Html->link(__('New Admin'), ['controller' => 'Admins', 'action' => 'add']) ?></li>
         <li><?= $this->Html->link(__('List Credit Notes'), ['controller' => 'CreditNotes', 'action' => 'index']) ?></li>
@@ -26,8 +32,6 @@
         <li><?= $this->Html->link(__('New Driver'), ['controller' => 'Drivers', 'action' => 'add']) ?></li>
         <li><?= $this->Html->link(__('List Grns'), ['controller' => 'Grns', 'action' => 'index']) ?></li>
         <li><?= $this->Html->link(__('New Grn'), ['controller' => 'Grns', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Gst Figures'), ['controller' => 'GstFigures', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Gst Figure'), ['controller' => 'GstFigures', 'action' => 'add']) ?></li>
         <li><?= $this->Html->link(__('List Journal Vouchers'), ['controller' => 'JournalVouchers', 'action' => 'index']) ?></li>
         <li><?= $this->Html->link(__('New Journal Voucher'), ['controller' => 'JournalVouchers', 'action' => 'add']) ?></li>
         <li><?= $this->Html->link(__('List Orders'), ['controller' => 'Orders', 'action' => 'index']) ?></li>
@@ -62,11 +66,15 @@
                 <th scope="col"><?= $this->Paginator->sort('id') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('city_id') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('name') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('alise') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('latitude') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('longitude') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('created_on') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('created_by') ?></th>
                 <th scope="col"><?= $this->Paginator->sort('status') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('financial_year_begins_from') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('financial_year_valid_to') ?></th>
+                <th scope="col"><?= $this->Paginator->sort('books_beginning_from') ?></th>
                 <th scope="col" class="actions"><?= __('Actions') ?></th>
             </tr>
         </thead>
@@ -76,11 +84,15 @@
                 <td><?= $this->Number->format($location->id) ?></td>
                 <td><?= $location->has('city') ? $this->Html->link($location->city->name, ['controller' => 'Cities', 'action' => 'view', $location->city->id]) : '' ?></td>
                 <td><?= h($location->name) ?></td>
+                <td><?= h($location->alise) ?></td>
                 <td><?= h($location->latitude) ?></td>
                 <td><?= h($location->longitude) ?></td>
                 <td><?= $this->Number->format($location->created_on) ?></td>
                 <td><?= $this->Number->format($location->created_by) ?></td>
-                <td><?= $this->Number->format($location->status) ?></td>
+                <td><?= h($location->status) ?></td>
+                <td><?= h($location->financial_year_begins_from) ?></td>
+                <td><?= h($location->financial_year_valid_to) ?></td>
+                <td><?= h($location->books_beginning_from) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['action' => 'view', $location->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['action' => 'edit', $location->id]) ?>

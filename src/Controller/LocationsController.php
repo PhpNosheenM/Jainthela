@@ -38,7 +38,7 @@ class LocationsController extends AppController
     public function view($id = null)
     {
         $location = $this->Locations->get($id, [
-            'contain' => ['Cities', 'AccountingEntries', 'AccountingGroups', 'Admins', 'CreditNotes', 'CustomerAddresses', 'DebitNotes', 'Drivers', 'Grns', 'GstFigures', 'JournalVouchers', 'Orders', 'Payments', 'PurchaseInvoices', 'PurchaseReturns', 'PurchaseVouchers', 'Receipts', 'ReferenceDetails', 'SaleReturns', 'SalesInvoices', 'SalesVouchers', 'Suppliers']
+            'contain' => ['Cities', 'AccountingGroups', 'FinancialYears', 'GstFigures', 'Ledgers', 'AccountingEntries', 'Admins', 'CreditNotes', 'CustomerAddresses', 'DebitNotes', 'Drivers', 'Grns', 'JournalVouchers', 'Orders', 'Payments', 'PurchaseInvoices', 'PurchaseReturns', 'PurchaseVouchers', 'Receipts', 'ReferenceDetails', 'SaleReturns', 'SalesInvoices', 'SalesVouchers', 'Suppliers']
         ]);
 
         $this->set('location', $location);
@@ -53,19 +53,8 @@ class LocationsController extends AppController
     {
         $location = $this->Locations->newEntity();
         if ($this->request->is('post')) {
-			
-			$date = date('d-m-Y');
-			$date = explode("-",$date);
-			$this->request->data['financial_year_begins_from'] =$date[2]."-04-01";
-			$this->request->data['books_beginning_from'] = $date[2]."-04-01"; 
-			$fyt=$date[2]+1;
-			$this->request->data['financial_year_valid_to'] = $fyt."-03-31";
-			
             $location = $this->Locations->patchEntity($location, $this->request->getData());
-			//pr($location); exit;
-		if ($this->Locations->save($location)) {
-			
-            
+            if ($this->Locations->save($location)) {
                 $this->Flash->success(__('The location has been saved.'));
 
                 return $this->redirect(['action' => 'index']);

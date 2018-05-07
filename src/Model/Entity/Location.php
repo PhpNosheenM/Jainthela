@@ -9,22 +9,28 @@ use Cake\ORM\Entity;
  * @property int $id
  * @property int $city_id
  * @property string $name
+ * @property string $alise
  * @property string $latitude
  * @property string $longitude
  * @property int $created_on
  * @property int $created_by
- * @property int $status
+ * @property string $status
+ * @property \Cake\I18n\FrozenDate $financial_year_begins_from
+ * @property \Cake\I18n\FrozenDate $financial_year_valid_to
+ * @property \Cake\I18n\FrozenDate $books_beginning_from
  *
  * @property \App\Model\Entity\City $city
- * @property \App\Model\Entity\AccountingEntry[] $accounting_entries
  * @property \App\Model\Entity\AccountingGroup[] $accounting_groups
+ * @property \App\Model\Entity\FinancialYear[] $financial_years
+ * @property \App\Model\Entity\GstFigure[] $gst_figures
+ * @property \App\Model\Entity\Ledger[] $ledgers
+ * @property \App\Model\Entity\AccountingEntry[] $accounting_entries
  * @property \App\Model\Entity\Admin[] $admins
  * @property \App\Model\Entity\CreditNote[] $credit_notes
  * @property \App\Model\Entity\CustomerAddress[] $customer_addresses
  * @property \App\Model\Entity\DebitNote[] $debit_notes
  * @property \App\Model\Entity\Driver[] $drivers
  * @property \App\Model\Entity\Grn[] $grns
- * @property \App\Model\Entity\GstFigure[] $gst_figures
  * @property \App\Model\Entity\JournalVoucher[] $journal_vouchers
  * @property \App\Model\Entity\Order[] $orders
  * @property \App\Model\Entity\Payment[] $payments
@@ -53,24 +59,27 @@ class Location extends Entity
     protected $_accessible = [
         'city_id' => true,
         'name' => true,
+        'alise' => true,
         'latitude' => true,
         'longitude' => true,
         'created_on' => true,
         'created_by' => true,
         'status' => true,
-        'city' => true,
-        'accounting_entries' => true,
-        'accounting_groups' => true,
-        'admins' => true,
         'financial_year_begins_from' => true,
-        'books_beginning_from' => true,
         'financial_year_valid_to' => true,
+        'books_beginning_from' => true,
+        'city' => true,
+        'accounting_groups' => true,
+        'financial_years' => true,
+        'gst_figures' => true,
+        'ledgers' => true,
+        'accounting_entries' => true,
+        'admins' => true,
         'credit_notes' => true,
         'customer_addresses' => true,
         'debit_notes' => true,
         'drivers' => true,
         'grns' => true,
-        'gst_figures' => true,
         'journal_vouchers' => true,
         'orders' => true,
         'payments' => true,
