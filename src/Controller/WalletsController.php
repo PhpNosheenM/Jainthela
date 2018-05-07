@@ -1,8 +1,10 @@
 <?php
 namespace App\Controller;
-
+use Cake\Filesystem\Folder;
+use Cake\Filesystem\File;
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\View\View;
 /**
  * Wallets Controller
  *
@@ -13,6 +15,13 @@ use App\Controller\AppController;
 class WalletsController extends AppController
 {
 
+	public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Security->setConfig('unlockedActions', ['add','index','delete','edits']);
+
+    }
+	
     /**
      * Index method
      *
@@ -45,13 +54,13 @@ class WalletsController extends AppController
 
         if ($this->request->is(['post','put'])) {
             $wallet = $this->Wallets->patchEntity($wallet, $this->request->getData());
-			$wallet->amount_type="plan";
+			 
 			$wallet->transaction_type="Added";
 			$wallet->city_id=$city_id;
 			if($id)
 			{
 				$wallet->id=$id;
-			}
+			} 
             if ($this->Wallets->save($wallet)) {
                 $this->Flash->success(__('The wallet has been saved.'));
 				return $this->redirect(['action' => 'index']);
@@ -72,7 +81,7 @@ class WalletsController extends AppController
 		} */
 
         $wallets = $this->paginate($wallets1);
-		$customers=$this->Wallets->Customers->find('list');
+		$customers=$this->Wallets->Customers->find('list')->where(['Customers.city_id'=>$city_id]);
 		$plans1=$this->Wallets->Plans->find();
 		$paginate_limit=$this->paginate['limit'];
 		

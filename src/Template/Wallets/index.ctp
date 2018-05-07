@@ -26,12 +26,21 @@
 									<?= $this->Form->select('customer_id',$customers,['class'=>'form-control select','label'=>false,'empty' => '--Select--']) ?>
 								</div>
 								<div class="form-group">
+									
+                                        <div class="col-md-6">
+                                            <label class="check"><input type="radio" id="cat" value="plan" class="iradio" name="amount_type" checked="checked" /> Plan </label>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="check"><input type="radio" id="itm"  value="direct money"  class="iradio" name="amount_type"/> Direct</label>
+                                        </div>
+                                    </div>
+								<div class="form-group" id="pln_hd">
 									<label>Plan</label>
 									<?= $this->Form->select('plan_id',$plans,['class'=>'form-control select','label'=>false,'empty' => '--Select--', 'id'=>'plan_id']) ?>
 								</div>
 								<div class="form-group">
 									<label>Total Amount</label>
-									<?= $this->Form->control('total_amount',['id'=>'total_amount','class'=>'form-control','placeholder'=>'Amount','label'=>false, 'readonly'=>true]) ?>
+									<?= $this->Form->control('add_amount',['id'=>'total_amount','class'=>'form-control','placeholder'=>'Amount','label'=>false, 'readonly'=>true,'type'=>'number']) ?>
 									<span class="help-block"></span>
 								</div>
 								 
@@ -126,6 +135,18 @@
 			
 			}
 		});
+		$(document).on("click", ".iradio", function(){
+			var radio_value=$("input[name=amount_type]:checked").val(); 
+			if(radio_value!="plan"){
+				$("#pln_hd").hide();
+				$("#plan_id").selectpicker("val","");
+				$("#total_amount").removeAttr("readonly");
+			}else{
+				$("#pln_hd").show();
+				$("#total_amount").attr("readonly","readonly");
+			}
+		});
+		
 		$(document).on("change", "#plan_id", function(){
 			var total_amount= $("option:selected", this).attr("total_amount");
 			$("#total_amount").val(total_amount);
