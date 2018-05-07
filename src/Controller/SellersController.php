@@ -2,9 +2,7 @@
 namespace App\Controller;
 use App\Controller\AppController;
 use Cake\Event\Event;
-use Cake\View\View;
-
-/**
+use Cake\View\View;/**
  * Sellers Controller
  *
  * @property \App\Model\Table\SellersTable $Sellers
@@ -13,7 +11,7 @@ use Cake\View\View;
  */
 class SellersController extends AppController
 {
-	
+
 	 public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
@@ -43,6 +41,7 @@ class SellersController extends AppController
             $this->Flash->error(__('Invalid Username or Password'));
         }	
     }
+	
     /**
      * Index method
      *
@@ -87,9 +86,8 @@ class SellersController extends AppController
      */
     public function view($id = null)
     {
-		
         $seller = $this->Sellers->get($id, [
-            'contain' => ['Cities','Items', 'SellerItems', 'SellerRatings']
+            'contain' => ['Cities', 'Categories', 'Ledgers', 'Locations', 'Items', 'SellerItems', 'SellerRatings', 'ReferenceDetails']
         ]);
 
         $this->set('seller', $seller);
@@ -112,20 +110,11 @@ class SellersController extends AppController
             $seller = $this->Sellers->patchEntity($seller, $this->request->getData());
 			$seller->city_id=$city_id;
 			$seller->created_by=$user_id;
-			$seller->registration_date=date('Y-m-d');
+			$registration_date=$this->request->data['registration_date'];
+			$seller->registration_date=date('Y-m-d', strtotime($registration_date));
 			$bill_to_bill_accounting=$seller->bill_to_bill_accounting;
 			$data=$this->Sellers->Locations->get($location_id);
-			if(!empty($seller->reference_details))
-				{
-					foreach($seller->reference_details as $reference_detail)
-					{
-						//$data=$this->Sellers->Locations->get($location_id);
-						$reference_detail->transaction_date = $data->books_beginning_from;
-						$reference_detail->opening_balance = 'yes';
-						
-					}
-				}
-			//pr($seller); exit;
+		 
 			 if ($this->Sellers->save($seller)) { 
 				
 				$accounting_group = $this->Sellers->Ledgers->AccountingGroups->find()->where(['supplier'=>1])->first();
@@ -166,7 +155,7 @@ class SellersController extends AppController
 
                 return $this->redirect(['action' => 'index']);
             }
-			 
+				pr($seller); exit; 
             $this->Flash->error(__('The seller could not be saved. Please, try again.'));
         }
 		//$categories = $this->Sellers->Categories->find('threaded')->contain(['Items']);
@@ -175,7 +164,6 @@ class SellersController extends AppController
         
         $this->set(compact('seller','locations'));
     }
-	
 
     /**
      * Edit method
@@ -186,9 +174,6 @@ class SellersController extends AppController
      */
     public function edit($id = null)
     {
-		$user_id=$this->Auth->User('id');
-		$city_id=$this->Auth->User('city_id'); 
-		$this->viewBuilder()->layout('admin_portal');
         $seller = $this->Sellers->get($id, [
             'contain' => []
         ]);
@@ -201,11 +186,20 @@ class SellersController extends AppController
             }
             $this->Flash->error(__('The seller could not be saved. Please, try again.'));
         }
-     
-        $this->set(compact('seller'));
+        $cities = $this->Sellers->Cities->find('list', ['limit' => 200]);
+        $ledgers = $this->Sellers->Ledgers->find('list', ['limit' => 200]);
+        $locations = $this->Sellers->Locations->find('list', ['limit' => 200]);
+        $this->set(compact('seller', 'cities', 'ledgers', 'locations'));
     }
-	
-	  public function sellerItem($id = null)
+
+    /**
+     * Delete method
+     *
+     * @param string|null $id Seller id.
+     * @return \Cake\Http\Response|null Redirects to index.
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */
+   public function sellerItem($id = null)
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 

@@ -1,140 +1,70 @@
-<!-- PAGE CONTENT WRAPPER -->
-<?php $this->set('title', 'Seller'); ?>
-<div class="page-content-wrap">
-
-	<div class="row">
-		<div class="col-md-12">
-		
-		<?= $this->Form->create($seller,['id'=>"jvalidate",'class'=>"form-horizontal"]) ?>  
-			<div class="panel panel-default">
-				<div class="panel-heading">
-					<h3 class="panel-title"><strong>Seller</strong></h3>
-				</div>
-			
-				<div class="panel-body">    
-					<div class="row">
-						<div class="col-md-6">
-							<div class="form-group">
-								<label class="col-md-3 control-label">Seller Name</label>
-								<div class="col-md-9">                                            
-									<?= $this->Form->control('name',['class'=>'form-control','placeholder'=>'Seller Name','label'=>false]) ?>
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-md-3 control-label">Firm Name</label>
-								<div class="col-md-9">                                            
-									<?= $this->Form->control('firm_name',['class'=>'form-control','placeholder'=>'Firm Name','label'=>false]) ?>
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-md-3 control-label">Firm Address</label>
-								<div class="col-md-9 col-xs-12"> 
-									<?= $this->Form->control('firm_address',['class'=>'form-control','placeholder'=>'Firm Address','label'=>false,'rows'=>'4']) ?>
-								</div>
-							</div>
-							
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">Status</label>
-								<div class="col-md-9 col-xs-12">
-									<?php $options['Active'] = 'Active'; ?>
-								<?php $options['Deactive'] = 'Deactive'; ?>
-								<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-md-3 control-label">User Name</label>
-								<div class="col-md-9"> 
-										<?= $this->Form->control('username',['class'=>'form-control','placeholder'=>'User Name','label'=>false]) ?>
-								</div>
-							</div>
-							
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">Password</label>
-								<div class="col-md-9 col-xs-12">
-									<?= $this->Form->control('password',['class'=>'form-control','placeholder'=>'Password','label'=>false,'type'=>'password']) ?>
-								</div>
-							</div>
-							
-							
-						</div>
-						<div class="col-md-6">
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">GSTIN</label>
-								<div class="col-md-9 col-xs-12">
-									<?= $this->Form->control('gstin',['class'=>'form-control','placeholder'=>'GSTIN','label'=>false]) ?>
-								</div>
-							</div>
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">GSTIN Holder</label>
-								<div class="col-md-9 col-xs-12">
-									<?= $this->Form->control('gstin_holder_name',['class'=>'form-control','placeholder'=>'GSTIN Holder Name','label'=>false]) ?>
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-md-3 control-label">GSTIN Holder Address</label>
-								<div class="col-md-9 col-xs-12"> 
-									<?= $this->Form->control('gstin_holder_address',['class'=>'form-control','placeholder'=>'GSTIN Holder Address','label'=>false,'rows'=>'4']) ?>
-								</div>
-							</div>
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">Email</label>
-								<div class="col-md-9 col-xs-12">
-									<?= $this->Form->control('email',['class'=>'form-control','placeholder'=>'Email','label'=>false]) ?>
-								</div>
-							</div>
-							
-							
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">Mobile</label>
-								<div class="col-md-9 col-xs-12">
-									<?= $this->Form->control('mobile_no',['class'=>'form-control','placeholder'=>'Mobile No','label'=>false]) ?>
-									</div>
-							</div>
-							
-							
-							
-						</div>
-						
-					</div>
-
-				</div>
-				<div class="panel-footer">
-					<center>
-						<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
-					</center>
-				</div>
-			</div>
-			<?= $this->Form->end() ?>
-		</div>
-	</div>                    
-	
-</div>
-
-<?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
-<?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
 <?php
-   $js='var jvalidate = $("#jvalidate").validate({
-		ignore: [],
-		rules: {                                            
-				name: {
-						required: true,
-				},
-				firm_name: {
-						required: true,
-				},
-				email: {
-						required: true,
-				},
-				user_name: {
-						required: true,
-				},
-				password: {
-						required: true,
-				},
-				mobile_no: {
-						required: true,
-				},
-			}                                        
-		});';  
-echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		
+/**
+ * @var \App\View\AppView $this
+ * @var \App\Model\Entity\Seller $seller
+ */
 ?>
+<nav class="large-3 medium-4 columns" id="actions-sidebar">
+    <ul class="side-nav">
+        <li class="heading"><?= __('Actions') ?></li>
+        <li><?= $this->Form->postLink(
+                __('Delete'),
+                ['action' => 'delete', $seller->id],
+                ['confirm' => __('Are you sure you want to delete # {0}?', $seller->id)]
+            )
+        ?></li>
+        <li><?= $this->Html->link(__('List Sellers'), ['action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('List Cities'), ['controller' => 'Cities', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New City'), ['controller' => 'Cities', 'action' => 'add']) ?></li>
+        <li><?= $this->Html->link(__('List Categories'), ['controller' => 'Categories', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New Category'), ['controller' => 'Categories', 'action' => 'add']) ?></li>
+        <li><?= $this->Html->link(__('List Ledgers'), ['controller' => 'Ledgers', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New Ledger'), ['controller' => 'Ledgers', 'action' => 'add']) ?></li>
+        <li><?= $this->Html->link(__('List Locations'), ['controller' => 'Locations', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New Location'), ['controller' => 'Locations', 'action' => 'add']) ?></li>
+        <li><?= $this->Html->link(__('List Items'), ['controller' => 'Items', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New Item'), ['controller' => 'Items', 'action' => 'add']) ?></li>
+        <li><?= $this->Html->link(__('List Seller Items'), ['controller' => 'SellerItems', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New Seller Item'), ['controller' => 'SellerItems', 'action' => 'add']) ?></li>
+        <li><?= $this->Html->link(__('List Seller Ratings'), ['controller' => 'SellerRatings', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New Seller Rating'), ['controller' => 'SellerRatings', 'action' => 'add']) ?></li>
+        <li><?= $this->Html->link(__('List Reference Details'), ['controller' => 'ReferenceDetails', 'action' => 'index']) ?></li>
+        <li><?= $this->Html->link(__('New Reference Detail'), ['controller' => 'ReferenceDetails', 'action' => 'add']) ?></li>
+    </ul>
+</nav>
+<div class="sellers form large-9 medium-8 columns content">
+    <?= $this->Form->create($seller) ?>
+    <fieldset>
+        <legend><?= __('Edit Seller') ?></legend>
+        <?php
+            echo $this->Form->control('location_id', ['options' => $locations]);
+            echo $this->Form->control('name');
+            echo $this->Form->control('username');
+            echo $this->Form->control('password');
+            echo $this->Form->control('email');
+            echo $this->Form->control('mobile_no');
+            echo $this->Form->control('latitude');
+            echo $this->Form->control('longitude');
+            echo $this->Form->control('gstin');
+            echo $this->Form->control('gstin_holder_name');
+            echo $this->Form->control('gstin_holder_address');
+            echo $this->Form->control('firm_name');
+            echo $this->Form->control('firm_address');
+            echo $this->Form->control('registration_date');
+            echo $this->Form->control('termination_date');
+            echo $this->Form->control('termination_reason');
+            echo $this->Form->control('breif_decription');
+            echo $this->Form->control('passkey');
+            echo $this->Form->control('timeout');
+            echo $this->Form->control('created_on');
+            echo $this->Form->control('created_by');
+            echo $this->Form->control('status');
+            echo $this->Form->control('bill_to_bill_accounting');
+            echo $this->Form->control('opening_balance_value');
+            echo $this->Form->control('debit_credit');
+            echo $this->Form->control('saller_image');
+        ?>
+    </fieldset>
+    <?= $this->Form->button(__('Submit')) ?>
+    <?= $this->Form->end() ?>
+</div>
