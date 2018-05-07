@@ -53,16 +53,19 @@
 									<?= $this->Form->control('firm_pincode',['type'=>'number','class'=>'form-control','placeholder'=>'Firm Pincode','label'=>false]) ?>
 								</div>
 							</div>
-							
+							<?php 
+							$registration_date=$seller->registration_date;
+							$org_registration_date=date('d-m-Y', strtotime($registration_date));
+							?>
 							<div class="form-group">
 								<label class="col-md-3 control-label">Registration Date</label>
 								<div class="col-md-9"> 
-										<?= $this->Form->control('registration_date',['class'=>'form-control datepicker','placeholder'=>'Registration Date','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>'']) ?> 
+										<?= $this->Form->control('registration_date',['class'=>'form-control datepicker','placeholder'=>'Registration Date','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>$org_registration_date]) ?> 
 								</div>
 							</div>
 							 
 							
-							<div class="form-group">           
+							<div class="form-group">
 								<label align="left" class="col-md-3 control-label">Opening balance</label>
 								<div class="col-md-6 col-xs-12">
 								

@@ -40,9 +40,12 @@
 								<tr>
 									<th><?= ('SNo.') ?></th>
 									<th><?= ('name') ?></th>
-									<th><?= ('firm_name') ?></th>
-									<th><?= ('email') ?></th>
-									<th><?= ('mobile no') ?></th>
+									<th><?= ('Firm Name') ?></th>
+									<th><?= ('Firm Email') ?></th>
+									<th><?= ('Firm Address') ?></th>
+									<th><?= ('Firm Contact') ?></th>
+									<th><?= ('Firm Pincode') ?></th>
+									<th><?= ('Pan') ?></th>
 									<th><?= ('GSTIN') ?></th>
 									<th><?= ('GSTIN Holder') ?></th>
 									<th><?= ('status') ?></th>
@@ -57,8 +60,11 @@
 									<td><?= $this->Number->format(++$i) ?></td>
 									<td><?= h($seller->name) ?></td>
 									<td><?= h($seller->firm_name) ?></td>
-									<td><?= h($seller->email) ?></td>
-									<td><?= h($seller->mobile_no) ?></td>
+									<td><?= h($seller->firm_email) ?></td>
+									<td><?= h($seller->firm_address) ?></td>
+									<td><?= h($seller->firm_contact) ?></td>
+									<td><?= h($seller->firm_pincode) ?></td>
+									<td><?= h($seller->pan) ?></td>
 									<td><?= h($seller->gstin) ?></td>
 									<td><?= h($seller->gstin_holder_name) ?></td>
 									<td><?= h($seller->status) ?></td>

@@ -64,8 +64,10 @@ class SellersController extends AppController
 									'Sellers.name LIKE' => $search.'%',
 									'Sellers.status LIKE' => $search.'%',
 									'Sellers.firm_name LIKE' => $search.'%',
-									'Sellers.email LIKE' => $search.'%',
-									'Sellers.mobile_no LIKE' => $search.'%',
+									'Sellers.firm_address LIKE' => $search.'%',
+									'Sellers.firm_email LIKE' => $search.'%',
+									'Sellers.firm_contact LIKE' => $search.'%',
+									'Sellers.firm_pincode LIKE' => $search.'%',
 									'Sellers.gstin LIKE' => $search.'%',
 									'Sellers.gstin_holder_name LIKE' => $search.'%',
 									'Sellers.registration_date' => $search.'%'
@@ -76,8 +78,7 @@ class SellersController extends AppController
 		$paginate_limit=$this->paginate['limit'];
         $this->set(compact('sellers','paginate_limit'));
     }
-
-    /**
+     /**
      * View method
      *
      * @param string|null $id Seller id.
@@ -182,6 +183,10 @@ class SellersController extends AppController
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $seller = $this->Sellers->patchEntity($seller, $this->request->getData());
+			$seller->city_id=$city_id;
+			$seller->created_by=$user_id;
+			$registration_date=$this->request->data['registration_date'];
+			$seller->registration_date=date('Y-m-d', strtotime($registration_date));
             if ($this->Sellers->save($seller)) {
                 $this->Flash->success(__('The seller has been saved.'));
 
