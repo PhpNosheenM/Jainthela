@@ -60,7 +60,7 @@ class VendorDetailsTable extends Table
             ->requirePresence('contact_person', 'create')
             ->notEmpty('contact_person');
 
-        $validator
+      /*   $validator
             ->scalar('contact_no')
             ->maxLength('contact_no', 10)
             ->requirePresence('contact_no', 'create')
@@ -70,7 +70,7 @@ class VendorDetailsTable extends Table
             ->scalar('contact_email')
             ->maxLength('contact_email', 200)
             ->requirePresence('contact_email', 'create')
-            ->notEmpty('contact_email');
+            ->notEmpty('contact_email'); */
 
         return $validator;
     }

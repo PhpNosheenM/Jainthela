@@ -1,8 +1,8 @@
 <?php
 namespace App\Controller;
-
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\View\View;
 /**
  * Vendors Controller
  *
@@ -18,14 +18,46 @@ class VendorsController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
+	 
+	public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Security->setConfig('unlockedActions', ['add','edit','index']);
+
+    }
+	
     public function index()
     {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
+		$this->viewBuilder()->layout('admin_portal'); 
         $this->paginate = [
-            'contain' => ['Cities', 'Locations']
+            'limit' => 20
         ];
-        $vendors = $this->paginate($this->Vendors);
-
-        $this->set(compact('vendors'));
+		$vendors = $this->Vendors->find()->where(['Vendors.city_id'=>$city_id]);
+		
+        if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$vendors->where([
+							'OR' => [
+									'Vendors.name LIKE' => $search.'%',
+									'Vendors.status LIKE' => $search.'%',
+									'Vendors.firm_name LIKE' => $search.'%',
+									'Vendors.firm_address LIKE' => $search.'%',
+									'Vendors.firm_email LIKE' => $search.'%',
+									'Vendors.firm_contact LIKE' => $search.'%',
+									'Vendors.firm_pincode LIKE' => $search.'%',
+									'Vendors.gstin LIKE' => $search.'%',
+									'Vendors.gstin_holder_name LIKE' => $search.'%',
+									'Vendors.registration_date' => $search.'%'
+							]
+			]);
+		}
+		
+		$vendors= $this->paginate($vendors);
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('vendors','paginate_limit'));
     }
 
     /**
@@ -51,9 +83,20 @@ class VendorsController extends AppController
      */
     public function add()
     {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
+		$this->viewBuilder()->layout('admin_portal');
         $vendor = $this->Vendors->newEntity();
         if ($this->request->is('post')) {
             $vendor = $this->Vendors->patchEntity($vendor, $this->request->getData());
+			$vendor->city_id=$city_id;
+			$vendor->created_by=$user_id;
+			$registration_date=$this->request->data['registration_date'];
+			$vendor->registration_date=date('Y-m-d', strtotime($registration_date));
+			$bill_to_bill_accounting=$vendor->bill_to_bill_accounting;
+			//$data=$this->Sellers->Locations->get($location_id);
+			 
             if ($this->Vendors->save($vendor)) {
                 $this->Flash->success(__('The vendor has been saved.'));
 
@@ -61,9 +104,8 @@ class VendorsController extends AppController
             }
             $this->Flash->error(__('The vendor could not be saved. Please, try again.'));
         }
-        $cities = $this->Vendors->Cities->find('list', ['limit' => 200]);
-        $locations = $this->Vendors->Locations->find('list', ['limit' => 200]);
-        $this->set(compact('vendor', 'cities', 'locations'));
+        $cities = $this->Vendors->Cities->find('list', ['limit' => 200]); 
+        $this->set(compact('vendor', 'cities'));
     }
 
     /**
@@ -75,11 +117,19 @@ class VendorsController extends AppController
      */
     public function edit($id = null)
     {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$this->viewBuilder()->layout('admin_portal');
         $vendor = $this->Vendors->get($id, [
-            'contain' => []
+            'contain' => ['VendorDetails']
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $vendor = $this->Vendors->patchEntity($vendor, $this->request->getData());
+			$vendor->city_id=$city_id;
+			$vendor->created_by=$user_id;
+			$registration_date=$this->request->data['registration_date'];
+			$vendor->registration_date=date('Y-m-d', strtotime($registration_date));
+			
             if ($this->Vendors->save($vendor)) {
                 $this->Flash->success(__('The vendor has been saved.'));
 
@@ -88,7 +138,6 @@ class VendorsController extends AppController
             $this->Flash->error(__('The vendor could not be saved. Please, try again.'));
         }
         $cities = $this->Vendors->Cities->find('list', ['limit' => 200]);
-        $locations = $this->Vendors->Locations->find('list', ['limit' => 200]);
         $this->set(compact('vendor', 'cities', 'locations'));
     }
 

@@ -2,7 +2,8 @@
 namespace App\Controller;
 use App\Controller\AppController;
 use Cake\Event\Event;
-use Cake\View\View;/**
+use Cake\View\View;
+/**
  * Sellers Controller
  *
  * @property \App\Model\Table\SellersTable $Sellers
@@ -116,7 +117,7 @@ class SellersController extends AppController
 			$bill_to_bill_accounting=$seller->bill_to_bill_accounting;
 			$data=$this->Sellers->Locations->get($location_id);
 		 
-			 if ($this->Sellers->save($seller)) { 
+			 if ($this->Sellers->save($seller)) {
 				
 				$accounting_group = $this->Sellers->Ledgers->AccountingGroups->find()->where(['supplier'=>1])->first();
 				$ledger = $this->Sellers->Ledgers->newEntity();

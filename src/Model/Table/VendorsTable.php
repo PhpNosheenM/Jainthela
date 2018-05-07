@@ -38,6 +38,7 @@ class VendorsTable extends Table
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
+		 
         $this->belongsTo('Cities', [
             'foreignKey' => 'city_id',
             'joinType' => 'INNER'
@@ -46,7 +47,8 @@ class VendorsTable extends Table
             'foreignKey' => 'vendor_id'
         ]);
         $this->hasMany('VendorDetails', [
-            'foreignKey' => 'vendor_id'
+            'foreignKey' => 'vendor_id',
+			'saveStrategy'=>'replace'
         ]);
     }
 
@@ -120,7 +122,7 @@ class VendorsTable extends Table
             ->requirePresence('firm_pincode', 'create')
             ->notEmpty('firm_pincode');
 
-        $validator
+      /*   $validator
             ->date('registration_date')
             ->requirePresence('registration_date', 'create')
             ->notEmpty('registration_date');
@@ -166,7 +168,7 @@ class VendorsTable extends Table
             ->maxLength('debit_credit', 10)
             ->requirePresence('debit_credit', 'create')
             ->notEmpty('debit_credit');
-
+ */
         $validator
             ->scalar('status')
             ->maxLength('status', 10)
