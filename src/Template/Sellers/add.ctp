@@ -12,51 +12,55 @@
 				<div class="panel-body">   			
 					<div class="row">
 						<div class="col-md-6">
+						
 							<div class="form-group">
 								<label class="col-md-3 control-label">Seller Name</label>
-								<div class="col-md-9">                                            
+								<div class="col-md-9">
 									<?= $this->Form->control('name',['class'=>'form-control','placeholder'=>'Seller Name','label'=>false]) ?>
 								</div>
 							</div>
+							
 							<div class="form-group">
 								<label class="col-md-3 control-label">Firm Name</label>
-								<div class="col-md-9">                                            
+								<div class="col-md-9">
 									<?= $this->Form->control('firm_name',['class'=>'form-control','placeholder'=>'Firm Name','label'=>false]) ?>
 								</div>
 							</div>
 							<div class="form-group">
 								<label class="col-md-3 control-label">Firm Address</label>
-								<div class="col-md-9 col-xs-12"> 
+								<div class="col-md-9 col-xs-12">
 									<?= $this->Form->control('firm_address',['class'=>'form-control','placeholder'=>'Firm Address','label'=>false,'rows'=>'4']) ?>
 								</div>
 							</div>
 							
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">Status</label>
-								<div class="col-md-9 col-xs-12">
-									<?php $options['Active'] = 'Active'; ?>
-								<?php $options['Deactive'] = 'Deactive'; ?>
-								<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
+							<div class="form-group">
+								<label class="col-md-3 control-label">Firm Email</label>
+								<div class="col-md-9">
+									<?= $this->Form->control('firm_email',['type'=>'mail','class'=>'form-control','placeholder'=>'Firm Email','label'=>false]) ?>
+								</div>
+							</div>
+							 
+							 <div class="form-group">
+								<label class="col-md-3 control-label">Firm Contact</label>
+								<div class="col-md-9">
+									<?= $this->Form->control('firm_contact',['type'=>'number','class'=>'form-control','placeholder'=>'Firm Contact','label'=>false]) ?>
+								</div>
+							</div>
+							
+							 <div class="form-group">
+								<label class="col-md-3 control-label">Firm Pincode</label>
+								<div class="col-md-9">
+									<?= $this->Form->control('firm_pincode',['type'=>'number','class'=>'form-control','placeholder'=>'Firm Pincode','label'=>false]) ?>
 								</div>
 							</div>
 							
 							<div class="form-group">
-								<label class="col-md-3 control-label">Duration</label>
-								<div class="col-md-9 col-xs-12">
-									<div class="input-group">
-										<?= $this->Form->control('duration_from',['class'=>'form-control datepicker','placeholder'=>'Duration From','label'=>false,'type'=>'text','data-date-format' => 'DD/MM/YYYY','value'=>'']) ?>
-										<span class="input-group-addon add-on"> - </span>
-										<?= $this->Form->control('duration_to',['class'=>'form-control datepicker','placeholder'=>'Duration To','label'=>false,'type'=>'text','data-date-format' => 'DD/MM/YYYY','value'=>'']) ?>
-									</div>
+								<label class="col-md-3 control-label">Registration Date</label>
+								<div class="col-md-9"> 
+										<?= $this->Form->control('registration_date',['class'=>'form-control datepicker','placeholder'=>'Registration Date','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>'']) ?> 
 								</div>
 							</div>
-							
-							<div class="form-group">
-								<label class="col-md-3 control-label">Terms And Condition</label>
-								<div class="col-md-9 col-xs-12"> 
-									<?= $this->Form->control('terms_and_condition',['class'=>'form-control','placeholder'=>'Terms And Condition','label'=>false,'rows'=>'4']) ?>
-								</div>
-							</div>
+							 
 							
 							<div class="form-group">           
 								<label align="left" class="col-md-3 control-label">Opening balance</label>
@@ -70,34 +74,22 @@
 									<?= $this->Form->select('debit_credit',$options,['class'=>'form-control select cr_dr','label'=>false]) ?>
 								</div>
 							</div>
-								
+							  
+						</div>
+						
+						
 							
-							<div class="form-group">                                        
+							
+						<div class="col-md-6">
+							
+							 <div class="form-group">                                        
 								<label align="left" class="col-md-3 control-label">Bill to Bill</label>
 								<div class="col-md-9 col-xs-12">
-									<?php $options =[['value'=>'no','text'=>'no'],['value'=>'yes','text'=>'yes']]; ?>
+									<?php $options =[['value'=>'no','text'=>'No'],['value'=>'yes','text'=>'Yes']]; ?>
 									<?= $this->Form->select('bill_to_bill_accounting',$options,['class'=>'form-control select bill_to_bill','label'=>false]) ?>
 								</div>
-							</div>
+							</div> 
 							
-							
-							
-						</div>
-						<div class="col-md-6">
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">GSTIN</label>
-								<div class="col-md-9 col-xs-12">
-									<?= $this->Form->control('gstin',['class'=>'form-control gst','placeholder'=>'Eg:22ASDFR0967W6Z5','label'=>false]) ?>
-								</div>
-							</div>
-							
-							<div class="form-group">                                        
-								<label class="col-md-3 control-label">Location</label>
-								<div class="col-md-9 col-xs-12">
-									
-								<?= $this->Form->select('location_id',$locations,['class'=>'form-control select','label'=>false]) ?>
-								</div>
-							</div>
 							
 							<div class="form-group">
 								<label class="col-md-3 control-label">PAN No </label>
@@ -107,29 +99,29 @@
 									</div>
 								</div>
 							</div>
-							<div class="form-group">
-								<label class="col-md-3 control-label">AADHAR No </label>
-								<div class="col-md-9"> 
-									<div class="input text required error" aria-required="true">
-										<?= $this->Form->control('aadhar_no',['class'=>'form-control','placeholder'=>'AADHAR No','label'=>false]) ?>
-									</div>
+							
+							<div class="form-group">                                        
+								<label class="col-md-3 control-label">GSTIN</label>
+								<div class="col-md-9 col-xs-12">
+									<?= $this->Form->control('gstin',['class'=>'form-control gst','placeholder'=>'Eg:22ASDFR0967W6Z5','label'=>false]) ?>
 								</div>
 							</div>
-							<div class="form-group">
-								<label class="col-md-3 control-label">Contact Person </label>
-								<div class="col-md-9"> 
-									<div class="input text required error" aria-required="true">
-										<?= $this->Form->control('contact_person',['class'=>'form-control','placeholder'=>'Contact Person Name','label'=>false]) ?>
-									</div>
+							
+							
+							<div class="form-group">                                        
+								<label class="col-md-3 control-label">GSTIN Holder Name</label>
+								<div class="col-md-9 col-xs-12">
+									<?= $this->Form->control('gstin_holder_name',['class'=>'form-control','placeholder'=>'GSTIN Holder Name','label'=>false]) ?>
 								</div>
 							</div>
 							
 							<div class="form-group">                                        
-								<label class="col-md-3 control-label">Email</label>
+								<label class="col-md-3 control-label">GSTIN Address</label>
 								<div class="col-md-9 col-xs-12">
-									<?= $this->Form->control('email',['class'=>'form-control','placeholder'=>'Email','label'=>false]) ?>
+									<?= $this->Form->control('gstin_address',['class'=>'form-control','placeholder'=>'GSTIN Address','label'=>false,'rows'=>4]) ?>
 								</div>
 							</div>
+							    
 							
 							<div class="form-group">
 								<label class="col-md-3 control-label">User Name</label>
@@ -147,27 +139,58 @@
 								</div>
 							</div>
 							
+							
 							<div class="form-group">                                        
-								<label class="col-md-3 control-label">Mobile</label>
+								<label class="col-md-3 control-label">Status</label>
 								<div class="col-md-9 col-xs-12">
-									<?= $this->Form->control('mobile_no',['class'=>'form-control','placeholder'=>'Mobile No','label'=>false]) ?>
-								</div>
-							</div>
-						</div>
-						</div>
-						</div>
-						<div class="panel-body">    
-							<div class="row">		
-								<div class="col-md-7">
-									<div class="window" style="margin:auto;display:none;">
-											<table width="90%" class="refTbl">
-											<tbody></tbody>
-											<tfoot>
-											<tr style="border-top:#a5a1a1"><td colspan="2"><a role="button" class="addRefRow">Add Row</a></td><td valign="top"><input type="text" name="total" class="form-control input-sm rightAligntextClass total calculation " id="total" readonly></td><td valign="top"><input type="text" id="total_type" name="total_type" class="form-control input-sm total_type calculation " readonly></td></tr></tfoot></table>
-										</div>
+									<?php $options1['Active'] = 'Active'; ?>
+								<?php $options1['Deactive'] = 'Deactive'; ?>
+								<?= $this->Form->select('status',$options1,['class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
 							
+						</div>
+						</div>
+						</div>
+					 
+							 
+							
+							
+							<div class="panel-body">    
+					<div class="row">
+						<div class="table-responsive">
+							<table class="table table-bordered main_table">
+								<thead>
+									<tr> 
+										<th><?= ('Contact Person') ?></th>
+										<th><?= ('Contact Number') ?></th>
+										<th><?= ('Contact Email') ?></th>
+										<th  class="actions"><?= __('Actions') ?></th>
+									</tr>
+								</thead>
+								<tbody class="MainTbody">  
+									<tr class="MainTr">
+			
+										<td width="" valign="top">
+											 
+											<?= $this->Form->control('contact_person',['class'=>'form-control contact_person','label'=>false]) ?>
+										</td>
+										<td width="30%" valign="top">
+											<?= $this->Form->control('contact_no',['class'=>'form-control contact_no','label'=>false,'type'=>'number']) ?>
+										</td>
+										<td width="20%" valign="top">
+											<?= $this->Form->control('contact_email',['class'=>'form-control contact_email','label'=>false,'type'=>'mail']) ?>
+										</td>
+										<td valign="top"  >
+											<a class="btn btn-primary  btn-condensed btn-sm add_row" href="#" role="button" ><i class="fa fa-plus"></i></a>
+											<a class="btn btn-danger  btn-condensed btn-sm delete_row " href="#" role="button" ><i class="fa fa-times"></i></a>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
 							
 							<div class="panel-footer">
 								<center>
@@ -187,28 +210,24 @@ $option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
 $option_ref[]= ['value'=>'Advance','text'=>'Advance'];
 $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 ?>
-<table id="sampleForRef" style="display:none;" width="100%">
-	<tbody>
-		<tr>
-			<td width="20%" valign="top"> 
-				
-				<?php 
-				echo $this->Form->input('type', ['empty'=>'--Select ref--','options'=>$option_ref,'label' => false,'class' => 'form-control select input-sm refType','value'=>'New Ref']); ?>
-			</td>
+
+<table id="sampleTable" width="100%" style="display:none;">
+	<tbody class="sampleMainTbody">
+		<tr class="MainTr">
+			
 			<td width="" valign="top">
-				<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name']); ?>
+				<?= $this->Form->control('contact_person',['class'=>'form-control contact_person','label'=>false]) ?>
 			</td>
+			<td width="30%" valign="top">
+				<?= $this->Form->control('contact_no',['class'=>'form-control contact_no','label'=>false,'type'=>'number']) ?>
+			</td>
+			<td width="20%" valign="top">
+				<?= $this->Form->control('contact_email',['class'=>'form-control contact_email','label'=>false,'type'=>'mail']) ?>
+			</td>  
 			
-			<td width="20%" style="padding-right:0px;" valign="top">
-				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount']); ?>
-			</td>
-			<td width="10%" style="padding-left:0px;" valign="top">
-				<?php 
-				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control select input-sm  calculation refDrCr','value'=>'Dr']); ?>
-			</td>
-			
-			<td width="5%" align="right" valign="top">
-				<a class="delete_tr_ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+			<td valign="top"  >
+				<a class="btn btn-primary  btn-condensed btn-sm add_row" href="#" role="button" ><i class="fa fa-plus"></i></a>
+				<a class="btn btn-danger  btn-condensed btn-sm delete_row " href="#" role="button" ><i class="fa fa-times"></i></a>
 			</td>
 		</tr>
 	</tbody>
@@ -289,19 +308,45 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 				$(this).closest("tr").remove();
 				
 			});
-		$(document).on("click",".addRefRow",function(){
-				AddRefRow();
-				
+		$(document).on("click",".add_row",function(){
+			addMainRow();
+			renameRows();
+		});
+		
+		//addMainRow();
+		renameRows();
+		function addMainRow(){
+			var tr=$("#sampleTable tbody").html();
+			$(".main_table tbody").append(tr);
+			renameRows();
+			
+		}
+		
+		$(document).on("click",".delete_row",function(){
+			var t=$(this).closest("tr").remove();
+			renameRows();
 		});
 		
 		
-		function AddRefRow(){
-			var refTr=$("#sampleForRef tbody tr").clone();
-			$("div.window table tbody").append(refTr);
-			renameRefRows();
-			//calculation();
-		}
+		$(document).on("click",".default_address",function(){
+			$(".default_address").prop("checked",false);
+			$(".default_address").val(0);
+			$(this).prop("checked",true);
+			$(this).val(1);
+		});
 		
+		
+		function renameRows(){
+				var i=0; 
+				$(".main_table tbody tr").each(function(){
+					$(this).find("td:nth-child(1) input.contact_person").attr({name:"seller_details["+i+"][contact_person]",id:"seller_details-"+i+"-contact_person"});
+					$(this).find("td:nth-child(2) input.contact_no").attr({name:"seller_details["+i+"][contact_no]",id:"seller_details-"+i+"-contact_no"});
+					$(this).find("td:nth-child(3) input.contact_email").attr({name:"seller_details["+i+"][contact_email]",id:"seller_details-"+i+"-contact_email"});
+					 
+					i++;
+			});
+		}
+		/* 
 		function renameRefRows(){
 			var i=0;
 			var bill_accounting=$("option:selected", this).val();
@@ -312,18 +357,12 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			}else{
 					var eqlClassCr=$(".balance").attr("id");
 			}
-			$("div.window table tbody tr").each(function(){
-					$(this).find("td:nth-child(1) select.refType").attr({name:"reference_details["+i+"][type]",id:"reference_details-"+i+"-type"}).addClass("select");
-					var is_input=$(this).find("td:nth-child(2) input.ref_name").length;
-					if(is_input){
-						$(this).find("td:nth-child(2) input.ref_name").attr({name:"reference_details["+i+"][ref_name]",id:"reference_details-"+i+"-ref_name"}).rules("add", "required");
-					}
-					var Dr_Cr=$(this).find("td:nth-child(4) select option:selected").val();
-					if(Dr_Cr=="Dr"){
-						$(this).find("td:nth-child(3) input").attr({name:"reference_details["+i+"][debit]",id:"reference_details-"+i+"-debit"}).rules("add", "required");
-					}else{
-						$(this).find("td:nth-child(3) input").attr({name:"reference_details["+i+"][credit]",id:"reference_details-"+i+"-credit"}).rules("add", "required");
-					}
+			$(".main_table tbody tr").each(function(){
+				alert();
+					$(this).find("td:nth-child(1) input.contact_person").attr({name:"seller_details["+i+"][contact_person]",id:"seller_details-"+i+"-contact_person"});
+					$(this).find("td:nth-child(2) input.contact_no").attr({name:"seller_details["+i+"][contact_no]",id:"seller_details-"+i+"-contact_no"});
+					$(this).find("td:nth-child(3) input.contact_email").attr({name:"seller_details["+i+"][contact_email]",id:"seller_details-"+i+"-contact_email"});
+					 
 					i++;
 				});
 				
@@ -342,7 +381,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 							}
 						});
 		}
-		
+		 */
 		$(document).on("keyup, change",".calculation",function()
 			{ 
 				calculation();
