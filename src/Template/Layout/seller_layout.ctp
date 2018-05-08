@@ -24,7 +24,7 @@
     </head>
     <body>
         <?php
-        if($user_type != 'Admin')
+        if($user_type != 'Seller')
         {
             $unAthorizedUrl=$this->Url->build(['controller'=>'UnAuthorized','action'=>'un_authorized']);
             echo "<meta http-equiv='refresh' content='0;url=".$unAthorizedUrl."'/>";

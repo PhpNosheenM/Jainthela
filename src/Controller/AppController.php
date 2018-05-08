@@ -131,8 +131,8 @@ class AppController extends Controller
 		
 		/*   Get Menu    */
 		$sidebar_menu=$this->SidebarMenu->getMenu();
-		
-		$this->set(compact('sidebar_menu'));
+		$user_type=$this->Auth->User('user_type');
+		$this->set(compact('sidebar_menu','user_type'));
 	}
 	
 	public function stockReportApp($city_id = null,$from_date = null,$transaction_date = null)
