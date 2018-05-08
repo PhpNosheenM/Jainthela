@@ -14,7 +14,7 @@
 		<div class="col-md-12">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><strong>Seller</strong></h3>
+					<h3 class="panel-title"><strong>Vendors List</strong></h3>
 				<div class="pull-right">
 			<div class="pull-left">
 				<?= $this->Form->create('Search',['type'=>'GET']) ?>
@@ -70,8 +70,6 @@
 									<td><?= h($vendor->status) ?></td>
 									<td class="actions">
 										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'edit', $vendor->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
-										<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $vendor->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $vendor->id),'escape'=>false]) ?>
-									
 									</td>
 								</tr>
 								<?php endforeach; ?>
