@@ -41,6 +41,12 @@ class ItemReviewRatingsTable extends Table
             'foreignKey' => 'item_id',
             'joinType' => 'INNER'
         ]);
+		
+		 $this->belongsTo('Sellers', [
+            'foreignKey' => 'seller_id',
+            'joinType' => 'INNER'
+        ]);
+		
         $this->belongsTo('Customers', [
             'foreignKey' => 'customer_id',
             'joinType' => 'INNER'

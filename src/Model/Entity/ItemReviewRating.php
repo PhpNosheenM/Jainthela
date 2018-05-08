@@ -31,9 +31,11 @@ class ItemReviewRating extends Entity
     protected $_accessible = [
         'item_id' => true,
         'customer_id' => true,
+        'seller_id' => true,
         'rating' => true,
         'comment' => true,
         'status' => true,
+        'seller' => true,
         'item' => true,
         'customer' => true
     ];

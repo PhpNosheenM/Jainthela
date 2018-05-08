@@ -111,17 +111,17 @@ class AdminsTable extends Table
             ->maxLength('mobile_no', 30)
             ->requirePresence('mobile_no', 'create')
             ->notEmpty('mobile_no');
-
+/* 
         $validator
             ->dateTime('created_on')
             ->requirePresence('created_on', 'create')
             ->notEmpty('created_on');
-
+ */
         $validator
             ->integer('created_by')
             ->requirePresence('created_by', 'create')
             ->notEmpty('created_by');
-
+/* 
         $validator
             ->scalar('passkey')
             ->requirePresence('passkey', 'create')
@@ -130,7 +130,7 @@ class AdminsTable extends Table
         $validator
             ->requirePresence('timeout', 'create')
             ->notEmpty('timeout');
-
+ */
         $validator
             ->requirePresence('status', 'create')
             ->notEmpty('status');
@@ -140,7 +140,7 @@ class AdminsTable extends Table
 	public function findAuth(\Cake\ORM\Query $query, array $options)
 	{
 		$query
-			->where(['Admins.status' => 1]);
+			->where(['Admins.status' => 'Active']);
 
 		return $query;
 	}

@@ -7,17 +7,17 @@
     font-size: 13px;
 }
 
-</style><?php $this->set('title', 'Location'); ?>
+</style><?php $this->set('title', 'Rating'); ?>
 <div class="page-content-wrap">
         <div class="page-title">                    
-			<h2><span class="fa fa-arrow-circle-o-left"></span> Location</h2>
+			<h2><span class="fa fa-arrow-circle-o-left"></span> Rating</h2>
 		</div> 
 	<div class="row">
 				 
 	            <div class="col-md-12">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h3 class="panel-title">LIST Location</h3>
+						<h3 class="panel-title">LIST Rating</h3>
 						<div class="pull-right">
 						<div class="pull-left">
 							<?= $this->Form->create('Search',['type'=>'GET']) ?>
@@ -43,37 +43,32 @@
 								<thead>
 									<tr>
 										<th><?= ('SN.') ?></th>
-										<th><?= ('Name') ?></th>
-										<th><?= ('Alise') ?></th>
-										<th><?= ('Latitude') ?></th>
-										<th><?= ('Longitude') ?></th>
-										<th><?= ('Status') ?></th>
-										<th scope="col" class="actions"><?= __('Actions') ?></th>
+										<th><?= ('Item') ?></th>
+										<th><?= ('Customer') ?></th>
+										<th><?= ('Seller') ?></th>
+										<th><?= ('Rating') ?></th>
+										<th><?= ('Comment') ?></th>
+										<th><?= ('Created') ?></th>
 									</tr>
 								</thead>
 								<tbody>                                            
 								<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); ?>
 								
-								  <?php foreach ($locations as $data): ?>
+								  <?php foreach ($ratings as $data): ?>
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
-									<td><?= h($data->name) ?></td>
-									<td><?= h($data->alise) ?></td>
-									<td><?= h($data->latitude) ?></td>
-									<td><?= h($data->longitude) ?></td>
-									<td><?= h($data->status) ?></td>
-									
-									<td class="actions">
-										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'edit',$data->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
-									
-									</td>
+									<td><?php echo $data->item->name.' ('.$data->item->alias_name.')'; ?></td>
+									<td><?= h($data->customer->name) ?></td>
+									<td><?= h($data->seller->name) ?></td>
+									<td><?= h($data->rating) ?> <i class="fa fa-star"></i></td>
+									<td><?= h($data->comment) ?></td>
+									<td><?= h($data->created_on) ?></td>
 								</tr>
 								<?php endforeach; ?>
 								</tbody>
 							</table>
 				        </div>
 			    </div>
-				
 				<div class="panel-footer">
 					<div class="paginator pull-right">
 						<ul class="pagination">

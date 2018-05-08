@@ -26,6 +26,36 @@ class CustomersController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
+	 
+	 public function rating()
+    {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$this->viewBuilder()->layout('admin_portal');
+        $this->paginate = [
+			'limit' => 20
+        ];
+		$ratings = $this->Customers->ItemReviewRatings->find()->contain(['Items','Customers','Sellers']);
+		
+		if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$ratings->where([
+							'OR' => [
+									'Customers.name LIKE' => $search.'%',
+									'Sellers.name LIKE' => $search.'%',
+									'Items.name LIKE' => $search.'%',
+									'ItemReviewRatings.rating LIKE' => $search.'%',
+									'ItemReviewRatings.comment LIKE' => $search.'%',
+									'ItemReviewRatings.created_on LIKE' => $search.'%'
+							]
+			]);
+		}
+		
+		$ratings = $this->paginate($ratings);
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('ratings','paginate_limit'));
+	
+	}
     public function index()
     {
 		$user_id=$this->Auth->User('id');
