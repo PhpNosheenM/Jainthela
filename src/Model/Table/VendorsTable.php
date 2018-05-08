@@ -48,7 +48,9 @@ class VendorsTable extends Table
         ]);
         $this->hasMany('VendorDetails', [
             'foreignKey' => 'vendor_id',
-			'saveStrategy'=>'replace'
+			'saveStrategy'=>'replace',
+			'dependent'=>true,
+			'cascadeCallbacks'=>true
         ]);
     }
 

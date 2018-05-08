@@ -16,7 +16,7 @@ class SellersController extends AppController
 	 public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->Security->setConfig('unlockedActions', ['add','edit']);
+        $this->Security->setConfig('unlockedActions', ['add','edit','index']);
 
     }
 	

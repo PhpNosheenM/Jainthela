@@ -174,11 +174,11 @@ class LocationsTable extends Table
             ->requirePresence('longitude', 'create')
             ->notEmpty('longitude');
 
-        $validator
+     /*    $validator
             ->integer('created_on')
             ->requirePresence('created_on', 'create')
             ->notEmpty('created_on');
-
+ */
         $validator
             ->integer('created_by')
             ->requirePresence('created_by', 'create')
@@ -190,7 +190,7 @@ class LocationsTable extends Table
             ->requirePresence('status', 'create')
             ->notEmpty('status');
 
-        $validator
+      /*   $validator
             ->date('financial_year_begins_from')
             ->requirePresence('financial_year_begins_from', 'create')
             ->notEmpty('financial_year_begins_from');
@@ -203,7 +203,7 @@ class LocationsTable extends Table
         $validator
             ->date('books_beginning_from')
             ->requirePresence('books_beginning_from', 'create')
-            ->notEmpty('books_beginning_from');
+            ->notEmpty('books_beginning_from'); */
 
         return $validator;
     }

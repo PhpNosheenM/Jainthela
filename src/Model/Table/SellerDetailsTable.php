@@ -62,7 +62,7 @@ class SellerDetailsTable extends Table
 
         $validator
             ->scalar('contact_no')
-            ->maxLength('contact_no', 10)
+            ->maxLength('contact_no', 200)
             ->requirePresence('contact_no', 'create')
             ->notEmpty('contact_no');
 /* 
