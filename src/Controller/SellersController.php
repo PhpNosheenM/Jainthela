@@ -49,7 +49,7 @@ class SellersController extends AppController
      * @return \Cake\Http\Response|void
      */
     public function index()
-    {
+    { $this->Flash->success(__('The seller has been saved.'));
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 

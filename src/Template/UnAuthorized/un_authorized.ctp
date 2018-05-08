@@ -5,14 +5,11 @@
 
 
   <!-- Page -->
-  <div class="page animsition vertical-align text-center" data-animsition-in="fade-in"
-  data-animsition-out="fade-out">>
-    <div class="page-content vertical-align-middle">
-      <h2>Unauthorized!</h2>
+  <div class="error-container text-center">
+      <div class="error-code"><h2>Unauthorized!</h2></div>
       <p>You have attempted to access a portal for which you are not authorized.</p>
-
       <footer class="page-copyright">
-        <p>© 2017 Entry Hires.</p>
+        <p>© 2017 Jain Thela.</p>
         <div class="social">
           <a href="javascript:void(0)">
             <i class="icon bd-twitter" aria-hidden="true"></i>
@@ -25,8 +22,6 @@
           </a>
         </div>
       </footer>
-	  
-    </div>
-  </div>
+  </div>    
 
 </html>

@@ -23,6 +23,7 @@
         <!-- EOF CSS INCLUDE -->                                      
     </head>
     <body>
+
         <?php
         if($user_type != 'Seller')
         {
@@ -33,7 +34,7 @@
         ?>
         <!-- START PAGE CONTAINER -->
         <div class="page-container page-navigation-top-fixed page-navigation-toggled page-container-wide">
-            
+            <?= $this->Flash->render() ?>
             <!-- START PAGE SIDEBAR -->
             <div class="page-sidebar page-sidebar-fixed scroll">
                 <!-- START X-NAVIGATION -->
@@ -101,8 +102,10 @@
 
         <!-- START THIS PAGE PLUGINS-->        
 		<?= $this->Html->script('plugins/icheck/icheck.min.js') ?>  
-		<?= $this->Html->script('plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js') ?> 
-		<!--<?= $this->Html->script('plugins/bootstrap/bootstrap-timepicker.min.js') ?>-->
+        <?= $this->Html->script('plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js') ?> 
+        <?= $this->Html->script('plugins/noty/jquery.noty.js') ?> 
+        <?= $this->Html->script('plugins/noty/layouts/topRight.js') ?> 
+		<?= $this->Html->script('plugins/noty/themes/default.js') ?> 
 		<?= $this->fetch('jsFileInput') ?>
 		<?= $this->fetch('jsDatePicker') ?>
 		<?= $this->fetch('jsTimePicker') ?>
