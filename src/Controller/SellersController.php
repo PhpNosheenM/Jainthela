@@ -35,7 +35,7 @@ class SellersController extends AppController
 			{
 				$city = $this->Sellers->Locations->get($user['location_id']);
 				$user['city_id']=$city->id;
-				$user['user_role']='seller';
+				$user['user_type']='Seller';
 				$this->Auth->setUser($user);
 				return $this->redirect(['controller'=>'Sellers','action' => 'index']);
             }
@@ -53,7 +53,7 @@ class SellersController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('seller_layout');
         $this->paginate = [
 			'limit' => 20
         ];

@@ -130,11 +130,17 @@ class AppController extends Controller
         parent::beforeFilter($event);
 		
 		/*   Get Menu    */
-		$sidebar_menu=$this->SidebarMenu->getMenu();
+	}
+	public function beforeRender(Event $event)
+    {
+        parent::beforeRender($event);
+		
+		/*   Get Menu    */
 		$user_type=$this->Auth->User('user_type');
+		$sidebar_menu=$this->SidebarMenu->getMenu($user_type);
+		
 		$this->set(compact('sidebar_menu','user_type'));
 	}
-	
 	public function stockReportApp($city_id = null,$from_date = null,$transaction_date = null)
     {
 		$this->loadModel('Items');

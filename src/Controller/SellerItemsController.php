@@ -158,7 +158,7 @@ class SellerItemsController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('seller_layout');
         $itemVariation = $this->SellerItems->ItemVariations->newEntity();
         if ($this->request->is('post')) 
 		{ 

@@ -10,9 +10,9 @@ class SidebarMenuComponent extends Component
 		parent::initialize($config);
 		$this->Menus = TableRegistry::get('Menus');
 	}
-	function getMenu()
+	function getMenu($user_type)
 	{
-		$sidebar_menu = $this->Menus->find('threaded')->contain(['ParentMenus']);
+		$sidebar_menu = $this->Menus->find('threaded')->where(['Menus.menu_for_user'=>$user_type])->contain(['ParentMenus']);
 		return $sidebar_menu;
 	}
 	
