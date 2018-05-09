@@ -61,6 +61,34 @@ class AppController extends Controller
 		FrozenTime::setToStringFormat('dd-MM-yyyy hh:mm a');  // For any immutable DateTime
 		FrozenDate::setToStringFormat('dd-MM-yyyy');  // For any immutable Date
 		
+		if($this->request->params['controller'] == 'SuperAdmins' or  $this->request->params['controller'] == 'SuperAdmins') 
+		{
+			$this->loadComponent('Auth', [
+			 'authenticate' => [
+					'Form' => [
+						'finder' => 'auth',
+						'fields' => [
+							'username' => 'username',
+							'password' => 'password'
+						],
+						'userModel' => 'SuperAdmins'
+					]
+				],
+				'loginAction' => [
+					'controller' => 'SuperAdmins',
+					'action' => 'login'
+				],
+				'loginRedirect' => [
+					'controller' => 'SuperAdmins',
+					'action' => 'index',
+				],
+				'logoutRedirect' => [
+					'controller' => 'SuperAdmins',
+					'action' => 'login'
+				],
+				'unauthorizedRedirect' => $this->referer(),
+			]);
+		}
 		
 		if($this->request->params['controller'] == 'Admins' or  $this->request->params['controller'] == 'admins') 
 		{
@@ -130,16 +158,17 @@ class AppController extends Controller
         parent::beforeFilter($event);
 		
 		/*   Get Menu    */
+		
+		$user_type=$this->Auth->User('user_type');
+		$sidebar_menu=$this->SidebarMenu->getMenu($user_type);
+		
+		$this->set(compact('sidebar_menu','user_type'));
 	}
 	public function beforeRender(Event $event)
     {
         parent::beforeRender($event);
 		
 		/*   Get Menu    */
-		$user_type=$this->Auth->User('user_type');
-		$sidebar_menu=$this->SidebarMenu->getMenu($user_type);
-		
-		$this->set(compact('sidebar_menu','user_type'));
 	}
 	public function stockReportApp($city_id = null,$from_date = null,$transaction_date = null)
     {
