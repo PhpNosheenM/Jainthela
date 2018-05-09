@@ -26,6 +26,12 @@ class TermConditionsController extends AppController
 		$this->paginate = [
 			'limit' => 20,
          ];
+		  
+		if($id)
+		{
+		   $id = $this->EncryptingDecrypting->decryptData($id);
+		}
+		
 		$termCondition1=$this->TermConditions->find();
 		if($id)
 		{
@@ -128,9 +134,10 @@ class TermConditionsController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($dir)
     {
         $this->request->allowMethod(['post', 'delete']);
+		$id = $this->EncryptingDecrypting->decryptData($dir);
         $termCondition = $this->TermConditions->get($id);
         if ($this->TermConditions->delete($termCondition)) {
             $this->Flash->success(__('The term condition has been deleted.'));

@@ -38,7 +38,10 @@
 					<h3 class="panel-title">LIST CANCEL REASON</h3>
 				<div class="pull-right">
 					<div class="pull-left">
-					<?= $this->Form->create('Search',['type'=>'GET']) ?>
+					
+						<?= $this->Form->create('Search',['type'=>'GET']) ?>
+						<?= $this->Html->link(__('<span class="fa fa-plus"></span> Add New'), ['action' => 'index'],['style'=>'margin-top:-30px !important;','class'=>'btn btn-success','escape'=>false]) ?>
+						
 						<div class="form-group" style="display:inline-table">
 							<div class="input-group">
 								<div class="input-group-addon">
@@ -79,15 +82,19 @@
 									
 									<td><?= h($cancelReason->status) ?></td>
 									<td class="actions">
-										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $cancelReason->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
-										<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $cancelReason->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $cancelReason->id),'escape'=>false]) ?>
+										<?php
+											$cancelReason_id = $EncryptingDecrypting->encryptData($cancelReason->id);
+										?>
+									
+										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $cancelReason_id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+										<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $cancelReason_id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?'),'escape'=>false]) ?>
 									</td>
 								</tr>
 					            <?php endforeach; ?>
 					       </tbody>
 				    </table>
-				</div>	 	 
-            </div>      
+				</div>
+            </div>
                <div class="panel-footer">
 						<div class="paginator pull-right">
 								<ul class="pagination">

@@ -34,7 +34,7 @@
 					</div>
 					<div class="panel-footer">
 						 <center>
-								<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
+							<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
 						 </center>
                      </div> 
 			        <?= $this->Form->end() ?>

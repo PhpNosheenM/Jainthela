@@ -27,6 +27,12 @@ class BrandsController extends AppController
 		$this->paginate =[
 				'limit' => 20
 		];
+		
+		if($id)
+		{
+		   $id = $this->EncryptingDecrypting->decryptData($id);
+		}
+		
 		$brands = $this->Brands->find()->where(['city_id'=>$city_id]);
 		
 		if($id)
@@ -198,9 +204,10 @@ class BrandsController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($dir)
     {
         $this->request->allowMethod(['post', 'delete']);
+		$id = $this->EncryptingDecrypting->decryptData($dir);
         $brand = $this->Brands->get($id);
         if ($this->Brands->delete($brand)) {
             $this->Flash->success(__('The brand has been deleted.'));
