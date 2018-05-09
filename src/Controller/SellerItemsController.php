@@ -164,7 +164,7 @@ class SellerItemsController extends AppController
 		{ 
 			$masterIds=[];$ItemIds=[];
 			$arr=$this->request->getData(); $i=1; 
-           pr($arr);exit;
+         
 			foreach($arr as $key => $csm)
 			{
 				
@@ -177,7 +177,7 @@ class SellerItemsController extends AppController
 				{ 
 					$query1 = $this->SellerItems->ItemVariations->query();
 					  $query1->update()
-					  ->set(['maximum_quantity_purchase' =>$csm['maximum_quantity_purchase'],'current_stock'=>$csm['current_stock'],'purchase_rate'=>$csm['purchase_rate'],'sales_rate'=>$csm['sales_rate'],'mrp'=>$csm['mrp'],'ready_to_sale'=>$csm['ready_to_sale']])
+					  ->set(['maximum_quantity_purchase' =>$csm['maximum_quantity_purchase'],'current_stock'=>$csm['current_stock'],'add_stock'=>$csm['add_stock'],'purchase_rate'=>$csm['purchase_rate'],'sales_rate'=>$csm['sales_rate'],'mrp'=>$csm['mrp'],'ready_to_sale'=>$csm['ready_to_sale']])
 					  ->where(['seller_id'=>$user_id,'item_id'=>$arr[$key]['item_id'],'item_variation_master_id'=>$csm['item_variation_master_id']])
 					  ->execute();
 					  unset($arr[$key]);
@@ -242,10 +242,11 @@ class SellerItemsController extends AppController
 		
 		$sellerItems = $this->SellerItems->find()
 							->where(['SellerItems.seller_id'=>$user_id]);
-								
+		$sellerItemCommision=[];						
 		foreach($sellerItems as $sellerItem)
 		{
-			$seller_item[]=$sellerItem->item_id;
+			$seller_item[] = $sellerItem->item_id;
+			$sellerItemCommision[$sellerItem->item_id]  = $sellerItem->commission_percentage;
 		}
 		
 		$categories = $this->SellerItems->Categories->find('threaded');
@@ -259,10 +260,8 @@ class SellerItemsController extends AppController
 							])
 							->group(['Categories.id'])
 							->autoFields(true);
-		//pr($sellerItems->toArray());
-		//exit;					
-			
-        $this->set(compact('itemVariation', 'categories'));
+		
+        $this->set(compact('itemVariation', 'categories','sellerItemCommision'));
     }
     /**
      * Edit method
@@ -345,6 +344,12 @@ class SellerItemsController extends AppController
 			}
         }
 		$this->set(compact('sellers','sellerItemApproval'));
+	}
+	public function getItemInfo()
+	{
+		$item_id = $this->request->query('item_id');
+		$item = $this->SellerItems->Items->find()->where(['Items.id'=>@$item_id])->contain(['ItemVariationMasters'=>['ItemVariations','UnitVariations'=>['Units']]])->first();
+		$this->set(compact('item'));
 	}
 	public function getItemVariationDetail()
 	{

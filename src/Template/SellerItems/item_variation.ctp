@@ -18,12 +18,25 @@ padding: 10px 5px;
 				<div class="panel-body">
 					<div class="row">
 						<div class="col-md-12">
-							<div class="form-group">
-								<div class="col-md-12">    
-									<div class="panel-group accordion accordion-dc">
-										<?= $this->RecursiveCategories->categoryItemVariations($categories) ?>
-									</div>
+							<div class="form-group" style="text-align:center;">
+								<div class="col-md-4"></div>    
+								<div class="col-md-4"> 
+									<!--<div class="panel-group accordion accordion-dc">
+										<?= $this->RecursiveCategories->categoryItemVariations($categories,$sellerItemCommision) ?>
+									</div>-->
+									<select class="form-control select change_option" label="false">
+									<option>--select--</option>
+									<?= $this->RecursiveCategories->categoryItemVariationsOption($categories) ?>
+									</select>
 								</div>
+								<div class="col-md-4"></div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group addResult">
+							
 							</div>
 						</div>
 					</div>
@@ -64,7 +77,7 @@ $js='
 			{
 				$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("checked",true);
 				$(this).closest(".item_variation").find("input.entity_variation[type=checkbox]").prop("checked",true);
-				$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("disabled",false);
+				$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("disabled",false);  
 				$(this).closest(".item_variation").find("input.entity_maximum").prop("disabled",false);
 				$(this).closest(".item_variation").find("select.entity_maximum").prop("disabled",false);
 			}
@@ -85,22 +98,65 @@ $js='
 				if(sales_rate > mrp)
 				{
 					alert("Sales rate grater than mrp,Do you want to submit.");
+					$(this).closest("tr").find("td input.sales_rate").val(mrp)
 				}
 			}
 		});
+		
+		$(document).on("keyup",".calc",function(){
+			var mrp        = parseFloat($(this).closest("tr").find("td input.mrp").val());
+			$(this).closest("tr").find("td input.sales_rate").val(mrp)
+			var sales_rate = parseFloat($(this).closest("tr").find("td input.sales_rate").val());
+			var commission = parseFloat($(this).closest("tr").find("td input#commission").val()); 
+			
+			if(!isNaN(sales_rate))
+			{ 
+				var amt_after_commission = sales_rate-((sales_rate*commission)/100); 
+				$(this).closest("tr").find("td input.purchase_rate").val(round(amt_after_commission)); 
+			}
+		});
+		
 		$(document).on("keyup",".addStock",function(){
 			var stock    = parseFloat($(this).val()); 
 			var oldStock = parseFloat($(this).closest("tr").find("td input.cStock").val());
+			var chstock = parseFloat($(this).closest("tr").find("td input#chstock").val());
 			
-			if(!isNaN(stock) & !isNaN(oldStock))
+			if(!isNaN(stock) & !isNaN(chstock))
 			{ 
-				var totalStock = stock+oldStock;
+				var totalStock = stock+chstock;
 				$(this).closest("tr").find("td input.cStock").val(totalStock);
 			}
-			else{
+			else if(!isNaN(stock) & isNaN(chstock))
+			{
+				$(this).closest("tr").find("td input.cStock").val(stock);
+			}
+			else if(isNaN(stock) & isNaN(chstock) & isNaN(chstock))
+			{
 				$(this).closest("tr").find("td input.cStock").val("");
 			}
+			else if(isNaN(stock) & !isNaN(chstock) & !isNaN(chstock))
+			{
+				$(this).closest("tr").find("td input.cStock").val(chstock);
+			}
+			
+			
+			
+			
 		});
+		
+		$(document).on("change",".change_option",function(){
+			var item_id  = $(this).val();
+			$(".addResult").html("<b> Loading... </b>");	
+			var url =   "'.$this->Url->build(["controller"=>"SellerItems","action"=>"getItemInfo"]).'";
+			url =   url+"?item_id="+item_id;
+			
+            $.ajax({
+							url: url,
+			}).done(function(response){ 
+					$(".addResult").html(response);
+			});
+		});
+		
 		$(document).on("change",".single_item",function(){
 			var item_variation=$(this).val(); 
 			
