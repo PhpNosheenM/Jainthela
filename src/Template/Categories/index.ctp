@@ -22,39 +22,16 @@
 }
 </style>
 <?php $this->set('title', 'Category'); ?>
-<div class="content-frame">
-	
-	<!-- START CONTENT FRAME TOP -->
-	<div class="content-frame-top">                        
-		<div class="page-title">                    
-			<h2><span class="fa fa-arrow-circle-o-left"></span> Categories</h2>
-		</div>                                      
-		<div class="pull-right">
-			<div class="pull-left">
-				<?= $this->Form->create('Search',['type'=>'GET']) ?>
-					<div class="form-group" style="display:inline-table">
-						<div class="input-group">
-							<div class="input-group-addon">
-								<span class="fa fa-search"></span>
-							</div>
-							<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
-							<div class="input-group-btn">
-								<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
-							</div>
+<div class="page-content-wrap">
+        <div class="page-title">                    
+			<h2><span class="fa fa-arrow-circle-o-left"></span> Category</h2>
+		</div> 
+	<div class="row">
+				<div class="col-md-4">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title">ADD Category</h3>
 						</div>
-					</div>
-				<?= $this->Form->end() ?>
-			</div> 
-			<div class="pull-right">
-				<button class="btn btn-default content-frame-left-toggle"><span class="fa fa-bars"></span></button>           
-			</div>                      
-		</div>                        
-	</div>
-	<!-- END CONTENT FRAME TOP -->
-	
-	<!-- START CONTENT FRAME LEFT -->
-	<div class="content-frame-left">
-		<div class="panel panel-default">
 			<?= $this->Form->create($category,['id'=>'jvalidate','type'=>'file']) ?>
 				<?php $js=''; ?>
 				<div class="panel-body">
@@ -128,55 +105,86 @@
 	<!-- END CONTENT FRAME LEFT -->
 
 	<!-- START CONTENT FRAME BODY -->
-	<div class="content-frame-body">
+	<div class="col-md-8">
 		<div class="panel panel-default">
-			<div class="panel-body">
-				<div class="table-responsive">
-				<table class="table table-bordered">
-					<thead>
-						<tr>
-							<th><?= ('SN.') ?></th>
-							<th><?= ('Category Name') ?></th>
-							<th><?= ('Parent Category') ?></th>
-							<th><?= ('Status') ?></th>
-							
-							<th scope="col" class="actions"><?= __('Actions') ?></th>
-						</tr>
-					</thead>
-					<tbody>                                            
-						<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); 
-						foreach ($categories as $category): ?>
-						<tr>
-							<td><?= $this->Number->format(++$i) ?></td>
-							<td><?= h($category->name) ?></td>
-							<td><?= $category->has('parent_category') ? h($category->parent_category->name) : ''  ?></td>
-							<td><?= h($category->status) ?></td>
-							<td class="actions">
-								<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $category->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
-								<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $category->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $category->id),'escape'=>false]) ?>
-							</td>
-						</tr>
-						<?php endforeach; ?>
-					</tbody>
-				</table>
+			  <div class="panel-heading">
+				<h3 class="panel-title">LIST Category</h3>
+				 <div class="pull-right">
+					<div class="pull-left">
+							<?= $this->Form->create('Search',['type'=>'GET']) ?>
+							<?= $this->Html->link(__('<span class="fa fa-plus"></span> Add Category'), ['action' => 'index'],['style'=>'margin-top:-30px !important;','class'=>'btn btn-success','escape'=>false]) ?>
+								<div class="form-group" style="display:inline-table">
+									<div class="input-group">
+										<div class="input-group-addon">
+											<span class="fa fa-search"></span>
+										</div>
+										<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
+											<div class="input-group-btn">
+												<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
+											</div>
+									</div>
+								</div>
+							<?= $this->Form->end() ?>
+					</div> 	   
+				 </div> 
+				</div>	
+				<div class="content-frame-body">
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<div class="table-responsive">
+							<table class="table table-bordered">
+								<thead>
+									<tr>
+										<th><?= ('SN.') ?></th>
+										<th><?= ('Category Name') ?></th>
+										<th><?= ('Parent Category') ?></th>
+										<th><?= ('Status') ?></th>
+										
+										<th scope="col" class="actions"><?= __('Actions') ?></th>
+									</tr>
+								</thead>
+								<tbody>                                            
+									<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); 
+									foreach ($categories as $category): ?>
+									<tr>
+										<td><?= $this->Number->format(++$i) ?></td>
+										<td><?= h($category->name) ?></td>
+										<td><?= $category->has('parent_category') ? h($category->parent_category->name) : ''  ?></td>
+										<td><?= h($category->status) ?></td>
+										<td class="actions">
+											<?php
+												$category_id = $EncryptingDecrypting->encryptData($category->id);
+											?>
+											
+											<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $category_id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+											<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $category_id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?'),'escape'=>false]) ?>
+										</td>
+									</tr>
+									<?php endforeach; ?>
+								</tbody>
+							</table>
+							</div>
+						</div>
+						<div class="panel-footer">
+							<div class="paginator pull-right">
+								<ul class="pagination">
+									<?= $this->Paginator->first(__('First')) ?>
+									<?= $this->Paginator->prev(__('Previous')) ?>
+									<?= $this->Paginator->numbers() ?>
+									<?= $this->Paginator->next(__('Next')) ?>
+									<?= $this->Paginator->last(__('Last')) ?>
+								</ul>
+								<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+							</div>
+						</div>
+					</div>
 				</div>
-			</div>
-			<div class="panel-footer">
-				<div class="paginator pull-right">
-					<ul class="pagination">
-						<?= $this->Paginator->first(__('First')) ?>
-						<?= $this->Paginator->prev(__('Previous')) ?>
-						<?= $this->Paginator->numbers() ?>
-						<?= $this->Paginator->next(__('Next')) ?>
-						<?= $this->Paginator->last(__('Last')) ?>
-					</ul>
-					<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
-				</div>
-			</div>
-		</div>
-	</div>
 	<!-- END CONTENT FRAME BODY -->
-</div> 
+			</div> 
+		</div> 
+	</div> 
+</div>
+
 <!-- END CONTENT FRAME -->
 <?= $this->Html->script('plugins/fileinput/fileinput.min.js',['block'=>'jsFileInput']) ?>
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
