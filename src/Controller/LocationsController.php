@@ -210,6 +210,11 @@ class LocationsController extends AppController
             'limit' => 20
         ];
 		
+		if($id)
+		{
+		   $id = $this->EncryptingDecrypting->decryptData($id);
+		}
+		
         $locations =$this->Locations->find()->where(['Locations.city_id'=>$city_id]);
 		if($id)
 		{
@@ -262,9 +267,10 @@ class LocationsController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($dir)
     {
         $this->request->allowMethod(['post', 'delete']);
+		$id = $this->EncryptingDecrypting->decryptData($dir);
         $location = $this->Locations->get($id);
         if ($this->Locations->delete($location)) {
             $this->Flash->success(__('The location has been deleted.'));

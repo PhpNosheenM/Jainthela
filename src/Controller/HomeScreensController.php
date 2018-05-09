@@ -198,6 +198,8 @@ class HomeScreensController extends AppController
     {
         $this->request->allowMethod(['post', 'delete']);
 		$id = $this->EncryptingDecrypting->decryptData($dir);
+		
+		$id = $this->EncryptingDecrypting->decryptData($dir);
         $homeScreen = $this->HomeScreens->get($id);
         if ($this->HomeScreens->delete($homeScreen)) {
             $this->Flash->success(__('The home screen has been deleted.'));
