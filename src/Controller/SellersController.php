@@ -119,7 +119,7 @@ class SellersController extends AppController
 		 
 			 if ($this->Sellers->save($seller)) {
 				
-				$accounting_group = $this->Sellers->Ledgers->AccountingGroups->find()->where(['supplier'=>1])->first();
+				$accounting_group = $this->Sellers->Ledgers->AccountingGroups->find()->where(['seller'=>1])->first();
 				$ledger = $this->Sellers->Ledgers->newEntity();
 				$ledger->name = $seller->firm_name;
 				$ledger->accounting_group_id = $accounting_group->id;
@@ -155,9 +155,8 @@ class SellersController extends AppController
 				}
                 $this->Flash->success(__('The seller has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'add']);
             }
-				pr($seller); exit; 
             $this->Flash->error(__('The seller could not be saved. Please, try again.'));
         }
 		//$categories = $this->Sellers->Categories->find('threaded')->contain(['Items']);

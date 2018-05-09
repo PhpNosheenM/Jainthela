@@ -133,8 +133,6 @@ class LocationsController extends AppController
 		$this->viewBuilder()->layout('admin_portal'); 
         $location = $this->Locations->newEntity(); 
 		
-		 
-		
         if ($this->request->is('post')) {
             $location = $this->Locations->patchEntity($location, $this->request->getData());
 			$location->created_by=$user_id;
@@ -142,14 +140,52 @@ class LocationsController extends AppController
 		
             if ($location=$this->Locations->save($location)) {
 				 
-				$sellers = $this->Locations->Sellers->newEntity(); 
-				$sellers = $this->Locations->Sellers->patchEntity($sellers, $this->request->getData());
-				$sellers->location_id=$location->id;
-				$sellers->city_id=$location->city_id;
-				$sellers->name=$this->request->getData('seller_name');
-				$sellers->status=$this->request->getData('seller_status');
-				$this->Locations->Sellers->save($sellers);
+				$seller = $this->Locations->Sellers->newEntity(); 
+				$seller = $this->Locations->Sellers->patchEntity($seller, $this->request->getData());
 				
+				$seller->location_id=$location->id;
+				$seller->city_id=$location->city_id;
+				$seller->name=$this->request->getData('seller_name');
+				$seller->status=$this->request->getData('seller_status');
+
+				if($this->Locations->Sellers->save($seller))
+				{
+					$bill_to_bill_accounting=$seller->bill_to_bill_accounting;
+					$accounting_group = $this->Locations->Sellers->Ledgers->AccountingGroups->find()->where(['seller'=>1])->first();
+					$ledger = $this->Locations->Sellers->Ledgers->newEntity();
+					$ledger->name = $seller->firm_name;
+					$ledger->accounting_group_id = $accounting_group->id;
+					$ledger->seller_id=$seller->id;
+					$ledger->bill_to_bill_accounting=$bill_to_bill_accounting;
+					
+					if($this->Locations->Sellers->Ledgers->save($ledger))
+					{
+						$query=$this->Locations->Sellers->ReferenceDetails->query();
+							$result = $query->update()
+							->set(['ledger_id' => $ledger->id])
+							->where(['seller_id' => $seller->id])
+							->execute();
+						//Create Accounting Entry//
+				        $transaction_date=$location->books_beginning_from;
+						$AccountingEntry = $this->Locations->Sellers->Ledgers->AccountingEntries->newEntity();
+						$AccountingEntry->ledger_id        = $ledger->id;
+						if($seller->debit_credit=="Dr")
+						{
+							$AccountingEntry->debit        = $seller->opening_balance_value;
+						}
+						if($seller->debit_credit=="Cr")
+						{
+							$AccountingEntry->credit       = $seller->opening_balance_value;
+						}
+						$AccountingEntry->transaction_date = date("Y-m-d",strtotime($transaction_date));
+						$AccountingEntry->location_id       = $location_id;
+						$AccountingEntry->city_id       = $city_id;
+						$AccountingEntry->is_opening_balance = 'yes';
+						if($seller->opening_balance_value){
+						$this->Locations->Sellers->Ledgers->AccountingEntries->save($AccountingEntry);
+						}
+					}
+				}
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('The location could not be saved. Please, try again.'));
