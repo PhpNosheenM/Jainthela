@@ -13,10 +13,16 @@
         <li><?= $this->Html->link(__('New Location'), ['action' => 'add']) ?> </li>
         <li><?= $this->Html->link(__('List Cities'), ['controller' => 'Cities', 'action' => 'index']) ?> </li>
         <li><?= $this->Html->link(__('New City'), ['controller' => 'Cities', 'action' => 'add']) ?> </li>
-        <li><?= $this->Html->link(__('List Accounting Entries'), ['controller' => 'AccountingEntries', 'action' => 'index']) ?> </li>
-        <li><?= $this->Html->link(__('New Accounting Entry'), ['controller' => 'AccountingEntries', 'action' => 'add']) ?> </li>
         <li><?= $this->Html->link(__('List Accounting Groups'), ['controller' => 'AccountingGroups', 'action' => 'index']) ?> </li>
         <li><?= $this->Html->link(__('New Accounting Group'), ['controller' => 'AccountingGroups', 'action' => 'add']) ?> </li>
+        <li><?= $this->Html->link(__('List Financial Years'), ['controller' => 'FinancialYears', 'action' => 'index']) ?> </li>
+        <li><?= $this->Html->link(__('New Financial Year'), ['controller' => 'FinancialYears', 'action' => 'add']) ?> </li>
+        <li><?= $this->Html->link(__('List Gst Figures'), ['controller' => 'GstFigures', 'action' => 'index']) ?> </li>
+        <li><?= $this->Html->link(__('New Gst Figure'), ['controller' => 'GstFigures', 'action' => 'add']) ?> </li>
+        <li><?= $this->Html->link(__('List Ledgers'), ['controller' => 'Ledgers', 'action' => 'index']) ?> </li>
+        <li><?= $this->Html->link(__('New Ledger'), ['controller' => 'Ledgers', 'action' => 'add']) ?> </li>
+        <li><?= $this->Html->link(__('List Accounting Entries'), ['controller' => 'AccountingEntries', 'action' => 'index']) ?> </li>
+        <li><?= $this->Html->link(__('New Accounting Entry'), ['controller' => 'AccountingEntries', 'action' => 'add']) ?> </li>
         <li><?= $this->Html->link(__('List Admins'), ['controller' => 'Admins', 'action' => 'index']) ?> </li>
         <li><?= $this->Html->link(__('New Admin'), ['controller' => 'Admins', 'action' => 'add']) ?> </li>
         <li><?= $this->Html->link(__('List Credit Notes'), ['controller' => 'CreditNotes', 'action' => 'index']) ?> </li>
@@ -29,8 +35,6 @@
         <li><?= $this->Html->link(__('New Driver'), ['controller' => 'Drivers', 'action' => 'add']) ?> </li>
         <li><?= $this->Html->link(__('List Grns'), ['controller' => 'Grns', 'action' => 'index']) ?> </li>
         <li><?= $this->Html->link(__('New Grn'), ['controller' => 'Grns', 'action' => 'add']) ?> </li>
-        <li><?= $this->Html->link(__('List Gst Figures'), ['controller' => 'GstFigures', 'action' => 'index']) ?> </li>
-        <li><?= $this->Html->link(__('New Gst Figure'), ['controller' => 'GstFigures', 'action' => 'add']) ?> </li>
         <li><?= $this->Html->link(__('List Journal Vouchers'), ['controller' => 'JournalVouchers', 'action' => 'index']) ?> </li>
         <li><?= $this->Html->link(__('New Journal Voucher'), ['controller' => 'JournalVouchers', 'action' => 'add']) ?> </li>
         <li><?= $this->Html->link(__('List Orders'), ['controller' => 'Orders', 'action' => 'index']) ?> </li>
@@ -69,12 +73,20 @@
             <td><?= h($location->name) ?></td>
         </tr>
         <tr>
+            <th scope="row"><?= __('Alise') ?></th>
+            <td><?= h($location->alise) ?></td>
+        </tr>
+        <tr>
             <th scope="row"><?= __('Latitude') ?></th>
             <td><?= h($location->latitude) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Longitude') ?></th>
             <td><?= h($location->longitude) ?></td>
+        </tr>
+        <tr>
+            <th scope="row"><?= __('Status') ?></th>
+            <td><?= h($location->status) ?></td>
         </tr>
         <tr>
             <th scope="row"><?= __('Id') ?></th>
@@ -89,85 +101,18 @@
             <td><?= $this->Number->format($location->created_by) ?></td>
         </tr>
         <tr>
-            <th scope="row"><?= __('Status') ?></th>
-            <td><?= $this->Number->format($location->status) ?></td>
+            <th scope="row"><?= __('Financial Year Begins From') ?></th>
+            <td><?= h($location->financial_year_begins_from) ?></td>
+        </tr>
+        <tr>
+            <th scope="row"><?= __('Financial Year Valid To') ?></th>
+            <td><?= h($location->financial_year_valid_to) ?></td>
+        </tr>
+        <tr>
+            <th scope="row"><?= __('Books Beginning From') ?></th>
+            <td><?= h($location->books_beginning_from) ?></td>
         </tr>
     </table>
-    <div class="related">
-        <h4><?= __('Related Accounting Entries') ?></h4>
-        <?php if (!empty($location->accounting_entries)): ?>
-        <table cellpadding="0" cellspacing="0">
-            <tr>
-                <th scope="col"><?= __('Id') ?></th>
-                <th scope="col"><?= __('Ledger Id') ?></th>
-                <th scope="col"><?= __('Debit') ?></th>
-                <th scope="col"><?= __('Credit') ?></th>
-                <th scope="col"><?= __('Transaction Date') ?></th>
-                <th scope="col"><?= __('Location Id') ?></th>
-                <th scope="col"><?= __('Purchase Voucher Id') ?></th>
-                <th scope="col"><?= __('Purchase Voucher Row Id') ?></th>
-                <th scope="col"><?= __('Is Opening Balance') ?></th>
-                <th scope="col"><?= __('Sales Invoice Id') ?></th>
-                <th scope="col"><?= __('Sale Return Id') ?></th>
-                <th scope="col"><?= __('Purchase Invoice Id') ?></th>
-                <th scope="col"><?= __('Purchase Return Id') ?></th>
-                <th scope="col"><?= __('Receipt Id') ?></th>
-                <th scope="col"><?= __('Receipt Row Id') ?></th>
-                <th scope="col"><?= __('Payment Id') ?></th>
-                <th scope="col"><?= __('Payment Row Id') ?></th>
-                <th scope="col"><?= __('Credit Note Id') ?></th>
-                <th scope="col"><?= __('Credit Note Row Id') ?></th>
-                <th scope="col"><?= __('Debit Note Id') ?></th>
-                <th scope="col"><?= __('Debit Note Row Id') ?></th>
-                <th scope="col"><?= __('Sales Voucher Id') ?></th>
-                <th scope="col"><?= __('Sales Voucher Row Id') ?></th>
-                <th scope="col"><?= __('Journal Voucher Id') ?></th>
-                <th scope="col"><?= __('Journal Voucher Row Id') ?></th>
-                <th scope="col"><?= __('Contra Voucher Id') ?></th>
-                <th scope="col"><?= __('Contra Voucher Row Id') ?></th>
-                <th scope="col"><?= __('Reconciliation Date') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
-            </tr>
-            <?php foreach ($location->accounting_entries as $accountingEntries): ?>
-            <tr>
-                <td><?= h($accountingEntries->id) ?></td>
-                <td><?= h($accountingEntries->ledger_id) ?></td>
-                <td><?= h($accountingEntries->debit) ?></td>
-                <td><?= h($accountingEntries->credit) ?></td>
-                <td><?= h($accountingEntries->transaction_date) ?></td>
-                <td><?= h($accountingEntries->location_id) ?></td>
-                <td><?= h($accountingEntries->purchase_voucher_id) ?></td>
-                <td><?= h($accountingEntries->purchase_voucher_row_id) ?></td>
-                <td><?= h($accountingEntries->is_opening_balance) ?></td>
-                <td><?= h($accountingEntries->sales_invoice_id) ?></td>
-                <td><?= h($accountingEntries->sale_return_id) ?></td>
-                <td><?= h($accountingEntries->purchase_invoice_id) ?></td>
-                <td><?= h($accountingEntries->purchase_return_id) ?></td>
-                <td><?= h($accountingEntries->receipt_id) ?></td>
-                <td><?= h($accountingEntries->receipt_row_id) ?></td>
-                <td><?= h($accountingEntries->payment_id) ?></td>
-                <td><?= h($accountingEntries->payment_row_id) ?></td>
-                <td><?= h($accountingEntries->credit_note_id) ?></td>
-                <td><?= h($accountingEntries->credit_note_row_id) ?></td>
-                <td><?= h($accountingEntries->debit_note_id) ?></td>
-                <td><?= h($accountingEntries->debit_note_row_id) ?></td>
-                <td><?= h($accountingEntries->sales_voucher_id) ?></td>
-                <td><?= h($accountingEntries->sales_voucher_row_id) ?></td>
-                <td><?= h($accountingEntries->journal_voucher_id) ?></td>
-                <td><?= h($accountingEntries->journal_voucher_row_id) ?></td>
-                <td><?= h($accountingEntries->contra_voucher_id) ?></td>
-                <td><?= h($accountingEntries->contra_voucher_row_id) ?></td>
-                <td><?= h($accountingEntries->reconciliation_date) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['controller' => 'AccountingEntries', 'action' => 'view', $accountingEntries->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['controller' => 'AccountingEntries', 'action' => 'edit', $accountingEntries->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['controller' => 'AccountingEntries', 'action' => 'delete', $accountingEntries->id], ['confirm' => __('Are you sure you want to delete # {0}?', $accountingEntries->id)]) ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </table>
-        <?php endif; ?>
-    </div>
     <div class="related">
         <h4><?= __('Related Accounting Groups') ?></h4>
         <?php if (!empty($location->accounting_groups)): ?>
@@ -179,7 +124,6 @@
                 <th scope="col"><?= __('Parent Id') ?></th>
                 <th scope="col"><?= __('Lft') ?></th>
                 <th scope="col"><?= __('Rght') ?></th>
-                <th scope="col"><?= __('Location Id') ?></th>
                 <th scope="col"><?= __('Customer') ?></th>
                 <th scope="col"><?= __('Supplier') ?></th>
                 <th scope="col"><?= __('Purchase Voucher First Ledger') ?></th>
@@ -214,7 +158,6 @@
                 <td><?= h($accountingGroups->parent_id) ?></td>
                 <td><?= h($accountingGroups->lft) ?></td>
                 <td><?= h($accountingGroups->rght) ?></td>
-                <td><?= h($accountingGroups->location_id) ?></td>
                 <td><?= h($accountingGroups->customer) ?></td>
                 <td><?= h($accountingGroups->supplier) ?></td>
                 <td><?= h($accountingGroups->purchase_voucher_first_ledger) ?></td>
@@ -243,6 +186,204 @@
                     <?= $this->Html->link(__('View'), ['controller' => 'AccountingGroups', 'action' => 'view', $accountingGroups->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['controller' => 'AccountingGroups', 'action' => 'edit', $accountingGroups->id]) ?>
                     <?= $this->Form->postLink(__('Delete'), ['controller' => 'AccountingGroups', 'action' => 'delete', $accountingGroups->id], ['confirm' => __('Are you sure you want to delete # {0}?', $accountingGroups->id)]) ?>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        </table>
+        <?php endif; ?>
+    </div>
+    <div class="related">
+        <h4><?= __('Related Financial Years') ?></h4>
+        <?php if (!empty($location->financial_years)): ?>
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <th scope="col"><?= __('Id') ?></th>
+                <th scope="col"><?= __('Fy From') ?></th>
+                <th scope="col"><?= __('Fy To') ?></th>
+                <th scope="col"><?= __('Status') ?></th>
+                <th scope="col"><?= __('Company Id') ?></th>
+                <th scope="col" class="actions"><?= __('Actions') ?></th>
+            </tr>
+            <?php foreach ($location->financial_years as $financialYears): ?>
+            <tr>
+                <td><?= h($financialYears->id) ?></td>
+                <td><?= h($financialYears->fy_from) ?></td>
+                <td><?= h($financialYears->fy_to) ?></td>
+                <td><?= h($financialYears->status) ?></td>
+                <td><?= h($financialYears->company_id) ?></td>
+                <td class="actions">
+                    <?= $this->Html->link(__('View'), ['controller' => 'FinancialYears', 'action' => 'view', $financialYears->id]) ?>
+                    <?= $this->Html->link(__('Edit'), ['controller' => 'FinancialYears', 'action' => 'edit', $financialYears->id]) ?>
+                    <?= $this->Form->postLink(__('Delete'), ['controller' => 'FinancialYears', 'action' => 'delete', $financialYears->id], ['confirm' => __('Are you sure you want to delete # {0}?', $financialYears->id)]) ?>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        </table>
+        <?php endif; ?>
+    </div>
+    <div class="related">
+        <h4><?= __('Related Gst Figures') ?></h4>
+        <?php if (!empty($location->gst_figures)): ?>
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <th scope="col"><?= __('Id') ?></th>
+                <th scope="col"><?= __('Name') ?></th>
+                <th scope="col"><?= __('Location Id') ?></th>
+                <th scope="col"><?= __('Tax Percentage') ?></th>
+                <th scope="col"><?= __('Created By') ?></th>
+                <th scope="col"><?= __('Created On') ?></th>
+                <th scope="col"><?= __('Status') ?></th>
+                <th scope="col" class="actions"><?= __('Actions') ?></th>
+            </tr>
+            <?php foreach ($location->gst_figures as $gstFigures): ?>
+            <tr>
+                <td><?= h($gstFigures->id) ?></td>
+                <td><?= h($gstFigures->name) ?></td>
+                <td><?= h($gstFigures->location_id) ?></td>
+                <td><?= h($gstFigures->tax_percentage) ?></td>
+                <td><?= h($gstFigures->created_by) ?></td>
+                <td><?= h($gstFigures->created_on) ?></td>
+                <td><?= h($gstFigures->status) ?></td>
+                <td class="actions">
+                    <?= $this->Html->link(__('View'), ['controller' => 'GstFigures', 'action' => 'view', $gstFigures->id]) ?>
+                    <?= $this->Html->link(__('Edit'), ['controller' => 'GstFigures', 'action' => 'edit', $gstFigures->id]) ?>
+                    <?= $this->Form->postLink(__('Delete'), ['controller' => 'GstFigures', 'action' => 'delete', $gstFigures->id], ['confirm' => __('Are you sure you want to delete # {0}?', $gstFigures->id)]) ?>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        </table>
+        <?php endif; ?>
+    </div>
+    <div class="related">
+        <h4><?= __('Related Ledgers') ?></h4>
+        <?php if (!empty($location->ledgers)): ?>
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <th scope="col"><?= __('Id') ?></th>
+                <th scope="col"><?= __('Name') ?></th>
+                <th scope="col"><?= __('Accounting Group Id') ?></th>
+                <th scope="col"><?= __('Freeze') ?></th>
+                <th scope="col"><?= __('Supplier Id') ?></th>
+                <th scope="col"><?= __('Customer Id') ?></th>
+                <th scope="col"><?= __('Seller Id') ?></th>
+                <th scope="col"><?= __('Vendor Id') ?></th>
+                <th scope="col"><?= __('Tax Percentage') ?></th>
+                <th scope="col"><?= __('Gst Type') ?></th>
+                <th scope="col"><?= __('Input Output') ?></th>
+                <th scope="col"><?= __('Gst Figure Id') ?></th>
+                <th scope="col"><?= __('Bill To Bill Accounting') ?></th>
+                <th scope="col"><?= __('Round Off') ?></th>
+                <th scope="col"><?= __('Cash') ?></th>
+                <th scope="col"><?= __('Flag') ?></th>
+                <th scope="col"><?= __('Default Credit Days') ?></th>
+                <th scope="col"><?= __('Commission') ?></th>
+                <th scope="col"><?= __('Sales Account') ?></th>
+                <th scope="col" class="actions"><?= __('Actions') ?></th>
+            </tr>
+            <?php foreach ($location->ledgers as $ledgers): ?>
+            <tr>
+                <td><?= h($ledgers->id) ?></td>
+                <td><?= h($ledgers->name) ?></td>
+                <td><?= h($ledgers->accounting_group_id) ?></td>
+                <td><?= h($ledgers->freeze) ?></td>
+                <td><?= h($ledgers->supplier_id) ?></td>
+                <td><?= h($ledgers->customer_id) ?></td>
+                <td><?= h($ledgers->seller_id) ?></td>
+                <td><?= h($ledgers->vendor_id) ?></td>
+                <td><?= h($ledgers->tax_percentage) ?></td>
+                <td><?= h($ledgers->gst_type) ?></td>
+                <td><?= h($ledgers->input_output) ?></td>
+                <td><?= h($ledgers->gst_figure_id) ?></td>
+                <td><?= h($ledgers->bill_to_bill_accounting) ?></td>
+                <td><?= h($ledgers->round_off) ?></td>
+                <td><?= h($ledgers->cash) ?></td>
+                <td><?= h($ledgers->flag) ?></td>
+                <td><?= h($ledgers->default_credit_days) ?></td>
+                <td><?= h($ledgers->commission) ?></td>
+                <td><?= h($ledgers->sales_account) ?></td>
+                <td class="actions">
+                    <?= $this->Html->link(__('View'), ['controller' => 'Ledgers', 'action' => 'view', $ledgers->id]) ?>
+                    <?= $this->Html->link(__('Edit'), ['controller' => 'Ledgers', 'action' => 'edit', $ledgers->id]) ?>
+                    <?= $this->Form->postLink(__('Delete'), ['controller' => 'Ledgers', 'action' => 'delete', $ledgers->id], ['confirm' => __('Are you sure you want to delete # {0}?', $ledgers->id)]) ?>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        </table>
+        <?php endif; ?>
+    </div>
+    <div class="related">
+        <h4><?= __('Related Accounting Entries') ?></h4>
+        <?php if (!empty($location->accounting_entries)): ?>
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <th scope="col"><?= __('Id') ?></th>
+                <th scope="col"><?= __('Ledger Id') ?></th>
+                <th scope="col"><?= __('Debit') ?></th>
+                <th scope="col"><?= __('Credit') ?></th>
+                <th scope="col"><?= __('Transaction Date') ?></th>
+                <th scope="col"><?= __('Location Id') ?></th>
+                <th scope="col"><?= __('City Id') ?></th>
+                <th scope="col"><?= __('Purchase Voucher Id') ?></th>
+                <th scope="col"><?= __('Purchase Voucher Row Id') ?></th>
+                <th scope="col"><?= __('Is Opening Balance') ?></th>
+                <th scope="col"><?= __('Sales Invoice Id') ?></th>
+                <th scope="col"><?= __('Sale Return Id') ?></th>
+                <th scope="col"><?= __('Purchase Invoice Id') ?></th>
+                <th scope="col"><?= __('Purchase Return Id') ?></th>
+                <th scope="col"><?= __('Receipt Id') ?></th>
+                <th scope="col"><?= __('Receipt Row Id') ?></th>
+                <th scope="col"><?= __('Payment Id') ?></th>
+                <th scope="col"><?= __('Payment Row Id') ?></th>
+                <th scope="col"><?= __('Credit Note Id') ?></th>
+                <th scope="col"><?= __('Credit Note Row Id') ?></th>
+                <th scope="col"><?= __('Debit Note Id') ?></th>
+                <th scope="col"><?= __('Debit Note Row Id') ?></th>
+                <th scope="col"><?= __('Sales Voucher Id') ?></th>
+                <th scope="col"><?= __('Sales Voucher Row Id') ?></th>
+                <th scope="col"><?= __('Journal Voucher Id') ?></th>
+                <th scope="col"><?= __('Journal Voucher Row Id') ?></th>
+                <th scope="col"><?= __('Contra Voucher Id') ?></th>
+                <th scope="col"><?= __('Contra Voucher Row Id') ?></th>
+                <th scope="col"><?= __('Reconciliation Date') ?></th>
+                <th scope="col"><?= __('Entry From') ?></th>
+                <th scope="col" class="actions"><?= __('Actions') ?></th>
+            </tr>
+            <?php foreach ($location->accounting_entries as $accountingEntries): ?>
+            <tr>
+                <td><?= h($accountingEntries->id) ?></td>
+                <td><?= h($accountingEntries->ledger_id) ?></td>
+                <td><?= h($accountingEntries->debit) ?></td>
+                <td><?= h($accountingEntries->credit) ?></td>
+                <td><?= h($accountingEntries->transaction_date) ?></td>
+                <td><?= h($accountingEntries->location_id) ?></td>
+                <td><?= h($accountingEntries->city_id) ?></td>
+                <td><?= h($accountingEntries->purchase_voucher_id) ?></td>
+                <td><?= h($accountingEntries->purchase_voucher_row_id) ?></td>
+                <td><?= h($accountingEntries->is_opening_balance) ?></td>
+                <td><?= h($accountingEntries->sales_invoice_id) ?></td>
+                <td><?= h($accountingEntries->sale_return_id) ?></td>
+                <td><?= h($accountingEntries->purchase_invoice_id) ?></td>
+                <td><?= h($accountingEntries->purchase_return_id) ?></td>
+                <td><?= h($accountingEntries->receipt_id) ?></td>
+                <td><?= h($accountingEntries->receipt_row_id) ?></td>
+                <td><?= h($accountingEntries->payment_id) ?></td>
+                <td><?= h($accountingEntries->payment_row_id) ?></td>
+                <td><?= h($accountingEntries->credit_note_id) ?></td>
+                <td><?= h($accountingEntries->credit_note_row_id) ?></td>
+                <td><?= h($accountingEntries->debit_note_id) ?></td>
+                <td><?= h($accountingEntries->debit_note_row_id) ?></td>
+                <td><?= h($accountingEntries->sales_voucher_id) ?></td>
+                <td><?= h($accountingEntries->sales_voucher_row_id) ?></td>
+                <td><?= h($accountingEntries->journal_voucher_id) ?></td>
+                <td><?= h($accountingEntries->journal_voucher_row_id) ?></td>
+                <td><?= h($accountingEntries->contra_voucher_id) ?></td>
+                <td><?= h($accountingEntries->contra_voucher_row_id) ?></td>
+                <td><?= h($accountingEntries->reconciliation_date) ?></td>
+                <td><?= h($accountingEntries->entry_from) ?></td>
+                <td class="actions">
+                    <?= $this->Html->link(__('View'), ['controller' => 'AccountingEntries', 'action' => 'view', $accountingEntries->id]) ?>
+                    <?= $this->Html->link(__('Edit'), ['controller' => 'AccountingEntries', 'action' => 'edit', $accountingEntries->id]) ?>
+                    <?= $this->Form->postLink(__('Delete'), ['controller' => 'AccountingEntries', 'action' => 'delete', $accountingEntries->id], ['confirm' => __('Are you sure you want to delete # {0}?', $accountingEntries->id)]) ?>
                 </td>
             </tr>
             <?php endforeach; ?>
@@ -332,6 +473,9 @@
             <tr>
                 <th scope="col"><?= __('Id') ?></th>
                 <th scope="col"><?= __('Customer Id') ?></th>
+                <th scope="col"><?= __('Receiver Name') ?></th>
+                <th scope="col"><?= __('Gender') ?></th>
+                <th scope="col"><?= __('Mobile No') ?></th>
                 <th scope="col"><?= __('City Id') ?></th>
                 <th scope="col"><?= __('Location Id') ?></th>
                 <th scope="col"><?= __('Pincode') ?></th>
@@ -341,12 +485,16 @@
                 <th scope="col"><?= __('Latitude') ?></th>
                 <th scope="col"><?= __('Longitude') ?></th>
                 <th scope="col"><?= __('Default Address') ?></th>
+                <th scope="col"><?= __('Is Deleted') ?></th>
                 <th scope="col" class="actions"><?= __('Actions') ?></th>
             </tr>
             <?php foreach ($location->customer_addresses as $customerAddresses): ?>
             <tr>
                 <td><?= h($customerAddresses->id) ?></td>
                 <td><?= h($customerAddresses->customer_id) ?></td>
+                <td><?= h($customerAddresses->receiver_name) ?></td>
+                <td><?= h($customerAddresses->gender) ?></td>
+                <td><?= h($customerAddresses->mobile_no) ?></td>
                 <td><?= h($customerAddresses->city_id) ?></td>
                 <td><?= h($customerAddresses->location_id) ?></td>
                 <td><?= h($customerAddresses->pincode) ?></td>
@@ -356,6 +504,7 @@
                 <td><?= h($customerAddresses->latitude) ?></td>
                 <td><?= h($customerAddresses->longitude) ?></td>
                 <td><?= h($customerAddresses->default_address) ?></td>
+                <td><?= h($customerAddresses->is_deleted) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['controller' => 'CustomerAddresses', 'action' => 'view', $customerAddresses->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['controller' => 'CustomerAddresses', 'action' => 'edit', $customerAddresses->id]) ?>
@@ -411,7 +560,7 @@
                 <th scope="col"><?= __('Device Token') ?></th>
                 <th scope="col"><?= __('Latitude') ?></th>
                 <th scope="col"><?= __('Longitude') ?></th>
-                <th scope="col"><?= __('Supplier Type') ?></th>
+                <th scope="col"><?= __('Status') ?></th>
                 <th scope="col" class="actions"><?= __('Actions') ?></th>
             </tr>
             <?php foreach ($location->drivers as $drivers): ?>
@@ -425,7 +574,7 @@
                 <td><?= h($drivers->device_token) ?></td>
                 <td><?= h($drivers->latitude) ?></td>
                 <td><?= h($drivers->longitude) ?></td>
-                <td><?= h($drivers->supplier_type) ?></td>
+                <td><?= h($drivers->status) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['controller' => 'Drivers', 'action' => 'view', $drivers->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['controller' => 'Drivers', 'action' => 'edit', $drivers->id]) ?>
@@ -442,60 +591,37 @@
         <table cellpadding="0" cellspacing="0">
             <tr>
                 <th scope="col"><?= __('Id') ?></th>
+                <th scope="col"><?= __('Seller Id') ?></th>
                 <th scope="col"><?= __('Voucher No') ?></th>
+                <th scope="col"><?= __('Grn No') ?></th>
                 <th scope="col"><?= __('Location Id') ?></th>
-                <th scope="col"><?= __('Company Id') ?></th>
+                <th scope="col"><?= __('Order Id') ?></th>
                 <th scope="col"><?= __('Transaction Date') ?></th>
                 <th scope="col"><?= __('Reference No') ?></th>
-                <th scope="col"><?= __('Total Purchase') ?></th>
-                <th scope="col"><?= __('Total Sale') ?></th>
-                <th scope="col"><?= __('Supplier Ledger Id') ?></th>
                 <th scope="col"><?= __('Status') ?></th>
+                <th scope="col"><?= __('Total Taxable Value') ?></th>
+                <th scope="col"><?= __('Total Gst') ?></th>
+                <th scope="col"><?= __('Total Amount') ?></th>
                 <th scope="col" class="actions"><?= __('Actions') ?></th>
             </tr>
             <?php foreach ($location->grns as $grns): ?>
             <tr>
                 <td><?= h($grns->id) ?></td>
+                <td><?= h($grns->seller_id) ?></td>
                 <td><?= h($grns->voucher_no) ?></td>
+                <td><?= h($grns->grn_no) ?></td>
                 <td><?= h($grns->location_id) ?></td>
-                <td><?= h($grns->company_id) ?></td>
+                <td><?= h($grns->order_id) ?></td>
                 <td><?= h($grns->transaction_date) ?></td>
                 <td><?= h($grns->reference_no) ?></td>
-                <td><?= h($grns->total_purchase) ?></td>
-                <td><?= h($grns->total_sale) ?></td>
-                <td><?= h($grns->supplier_ledger_id) ?></td>
                 <td><?= h($grns->status) ?></td>
+                <td><?= h($grns->total_taxable_value) ?></td>
+                <td><?= h($grns->total_gst) ?></td>
+                <td><?= h($grns->total_amount) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['controller' => 'Grns', 'action' => 'view', $grns->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['controller' => 'Grns', 'action' => 'edit', $grns->id]) ?>
                     <?= $this->Form->postLink(__('Delete'), ['controller' => 'Grns', 'action' => 'delete', $grns->id], ['confirm' => __('Are you sure you want to delete # {0}?', $grns->id)]) ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </table>
-        <?php endif; ?>
-    </div>
-    <div class="related">
-        <h4><?= __('Related Gst Figures') ?></h4>
-        <?php if (!empty($location->gst_figures)): ?>
-        <table cellpadding="0" cellspacing="0">
-            <tr>
-                <th scope="col"><?= __('Id') ?></th>
-                <th scope="col"><?= __('Name') ?></th>
-                <th scope="col"><?= __('Location Id') ?></th>
-                <th scope="col"><?= __('Tax Percentage') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
-            </tr>
-            <?php foreach ($location->gst_figures as $gstFigures): ?>
-            <tr>
-                <td><?= h($gstFigures->id) ?></td>
-                <td><?= h($gstFigures->name) ?></td>
-                <td><?= h($gstFigures->location_id) ?></td>
-                <td><?= h($gstFigures->tax_percentage) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['controller' => 'GstFigures', 'action' => 'view', $gstFigures->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['controller' => 'GstFigures', 'action' => 'edit', $gstFigures->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['controller' => 'GstFigures', 'action' => 'delete', $gstFigures->id], ['confirm' => __('Are you sure you want to delete # {0}?', $gstFigures->id)]) ?>
                 </td>
             </tr>
             <?php endforeach; ?>
@@ -546,15 +672,20 @@
             <tr>
                 <th scope="col"><?= __('Id') ?></th>
                 <th scope="col"><?= __('Location Id') ?></th>
+                <th scope="col"><?= __('City Id') ?></th>
+                <th scope="col"><?= __('Sales Ledger Id') ?></th>
+                <th scope="col"><?= __('Party Ledger Id') ?></th>
                 <th scope="col"><?= __('Customer Id') ?></th>
                 <th scope="col"><?= __('Driver Id') ?></th>
                 <th scope="col"><?= __('Customer Address Id') ?></th>
-                <th scope="col"><?= __('Offer Detail Id') ?></th>
+                <th scope="col"><?= __('Promotion Detail Id') ?></th>
                 <th scope="col"><?= __('Order No') ?></th>
+                <th scope="col"><?= __('Voucher No') ?></th>
                 <th scope="col"><?= __('Ccavvenue Tracking No') ?></th>
                 <th scope="col"><?= __('Amount From Wallet') ?></th>
                 <th scope="col"><?= __('Total Amount') ?></th>
                 <th scope="col"><?= __('Discount Percent') ?></th>
+                <th scope="col"><?= __('Total Gst') ?></th>
                 <th scope="col"><?= __('Grand Total') ?></th>
                 <th scope="col"><?= __('Pay Amount') ?></th>
                 <th scope="col"><?= __('Online Amount') ?></th>
@@ -564,6 +695,8 @@
                 <th scope="col"><?= __('Delivery Time Id') ?></th>
                 <th scope="col"><?= __('Order Status') ?></th>
                 <th scope="col"><?= __('Cancel Reason Id') ?></th>
+                <th scope="col"><?= __('Cancel Reason Other') ?></th>
+                <th scope="col"><?= __('Cancel Date') ?></th>
                 <th scope="col"><?= __('Order Date') ?></th>
                 <th scope="col"><?= __('Payment Status') ?></th>
                 <th scope="col"><?= __('Order From') ?></th>
@@ -573,15 +706,20 @@
             <tr>
                 <td><?= h($orders->id) ?></td>
                 <td><?= h($orders->location_id) ?></td>
+                <td><?= h($orders->city_id) ?></td>
+                <td><?= h($orders->sales_ledger_id) ?></td>
+                <td><?= h($orders->party_ledger_id) ?></td>
                 <td><?= h($orders->customer_id) ?></td>
                 <td><?= h($orders->driver_id) ?></td>
                 <td><?= h($orders->customer_address_id) ?></td>
-                <td><?= h($orders->offer_detail_id) ?></td>
+                <td><?= h($orders->promotion_detail_id) ?></td>
                 <td><?= h($orders->order_no) ?></td>
+                <td><?= h($orders->voucher_no) ?></td>
                 <td><?= h($orders->ccavvenue_tracking_no) ?></td>
                 <td><?= h($orders->amount_from_wallet) ?></td>
                 <td><?= h($orders->total_amount) ?></td>
                 <td><?= h($orders->discount_percent) ?></td>
+                <td><?= h($orders->total_gst) ?></td>
                 <td><?= h($orders->grand_total) ?></td>
                 <td><?= h($orders->pay_amount) ?></td>
                 <td><?= h($orders->online_amount) ?></td>
@@ -591,6 +729,8 @@
                 <td><?= h($orders->delivery_time_id) ?></td>
                 <td><?= h($orders->order_status) ?></td>
                 <td><?= h($orders->cancel_reason_id) ?></td>
+                <td><?= h($orders->cancel_reason_other) ?></td>
+                <td><?= h($orders->cancel_date) ?></td>
                 <td><?= h($orders->order_date) ?></td>
                 <td><?= h($orders->payment_status) ?></td>
                 <td><?= h($orders->order_from) ?></td>
@@ -642,26 +782,42 @@
             <tr>
                 <th scope="col"><?= __('Id') ?></th>
                 <th scope="col"><?= __('Voucher No') ?></th>
+                <th scope="col"><?= __('Invoice No') ?></th>
                 <th scope="col"><?= __('Location Id') ?></th>
                 <th scope="col"><?= __('Transaction Date') ?></th>
-                <th scope="col"><?= __('Supplier Ledger Id') ?></th>
+                <th scope="col"><?= __('Seller Ledger Id') ?></th>
                 <th scope="col"><?= __('Purchase Ledger Id') ?></th>
-                <th scope="col"><?= __('Grn Id') ?></th>
                 <th scope="col"><?= __('Narration') ?></th>
-                <th scope="col"><?= __('Status') ?></th>
+                <th scope="col"><?= __('Total Taxable Value') ?></th>
+                <th scope="col"><?= __('Total Gst') ?></th>
+                <th scope="col"><?= __('Total Amount') ?></th>
+                <th scope="col"><?= __('Entry From') ?></th>
+                <th scope="col"><?= __('City Id') ?></th>
+                <th scope="col"><?= __('Created By') ?></th>
+                <th scope="col"><?= __('Created On') ?></th>
+                <th scope="col"><?= __('Edited By') ?></th>
+                <th scope="col"><?= __('Edited On') ?></th>
                 <th scope="col" class="actions"><?= __('Actions') ?></th>
             </tr>
             <?php foreach ($location->purchase_invoices as $purchaseInvoices): ?>
             <tr>
                 <td><?= h($purchaseInvoices->id) ?></td>
                 <td><?= h($purchaseInvoices->voucher_no) ?></td>
+                <td><?= h($purchaseInvoices->invoice_no) ?></td>
                 <td><?= h($purchaseInvoices->location_id) ?></td>
                 <td><?= h($purchaseInvoices->transaction_date) ?></td>
-                <td><?= h($purchaseInvoices->supplier_ledger_id) ?></td>
+                <td><?= h($purchaseInvoices->seller_ledger_id) ?></td>
                 <td><?= h($purchaseInvoices->purchase_ledger_id) ?></td>
-                <td><?= h($purchaseInvoices->grn_id) ?></td>
                 <td><?= h($purchaseInvoices->narration) ?></td>
-                <td><?= h($purchaseInvoices->status) ?></td>
+                <td><?= h($purchaseInvoices->total_taxable_value) ?></td>
+                <td><?= h($purchaseInvoices->total_gst) ?></td>
+                <td><?= h($purchaseInvoices->total_amount) ?></td>
+                <td><?= h($purchaseInvoices->entry_from) ?></td>
+                <td><?= h($purchaseInvoices->city_id) ?></td>
+                <td><?= h($purchaseInvoices->created_by) ?></td>
+                <td><?= h($purchaseInvoices->created_on) ?></td>
+                <td><?= h($purchaseInvoices->edited_by) ?></td>
+                <td><?= h($purchaseInvoices->edited_on) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['controller' => 'PurchaseInvoices', 'action' => 'view', $purchaseInvoices->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['controller' => 'PurchaseInvoices', 'action' => 'edit', $purchaseInvoices->id]) ?>
@@ -754,8 +910,6 @@
                 <th scope="col"><?= __('Location Id') ?></th>
                 <th scope="col"><?= __('Transaction Date') ?></th>
                 <th scope="col"><?= __('Narration') ?></th>
-                <th scope="col"><?= __('Voucher Amount') ?></th>
-                <th scope="col"><?= __('Amount') ?></th>
                 <th scope="col"><?= __('Sales Invoice Id') ?></th>
                 <th scope="col"><?= __('Status') ?></th>
                 <th scope="col" class="actions"><?= __('Actions') ?></th>
@@ -767,8 +921,6 @@
                 <td><?= h($receipts->location_id) ?></td>
                 <td><?= h($receipts->transaction_date) ?></td>
                 <td><?= h($receipts->narration) ?></td>
-                <td><?= h($receipts->voucher_amount) ?></td>
-                <td><?= h($receipts->amount) ?></td>
                 <td><?= h($receipts->sales_invoice_id) ?></td>
                 <td><?= h($receipts->status) ?></td>
                 <td class="actions">
@@ -789,7 +941,9 @@
                 <th scope="col"><?= __('Id') ?></th>
                 <th scope="col"><?= __('Customer Id') ?></th>
                 <th scope="col"><?= __('Supplier Id') ?></th>
+                <th scope="col"><?= __('Seller Id') ?></th>
                 <th scope="col"><?= __('Transaction Date') ?></th>
+                <th scope="col"><?= __('City Id') ?></th>
                 <th scope="col"><?= __('Location Id') ?></th>
                 <th scope="col"><?= __('Ledger Id') ?></th>
                 <th scope="col"><?= __('Type') ?></th>
@@ -819,7 +973,9 @@
                 <td><?= h($referenceDetails->id) ?></td>
                 <td><?= h($referenceDetails->customer_id) ?></td>
                 <td><?= h($referenceDetails->supplier_id) ?></td>
+                <td><?= h($referenceDetails->seller_id) ?></td>
                 <td><?= h($referenceDetails->transaction_date) ?></td>
+                <td><?= h($referenceDetails->city_id) ?></td>
                 <td><?= h($referenceDetails->location_id) ?></td>
                 <td><?= h($referenceDetails->ledger_id) ?></td>
                 <td><?= h($referenceDetails->type) ?></td>
@@ -998,6 +1154,7 @@
             <tr>
                 <th scope="col"><?= __('Id') ?></th>
                 <th scope="col"><?= __('Location Id') ?></th>
+                <th scope="col"><?= __('City Id') ?></th>
                 <th scope="col"><?= __('Name') ?></th>
                 <th scope="col"><?= __('Address') ?></th>
                 <th scope="col"><?= __('Mobile No') ?></th>
@@ -1007,12 +1164,20 @@
                 <th scope="col"><?= __('Edited On') ?></th>
                 <th scope="col"><?= __('Edited By') ?></th>
                 <th scope="col"><?= __('Status') ?></th>
+                <th scope="col"><?= __('Bill To Bill Accounting') ?></th>
+                <th scope="col"><?= __('Debit Credit') ?></th>
+                <th scope="col"><?= __('Opening Balance Value') ?></th>
+                <th scope="col"><?= __('Gstin') ?></th>
+                <th scope="col"><?= __('Gstin Holder Name') ?></th>
+                <th scope="col"><?= __('Gstin Holder Address') ?></th>
+                <th scope="col"><?= __('Firm Name') ?></th>
                 <th scope="col" class="actions"><?= __('Actions') ?></th>
             </tr>
             <?php foreach ($location->suppliers as $suppliers): ?>
             <tr>
                 <td><?= h($suppliers->id) ?></td>
                 <td><?= h($suppliers->location_id) ?></td>
+                <td><?= h($suppliers->city_id) ?></td>
                 <td><?= h($suppliers->name) ?></td>
                 <td><?= h($suppliers->address) ?></td>
                 <td><?= h($suppliers->mobile_no) ?></td>
@@ -1022,6 +1187,13 @@
                 <td><?= h($suppliers->edited_on) ?></td>
                 <td><?= h($suppliers->edited_by) ?></td>
                 <td><?= h($suppliers->status) ?></td>
+                <td><?= h($suppliers->bill_to_bill_accounting) ?></td>
+                <td><?= h($suppliers->debit_credit) ?></td>
+                <td><?= h($suppliers->opening_balance_value) ?></td>
+                <td><?= h($suppliers->gstin) ?></td>
+                <td><?= h($suppliers->gstin_holder_name) ?></td>
+                <td><?= h($suppliers->gstin_holder_address) ?></td>
+                <td><?= h($suppliers->firm_name) ?></td>
                 <td class="actions">
                     <?= $this->Html->link(__('View'), ['controller' => 'Suppliers', 'action' => 'view', $suppliers->id]) ?>
                     <?= $this->Html->link(__('Edit'), ['controller' => 'Suppliers', 'action' => 'edit', $suppliers->id]) ?>

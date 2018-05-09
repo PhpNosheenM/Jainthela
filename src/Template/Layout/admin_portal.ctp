@@ -23,6 +23,14 @@
         <!-- EOF CSS INCLUDE -->                                      
     </head>
     <body>
+        <?php
+        if($user_type != 'Admin')
+        {
+            $unAthorizedUrl=$this->Url->build(['controller'=>'UnAuthorized','action'=>'un_authorized']);
+            echo "<meta http-equiv='refresh' content='0;url=".$unAthorizedUrl."'/>";
+            exit;
+        }
+        ?>
         <!-- START PAGE CONTAINER -->
         <div class="page-container page-navigation-top-fixed page-navigation-toggled page-container-wide">
             

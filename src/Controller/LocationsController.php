@@ -1,8 +1,10 @@
 <?php
 namespace App\Controller;
-
+use Cake\Filesystem\Folder;
+use Cake\Filesystem\File;
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\View\View;
 /**
  * Locations Controller
  *
@@ -13,19 +15,93 @@ use App\Controller\AppController;
 class LocationsController extends AppController
 {
 
+	public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Security->setConfig('unlockedActions', ['add','edit'.'index']);
+
+    }
     /**
      * Index method
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    public function index($id = null)
     {
+		$city_id=$this->Auth->User('city_id');
+		$user_id=$this->Auth->User('id');
+		$this->viewBuilder()->layout('admin_portal');
         $this->paginate = [
-            'contain' => ['Cities']
+            'limit' => 20
         ];
-        $locations = $this->paginate($this->Locations);
+		
+        $locations =$this->Locations->find()->where(['Locations.city_id'=>$city_id]);
+		if($id)
+		{
+			$location = $this->Locations->get($id);
+		}
+		else{
+			$location = $this->Locations->newEntity();
+		}
+		
+		if ($this->request->is(['post','put'])) {
+			 
+			
+            $location = $this->Locations->patchEntity($location, $this->request->getData());
+			 
 
-        $this->set(compact('locations'));
+			$location->city_id=$city_id;
+			$location->created_by=$user_id;
+			$location->financial_year_begins_from=date('Y-m-d', strtotime($this->request->data['financial_year_begins_from']));
+			$location->financial_year_valid_to=date('Y-m-d', strtotime($this->request->data['financial_year_valid_to']));
+			$location->books_beginning_from=date('Y-m-d', strtotime($this->request->data['books_beginning_from']));
+			 
+            if ($location_data=$this->Locations->save($location)) {
+				
+				$data = $this->Locations->Sellers->newEntity();
+				
+				$data->location_id=$location_data->id;
+				$data->city_id=$location_data->city_id;
+				$data->name=$location_data->name;
+				$data->latitude=$location_data->latitude;
+				$data->longitude=$location_data->longitude;
+				
+				$this->Locations->Sellers->save($data);
+				 
+				pr($data); exit;
+                $this->Flash->success(__('The banner has been saved.'));
+
+                if(empty($banner_error))
+                {
+                 return $this->redirect(['action' => 'delete_file',$dir]);
+                }
+                else
+                {
+                    return $this->redirect(['action' => 'index']);
+                }
+            }
+            $this->Flash->error(__('The banner could not be saved. Please, try again.'));
+        }
+		else if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$locations->where([
+							'OR' => [
+									'Locations.name LIKE' => $search.'%',
+									'Locations.alise LIKE' => $search.'%',
+									'Locations.latitude LIKE' => $search.'%',
+									'Locations.longitude LIKE' => $search.'%',
+									'Locations.financial_year_begins_from LIKE' => $search.'%',
+									'Locations.financial_year_valid_to LIKE' => $search.'%',
+									'Locations.books_beginning_from LIKE' => $search.'%',
+									'Locations.status LIKE' => $search.'%'
+							]
+			]);
+		}
+		
+		
+		$locations = $this->paginate($locations);
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('locations','location','paginate_limit'));
     }
 
     /**
@@ -38,7 +114,7 @@ class LocationsController extends AppController
     public function view($id = null)
     {
         $location = $this->Locations->get($id, [
-            'contain' => ['Cities', 'AccountingEntries', 'AccountingGroups', 'Admins', 'CreditNotes', 'CustomerAddresses', 'DebitNotes', 'Drivers', 'Grns', 'GstFigures', 'JournalVouchers', 'Orders', 'Payments', 'PurchaseInvoices', 'PurchaseReturns', 'PurchaseVouchers', 'Receipts', 'ReferenceDetails', 'SaleReturns', 'SalesInvoices', 'SalesVouchers', 'Suppliers']
+            'contain' => ['Cities', 'AccountingGroups', 'FinancialYears', 'GstFigures', 'Ledgers', 'AccountingEntries', 'Admins', 'CreditNotes', 'CustomerAddresses', 'DebitNotes', 'Drivers', 'Grns', 'JournalVouchers', 'Orders', 'Payments', 'PurchaseInvoices', 'PurchaseReturns', 'PurchaseVouchers', 'Receipts', 'ReferenceDetails', 'SaleReturns', 'SalesInvoices', 'SalesVouchers', 'Suppliers']
         ]);
 
         $this->set('location', $location);
@@ -51,23 +127,29 @@ class LocationsController extends AppController
      */
     public function add()
     {
-        $location = $this->Locations->newEntity();
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
+		$this->viewBuilder()->layout('admin_portal'); 
+        $location = $this->Locations->newEntity(); 
+		
+		 
+		
         if ($this->request->is('post')) {
-			
-			$date = date('d-m-Y');
-			$date = explode("-",$date);
-			$this->request->data['financial_year_begins_from'] =$date[2]."-04-01";
-			$this->request->data['books_beginning_from'] = $date[2]."-04-01"; 
-			$fyt=$date[2]+1;
-			$this->request->data['financial_year_valid_to'] = $fyt."-03-31";
-			
             $location = $this->Locations->patchEntity($location, $this->request->getData());
-			//pr($location); exit;
-		if ($this->Locations->save($location)) {
-			
-            
-                $this->Flash->success(__('The location has been saved.'));
-
+			$location->created_by=$user_id;
+			$location->city_id=$city_id;
+		
+            if ($location=$this->Locations->save($location)) {
+				 
+				$sellers = $this->Locations->Sellers->newEntity(); 
+				$sellers = $this->Locations->Sellers->patchEntity($sellers, $this->request->getData());
+				$sellers->location_id=$location->id;
+				$sellers->city_id=$location->city_id;
+				$sellers->name=$this->request->getData('seller_name');
+				$sellers->status=$this->request->getData('seller_status');
+				$this->Locations->Sellers->save($sellers);
+				
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('The location could not be saved. Please, try again.'));
@@ -85,20 +167,56 @@ class LocationsController extends AppController
      */
     public function edit($id = null)
     {
-        $location = $this->Locations->get($id, [
-            'contain' => []
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
+       $city_id=$this->Auth->User('city_id');
+		$user_id=$this->Auth->User('id');
+		$this->viewBuilder()->layout('admin_portal');
+        $this->paginate = [
+            'limit' => 20
+        ];
+		
+        $locations =$this->Locations->find()->where(['Locations.city_id'=>$city_id]);
+		if($id)
+		{
+			$location = $this->Locations->get($id);
+		}
+		else{
+			$location = $this->Locations->newEntity();
+		}
+		
+		if ($this->request->is(['post','put'])) {
+			 
+			
             $location = $this->Locations->patchEntity($location, $this->request->getData());
-            if ($this->Locations->save($location)) {
-                $this->Flash->success(__('The location has been saved.'));
+			 
 
-                return $this->redirect(['action' => 'index']);
+			$location->city_id=$city_id;
+			$location->created_by=$user_id;
+            if ($location_data=$this->Locations->save($location)) {
+				
+				$data = $this->Locations->Sellers->newEntity();
+				
+				$data->location_id=$location_data->id;
+				$data->city_id=$location_data->city_id;
+				$data->name=$location_data->name;
+				$data->latitude=$location_data->latitude;
+				$data->longitude=$location_data->longitude;
+				
+				$this->Locations->Sellers->save($data);
+				 
+			 
+                $this->Flash->success(__('The banner has been saved.'));
+ 
+                    return $this->redirect(['action' => 'index']);
+                
             }
-            $this->Flash->error(__('The location could not be saved. Please, try again.'));
+            $this->Flash->error(__('The banner could not be saved. Please, try again.'));
         }
-        $cities = $this->Locations->Cities->find('list', ['limit' => 200]);
-        $this->set(compact('location', 'cities'));
+		 
+		
+		
+		$locations = $this->paginate($locations);
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('locations','location','paginate_limit'));
     }
 
     /**

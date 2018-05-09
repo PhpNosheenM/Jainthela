@@ -11,14 +11,15 @@ use Cake\Validation\Validator;
  *
  * @property \App\Model\Table\CitiesTable|\Cake\ORM\Association\BelongsTo $Cities
  * @property \App\Model\Table\AccountingEntriesTable|\Cake\ORM\Association\HasMany $AccountingEntries
- * @property \App\Model\Table\AccountingGroupsTable|\Cake\ORM\Association\HasMany $AccountingGroups
  * @property \App\Model\Table\AdminsTable|\Cake\ORM\Association\HasMany $Admins
+ * @property |\Cake\ORM\Association\HasMany $ContraVouchers
  * @property \App\Model\Table\CreditNotesTable|\Cake\ORM\Association\HasMany $CreditNotes
  * @property \App\Model\Table\CustomerAddressesTable|\Cake\ORM\Association\HasMany $CustomerAddresses
  * @property \App\Model\Table\DebitNotesTable|\Cake\ORM\Association\HasMany $DebitNotes
  * @property \App\Model\Table\DriversTable|\Cake\ORM\Association\HasMany $Drivers
  * @property \App\Model\Table\GrnsTable|\Cake\ORM\Association\HasMany $Grns
  * @property \App\Model\Table\GstFiguresTable|\Cake\ORM\Association\HasMany $GstFigures
+ * @property |\Cake\ORM\Association\HasMany $ItemLedgers
  * @property \App\Model\Table\JournalVouchersTable|\Cake\ORM\Association\HasMany $JournalVouchers
  * @property \App\Model\Table\OrdersTable|\Cake\ORM\Association\HasMany $Orders
  * @property \App\Model\Table\PaymentsTable|\Cake\ORM\Association\HasMany $Payments
@@ -30,6 +31,8 @@ use Cake\Validation\Validator;
  * @property \App\Model\Table\SaleReturnsTable|\Cake\ORM\Association\HasMany $SaleReturns
  * @property \App\Model\Table\SalesInvoicesTable|\Cake\ORM\Association\HasMany $SalesInvoices
  * @property \App\Model\Table\SalesVouchersTable|\Cake\ORM\Association\HasMany $SalesVouchers
+ * @property |\Cake\ORM\Association\HasMany $SellerRequests
+ * @property |\Cake\ORM\Association\HasMany $Sellers
  * @property \App\Model\Table\SuppliersTable|\Cake\ORM\Association\HasMany $Suppliers
  *
  * @method \App\Model\Entity\Location get($primaryKey, $options = [])
@@ -61,25 +64,13 @@ class LocationsTable extends Table
             'foreignKey' => 'city_id',
             'joinType' => 'INNER'
         ]);
-        $this->hasMany('AccountingGroups', [
-            'foreignKey' => 'location_id'
-        ]);
-		    $this->hasMany('FinancialYears', [
-            'foreignKey' => 'location_id'
-        ]);
-		    $this->hasMany('GstFigures', [
-            'foreignKey' => 'location_id'
-        ]);
-		   $this->hasMany('Ledgers', [
-            'foreignKey' => 'location_id'
-        ]);
-		    $this->hasMany('AccountingEntries', [
-            'foreignKey' => 'location_id'
-        ]);
-        $this->hasMany('AccountingGroups', [
+        $this->hasMany('AccountingEntries', [
             'foreignKey' => 'location_id'
         ]);
         $this->hasMany('Admins', [
+            'foreignKey' => 'location_id'
+        ]);
+        $this->hasMany('ContraVouchers', [
             'foreignKey' => 'location_id'
         ]);
         $this->hasMany('CreditNotes', [
@@ -98,6 +89,9 @@ class LocationsTable extends Table
             'foreignKey' => 'location_id'
         ]);
         $this->hasMany('GstFigures', [
+            'foreignKey' => 'location_id'
+        ]);
+        $this->hasMany('ItemLedgers', [
             'foreignKey' => 'location_id'
         ]);
         $this->hasMany('JournalVouchers', [
@@ -133,6 +127,12 @@ class LocationsTable extends Table
         $this->hasMany('SalesVouchers', [
             'foreignKey' => 'location_id'
         ]);
+        $this->hasMany('SellerRequests', [
+            'foreignKey' => 'location_id'
+        ]);
+        $this->hasMany('Sellers', [
+            'foreignKey' => 'location_id'
+        ]);
         $this->hasMany('Suppliers', [
             'foreignKey' => 'location_id'
         ]);
@@ -157,6 +157,12 @@ class LocationsTable extends Table
             ->notEmpty('name');
 
         $validator
+            ->scalar('alise')
+            ->maxLength('alise', 100)
+            ->requirePresence('alise', 'create')
+            ->notEmpty('alise');
+
+        $validator
             ->scalar('latitude')
             ->maxLength('latitude', 50)
             ->requirePresence('latitude', 'create')
@@ -168,19 +174,36 @@ class LocationsTable extends Table
             ->requirePresence('longitude', 'create')
             ->notEmpty('longitude');
 
-        $validator
+     /*    $validator
             ->integer('created_on')
             ->requirePresence('created_on', 'create')
             ->notEmpty('created_on');
-
+ */
         $validator
             ->integer('created_by')
             ->requirePresence('created_by', 'create')
             ->notEmpty('created_by');
 
         $validator
+            ->scalar('status')
+            ->maxLength('status', 10)
             ->requirePresence('status', 'create')
             ->notEmpty('status');
+
+      /*   $validator
+            ->date('financial_year_begins_from')
+            ->requirePresence('financial_year_begins_from', 'create')
+            ->notEmpty('financial_year_begins_from');
+
+        $validator
+            ->date('financial_year_valid_to')
+            ->requirePresence('financial_year_valid_to', 'create')
+            ->notEmpty('financial_year_valid_to');
+
+        $validator
+            ->date('books_beginning_from')
+            ->requirePresence('books_beginning_from', 'create')
+            ->notEmpty('books_beginning_from'); */
 
         return $validator;
     }
