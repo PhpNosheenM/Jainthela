@@ -46,7 +46,8 @@
 						<h3 class="panel-title">LIST DELIVERY TIME</h3>
 					  <div class="pull-right">
 						<div class="pull-left">
-						<?= $this->Form->create('Search',['type'=>'GET']) ?>
+							<?= $this->Form->create('Search',['type'=>'GET']) ?>
+							<?= $this->Html->link(__('<span class="fa fa-plus"></span> Add New'), ['action' => 'index'],['style'=>'margin-top:-30px !important;','class'=>'btn btn-success','escape'=>false]) ?>
 						<div class="form-group" style="display:inline-table">
 							<div class="input-group">
 								<div class="input-group-addon">
@@ -86,17 +87,20 @@
 								<td><?= h($deliveryTime->time_to) ?></td>
 								<td><?= h($deliveryTime->status) ?></td>
 								<td class="actions">
-									<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $deliveryTime->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
-									<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $deliveryTime->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $deliveryTime->id),'escape'=>false]) ?>
+									<?php
+										$deliveryTime_id = $EncryptingDecrypting->encryptData($deliveryTime->id);
+									?>
+									<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $deliveryTime_id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+									<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $deliveryTime_id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?'),'escape'=>false]) ?>
 							     </td>
 							</tr>
 					                <?php endforeach; ?>
 					       </tbody>
 				    </table>
-				</div>	 	 
-            </div>	
-				</div>	
+				</div>
             </div>
-	    </div>	
+		</div>
+    </div>
 </div>
-<?= $this->Html->script('plugins/bootstrap/bootstrap-timepicker.js',['block'=>'jsTimePicker']) ?>	
+</div>
+<?= $this->Html->script('plugins/bootstrap/bootstrap-timepicker.min.js',['block'=>'jsTimePicker']) ?>	

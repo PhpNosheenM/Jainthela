@@ -34,6 +34,11 @@ class BannersController extends AppController
             'limit' => 20
         ];
 		
+		if($id)
+		{
+		   $id = $this->EncryptingDecrypting->decryptData($id);
+		}
+		
         $banners =$this->Banners->find()->where(['Banners.city_id'=>$city_id]);
 		
 		if($id)
@@ -215,9 +220,10 @@ class BannersController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($dir)
     {
         $this->request->allowMethod(['post', 'delete']);
+		$id = $this->EncryptingDecrypting->decryptData($dir);
         $banner = $this->Banners->get($id);
         if ($this->Banners->delete($banner)) {
             $this->Flash->success(__('The banner has been deleted.'));

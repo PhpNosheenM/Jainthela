@@ -65,6 +65,7 @@ class CustomersController extends AppController
             'contain' => ['Cities'],
 			'limit' => 20
         ];
+		
 		$customers = $this->Customers->find()->where(['Customers.city_id'=>$city_id]);
 
 		if ($this->request->is(['get'])){
@@ -147,6 +148,11 @@ class CustomersController extends AppController
      */
     public function edit($id = null)
     {
+		if($id)
+		{
+		   $id = $this->EncryptingDecrypting->decryptData($id);
+		}
+		
   		$user_id=$this->Auth->User('id');
   		$city_id=$this->Auth->User('city_id');
   		$location_id=$this->Auth->User('location_id');
@@ -177,9 +183,10 @@ class CustomersController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($dir)
     {
         $this->request->allowMethod(['post', 'delete']);
+		$id = $this->EncryptingDecrypting->decryptData($dir);
         $customer = $this->Customers->get($id);
         if ($this->Customers->delete($customer)) {
             $this->Flash->success(__('The customer has been deleted.'));
