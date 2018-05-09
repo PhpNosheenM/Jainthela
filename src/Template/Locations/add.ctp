@@ -15,37 +15,38 @@
 					<fieldset>
 					<legend><center>Location Registration</center></legend>
 					<div class="col-md-12">
-							<div class="form-group col-md-6">
+						<div class="col-md-6">
+							<div class="form-group">
 									<label>Name</label>
 									<?= $this->Form->control('name',['class'=>'form-control','placeholder'=>'Name','label'=>false]) ?>
 									<span class="help-block"></span>
 					        </div>
 							
-							 <div class="form-group col-md-6">
+							 <div class="form-group">
 									<label>Alise</label>
 									<?= $this->Form->control('alise',['class'=>'form-control','placeholder'=>'Alise','label'=>false]) ?>
 									<span class="help-block"></span>
 					        </div>
 							
-							 <div class="form-group col-md-4">
+							 <div class="form-group">
 									<label>Latitude</label>
 									<?= $this->Form->control('latitude',['class'=>'form-control','placeholder'=>'Latitude','label'=>false]) ?>
 									<span class="help-block"></span>
 					        </div>
 							
-							 <div class="form-group col-md-4">
+							 <div class="form-group">
 									<label>Longitude</label>
 									<?= $this->Form->control('longitude',['class'=>'form-control','placeholder'=>'Longitude','label'=>false]) ?>
 									<span class="help-block"></span>
 					        </div>
 							
-							<div class="form-group col-md-4">
+							<div class="form-group">
 								<label>Status</label>
 								<?php $options['Active'] = 'Active'; ?>
 								<?php $options['Deactive'] = 'Deactive'; ?>
 								<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
 					        </div>
-
+					    </div>
 					</div>
 					</fieldset>
 					<br>
