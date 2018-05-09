@@ -27,7 +27,13 @@
 									<?= $this->Form->control('alise',['class'=>'form-control','placeholder'=>'Alise','label'=>false]) ?>
 									<span class="help-block"></span>
 					        </div>
-							
+					        <div class="form-group">
+									<label>Books Beginning From</label>
+									<?= $this->Form->control('books_beginning_from',['class'=>'form-control datepicker','placeholder'=>'Books Beginning From','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>'']) ?> 
+									<span class="help-block"></span>
+					        </div>
+					    </div>
+						<div class="col-md-6">	
 							 <div class="form-group">
 									<label>Latitude</label>
 									<?= $this->Form->control('latitude',['class'=>'form-control','placeholder'=>'Latitude','label'=>false]) ?>
@@ -39,7 +45,7 @@
 									<?= $this->Form->control('longitude',['class'=>'form-control','placeholder'=>'Longitude','label'=>false]) ?>
 									<span class="help-block"></span>
 					        </div>
-							
+
 							<div class="form-group">
 								<label>Status</label>
 								<?php $options['Active'] = 'Active'; ?>
