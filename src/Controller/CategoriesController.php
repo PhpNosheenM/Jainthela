@@ -39,6 +39,12 @@ class CategoriesController extends AppController
             'contain' => ['ParentCategories'],
 			'limit' => 20
         ];
+		
+		if($id)
+		{
+		   $id = $this->EncryptingDecrypting->decryptData($id);
+		}
+		
 		$categories = $this->Categories->find()->where(['Categories.city_id'=>$city_id]);
 		if($id)
 		{
@@ -150,9 +156,10 @@ class CategoriesController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($dir)
     {
         $this->request->allowMethod(['post', 'delete']);
+		$id = $this->EncryptingDecrypting->decryptData($dir);
         $category = $this->Categories->get($id);
         if ($this->Categories->delete($category)) {
             $this->Flash->success(__('The category has been deleted.'));

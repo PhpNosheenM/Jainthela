@@ -9,9 +9,9 @@
 </style>
 <?php $this->set('title', 'unit'); ?>
 <div class="page-content-wrap">
-        <div class="page-title">                    
+        <div class="page-title">
 			<h2><span class="fa fa-arrow-circle-o-left"></span> UNIT</h2>
-		</div>     
+		</div>
 	<div class="row">
 		<div class="col-md-4">
 			<div class="panel panel-default">
@@ -59,7 +59,9 @@
 					<h3 class="panel-title">LIST UNITS</h3>
 				  <div class="pull-right">
 					<div class="pull-left">
-						<?= $this->Form->create('Search',['type'=>'GET']) ?>
+								<?= $this->Form->create('Search',['type'=>'GET']) ?>
+								<?= $this->Html->link(__('<span class="fa fa-plus"></span> Add Unit'), ['action' => 'index'],['style'=>'margin-top:-30px !important;','class'=>'btn btn-success','escape'=>false]) ?>
+								 
 							<div class="form-group" style="display:inline-table">
 								<div class="input-group">
 									<div class="input-group-addon">

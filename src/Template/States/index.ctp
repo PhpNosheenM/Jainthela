@@ -47,6 +47,7 @@
 					     <div class="pull-right">
 						    <div class="pull-left">
 									<?= $this->Form->create('Search',['type'=>'GET']) ?>
+									<?= $this->Html->link(__('<span class="fa fa-plus"></span> Add State'), ['action' => 'index'],['style'=>'margin-top:-30px !important;','class'=>'btn btn-success','escape'=>false]) ?>
 										<div class="form-group" style="display:inline-table">
 											<div class="input-group">
 												<div class="input-group-addon">
@@ -76,13 +77,19 @@
 										<tbody>                                            
 											<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); 
 											foreach ($states as $state): ?>
+											
 											<tr>
 											<td><?= $this->Number->format(++$i) ?></td>
 											<td><?= h($state->name) ?></td>
 											<td><?= h($state->status) ?></td>
 											<td class="actions">
-											<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $state->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
-											<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $state->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete ?', $state->id),'escape'=>false]) ?>
+											
+											<?php
+												$state_id = $EncryptingDecrypting->encryptData($state->id);
+											?>
+											
+											<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $state_id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+											<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $state_id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete ?'),'escape'=>false]) ?>
 											</td>
 											</tr>
 											<?php endforeach; ?>
