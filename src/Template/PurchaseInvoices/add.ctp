@@ -72,7 +72,6 @@
 										<th rowspan="2" style="text-align:center;width:130px;"><label>Purchase <br/>Rate<label></th>
 										<th rowspan="2" style="text-align:center;width:130px;"><label>Sales Rate<label></th>
 										<th rowspan="2" style="text-align:center;width:130px;"><label>MRP Rate<label></th>
-										<th rowspan="2" style="text-align:center;width:130px;"><label>GST <br/>Inc./Exc.<label></th>
 										<th rowspan="2" style="text-align:center;"><label>Action<label></th>
 									</tr>
 									<tr>
@@ -160,9 +159,6 @@
 			</td>
 			<td valign="top">
 				<?= $this->Form->control('mrp',['class'=>'form-control mrp','label'=>false,'readonly']) ?>
-			</td>
-			<td valign="top">
-				<?= $this->Form->select('gst_type',$GstType,['class'=>'form-control gst_type','label'=>false]) ?>
 			</td>
 			
 			<td valign="top"  >
@@ -278,7 +274,7 @@
 			$('.main_table tbody tr').each(function(){
 				
 				var gst_type=$(this).find('.gst_type option:selected').val();
-				if(gst_type=='excluding'){
+				
 					var qty=$(this).find('.quantity').val();
 					var rate=$(this).find('.rate').val();
 					var quantity_factor=$(this).find('option:selected', this).attr('quantity_factor');
@@ -307,15 +303,15 @@
 					total_taxable_value=total_taxable_value+taxable_value;
 					total_gst=total_gst+gst_rate;
 					total_amount=total_amount+net_amount1;
-					var per_item_purchase_rate=round((net_amount1/qty),2);
+					var per_item_purchase_rate=round((taxable_value/qty),2);
 					$(this).find('.purchase_rate').val(per_item_purchase_rate);
 					var commission_rate=(per_item_purchase_rate*commission)/100;
 					var per_item_sales_rate=round(per_item_purchase_rate+commission_rate,2);
 					$(this).find('.sales_rate').val(per_item_sales_rate);
 					$(this).find('.mrp').val(per_item_sales_rate);
-				}else{
-					
-					var qty=$(this).find('.quantity').val();
+				
+				
+				/* else{var qty=$(this).find('.quantity').val();
 					var rate=$(this).find('.rate').val();
 					var quantity_factor=$(this).find('option:selected', this).attr('quantity_factor');
 					var commission=$(this).find('option:selected', this).attr('commission');
@@ -351,7 +347,8 @@
 					var per_item_sales_rate=round(per_item_purchase_rate+commission_rate,2);
 					$(this).find('.sales_rate').val(per_item_sales_rate);
 					$(this).find('.mrp').val(per_item_sales_rate);
-				}
+				} */
+				
 				$('.total_taxable_value').val(round(total_taxable_value,2));
 				$('.gst_amt').val(round(total_gst,2));
 				$('.total_amt').val(round(total_amount,2));
