@@ -285,8 +285,10 @@ class CustomersController extends AppController
    {
       $id = $this->request->getData('id');
       $token ='';
+	 
        $customer = $this->Customers->get($id);
        if ($this->request->is(['patch', 'post', 'put'])) {
+		    $users = [];
          foreach(getallheaders() as $key => $value) {
             if($key == 'Authorization' || $key == 'authorization')
             {
@@ -301,13 +303,13 @@ class CustomersController extends AppController
                $customer_error = 1;
                $customer_image = @$this->request->data['customer_image'];
          			 $customer_error = $customer_image['error'];
-
                $customer = $this->Customers->patchEntity($customer, $this->request->getData());
-
               if($customer_error == '0')
          			{
          				$customer_ext=explode('/',$customer_image['type']);
-         				$customer->customer_image='customer'.time().'.'.$customer_ext[1];
+                $customer_image_data = 'customer'.time().'.'.$customer_ext[1];
+                $keyname = 'customer/'.$id.'/'.$customer_image_data;
+                $customer->customer_image = $keyname;
          			}
 
                $customer->edited_by = $id;
@@ -315,19 +317,19 @@ class CustomersController extends AppController
 
                if($exists == 0)
                {
+                 ///////////////// S3 Upload //////////////
+                if($customer_error == '0')
+                {
+                    $deletekeyname = 'customer/'.$id;
+                    $this->AwsFile->deleteMatchingObjects($deletekeyname);
+                    $this->AwsFile->putObjectFile($keyname,$customer_image['tmp_name'],$customer_image['type']);
+                 }
+
                  if ($customer_data = $this->Customers->save($customer)) {
-                     ///////////////// S3 Upload //////////////
-             				if($customer_error ==0)
-             				{
-                        $deletekeyname = 'customer/'.$customer_data->id;
-               					$this->AwsFile->deleteMatchingObjects($deletekeyname);
-               					$keyname = 'customer/'.$customer_data->id.'/'.$customer_data->customer_image;
-               					$this->AwsFile->putObjectFile($keyname,$customer_image['tmp_name'],$customer_image['type']);
-                     }
                      $success = true;
                      $message = 'Update Successfully';
                    }else {
-
+						//pr($customer);exit;
                      $success = false;
                      $message = 'Update Failed';
                    }
