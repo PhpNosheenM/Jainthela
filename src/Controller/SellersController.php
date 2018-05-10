@@ -33,8 +33,8 @@ class SellersController extends AppController
 			$user = $this->Auth->identify();
 			if ($user) 
 			{
-				$city = $this->Sellers->Locations->get($user['location_id']);
-				$user['city_id']=$city->id;
+				//$city = $this->Sellers->Locations->get($user['location_id']);
+				//$user['city_id']=$city->id;
 				$user['user_type']='Seller';
 				$this->Auth->setUser($user);
 				return $this->redirect(['controller'=>'Sellers','action' => 'index']);
