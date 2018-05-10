@@ -9,8 +9,12 @@ use Cake\Validation\Validator;
 /**
  * Grns Model
  *
+ * @property |\Cake\ORM\Association\BelongsTo $Sellers
+ * @property |\Cake\ORM\Association\BelongsTo $Admins
  * @property \App\Model\Table\LocationsTable|\Cake\ORM\Association\BelongsTo $Locations
  * @property \App\Model\Table\OrdersTable|\Cake\ORM\Association\BelongsTo $Orders
+ * @property \App\Model\Table\GrnRowsTable|\Cake\ORM\Association\HasMany $GrnRows
+ * @property |\Cake\ORM\Association\HasMany $ItemLedgers
  *
  * @method \App\Model\Entity\Grn get($primaryKey, $options = [])
  * @method \App\Model\Entity\Grn newEntity($data = null, array $options = [])
@@ -37,6 +41,12 @@ class GrnsTable extends Table
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
+        $this->belongsTo('Sellers', [
+            'foreignKey' => 'seller_id'
+        ]);
+        $this->belongsTo('Admins', [
+            'foreignKey' => 'admin_id'
+        ]);
         $this->belongsTo('Locations', [
             'foreignKey' => 'location_id',
             'joinType' => 'INNER'
@@ -44,10 +54,12 @@ class GrnsTable extends Table
         $this->belongsTo('Orders', [
             'foreignKey' => 'order_id',
             'joinType' => 'INNER'
-        ]); 
-		$this->hasMany('GrnRows', [
-            'foreignKey' => 'grn_id',
-            'saveStrategy' => 'replace'
+        ]);
+        $this->hasMany('GrnRows', [
+            'foreignKey' => 'grn_id'
+        ]);
+        $this->hasMany('ItemLedgers', [
+            'foreignKey' => 'grn_id'
         ]);
     }
 
@@ -69,7 +81,8 @@ class GrnsTable extends Table
             ->notEmpty('voucher_no');
 
         $validator
-            ->integer('grn_no')
+            ->scalar('grn_no')
+            ->maxLength('grn_no', 100)
             ->requirePresence('grn_no', 'create')
             ->notEmpty('grn_no');
 
@@ -82,12 +95,6 @@ class GrnsTable extends Table
             ->scalar('reference_no')
             ->maxLength('reference_no', 100)
             ->allowEmpty('reference_no');
-
-        $validator
-            ->scalar('status')
-            ->maxLength('status', 20)
-            ->requirePresence('status', 'create')
-            ->notEmpty('status');
 
         $validator
             ->decimal('total_taxable_value')
@@ -104,6 +111,17 @@ class GrnsTable extends Table
             ->requirePresence('total_amount', 'create')
             ->notEmpty('total_amount');
 
+        $validator
+            ->dateTime('created_on')
+            ->requirePresence('created_on', 'create')
+            ->notEmpty('created_on');
+
+        $validator
+            ->scalar('status')
+            ->maxLength('status', 20)
+            ->requirePresence('status', 'create')
+            ->notEmpty('status');
+
         return $validator;
     }
 
@@ -116,6 +134,8 @@ class GrnsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
+        $rules->add($rules->existsIn(['seller_id'], 'Sellers'));
+        $rules->add($rules->existsIn(['admin_id'], 'Admins'));
         $rules->add($rules->existsIn(['location_id'], 'Locations'));
         $rules->add($rules->existsIn(['order_id'], 'Orders'));
 

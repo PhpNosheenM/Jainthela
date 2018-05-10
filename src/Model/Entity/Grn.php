@@ -7,21 +7,23 @@ use Cake\ORM\Entity;
  * Grn Entity
  *
  * @property int $id
+ * @property int $seller_id
+ * @property int $admin_id
  * @property int $voucher_no
- * @property int $grn_no
+ * @property string $grn_no
  * @property int $location_id
  * @property int $order_id
  * @property \Cake\I18n\FrozenDate $transaction_date
  * @property string $reference_no
- * @property string $status
  * @property float $total_taxable_value
  * @property float $total_gst
  * @property float $total_amount
+ * @property \Cake\I18n\FrozenTime $created_on
+ * @property string $status
  *
  * @property \App\Model\Entity\Location $location
  * @property \App\Model\Entity\Order $order
- * @property \App\Model\Entity\SellerLedger $seller_ledger
- * @property \App\Model\Entity\PurchaseLedger $purchase_ledger
+ * @property \App\Model\Entity\GrnRow[] $grn_rows
  */
 class Grn extends Entity
 {
@@ -36,19 +38,21 @@ class Grn extends Entity
      * @var array
      */
     protected $_accessible = [
+        'seller_id' => true,
+        'admin_id' => true,
         'voucher_no' => true,
         'grn_no' => true,
         'location_id' => true,
         'order_id' => true,
         'transaction_date' => true,
         'reference_no' => true,
-        'status' => true,
         'total_taxable_value' => true,
         'total_gst' => true,
         'total_amount' => true,
+        'created_on' => true,
+        'status' => true,
         'location' => true,
         'order' => true,
-        'seller_ledger' => true,
-        'purchase_ledger' => true
+        'grn_rows' => true
     ];
 }

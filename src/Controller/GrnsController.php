@@ -52,15 +52,15 @@ class GrnsController extends AppController
      public function add()
     {
         $this->viewBuilder()->layout('admin_portal');
-        $company_id=$this->Auth->User('session_company_id');
+        //$company_id=$this->Auth->User('session_company_id');
         $location_id=$this->Auth->User('location_id');
         $grn = $this->Grns->newEntity();
-        $this->request->data['company_id'] =$company_id;
+        //$this->request->data['location_id'] =$location_id;
         if ($this->request->is('post')) 
         {
             $grn = $this->Grns->patchEntity($grn, $this->request->getData());
             $grn->transaction_date = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
-            $Voucher_no = $this->Grns->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
+            $Voucher_no = $this->Grns->find()->select(['voucher_no'])->where(['location_id'=>$location_id])->order(['voucher_no' => 'DESC'])->first();
             if($Voucher_no)
             {
                 $grn->voucher_no = $Voucher_no->voucher_no+1;
@@ -83,7 +83,7 @@ class GrnsController extends AppController
                     $item_ledger->quantity = $grn_row->quantity;
                     $item_ledger->rate = $grn_row->purchase_rate;
                     $item_ledger->sale_rate = $grn_row->sale_rate;
-                    $item_ledger->company_id  =$company_id;
+                   // $item_ledger->company_id  =$company_id;
                     $item_ledger->location_id =$location_id;
                     $item_ledger->status ='in';
                     $item_ledger->amount=$grn_row->quantity*$grn_row->purchase_rate;
