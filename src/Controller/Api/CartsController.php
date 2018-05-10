@@ -9,6 +9,23 @@ use Firebase\JWT\JWT;
 class CartsController extends AppController
 {
 
+	public function initialize()
+	 {
+			 parent::initialize();
+			 $this->Auth->allow(['getCount']);
+	 }
+
+	public function getCount($customer_id=null)
+	{
+		$customer_id=$this->request->query('customer_id');
+		$item_in_cart = $this->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])->count();
+		$success=true;
+		$message="Item Added Successfully";
+		$this->set(compact('success','message','item_in_cart'));
+		$this->set('_serialize',['success','message','item_in_cart']);
+	}
+
+
 	public function addToCartCombo($customer_id,$city_id,$combo_offer_id)
 	{
 		 // get combo Data
@@ -224,7 +241,7 @@ class CartsController extends AppController
 			$remaining_wallet_amount = 0.00;
 			$grand_total = 0.00;
 			$payableAmount = 0.00;
-			$Combototal = 0.00;	
+			$Combototal = 0.00;
 			$delivery_charge_amount = '0.00';
 			$tag=$this->request->data('tag');
 			if(!empty($city_id) && !empty($customer_id))
@@ -279,18 +296,18 @@ class CartsController extends AppController
 							->where(['customer_id' => $customer_id])
 							->contain(['ComboOffers'=>['ComboOfferDetails']])
 							->group('Carts.combo_offer_id')->autoFields(true)->toArray();
-							
-							if(empty($comboData)) { $comboData = []; }							
+
+							if(empty($comboData)) { $comboData = []; }
 							else {  $Combototal = number_format(0.00, 2);
-									foreach($comboData as $combo) 
+									foreach($comboData as $combo)
 									{
 										$Combototal = number_format($Combototal + $combo->amount, 2);
 									}
-								} 
+								}
 							if(!empty($categories->toArray()))
 							{
 									$category_arr = [];
-									
+
 									foreach ($categories as $cat_date) {
 									    $cat_name = $cat_date->item_variation->item->category->name;
 									    $cat_id = $cat_date->item_variation->item->category->id;
@@ -350,23 +367,23 @@ class CartsController extends AppController
 										foreach($carts_data as $cart_data)
 										{
 										  $grand_total1+=$cart_data->amount;
-										}										
+										}
 									}
-									
+
 									if(!empty($comboData))
 									{
 										foreach($comboData as $combo)
 										{
 											$grand_total1+=$combo->amount;
 										}
-									} 
+									}
 
-									
+
 									$grand_total=number_format(round($grand_total1), 2);
 									$payableAmount = $payableAmount + $grand_total1;
 
 									$delivery_charges=$this->Carts->DeliveryCharges->find()->where(['city_id'=>$city_id,'status'=>'Active']);
-									
+
 									if(!empty($delivery_charges->toArray()))
 									{
 											foreach ($delivery_charges as $delivery_charge) {
@@ -380,10 +397,10 @@ class CartsController extends AppController
 													}
 											}
 									}
-									$payableAmount = number_format($payableAmount,2);							
-							
+									$payableAmount = number_format($payableAmount,2);
+
 							//pr($grand_total);exit;
-								
+
 							if(empty($carts_data) && empty($comboData))
 							{
 							  $success = false;
@@ -398,7 +415,7 @@ class CartsController extends AppController
 							  $this->set(compact('success', 'message','address_available','grand_total','delivery_charge_amount','payableAmount','remaining_wallet_amount','carts','item_in_cart','comboData','Combototal'));
 							  $this->set('_serialize', ['success', 'message','remaining_wallet_amount','grand_total','delivery_charge_amount', 'payableAmount','item_in_cart','address_available','carts','comboData','Combototal']);
 							}
-							
+
 				}
 				else
 				{
@@ -425,6 +442,13 @@ class CartsController extends AppController
 			->where(['customer_id' => $customer_id])
 			->contain(['ItemVariations'=>['ItemVariationMasters','Items'=>['Categories']]]);
 
+			$comboData = $this->Carts->find()
+			->where(['customer_id' => $customer_id])
+			->contain(['ComboOffers'=>['ComboOfferDetails']])
+			->group('Carts.combo_offer_id')->autoFields(true)->toArray();
+
+			if(empty($comboData)) { $comboData = []; }
+			
 			if(!empty($categories->toArray()))
 			{
 					$comboData = $this->Carts->find()
