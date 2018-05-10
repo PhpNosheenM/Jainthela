@@ -26,7 +26,13 @@ class FaqsController extends AppController
 		$this->paginate = [
 			'limit' => 20,
          ];
-       $faqs1 =  $this->Faqs->find()->where(['Faqs.status'=>0,'Faqs.city_id'=>$city_id])->contain(['Cities']);
+		 
+		if($id)
+		{
+		   $id = $this->EncryptingDecrypting->decryptData($id);
+		}
+		
+        $faqs1 =  $this->Faqs->find()->where(['Faqs.status'=>0,'Faqs.city_id'=>$city_id])->contain(['Cities']);
 		if($id)
 		{
 		   $faq = $this->Faqs->get($id);
@@ -131,9 +137,10 @@ class FaqsController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($dir)
     {
         $this->request->allowMethod(['patch', 'post', 'put']);
+		$id = $this->EncryptingDecrypting->decryptData($dir);
         $faq = $this->Faqs->get($id);
 		$faq->status=1;
         if ($this->Faqs->save($faq)) {

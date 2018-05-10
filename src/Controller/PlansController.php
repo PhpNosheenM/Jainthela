@@ -28,6 +28,11 @@ class PlansController extends AppController
 			'limit' =>20
         ];
 		
+		if($id)
+		{
+		   $id = $this->EncryptingDecrypting->decryptData($id);
+		}
+		
 		$plans1 = $this->Plans->find()->where(['Plans.city_id'=>$city_id,'Plans.admin_id'=>$user_id]);
         if($id)
 		{
@@ -141,9 +146,10 @@ class PlansController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($dir)
     {
         $this->request->allowMethod(['post', 'delete']);
+		$id = $this->EncryptingDecrypting->decryptData($dir);
         $plan = $this->Plans->get($id);
         if ($this->Plans->delete($plan)) {
             $this->Flash->success(__('The plan has been deleted.'));

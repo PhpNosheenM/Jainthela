@@ -30,6 +30,11 @@ class HomeScreensController extends AppController
             'limit' => 20
         ];
 		
+		if($id)
+		{
+		   $id = $this->EncryptingDecrypting->decryptData($id);
+		}
+		
         $homeScreens =$this->HomeScreens->find()->where(['HomeScreens.city_id'=>$city_id]);
 	 
 		if($id)
@@ -189,9 +194,12 @@ class HomeScreensController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($dir)
     {
         $this->request->allowMethod(['post', 'delete']);
+		$id = $this->EncryptingDecrypting->decryptData($dir);
+		
+		$id = $this->EncryptingDecrypting->decryptData($dir);
         $homeScreen = $this->HomeScreens->get($id);
         if ($this->HomeScreens->delete($homeScreen)) {
             $this->Flash->success(__('The home screen has been deleted.'));

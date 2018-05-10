@@ -26,6 +26,11 @@ class DeliveryChargesController extends AppController
 		$this->paginate = [
 			'limit' => 20,
          ];
+		if($id)
+		{
+		   $id = $this->EncryptingDecrypting->decryptData($id);
+		}
+		
 	     $deliveryCharges = $this->DeliveryCharges->find()->where(['city_id'=>$city_id]);
 		
 		if($id)
@@ -54,6 +59,16 @@ class DeliveryChargesController extends AppController
             $this->Flash->error(__('The delivery charge could not be saved. Please, try again.'));
 			
         }
+		else if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$deliveryCharges->where([
+							'OR' => [
+									'DeliveryCharges.amount LIKE' => $search.'%',
+									'DeliveryCharges.charge LIKE' => $search.'%',
+									'DeliveryCharges.status LIKE' => $search.'%'
+							]
+			]);
+		}
 	 
         $deliveryCharges = $this->paginate($deliveryCharges);
         $paginate_limit=$this->paginate['limit'];
@@ -129,9 +144,10 @@ class DeliveryChargesController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($dir)
     {
         $this->request->allowMethod(['post', 'delete']);
+		$id = $this->EncryptingDecrypting->decryptData($dir);
         $deliveryCharge = $this->DeliveryCharges->get($id);
         if ($this->DeliveryCharges->delete($deliveryCharge)) {
             $this->Flash->success(__('The delivery charge has been deleted.'));

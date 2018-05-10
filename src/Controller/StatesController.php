@@ -25,6 +25,11 @@ class StatesController extends AppController
 		$this->paginate= [
 					'limit'=>20
 		];
+		if($id)
+		{
+		   $id = $this->EncryptingDecrypting->decryptData($id);
+		}
+		
 		$states=$this->States->find();
         if($id)
 		{
@@ -75,9 +80,10 @@ class StatesController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($dir)
     {
         $this->request->allowMethod(['post', 'delete']);
+		$id = $this->EncryptingDecrypting->decryptData($dir);
         $state = $this->States->get($id);
         if ($this->States->delete($state)) {
             $this->Flash->success(__('The state has been deleted.'));

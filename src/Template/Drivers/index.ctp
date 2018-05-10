@@ -9,9 +9,9 @@
 
 </style><?php $this->set('title', 'Drivers'); ?>
 <div class="page-content-wrap">
-        <div class="page-title">                    
+        <div class="page-title">
 			<h2><span class="fa fa-arrow-circle-o-left"></span> Drivers</h2>
-		</div> 
+		</div>
 	<div class="row">
 				<div class="col-md-4">
 					<div class="panel panel-default">
@@ -43,7 +43,7 @@
 					        </div>
 							 <div class="form-group">
 									<label>Password</label>
-									<?= $this->Form->control('password',['class'=>'form-control','placeholder'=>'Password','label'=>false]) ?>
+									<?= $this->Form->control('password',['class'=>'form-control','placeholder'=>'Password','label'=>false,'value'=>'']) ?>
 									<span class="help-block"></span>
 					        </div>
 							 
@@ -71,6 +71,7 @@
 						<div class="pull-right">
 						<div class="pull-left">
 							<?= $this->Form->create('Search',['type'=>'GET']) ?>
+							<?= $this->Html->link(__('<span class="fa fa-plus"></span> Add New'), ['action' => 'index'],['style'=>'margin-top:-30px !important;','class'=>'btn btn-success','escape'=>false]) ?>
 								<div class="form-group" style="display:inline-table">
 									<div class="input-group">
 										<div class="input-group-addon">
@@ -114,8 +115,11 @@
 									<td><?= h($data->status) ?></td>
 									
 									<td class="actions">
-										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index',$data->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
-										<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $data->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $data->id),'escape'=>false]) ?>
+										<?php
+											$data_id = $EncryptingDecrypting->encryptData($data->id);
+										?>
+										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index',$data_id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+										<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $data_id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?'),'escape'=>false]) ?>
 									
 									</td>
 								</tr>

@@ -9,15 +9,15 @@
 </style>
 <?php $this->set('title', 'Brand'); ?>
 <div class="content-frame">
-	
 	<!-- START CONTENT FRAME TOP -->
-	<div class="content-frame-top">                        
-		<div class="page-title">                    
+	<div class="content-frame-top">
+		<div class="page-title">
 			<h2><span class="fa fa-arrow-circle-o-left"></span> Brands</h2>
-		</div>                                      
+		</div>
 		<div class="pull-right">
 			<div class="pull-left">
 				<?= $this->Form->create('Search',['type'=>'GET']) ?>
+				<?= $this->Html->link(__('<span class="fa fa-plus"></span> Add New'), ['action' => 'index'],['style'=>'margin-top:-30px !important;','class'=>'btn btn-success','escape'=>false]) ?>
 					<div class="form-group" style="display:inline-table">
 						<div class="input-group">
 							<div class="input-group-addon">
@@ -30,9 +30,9 @@
 						</div>
 					</div>
 				<?= $this->Form->end() ?>
-			</div> 
+			</div>
 			<div class="pull-right">
-				<button class="btn btn-default content-frame-left-toggle"><span class="fa fa-bars"></span></button>           
+				<button class="btn btn-default content-frame-left-toggle"><span class="fa fa-bars"></span></button>
 			</div>  
 			                       
 		</div>                        
@@ -128,14 +128,17 @@
 							<td><?= h($brand->name) ?></td>
 							<td><?= h($brand->status) ?></td>
 							<td class="actions">
-								<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $brand->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
-								<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $brand->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $brand->id),'escape'=>false]) ?>
+								<?php
+									$brand_id = $EncryptingDecrypting->encryptData($brand->id);
+								?>
+								<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $brand_id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+								<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $brand_id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?'),'escape'=>false]) ?>
 							</td>
 						</tr>
 						<?php endforeach; ?>
 					</tbody>
 				</table>
-				</div>
+			</div>
 			</div>
 			<div class="panel-footer">
 				<div class="paginator pull-right">

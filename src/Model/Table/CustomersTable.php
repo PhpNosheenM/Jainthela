@@ -56,6 +56,9 @@ class CustomersTable extends Table
         $this->hasMany('AppNotificationCustomers', [
             'foreignKey' => 'customer_id'
         ]);
+		$this->hasMany('ItemReviewRatings', [
+            'foreignKey' => 'customer_id'
+        ]);
         $this->hasMany('BulkBookingLeads', [
             'foreignKey' => 'customer_id'
         ]);

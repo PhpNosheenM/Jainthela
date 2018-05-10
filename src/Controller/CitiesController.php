@@ -2,7 +2,8 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\View\View;
 /**
  * Cities Controller
  *
@@ -12,12 +13,16 @@ use App\Controller\AppController;
  */
 class CitiesController extends AppController
 {
-
+    public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+    }
     /**
      * Index method
      *
      * @return \Cake\Http\Response|void
      */
+   
     public function index($id = null)
     {
 		$user_id=$this->Auth->User('id');
@@ -26,6 +31,11 @@ class CitiesController extends AppController
             'contain' => ['States'],
 			'limit' =>20
         ];
+		if($id)
+		{
+		   $id = $this->EncryptingDecrypting->decryptData($id);
+		}
+		
 		$cities = $this->Cities->find();
         if($id)
 		{
@@ -74,16 +84,16 @@ class CitiesController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($dir)
     {
         $this->request->allowMethod(['post', 'delete']);
+		$id = $this->EncryptingDecrypting->decryptData($dir);
         $city = $this->Cities->get($id);
         if ($this->Cities->delete($city)) {
             $this->Flash->success(__('The city has been deleted.'));
         } else {
             $this->Flash->error(__('The city could not be deleted. Please, try again.'));
         }
-
         return $this->redirect(['action' => 'index']);
     }
 }

@@ -23,12 +23,19 @@
         <!-- EOF CSS INCLUDE -->                                      
     </head>
     <body>
+        <?php
+        if($user_type != 'Admin')
+        {
+            $unAthorizedUrl=$this->Url->build(['controller'=>'UnAuthorized','action'=>'un_authorized']);
+            echo "<meta http-equiv='refresh' content='0;url=".$unAthorizedUrl."'/>";
+            exit;
+        }
+        ?>
         <!-- START PAGE CONTAINER -->
         <div class="page-container page-navigation-top-fixed page-navigation-toggled page-container-wide">
             
             <!-- START PAGE SIDEBAR -->
-            <div class="page-sidebar page-sidebar-fixed scroll" style="overflow-y: scroll;
-">
+            <div class="page-sidebar page-sidebar-fixed scroll">
                 <!-- START X-NAVIGATION -->
 				<?= $this->element('sidebar_menu') ?>
                 <!-- END X-NAVIGATION -->
@@ -95,7 +102,7 @@
         <!-- START THIS PAGE PLUGINS-->        
 		<?= $this->Html->script('plugins/icheck/icheck.min.js') ?>  
 		<?= $this->Html->script('plugins/mcustomscrollbar/jquery.mCustomScrollbar.min.js') ?> 
-		<?= $this->Html->script('plugins/bootstrap/bootstrap-timepicker.min.js') ?>
+		<!--<?= $this->Html->script('plugins/bootstrap/bootstrap-timepicker.min.js') ?>-->
 		<?= $this->fetch('jsFileInput') ?>
 		<?= $this->fetch('jsDatePicker') ?>
 		<?= $this->fetch('jsTimePicker') ?>

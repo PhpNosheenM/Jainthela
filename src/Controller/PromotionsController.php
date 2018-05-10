@@ -105,6 +105,11 @@ class PromotionsController extends AppController
      */
     public function edit($id = null)
     {
+		if($id)
+		{
+		   $id = $this->EncryptingDecrypting->decryptData($id);
+		}
+		
 		$this->viewBuilder()->layout('admin_portal');
         $promotion = $this->Promotions->get($id, [
             'contain' => ['PromotionDetails']
@@ -132,9 +137,10 @@ class PromotionsController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($dir)
     {
         $this->request->allowMethod(['post', 'delete']);
+		$id = $this->EncryptingDecrypting->decryptData($dir);
         $promotion = $this->Promotions->get($id,[
             'contain' => ['PromotionDetails']]);
         if ($this->Promotions->delete($promotion)) {

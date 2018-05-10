@@ -70,8 +70,8 @@ class RecursiveCategoriesHelper extends Helper
 			   
 		}
     }
-	function categoryItemVariations($array) {
-	   $i=0;
+	function categoryItemVariations($array,$arraySec) {
+	    $i=0;
 	    $status[] =['value'=>'No','text'=>'No'];
 		$status[] =['value'=>'Yes','text'=>'Yes'];
 		$html = new FormHelper(new \Cake\View\View());
@@ -89,9 +89,9 @@ class RecursiveCategoriesHelper extends Helper
 								</a>';
 						echo	'</h4>
 						</div>';
-				if (count($vals['children'])) {
+				if (count($vals['children'])) { 
 					echo '<div class="panel-body" id="accOneColOne'.$vals['id'].'">';
-						$this->categoryItemVariations($vals['children']);
+						$this->categoryItemVariations($vals['children'],$arraySec);
 					echo '</div>';
 				}
 				else
@@ -107,6 +107,7 @@ class RecursiveCategoriesHelper extends Helper
 									$checked="checked";$style="display:block";
 								}else{$checked="";$style="display:none;";}
 							}
+
 							echo '<div class="item_variation">
 									<div class="">
 										<h4 class="panel-title" style="width: 100%;">
@@ -125,13 +126,14 @@ class RecursiveCategoriesHelper extends Helper
 								<th></th>
 								<th>Maximum Quantity Purchase</th>
 								<th>Current Stock</th>
-								<th>Rate</th>
-								<th>Sales Rate</th>
+								<th>Add Stock</th>
 								<th>MRP</th>
+								<th>Sales Rate</th>
 								<th>Read To Sale</th>
 							</tr>
 							</thead>
 							<tbody>';
+							
 							foreach($item['item_variation_masters'] as $item_variation_master)
 							{  
 								if(!empty($item_variation_master->item_variations[0]))
@@ -144,27 +146,30 @@ class RecursiveCategoriesHelper extends Helper
 								}
 								echo '<tr>';
 								echo '<td style="width:10%">';
-								echo '<input name="'.$i.'[item_id]" type="checkbox"  value="'.$item['id'].'" class="entity_variation'.$item_variation_master['unit_variation']['id'].'"  style="display:none;" '.$chk.'>';
+								echo '<input name="'.$item_variation_master['id'].'[item_id]" type="checkbox"  value="'.$item['id'].'" class="entity_variation entity_variation'.$item_variation_master['unit_variation']['id'].'"  style="display:none;" '.$chk.'>';
 
-								echo '<input name="'.$i.'[item_variation_master_id]" type="textbox"  value="'.$item_variation_master['id'].'" class="entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'].'" '.$disabled.' style="display:none;>';
+								echo '<input name="'.$item_variation_master['id'].'[item_variation_master_id]" type="textbox"  value="'.$item_variation_master['id'].'" class="entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'].'" '.$disabled.' style="display:none;>';
 								if($style=='')
 								{
 									$class='single_item variation'.$item['id'];
 								}else{$class='';}
-								echo '<label style="margin-left:30px;"><input name="'.$i.'[unit_variation_id]" type="checkbox"   value="'.$item_variation_master['unit_variation']['id'].'" class="'.$class.'" '.$disabled.'" '.$chk.' style="'.$style.'">&nbsp;&nbsp;'.$item_variation_master['unit_variation']['quantity_variation'].' '.$item_variation_master['unit_variation']['unit']['longname'].'</label>';
+								echo '<label style="margin-left:30px;"><input name="'.$item_variation_master['id'].'[unit_variation_id]" type="checkbox"   value="'.$item_variation_master['unit_variation']['id'].'" class="'.$class.'" '.$disabled.'" '.$chk.' style="'.$style.'">&nbsp;&nbsp;'.$item_variation_master['unit_variation']['quantity_variation'].' '.$item_variation_master['unit_variation']['unit']['longname'].'</label>';
 								echo '</td><td style="width:20%">';
-								echo $html->control($i.'[maximum_quantity_purchase]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Maximum Quantity Purchase','class'=>'form-control entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->maximum_quantity_purchase]);
-								echo '</td><td style="width:15%">';
-								echo $html->control($i.'[current_stock]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Current Stock','class'=>'form-control entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->current_stock]);
-								echo '</td><td style="width:15%">';
-								echo $html->control($i.'[purchase_rate]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Rate','class'=>'form-control entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->purchase_rate]);
-								echo '</td><td style="width:15%">';
-								echo $html->control($i.'[sales_rate]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Sales Rate','class'=>'form-control sales_rate calc entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->sales_rate]);
+								echo $html->control($item_variation_master['id'].'[maximum_quantity_purchase]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Maximum Quantity Purchase','class'=>'form-control entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->maximum_quantity_purchase,'required']);
 								echo '</td><td style="width:10%">';
-								echo $html->control($i.'[mrp]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'MRP','class'=>'form-control mrp calc entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->mrp]);
-								echo '</td><td style="width:15%">';
+								echo $html->control($item_variation_master['id'].'[current_stock]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Current Stock','class'=>'form-control cStock  entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->current_stock,'required','readonly']);
+								echo '</td><td style="width:10%">';
+								echo $html->control($item_variation_master['id'].'[add_stock]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Add Stock','class'=>'form-control addStock entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->add_stock]);
+								echo '</td><td style="width:12%">';
+								echo $html->control($item_variation_master['id'].'[mrp]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'MRP','class'=>'form-control mrp calc entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->mrp,'required']);
+								echo '</td><td style="width:13%">';
+								echo $html->control($item_variation_master['id'].'[sales_rate]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Sales Rate','class'=>'form-control sales_rate calc entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->sales_rate,'required']);
 								
-								echo $html->select($i.'[ready_to_sale]',$status,['class'=>'form-control entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'label'=>false,$disabled,'style'=>'display:inline !important;float:none;','placeholder'=>'Select...','label'=>false,'value'=>@$item_variation_master->item_variations[0]->ready_to_sale,'style'=>'display:inline !important;float:none;']);
+								echo '<input name="'.$item_variation_master['id'].'[commissions]" type="hidden"  value="'.@$arraySec[@$item->id].'" class="entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'].'" id="commission">';
+								
+								echo $html->control($item_variation_master['id'].'[purchase_rate]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'hidden','placeholder'=>'Rate','class'=>'form-control entity_maximum  purchase_rate entity_maximum '.$item_variation_master['unit_variation']['id'],'style'=>'float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->purchase_rate]);
+								echo '</td><td style="width:15%">';
+								echo $html->select($item_variation_master['id'].'[ready_to_sale]',$status,['class'=>'form-control entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'label'=>false,$disabled,'style'=>'display:inline !important;float:none;','placeholder'=>'Select...','label'=>false,'value'=>@$item_variation_master->item_variations[0]->ready_to_sale,'style'=>'display:inline !important;float:none;']);
 								
 								echo '</td>';
 								echo '</tr>';
@@ -184,7 +189,38 @@ class RecursiveCategoriesHelper extends Helper
 			   
 		}
     }
-
+	
+	
+	function categoryItemVariationsOption($array,$status=null) {
+	    
+		$html = new FormHelper(new \Cake\View\View());
+		if (count($array)) {
+			
+			foreach ($array as $vals) {
+				if($status==1)
+				{
+					echo '<optgroup label="&nbsp;&nbsp;'.$vals['name'].'">';
+				}
+				else
+				{
+					echo '<optgroup label="'.$vals['name'].'">';
+				}
+				if (count($vals['children'])) { 
+						$this->categoryItemVariationsOption($vals['children'],1);
+				}
+				else
+				{
+					foreach($vals['items'] as $item)
+						{   
+							echo '<option value="'.$item['id'].'">'.$item['name'].'</option>';
+						}
+				}
+				
+				echo '</optgroup>';  
+			}
+			   
+		}
+    }
 }
 
                                     

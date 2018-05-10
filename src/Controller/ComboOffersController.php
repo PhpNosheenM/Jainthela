@@ -207,8 +207,13 @@ class ComboOffersController extends AppController
         $this->set(compact('comboOffer', 'cities', 'admins'));
     }
 	
-	    public function edits($id = null)
+	public function edits($id = null)
     {
+		if($id)
+		{
+		   $id = $this->EncryptingDecrypting->decryptData($id);
+		}
+		
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('admin_portal');
         $comboOffer = $this->ComboOffers->get($id, [
@@ -292,9 +297,10 @@ class ComboOffersController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($dir)
     {
         $this->request->allowMethod(['patch', 'post', 'put']);
+		$id = $this->EncryptingDecrypting->decryptData($dir);
         $comboOffer = $this->ComboOffers->get($id);
 		$comboOffer->status='Deactive';
         if ($this->ComboOffers->save($comboOffer)) {

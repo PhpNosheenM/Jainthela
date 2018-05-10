@@ -10,7 +10,7 @@
 <?php $this->set('title', 'City'); ?>
 <div class="page-content-wrap">
     <div class="page-title">                    
-			<h2><span class="fa fa-arrow-circle-o-left"></span>CITY</h2>
+			<h2><span class="fa fa-arrow-circle-o-left"></span> CITY</h2>
 	</div> 
 	 <div class="row">
 				<div class="col-md-4">
@@ -52,11 +52,14 @@
 					     <div class="pull-right">
 						    <div class="pull-left">
 								<?= $this->Form->create('Search',['type'=>'GET']) ?>
+								<?= $this->Html->link(__('<span class="fa fa-plus"></span> Add City'), ['action' => 'index'],['style'=>'margin-top:-30px !important;','class'=>'btn btn-success','escape'=>false]) ?>
 										<div class="form-group" style="display:inline-table">
 											<div class="input-group">
+											
 												<div class="input-group-addon">
 													<span class="fa fa-search"></span>
 												</div>
+												
 												<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
 												<div class="input-group-btn">
 														<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
@@ -87,8 +90,12 @@
 											<td><?= h($city->name) ?></td>
 											<td><?= h($city->status) ?></td>
 											<td class="actions">
-												<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $city->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
-												<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $city->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete ?', $city->id),'escape'=>false]) ?>
+											<?php
+												$city_id = $EncryptingDecrypting->encryptData($city->id);
+											?>
+						
+												<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $city_id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+												<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $city_id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete ?'),'escape'=>false]) ?>
 											</td>
 										</tr>
 										<?php endforeach; ?>

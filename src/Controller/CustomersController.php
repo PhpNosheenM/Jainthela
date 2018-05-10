@@ -18,7 +18,7 @@ class CustomersController extends AppController
 	public function beforeFilter(Event $event)
 	{
 		parent::beforeFilter($event);
-		//$this->Security->setConfig('unlockedActions', ['add']);
+		 $this->Security->setConfig('unlockedActions', ['add','index','edit','delete','view']);
 	}
 
     /**
@@ -26,6 +26,36 @@ class CustomersController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
+	 
+	 public function rating()
+    {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$this->viewBuilder()->layout('admin_portal');
+        $this->paginate = [
+			'limit' => 20
+        ];
+		$ratings = $this->Customers->ItemReviewRatings->find()->contain(['Items','Customers','Sellers']);
+		
+		if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$ratings->where([
+							'OR' => [
+									'Customers.name LIKE' => $search.'%',
+									'Sellers.name LIKE' => $search.'%',
+									'Items.name LIKE' => $search.'%',
+									'ItemReviewRatings.rating LIKE' => $search.'%',
+									'ItemReviewRatings.comment LIKE' => $search.'%',
+									'ItemReviewRatings.created_on LIKE' => $search.'%'
+							]
+			]);
+		}
+		
+		$ratings = $this->paginate($ratings);
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('ratings','paginate_limit'));
+	
+	}
     public function index()
     {
 		$user_id=$this->Auth->User('id');
@@ -35,6 +65,7 @@ class CustomersController extends AppController
             'contain' => ['Cities'],
 			'limit' => 20
         ];
+		
 		$customers = $this->Customers->find()->where(['Customers.city_id'=>$city_id]);
 
 		if ($this->request->is(['get'])){
@@ -102,7 +133,7 @@ class CustomersController extends AppController
 				$this->Flash->success(__('The customer has been saved.'));
 				return $this->redirect(['action' => 'index']);
             }
-
+  
             $this->Flash->error(__('The customer could not be saved. Please, try again.'));
         }
 		$this->set(compact('customer', 'city_id','location_id'));
@@ -117,6 +148,11 @@ class CustomersController extends AppController
      */
     public function edit($id = null)
     {
+		if($id)
+		{
+		   $id = $this->EncryptingDecrypting->decryptData($id);
+		}
+		
   		$user_id=$this->Auth->User('id');
   		$city_id=$this->Auth->User('city_id');
   		$location_id=$this->Auth->User('location_id');
@@ -128,6 +164,7 @@ class CustomersController extends AppController
 
             $customer = $this->Customers->patchEntity($customer, $this->request->getData());
 			         $customer->edited_by = $user_id;
+					 
             if ($this->Customers->save($customer)) {
                 $this->Flash->success(__('The customer has been saved.'));
 
@@ -146,9 +183,10 @@ class CustomersController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($dir)
     {
         $this->request->allowMethod(['post', 'delete']);
+		$id = $this->EncryptingDecrypting->decryptData($dir);
         $customer = $this->Customers->get($id);
         if ($this->Customers->delete($customer)) {
             $this->Flash->success(__('The customer has been deleted.'));

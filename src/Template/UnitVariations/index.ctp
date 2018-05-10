@@ -9,9 +9,9 @@
 </style>
 <?php $this->set('title', 'unit'); ?>
 <div class="page-content-wrap">
-        <div class="page-title">                    
+        <div class="page-title">
 			<h2><span class="fa fa-arrow-circle-o-left"></span> UNIT VARIATION</h2>
-		</div>     
+		</div>
 	<div class="row">
 		<div class="col-md-4">
 			<div class="panel panel-default">
@@ -42,27 +42,28 @@
 		<div class="col-md-8">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title">LIST UNITS</h3>
-				  <div class="pull-right">
-					<div class="pull-left">
-						<?= $this->Form->create('Search',['type'=>'GET']) ?>
-							<div class="form-group" style="display:inline-table">
-								<div class="input-group">
-									<div class="input-group-addon">
-										<span class="fa fa-search"></span>
-									</div>
-									<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
-									<div class="input-group-btn">
-										<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
+					<h3 class="panel-title">LIST UNITS VARIATION</h3>
+					  <div class="pull-right">
+						<div class="pull-left">
+							<?= $this->Form->create('Search',['type'=>'GET']) ?>
+							<?= $this->Html->link(__('<span class="fa fa-plus"></span> Add New'), ['action' => 'index'],['style'=>'margin-top:-30px !important;','class'=>'btn btn-success','escape'=>false]) ?>
+								<div class="form-group" style="display:inline-table">
+									<div class="input-group">
+										<div class="input-group-addon">
+											<span class="fa fa-search"></span>
+										</div>
+										<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
+										<div class="input-group-btn">
+											<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
+										</div>
 									</div>
 								</div>
-							</div>
-						<?= $this->Form->end() ?>
-					</div> 
-				 </div>
-				</div> 
+							<?= $this->Form->end() ?>
+						</div>
+					 </div>
+				</div>
            <div class="panel-body">
-					    <?php $page_no=$this->Paginator->current('unitVariation'); $page_no=($page_no-1)*20; ?>
+			<?php $page_no=$this->Paginator->current('unitVariation'); $page_no=($page_no-1)*20; ?>
 			    <div class="table-responsive">
 				        <table class="table table-bordered">
 					<thead>
@@ -83,8 +84,12 @@
 							<td><?= h($unitVariation->unit->unit_name) ?></td>
 							
 							<td class="actions">
-								<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $unitVariation->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
-								<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $unitVariation->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $unitVariation->id),'escape'=>false]) ?>
+									<?php
+										$unitVariation_id = $EncryptingDecrypting->encryptData($unitVariation->id);
+									?>
+									
+								<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $unitVariation_id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+								<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $unitVariation_id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?'),'escape'=>false]) ?>
 									</td>
 								</tr>
 					            <?php endforeach; ?>

@@ -26,6 +26,11 @@ class ExpressDeliveriesController extends AppController
         $this->paginate = [
             'limit' => 20
         ];
+		 
+		if($id)
+		{
+		   $id = $this->EncryptingDecrypting->decryptData($id);
+		}
 		
         $expressDeliveries =$this->ExpressDeliveries->find()->where(['ExpressDeliveries.city_id'=>$city_id]);
 		
@@ -87,6 +92,7 @@ class ExpressDeliveriesController extends AppController
 
                 return $this->redirect(['action' => 'index']);
             }
+			 
             $this->Flash->error(__('The banner could not be saved. Please, try again.'));
         }
 		 else if ($this->request->is(['get'])){
@@ -174,9 +180,10 @@ class ExpressDeliveriesController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($dir)
     {
         $this->request->allowMethod(['post', 'delete']);
+		$id = $this->EncryptingDecrypting->decryptData($dir);
         $expressDelivery = $this->ExpressDeliveries->get($id);
         if ($this->ExpressDeliveries->delete($expressDelivery)) {
             $this->Flash->success(__('The express delivery has been deleted.'));

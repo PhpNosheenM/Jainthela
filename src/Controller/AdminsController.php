@@ -26,7 +26,7 @@ class AdminsController extends AppController
         // Allow users to register and logout.
         // You should not add the "login" action to allow list. Doing so would
         // cause problems with normal functioning of AuthComponent.
-        $this->Auth->allow(['logout', 'login']);
+        $this->Auth->allow(['logout', 'login', 'add']);
     }
 	public function blackhole($type)
 	{
@@ -48,7 +48,8 @@ class AdminsController extends AppController
 				$city = $this->Admins->Locations->get($user['location_id']);
 				$user['city_id']=$city->id;
 				$state = $this->Admins->Locations->Cities->get($city->id);
-				$user['state_id']=$state->id;
+                $user['state_id']=$state->id;
+				$user['user_type']='Admin';
 				$characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
                 $charactersLength = strlen($characters);
                 $randomString = '';
@@ -111,26 +112,64 @@ class AdminsController extends AppController
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
-    public function add()
+    public function add($id=null)
     {
-        $admin = $this->Admins->newEntity();
-        if ($this->request->is('post')) {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
+		$this->viewBuilder()->layout('admin_portal');
+		 $this->paginate = [
+            'limit' => 20
+        ];
+		
+		$admins =$this->Admins->find()->contain(['Locations','Roles']);
+		
+		if($id)
+		{
+			$admin = $this->Admins->get($id);
+		}
+		else{
+			$admin = $this->Admins->newEntity();
+		}
+		 
+        if ($this->request->is(['post','put'])) {
+			
             $admin = $this->Admins->patchEntity($admin, $this->request->getData());
+			$admin->created_by=$user_id;
+		 
             if ($this->Admins->save($admin)) {
                 $this->Flash->success(__('The admin has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'add']);
             }
             $this->Flash->error(__('The admin could not be saved. Please, try again.'));
         }
-        $locations = $this->Admins->Locations->find('list', ['limit' => 200]);
+		else if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$admins->where([
+							'OR' => [
+									'Admins.name LIKE' => $search.'%',
+									'Admins.email LIKE' => $search.'%',
+									'Admins.mobile_no LIKE' => $search.'%',
+									'Admins.username LIKE' => $search.'%',
+									'Admins.status LIKE' => $search.'%',
+									'Locations.name LIKE' => $search.'%',
+									'Roles.name LIKE' => $search.'%'
+							]
+			]);
+		}
+		
+		$admins = $this->paginate($admins);
+		$paginate_limit=$this->paginate['limit'];
+		
+        $locations = $this->Admins->Locations->find('list', ['limit' => 200])->where(['Locations.city_id'=>$city_id]);
         $roles = $this->Admins->Roles->find('list', ['limit' => 200]);
-        $this->set(compact('admin', 'locations', 'roles'));
+        $this->set(compact('admin', 'locations', 'roles','admins','paginate_limit'));
     }
 
     /**
      * Edit method
-     *
+     * 
      * @param string|null $id Admin id.
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
@@ -142,6 +181,7 @@ class AdminsController extends AppController
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $admin = $this->Admins->patchEntity($admin, $this->request->getData());
+			
             if ($this->Admins->save($admin)) {
                 $this->Flash->success(__('The admin has been saved.'));
 
@@ -149,6 +189,7 @@ class AdminsController extends AppController
             }
             $this->Flash->error(__('The admin could not be saved. Please, try again.'));
         }
+		
         $locations = $this->Admins->Locations->find('list', ['limit' => 200]);
         $roles = $this->Admins->Roles->find('list', ['limit' => 200]);
         $this->set(compact('admin', 'locations', 'roles'));

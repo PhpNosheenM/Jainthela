@@ -3,7 +3,6 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\View\View;
-
 /**
  * Sellers Controller
  *
@@ -13,11 +12,11 @@ use Cake\View\View;
  */
 class SellersController extends AppController
 {
-	
+
 	 public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->Security->setConfig('unlockedActions', ['add']);
+        $this->Security->setConfig('unlockedActions', ['add','edit','index']);
 
     }
 	
@@ -34,30 +33,31 @@ class SellersController extends AppController
 			$user = $this->Auth->identify();
 			if ($user) 
 			{
-				$city = $this->Sellers->Locations->get($user['location_id']);
-				$user['city_id']=$city->id;
-				$user['user_role']='seller';
+				//$city = $this->Sellers->Locations->get($user['location_id']);
+				//$user['city_id']=$city->id;
+				$user['user_type']='Seller';
 				$this->Auth->setUser($user);
 				return $this->redirect(['controller'=>'Sellers','action' => 'index']);
             }
             $this->Flash->error(__('Invalid Username or Password'));
         }	
     }
+	
     /**
      * Index method
      *
      * @return \Cake\Http\Response|void
      */
     public function index()
-    {
+    { $this->Flash->success(__('The seller has been saved.'));
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('seller_layout');
         $this->paginate = [
 			'limit' => 20
         ];
-        $sellers = $this->Sellers->find()->where(['Sellers.location_id'=>$location_id]);
+        $sellers = $this->Sellers->find()->where(['Sellers.city_id'=>$city_id]);
 		if ($this->request->is(['get'])){
 			$search=$this->request->getQuery('search');
 			$sellers->where([
@@ -65,8 +65,10 @@ class SellersController extends AppController
 									'Sellers.name LIKE' => $search.'%',
 									'Sellers.status LIKE' => $search.'%',
 									'Sellers.firm_name LIKE' => $search.'%',
-									'Sellers.email LIKE' => $search.'%',
-									'Sellers.mobile_no LIKE' => $search.'%',
+									'Sellers.firm_address LIKE' => $search.'%',
+									'Sellers.firm_email LIKE' => $search.'%',
+									'Sellers.firm_contact LIKE' => $search.'%',
+									'Sellers.firm_pincode LIKE' => $search.'%',
 									'Sellers.gstin LIKE' => $search.'%',
 									'Sellers.gstin_holder_name LIKE' => $search.'%',
 									'Sellers.registration_date' => $search.'%'
@@ -77,8 +79,7 @@ class SellersController extends AppController
 		$paginate_limit=$this->paginate['limit'];
         $this->set(compact('sellers','paginate_limit'));
     }
-
-    /**
+     /**
      * View method
      *
      * @param string|null $id Seller id.
@@ -87,9 +88,8 @@ class SellersController extends AppController
      */
     public function view($id = null)
     {
-		
         $seller = $this->Sellers->get($id, [
-            'contain' => ['Cities','Items', 'SellerItems', 'SellerRatings']
+            'contain' => ['Cities', 'Categories', 'Ledgers', 'Locations', 'Items', 'SellerItems', 'SellerRatings', 'ReferenceDetails']
         ]);
 
         $this->set('seller', $seller);
@@ -112,23 +112,14 @@ class SellersController extends AppController
             $seller = $this->Sellers->patchEntity($seller, $this->request->getData());
 			$seller->city_id=$city_id;
 			$seller->created_by=$user_id;
-			$seller->registration_date=date('Y-m-d');
+			$registration_date=$this->request->data['registration_date'];
+			$seller->registration_date=date('Y-m-d', strtotime($registration_date));
 			$bill_to_bill_accounting=$seller->bill_to_bill_accounting;
 			$data=$this->Sellers->Locations->get($location_id);
-			if(!empty($seller->reference_details))
-				{
-					foreach($seller->reference_details as $reference_detail)
-					{
-						//$data=$this->Sellers->Locations->get($location_id);
-						$reference_detail->transaction_date = $data->books_beginning_from;
-						$reference_detail->opening_balance = 'yes';
-						
-					}
-				}
-			//pr($seller); exit;
-			 if ($this->Sellers->save($seller)) { 
+		 
+			 if ($this->Sellers->save($seller)) {
 				
-				$accounting_group = $this->Sellers->Ledgers->AccountingGroups->find()->where(['supplier'=>1])->first();
+				$accounting_group = $this->Sellers->Ledgers->AccountingGroups->find()->where(['seller'=>1])->first();
 				$ledger = $this->Sellers->Ledgers->newEntity();
 				$ledger->name = $seller->firm_name;
 				$ledger->accounting_group_id = $accounting_group->id;
@@ -164,9 +155,8 @@ class SellersController extends AppController
 				}
                 $this->Flash->success(__('The seller has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'add']);
             }
-			 
             $this->Flash->error(__('The seller could not be saved. Please, try again.'));
         }
 		//$categories = $this->Sellers->Categories->find('threaded')->contain(['Items']);
@@ -175,7 +165,6 @@ class SellersController extends AppController
         
         $this->set(compact('seller','locations'));
     }
-	
 
     /**
      * Edit method
@@ -190,10 +179,14 @@ class SellersController extends AppController
 		$city_id=$this->Auth->User('city_id'); 
 		$this->viewBuilder()->layout('admin_portal');
         $seller = $this->Sellers->get($id, [
-            'contain' => []
+            'contain' => ['SellerDetails']
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $seller = $this->Sellers->patchEntity($seller, $this->request->getData());
+			$seller->city_id=$city_id;
+			$seller->created_by=$user_id;
+			$registration_date=$this->request->data['registration_date'];
+			$seller->registration_date=date('Y-m-d', strtotime($registration_date));
             if ($this->Sellers->save($seller)) {
                 $this->Flash->success(__('The seller has been saved.'));
 
@@ -204,8 +197,15 @@ class SellersController extends AppController
      
         $this->set(compact('seller'));
     }
-	
-	  public function sellerItem($id = null)
+
+    /**
+     * Delete method
+     *
+     * @param string|null $id Seller id.
+     * @return \Cake\Http\Response|null Redirects to index.
+     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     */
+   public function sellerItem($id = null)
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 

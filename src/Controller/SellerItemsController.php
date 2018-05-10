@@ -27,12 +27,33 @@ class SellerItemsController extends AppController
      */
     public function index()
     {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
+		$this->viewBuilder()->layout('admin_portal');
         $this->paginate = [
-            'contain' => ['Items', 'Sellers']
+			'contain' => ['Items', 'Sellers','Categories'],
+			'limit' => 20
         ];
-        $sellerItems = $this->paginate($this->SellerItems);
-
-        $this->set(compact('sellerItems'));
+		
+	/* 	if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$SellerItems->where([
+							'OR' => [
+									'Categories.name LIKE' => $search.'%',
+									'Items.link_name LIKE' => $search.'%',
+									'commission_percentage.link_name LIKE' => $search.'%',
+									'commission_created_on.link_name LIKE' => $search.'%',
+									'expiry_on_date.link_name LIKE' => $search.'%',
+									'Sellers.status LIKE' => $search.'%'
+							]
+			]);
+		} */
+		
+        $SellerItems = $this->SellerItems->find();
+        $SellerItems = $this->paginate($this->SellerItems);
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('SellerItems','paginate_limit'));
     }
 
     /**
@@ -137,14 +158,13 @@ class SellerItemsController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('seller_layout');
         $itemVariation = $this->SellerItems->ItemVariations->newEntity();
         if ($this->request->is('post')) 
-		{
+		{ 
 			$masterIds=[];$ItemIds=[];
 			$arr=$this->request->getData(); $i=1; 
-            
-			
+         
 			foreach($arr as $key => $csm)
 			{
 				
@@ -154,10 +174,10 @@ class SellerItemsController extends AppController
 				
 				$is_exist = $this->SellerItems->ItemVariations->find()->where(['seller_id'=>$user_id, 'item_id'=>@$arr[@$key]['item_id'],'item_variation_master_id'=>$arr[$key]['item_variation_master_id']])->count();
 				if($is_exist>0)
-				{
+				{ 
 					$query1 = $this->SellerItems->ItemVariations->query();
 					  $query1->update()
-					  ->set(['maximum_quantity_purchase' =>$csm['maximum_quantity_purchase'],'current_stock'=>$csm['current_stock'],'purchase_rate'=>$csm['purchase_rate'],'sales_rate'=>$csm['sales_rate'],'mrp'=>$csm['mrp'],'ready_to_sale'=>$csm['ready_to_sale']])
+					  ->set(['maximum_quantity_purchase' =>$csm['maximum_quantity_purchase'],'current_stock'=>$csm['current_stock'],'add_stock'=>$csm['add_stock'],'purchase_rate'=>$csm['purchase_rate'],'sales_rate'=>$csm['sales_rate'],'mrp'=>$csm['mrp'],'ready_to_sale'=>$csm['ready_to_sale']])
 					  ->where(['seller_id'=>$user_id,'item_id'=>$arr[$key]['item_id'],'item_variation_master_id'=>$csm['item_variation_master_id']])
 					  ->execute();
 					  unset($arr[$key]);
@@ -209,7 +229,7 @@ class SellerItemsController extends AppController
 			if(sizeof($arr)>0)
 			{ 
 			$itemVariation = $this->SellerItems->ItemVariations->newEntities(array_values($arr));
-			//pr($itemVariation);exit;
+			
 				if ($this->SellerItems->ItemVariations->saveMany($itemVariation)) {
 					$this->Flash->success(__('The seller item has been saved.'));
 
@@ -222,12 +242,13 @@ class SellerItemsController extends AppController
 		
 		$sellerItems = $this->SellerItems->find()
 							->where(['SellerItems.seller_id'=>$user_id]);
-								
+		$sellerItemCommision=[];						
 		foreach($sellerItems as $sellerItem)
 		{
-			$seller_item[]=$sellerItem->item_id;
+			$seller_item[] = $sellerItem->item_id;
+			$sellerItemCommision[$sellerItem->item_id]  = $sellerItem->commission_percentage;
 		}
-		//$seller_item[]=8;
+		
 		$categories = $this->SellerItems->Categories->find('threaded');
 							$categories->select(['total_item'=>$categories->func()->count('Items.id')])
 							->innerJoinWith('Items',function($q) use($user_id,$seller_item){
@@ -239,10 +260,8 @@ class SellerItemsController extends AppController
 							])
 							->group(['Categories.id'])
 							->autoFields(true);
-		//pr($categories->toArray());
-		//exit;					
-			
-        $this->set(compact('itemVariation', 'categories'));
+		
+        $this->set(compact('itemVariation', 'categories','sellerItemCommision'));
     }
     /**
      * Edit method
@@ -325,6 +344,12 @@ class SellerItemsController extends AppController
 			}
         }
 		$this->set(compact('sellers','sellerItemApproval'));
+	}
+	public function getItemInfo()
+	{
+		$item_id = $this->request->query('item_id');
+		$item = $this->SellerItems->Items->find()->where(['Items.id'=>@$item_id])->contain(['ItemVariationMasters'=>['ItemVariations','UnitVariations'=>['Units']]])->first();
+		$this->set(compact('item'));
 	}
 	public function getItemVariationDetail()
 	{
