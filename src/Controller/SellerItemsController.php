@@ -161,7 +161,7 @@ class SellerItemsController extends AppController
 		$this->viewBuilder()->layout('seller_layout');
         $itemVariation = $this->SellerItems->ItemVariations->newEntity();
         if ($this->request->is('post')) 
-		{ 
+		{
 			$masterIds=[];$ItemIds=[];
 			$arr=$this->request->getData(); $i=1; 
          
@@ -260,7 +260,7 @@ class SellerItemsController extends AppController
 							])
 							->group(['Categories.id'])
 							->autoFields(true);
-		
+		pr($categories->ToArray()); exit;
         $this->set(compact('itemVariation', 'categories','sellerItemCommision'));
     }
     /**

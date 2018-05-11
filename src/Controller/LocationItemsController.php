@@ -1,8 +1,10 @@
 <?php
 namespace App\Controller;
-
+use Cake\Filesystem\Folder;
+use Cake\Filesystem\File;
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\View\View;
 /**
  * LocationItems Controller
  *
@@ -12,21 +14,63 @@ use App\Controller\AppController;
  */
 class LocationItemsController extends AppController
 {
+	public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Security->setConfig('unlockedActions', ['index']);
 
+    }
     /**
      * Index method
      *
      * @return \Cake\Http\Response|void
      */
-    public function index()
+    public function index($id = null)
     {
+		$location_id=$this->Auth->User('location_id');
+		$user_id=$this->Auth->User('id');
+		$this->viewBuilder()->layout('admin_portal');
         $this->paginate = [
-            'contain' => ['Items', 'ItemVariations', 'Locations']
+            'limit' => 20
         ];
-        $locationItems = $this->paginate($this->LocationItems);
-
-        $this->set(compact('locationItems'));
+		 
+		$locationItem = $this->LocationItems->newEntity();
+		if ($this->request->is('post')) 
+		{
+			$item_id=$this->request->data('item_id');
+			$item_variation_master_ids=$this->request->data('item_variation_master_id');
+			$statuss=$this->request->data('status');
+			 $t=0;
+			 foreach($statuss as $status){
+				 
+				$locationItem = $this->LocationItems->newEntity();
+				$locationItem->location_id=$location_id;
+				$locationItem->item_id=$item_id;
+				$locationItem->item_variation_master_id=$item_variation_master_ids[$t];
+				$locationItem->status=$status;
+				
+				if ($this->LocationItems->save($locationItem)) {
+					
+				}
+				$t++;
+			 }
+			 
+		}	
+		$Items=$this->LocationItems->ItemVariationMasters->Items->find('list');
+		 
+        
+		$paginate_limit=$this->paginate['limit'];
+		$this->set(compact('locationItems','locationItem','paginate_limit','Items'));
     }
+ 
+	public function getItemInfo()
+	{
+		$location_id=$this->Auth->User('location_id');
+		$item_id = $this->request->query('item_id'); 
+		$item = $this->LocationItems->ItemVariationMasters->Items->find()->where(['Items.id'=>@$item_id])->contain(['ItemVariationMasters'=>['ItemVariations','UnitVariations'=>['Units']]])->first();
+		 $check_master=$this->LocationItems->find()->where(['item_id'=>$item_id,'location_id'=>$location_id]);
+		$this->set(compact('item','check_master'));
+	}
 
     /**
      * View method
@@ -51,6 +95,7 @@ class LocationItemsController extends AppController
      */
     public function add()
     {
+		
         $locationItem = $this->LocationItems->newEntity();
         if ($this->request->is('post')) {
             $locationItem = $this->LocationItems->patchEntity($locationItem, $this->request->getData());

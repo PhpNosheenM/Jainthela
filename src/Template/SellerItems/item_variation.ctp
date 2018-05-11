@@ -47,12 +47,9 @@ padding: 10px 5px;
 					</center>
 				</div>
 			</div>
-			
-						
-			
 			<?= $this->Form->end() ?>
 		</div>
-	</div>                    	
+	</div>
 </div>
 <?php
 $js='
