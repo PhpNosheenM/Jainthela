@@ -149,7 +149,7 @@ class SellerItemsController extends AppController
 			
         }
         $categories = $this->SellerItems->Categories->find('threaded')->contain(['Items']);
-		//pr($categories->toArray());exit;
+		
         $sellers = $this->SellerItems->Sellers->find('list');
         $this->set(compact('sellerItem', 'categories', 'sellers'));
     }
@@ -249,7 +249,7 @@ class SellerItemsController extends AppController
 			$sellerItemCommision[$sellerItem->item_id]  = $sellerItem->commission_percentage;
 		}
 		
-		$categories = $this->SellerItems->Categories->find('threaded');
+		/*$categories = $this->SellerItems->Categories->find('threaded');
 							$categories->select(['total_item'=>$categories->func()->count('Items.id')])
 							->innerJoinWith('Items',function($q) use($user_id,$seller_item){
 									return $q->where(['Items.id IN'=>$seller_item]);
@@ -259,8 +259,19 @@ class SellerItemsController extends AppController
 							}
 							])
 							->group(['Categories.id'])
+							->autoFields(true);*/
+		$categories = $this->SellerItems->Categories->find('threaded');
+							$categories
+							->contain(['Items'=>function($q) use($user_id,$seller_item){
+								return $q->where(['Items.id IN'=>$seller_item]);
+							}
+							])
+							->group(['Categories.id'])
 							->autoFields(true);
+<<<<<<< HEAD
 		pr($categories->ToArray()); exit;
+=======
+>>>>>>> c1688719f4f668e4bccb5490fb856475f62bc6ab
         $this->set(compact('itemVariation', 'categories','sellerItemCommision'));
     }
     /**

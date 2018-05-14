@@ -60,9 +60,13 @@ class LocationsTable extends Table
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
+        $this->belongsTo('FinancialYears');
         $this->belongsTo('Cities', [
             'foreignKey' => 'city_id',
             'joinType' => 'INNER'
+        ]);
+        $this->hasMany('AccountingGroups', [
+            'foreignKey' => 'location_id'
         ]);
         $this->hasMany('AccountingEntries', [
             'foreignKey' => 'location_id'

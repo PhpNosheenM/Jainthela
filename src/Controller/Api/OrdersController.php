@@ -72,7 +72,7 @@ class OrdersController extends AppController
 
           $payableAmount = number_format(0, 2);
           $grand_total1=0;
-
+			$order_details = [];
         if(!empty($orders_details_data->toArray()))
         {
           //pr($orders_details_data->toArray());exit;
@@ -96,7 +96,7 @@ class OrdersController extends AppController
           $categories = $this->Orders->find()
           ->where(['customer_id' => $customer_id])
           ->contain(['OrderDetails'=>['ItemVariations'=>['ItemVariationMasters','Items'=>['Categories']]]]);
-
+			$category = [];
           if(!empty($categories->toArray()))
           {
               $category_arr = [];
