@@ -20,12 +20,19 @@ class AccountingGroupsController extends AppController
      */
     public function index()
     {
+        $user_id=$this->Auth->User('id');
+        $city_id=$this->Auth->User('city_id'); 
+        $location_id=$this->Auth->User('location_id'); 
+        $state_id=$this->Auth->User('state_id'); 
+        $this->viewBuilder()->layout('admin_portal');
         $this->paginate = [
             'contain' => ['NatureOfGroups', 'ParentAccountingGroups', 'Locations']
         ];
         $accountingGroups = $this->paginate($this->AccountingGroups);
+        $natureOfGroups = $this->AccountingGroups->NatureOfGroups->find('list');
+        $parentAccountingGroups = $this->AccountingGroups->ParentAccountingGroups->find('list')->where(['ParentAccountingGroups.location_id'=>$location_id]);
 
-        $this->set(compact('accountingGroups'));
+        $this->set(compact('accountingGroups','natureOfGroups','parentAccountingGroups'));
     }
 
     /**
@@ -51,6 +58,12 @@ class AccountingGroupsController extends AppController
      */
     public function add()
     {
+        $user_id=$this->Auth->User('id');
+        $city_id=$this->Auth->User('city_id'); 
+        $location_id=$this->Auth->User('location_id'); 
+        $state_id=$this->Auth->User('state_id'); 
+        $this->viewBuilder()->layout('admin_portal');
+
         $accountingGroup = $this->AccountingGroups->newEntity();
         if ($this->request->is('post')) {
             $accountingGroup = $this->AccountingGroups->patchEntity($accountingGroup, $this->request->getData());

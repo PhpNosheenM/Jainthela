@@ -37,6 +37,7 @@ class LedgersController extends AppController
             $ledger->opening_balance_value = $this->request->getData()['opening_balance_value'];
             $ledger->debit_credit = $this->request->getData()['debit_credit'];
 			$data=$this->Ledgers->Locations->get($location_id);
+			$ledger->location_id = $location_id;
 			//pr($data->books_beginning_from); exit;
 			//pr($ledger); exit;
             if ($this->Ledgers->save($ledger)) 
@@ -76,7 +77,7 @@ class LedgersController extends AppController
 			$debtorArray[]= $accountingGroupdebitor->id;
 		}
 		$datadebtor[]=$SundryDebtor->id;
-		$SundryCredior = $this->Ledgers->AccountingGroups->find('all')->where(['supplier'=>1])->first();
+		$SundryCredior = $this->Ledgers->AccountingGroups->find('all')->where(['seller'=>1])->first();
 		$accountingGroupcreditors = $this->Ledgers->AccountingGroups
 							->find('children', ['for' => $SundryCredior->id])
 							->find('all');
