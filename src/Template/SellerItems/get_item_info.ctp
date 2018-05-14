@@ -30,16 +30,16 @@
 	{  
 		if(!empty($item_variation_master->item_variations[0]))
 		{
-			$chk="checked";$disabled=''; $style='display:none;';
+			$chk="checked";$disabled=''; $style='display:none;'; $v_class='no_edit';
 		}
 		else
 		{
-			$chk="";$disabled='disabled';$style='';
+			$chk="";$disabled='disabled';$style=''; $v_class='';
 		}
 	?>
 		<tr>
 		<td style="width:10%">
-		<input name="<?php echo $item_variation_master->id;?>[item_id]" type="checkbox"  value="<?php echo $item->id; ?>" class="entity_variation entity_variation<?php echo $item_variation_master->unit_variation->id;?>"  style="display:none;" <?php echo $chk; ?>>
+		<input name="<?php echo $item_variation_master->id;?>[item_id]" type="checkbox"  value="<?php echo $item->id; ?>" class="entity_variation entity_variation<?php echo $item_variation_master->unit_variation->id;  echo ' '; echo $v_class; ?>"  style="display:none;" <?php echo $chk; ?>>
 
 		<input name="<?php echo $item_variation_master->id;?>[item_variation_master_id]" type="textbox"  value="<?php echo $item_variation_master->id;?>" class="entity_maximum entity_maximum<?php echo $item_variation_master->unit_variation->id;?>" <?php echo $disabled; ?> style="display:none;" >
 		<?php 
@@ -62,9 +62,9 @@
 		<?php echo $this->Form->control($item_variation_master->id.'[mrp]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'MRP','class'=>'form-control mrp calc entity_maximum entity_maximum'.$item_variation_master->unit_variation->id,'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->mrp,'required']); ?>
 		</td><td style="width:13%">
 		<?php 
-		echo $this->Form->control($item_variation_master->id.'[sales_rate]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Sales Rate','class'=>'form-control sales_rate calc entity_maximum entity_maximum'.$item_variation_master->unit_variation->id,'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->sales_rate,'required']);
+		echo $this->Form->control($item_variation_master->id.'[sales_rate]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Sales Rate','class'=>'form-control sales_rate  entity_maximum entity_maximum'.$item_variation_master->unit_variation->id,'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->sales_rate,'required']);
 		?>
-		<input name="<?php echo $item_variation_master->id;?>[commissions]" type="hidden"  value="<?php echo @$arraySec[@$item->id];?>" class="entity_maximum entity_maximum<?php echo $item_variation_master->unit_variation->id;?>" id="commission">
+		<input name="<?php echo $item_variation_master->id;?>[commissions]" type="hidden"  value="<?php echo @$item->seller_items[0]->commission_percentage; ?>" class="entity_maximum entity_maximum<?php echo $item_variation_master->unit_variation->id; ?>" id="commission">
 		<?php 
 		echo $this->Form->control($item_variation_master->id.'[purchase_rate]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'hidden','placeholder'=>'Rate','class'=>'form-control entity_maximum  purchase_rate entity_maximum '.$item_variation_master['unit_variation']['id'],'style'=>'float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->purchase_rate]);
 		?>

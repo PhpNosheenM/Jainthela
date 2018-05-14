@@ -36,19 +36,19 @@ class RecursiveCategoriesHelper extends Helper
 							<h4 class="panel-title" style="width: 100%;">
 								<input type="checkbox" class="check_all">
 								<a href="#accOneColOne'.$vals['id'].'">
-									'.$vals['name'].'
+									'.$vals['name'].' <i class="fa fa-angle-down"></i>
 								</a>';
-								echo $html->control('commission_all', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Commission in %','class'=>'form-control col-sm-3 commission_all','style'=>'display:inline !important;width: 15%;float:none;']);
+								echo $html->control('commission_all', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Commission in %','class'=>'form-control col-sm-3 commission_all','style'=>'display:inline !important;width: 122px;float:none;']);
 						echo	'</h4>
 						</div>';
 				if (count($vals['children'])) {
-					echo '<div class="panel-body" id="accOneColOne'.$vals['id'].'">';
+					echo '<div class="panel-body" id="accOneColOne'.$vals['id'].'"  style="margin-left:20px; display:none;">';
 						$this->categoryItems($vals['children']);
 					echo '</div>';
 				}
 				else
 				{
-					echo '<div class="panel-body" id="accOneColOne'.$vals['id'].'" style="margin-left:20px;">';
+					echo '<div class="panel-body" id="accOneColOne'.$vals['id'].'" style="margin-left:20px; display:none;">';
 					$i=0;
 						foreach($vals['items'] as $item)
 						{ 
@@ -58,7 +58,7 @@ class RecursiveCategoriesHelper extends Helper
 							}else{$chk ="";$disabled="disabled";}
 							echo '<input name="category_ids[]" type="hidden"  value="'.$item['category_id'].'" >';
 							echo '<label><input name="item_ids[]" type="checkbox"  value="'.$item['id'].'" class="single_item" '.$chk.'>&nbsp;&nbsp;'.$item['name'].'</label>';
-							echo $html->control('commissions[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Commission in %','class'=>'form-control','style'=>'display:inline !important;width: 15%;float:none;margin: 1%;',$disabled,'item_id'=>$item['id'],'value'=>@$item->seller_items[0]->commission_percentage]);
+							echo $html->control('commissions[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Commission in %','class'=>'form-control','style'=>'display:inline !important;width: 122px;float:none;margin: 1%;',$disabled,'item_id'=>$item['id'],'value'=>@$item->seller_items[0]->commission_percentage]);
 							echo '<br/>';
 						}
 						

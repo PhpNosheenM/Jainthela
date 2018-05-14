@@ -75,31 +75,49 @@ $js='
 		$(document).on("change",".check_all_item",function(){
 			if($(this).is(":checked"))
 			{
-				$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("checked",true);
-				$(this).closest(".item_variation").find("input.entity_variation[type=checkbox]").prop("checked",true);
-				$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("disabled",false);  
-				$(this).closest(".item_variation").find("input.entity_maximum").prop("disabled",false);
-				$(this).closest(".item_variation").find("select.entity_maximum").prop("disabled",false);
+				if($(this).closest(".item_variation").find("input.no_edit[type=checkbox]:checked"))
+				{
+				}
+				else
+				{
+					$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("checked",true);
+					$(this).closest(".item_variation").find("input.entity_variation[type=checkbox]").prop("checked",true);
+					$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("disabled",false);  
+					$(this).closest(".item_variation").find("input.entity_maximum").prop("disabled",false);
+					$(this).closest(".item_variation").find("select.entity_maximum").prop("disabled",false);
+				}
+				
 			}
 			else
 			{
-				$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("checked",false);
-				$(this).closest(".item_variation").find("input.entity_variation[type=checkbox]").prop("checked",false);
-				$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("disabled",true);
-				$(this).closest(".item_variation").find("input.entity_maximum").prop("disabled",true);
-				$(this).closest(".item_variation").find("select.entity_maximum").prop("disabled",true);
+				if($(this).closest(".item_variation").find("input.no_edit[type=checkbox]:checked"))
+				{
+				}
+				else
+				{
+					$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("checked",false);
+					$(this).closest(".item_variation").find("input.entity_variation[type=checkbox]").prop("checked",false);
+					$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("disabled",true);
+					$(this).closest(".item_variation").find("input.entity_maximum").prop("disabled",true);
+					$(this).closest(".item_variation").find("select.entity_maximum").prop("disabled",true);
+				}
 			}
 		});
-		$(document).on("blur",".calc",function(){
+		$(document).on("blur",".sales_rate",function(){
 			var sales_rate = parseFloat($(this).closest("tr").find("td input.sales_rate").val());
 			var mrp        = parseFloat($(this).closest("tr").find("td input.mrp").val());
 			if(!isNaN(sales_rate) & !isNaN(mrp))
 			{
 				if(sales_rate > mrp)
 				{
-					alert("Sales rate grater than mrp,Do you want to submit.");
-					$(this).closest("tr").find("td input.sales_rate").val(mrp)
+					alert("Sales rate grater than mrp?.");
+					$(this).closest("tr").find("td input.sales_rate").val(mrp);
+					sales_rate=mrp;
+
 				}
+				var commission = parseFloat($(this).closest("tr").find("td input#commission").val()); 
+				var amt_after_commission = sales_rate-((sales_rate*commission)/100);
+				$(this).closest("tr").find("td input.purchase_rate").val(round(amt_after_commission));
 			}
 		});
 		
@@ -111,7 +129,7 @@ $js='
 			
 			if(!isNaN(sales_rate))
 			{ 
-				var amt_after_commission = sales_rate-((sales_rate*commission)/100); 
+				var amt_after_commission = sales_rate-((sales_rate*commission)/100);
 				$(this).closest("tr").find("td input.purchase_rate").val(round(amt_after_commission)); 
 			}
 		});
