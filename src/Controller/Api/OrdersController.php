@@ -67,7 +67,7 @@ class OrdersController extends AppController
     		$order_id=$this->request->query('order_id');
         $city_id=$this->request->query('city_id');
         $orders_details_data = $this->Orders->find()
-          ->contain(['OrderDetails'=>['ItemVariations'=>['Items','UnitVariations'=>['Units']]]])
+          ->contain(['OrderDetails'=>['ItemVariations'=>['ItemVariationMasters','Items','UnitVariations'=>['Units']]]])
           ->where(['Orders.id'=>$order_id,'Orders.customer_id'=>$customer_id]);
 
           $payableAmount = number_format(0, 2);

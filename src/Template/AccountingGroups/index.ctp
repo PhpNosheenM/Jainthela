@@ -1,107 +1,131 @@
+<style>
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    border-color: transparent;
+    padding: 8px 8px !important; 
+    background: #F0F4F9;
+    color: #656C78;
+    font-size: 13px;
+}
+</style>
+<?php $this->set('title', 'accounting Groups'); ?>
+<div class="page-content-wrap">
+        <div class="page-title">                    
+            <h2><span class="fa fa-arrow-circle-o-left"></span>Ledger</h2>
+        </div> 
+    <div class="row">
+                <div class="col-md-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Create Ledger</h3>
+                        </div>
+                        <?= $this->Form->create($accountingGroups,['id'=>"jvalidate"]) ?>
+                                <div class="panel-body">
+                                    <div class="form-group">
+                                        <label>Name</label>
+                                        <?= $this->Form->control('name',['class'=>'form-control','placeholder'=>'Name','label'=>false]) ?>
+                                        <span class="help-block"></span>
+                                    </div>
+                                    
+                                    <div class="form-group">           
+                                    <label >Opening balance</label>
+                                        <div class="">  
+                                            <div class="col-md-8">
+                                                   <?php echo $this->Form->control('parent_id',['class'=>'form-control input-sm select2me   calculation','label'=>false,'empty'=>'-Primary-', 'options' => $parentAccountingGroups]); ?>
+                                            </div>
+                                                <div class="col-md-4">  
+                                                    <?php echo $this->Form->control('nature_of_group_id',['class'=>'form-control input-sm select2me attributeRem','label'=>false,'empty'=>'-Nature of Group-', 'options' => $natureOfGroups,'required'=>'required']); ?>
+                                                
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel-footer">
+                                    <div class="col-md-offset-3 col-md-4">
+                                        <?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
+                                    </div>
+                                </div>
+                                
+                      <?= $this->Form->end() ?>
+                    </div>  
+                </div>  
+                <div class="col-md-8">
+                   <div class="panel panel-default">
+                      <div class="panel-heading">
+                        <h3 class="panel-title">List Ledger</h3>
+                         <div class="pull-right">
+                            <div class="pull-left">
+                                    <?= $this->Form->create('Search',['type'=>'GET']) ?>
+                                        <div class="form-group" style="display:inline-table">
+                                            <div class="input-group">
+                                                <div class="input-group-addon">
+                                                    <span class="fa fa-search"></span>
+                                                </div>
+                                                <?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
+                                                    <div class="input-group-btn">
+                                                        <?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
+                                                    </div>
+                                            </div>
+                                        </div>
+                                    <?= $this->Form->end() ?>
+                            </div>     
+                         </div> 
+                        </div>  
+                      <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                        <tr>
+                                        <th><?= ('SN.') ?></th>
+                                        <th><?= ('Name') ?></th>
+                                        <th><?= ('Accounting Groups') ?></th>
+                                        <th scope="col" class="actions"><?= __('Actions') ?></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>                                            
+                                            <?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1);
+                                                    //pr($ledgers->toArray()); exit;
+                                            foreach ($ledgers as $state): ?>
+                                            <tr>
+                                            <td><?= $this->Number->format(++$i) ?></td>
+                                            <td><?= h($state->name) ?></td>
+                                            <td><?= h($state->accounting_group->name) ?></td>
+                                            <td class="actions">
+                                            <?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $state->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+                                            <?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $state->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete ?', $state->id),'escape'=>false]) ?>
+                                            </td>
+                                            </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                        </div>
+                        <div class="panel-footer">
+                            <div class="paginator pull-right">
+                                <ul class="pagination">
+                                    <?= $this->Paginator->first(__('First')) ?>
+                                    <?= $this->Paginator->prev(__('Previous')) ?>
+                                    <?= $this->Paginator->numbers() ?>
+                                    <?= $this->Paginator->next(__('Next')) ?>
+                                    <?= $this->Paginator->last(__('Last')) ?>
+                                </ul>
+                                <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+                            </div>
+                        </div>
+                    </div>
+               </div>
+     </div>
+</div>  
+<?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
+<?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
 <?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\AccountingGroup[]|\Cake\Collection\CollectionInterface $accountingGroups
- */
+   $js='var jvalidate = $("#jvalidate").validate({
+        ignore: [],
+        rules: {                                            
+                name: {
+                        required: true,
+                },
+                
+            }                                        
+        });';  
+echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom'));       
 ?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('New Accounting Group'), ['action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Nature Of Groups'), ['controller' => 'NatureOfGroups', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Nature Of Group'), ['controller' => 'NatureOfGroups', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Locations'), ['controller' => 'Locations', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Location'), ['controller' => 'Locations', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Ledgers'), ['controller' => 'Ledgers', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Ledger'), ['controller' => 'Ledgers', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="accountingGroups index large-9 medium-8 columns content">
-    <h3><?= __('Accounting Groups') ?></h3>
-    <table cellpadding="0" cellspacing="0">
-        <thead>
-            <tr>
-                <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('nature_of_group_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('name') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('parent_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('location_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('customer') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('supplier') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('purchase_voucher_first_ledger') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('purchase_voucher_purchase_ledger') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('purchase_voucher_all_ledger') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('sale_invoice_party') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('sale_invoice_sales_account') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('credit_note_party') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('credit_note_sales_account') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('bank') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('cash') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('purchase_invoice_purchase_account') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('purchase_invoice_party') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('receipt_ledger') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('payment_ledger') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('credit_note_first_row') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('credit_note_all_row') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('debit_note_first_row') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('debit_note_all_row') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('sales_voucher_first_ledger') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('sales_voucher_sales_ledger') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('sales_voucher_all_ledger') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('journal_voucher_ledger') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('contra_voucher_ledger') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($accountingGroups as $accountingGroup): ?>
-            <tr>
-                <td><?= $this->Number->format($accountingGroup->id) ?></td>
-                <td><?= $accountingGroup->has('nature_of_group') ? $this->Html->link($accountingGroup->nature_of_group->name, ['controller' => 'NatureOfGroups', 'action' => 'view', $accountingGroup->nature_of_group->id]) : '' ?></td>
-                <td><?= h($accountingGroup->name) ?></td>
-                <td><?= $accountingGroup->has('parent_accounting_group') ? $this->Html->link($accountingGroup->parent_accounting_group->name, ['controller' => 'AccountingGroups', 'action' => 'view', $accountingGroup->parent_accounting_group->id]) : '' ?></td>
-                <td><?= $accountingGroup->has('location') ? $this->Html->link($accountingGroup->location->name, ['controller' => 'Locations', 'action' => 'view', $accountingGroup->location->id]) : '' ?></td>
-                <td><?= h($accountingGroup->customer) ?></td>
-                <td><?= h($accountingGroup->supplier) ?></td>
-                <td><?= h($accountingGroup->purchase_voucher_first_ledger) ?></td>
-                <td><?= h($accountingGroup->purchase_voucher_purchase_ledger) ?></td>
-                <td><?= h($accountingGroup->purchase_voucher_all_ledger) ?></td>
-                <td><?= $this->Number->format($accountingGroup->sale_invoice_party) ?></td>
-                <td><?= $this->Number->format($accountingGroup->sale_invoice_sales_account) ?></td>
-                <td><?= $this->Number->format($accountingGroup->credit_note_party) ?></td>
-                <td><?= $this->Number->format($accountingGroup->credit_note_sales_account) ?></td>
-                <td><?= $this->Number->format($accountingGroup->bank) ?></td>
-                <td><?= h($accountingGroup->cash) ?></td>
-                <td><?= h($accountingGroup->purchase_invoice_purchase_account) ?></td>
-                <td><?= h($accountingGroup->purchase_invoice_party) ?></td>
-                <td><?= h($accountingGroup->receipt_ledger) ?></td>
-                <td><?= h($accountingGroup->payment_ledger) ?></td>
-                <td><?= h($accountingGroup->credit_note_first_row) ?></td>
-                <td><?= h($accountingGroup->credit_note_all_row) ?></td>
-                <td><?= h($accountingGroup->debit_note_first_row) ?></td>
-                <td><?= h($accountingGroup->debit_note_all_row) ?></td>
-                <td><?= h($accountingGroup->sales_voucher_first_ledger) ?></td>
-                <td><?= h($accountingGroup->sales_voucher_sales_ledger) ?></td>
-                <td><?= h($accountingGroup->sales_voucher_all_ledger) ?></td>
-                <td><?= h($accountingGroup->journal_voucher_ledger) ?></td>
-                <td><?= h($accountingGroup->contra_voucher_ledger) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['action' => 'view', $accountingGroup->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $accountingGroup->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $accountingGroup->id], ['confirm' => __('Are you sure you want to delete # {0}?', $accountingGroup->id)]) ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
-    </div>
-</div>

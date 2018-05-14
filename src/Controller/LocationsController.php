@@ -262,6 +262,7 @@ class LocationsController extends AppController
 						$accountingGroup->credit_note_all_row=1;
 						$accountingGroup->receipt_ledger=1;
 						$accountingGroup->debit_note_all_row=1;
+						$accountingGroup->purchase_invoice_purchase_account=1;
 					}
 					if($accountingGroup->name=='Sales Accounts')
 					{
@@ -387,6 +388,7 @@ class LocationsController extends AppController
 				$accountingGroup->supplier=1;
 				$accountingGroup->location_id=$location->id;
 				$accountingGroup->purchase_voucher_party=1;
+				$accountingGroup->purchase_invoice_party=1;
 				$accountingGroup->purchase_voucher_first_ledger=1;
 				$accountingGroup->credit_note_all_row=1;
 				$accountingGroup->credit_note_first_row=1;
