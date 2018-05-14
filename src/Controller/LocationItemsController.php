@@ -55,7 +55,7 @@ class LocationItemsController extends AppController
 				$check_values=$this->LocationItems->find()->where(['LocationItems.location_id'=>$location_id,'LocationItems.item_id'=>$item_id,'LocationItems.item_variation_master_id'=>$item_variation_master_ids[$t]])->contain(['ItemVariationMasters'])->first();
 				@$updated_id=$check_values->id;
 				@$unit_variation_id=$check_values->item_variation_master->unit_variation_id;
-			 
+			
 					if(empty($check_count)){
 						 $item_variations = $this->LocationItems->ItemVariationMasters->ItemVariations->newEntity();
 						 $item_variations->item_id=$item_id;
@@ -102,6 +102,17 @@ class LocationItemsController extends AppController
 		$item = $this->LocationItems->ItemVariationMasters->Items->find()->where(['Items.id'=>@$item_id])->contain(['ItemVariationMasters'=>['ItemVariations','UnitVariations'=>['Units']]])->first();
 		 $check_master=$this->LocationItems->find()->where(['item_id'=>$item_id,'location_id'=>$location_id]);
 		$this->set(compact('item','check_master'));
+	}
+	public function checking($item_id,$item_variation_master_id){
+		 
+		$location_id=$this->Auth->User('location_id');
+		$check_master_count=$this->LocationItems->find()->where(['item_id'=>$item_id,'location_id'=>$location_id,'item_variation_master_id'=>$item_variation_master_id])->count();
+		$check_master=$this->LocationItems->find()->where(['item_id'=>$item_id,'location_id'=>$location_id,'item_variation_master_id'=>$item_variation_master_id])->first();
+		$status=$check_master->status;
+		$final=['check_master_count'=>$check_master_count,'status'=>$status]; 
+		
+		$this->response->body($final);
+		return $this->response;
 	}
 
     /**

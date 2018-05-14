@@ -23,32 +23,31 @@
 			<tbody>
 			<?php 
 			$k=0;
+			 
 			foreach($item->item_variation_masters as $item_variation_master)
 			{  
-			
-				if(!empty($item_variation_master->item_variations[0]))
-				{
-					$chk="checked";$disabled=''; $style='display:none;';
-				}
-				else
-				{
-					$chk="";$disabled='disabled';$style='';
-				}
+			$final_check=0;
+			 
+			$first_item_id=$item_variation_master->item_id;
+			$first_item_variation_master_id=$item_variation_master->id;
+		 $fetch_menu_submenu = $this->requestAction(['controller'=>'LocationItems', 'action'=>'checking'],['pass'=>array($first_item_id,$first_item_variation_master_id)]);
+			 pr($fetch_menu_submenu); exit;
+			echo $check_master_count=$fetch_menu_submenu['check_master_count'];
+			echo $check_status=$fetch_menu_submenu['status'];
 			?>
 				<tr>
-				<td align="center">
-				 
-				<label style="margin-left:30px;">
-				  <?php echo $item_variation_master->unit_variation->quantity_variation;?> <?php echo $item_variation_master->unit_variation->unit->longname;?>
-				</label>
-				</td>
-				<td style="width:15%" align="center">
-				<input type="text" name="item_variation_master_id[]" value="<?php echo $item_variation_master->id; ?>" />
-				<input type="text" name="status[]" value="Deactive" class="stst" />
-				<input name="test[]" type="checkbox"  value="<?php echo $item->id; ?>" class="entity_variation st2 entity_variation<?php echo $item_variation_master->unit_variation->id;?>"  >
-				</td>
+					<td align="center">
+					<label style="margin-left:30px;">
+					  <?php echo $item_variation_master->unit_variation->quantity_variation;?> <?php echo $item_variation_master->unit_variation->unit->longname;?>
+					</label>
+					</td>
+					<td style="width:15%" align="center">
+						<input type="hidden" name="item_variation_master_id[]" value="<?php echo $item_variation_master->id; ?>" />
+						<input type="hidden" name="status[]" value="Deactive" class="stst" />
+						<input name="test[]" type="checkbox"  value="<?php echo $item->id; ?>" class="entity_variation st2 entity_variation<?php echo $item_variation_master->unit_variation->id;?>" >
+					</td>
 				</tr>
-			<?php 
+			<?php
 					$k++;
 				} 
 			?>
