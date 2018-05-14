@@ -81,8 +81,9 @@ $js='
 								url: url,
 				}).done(function(response){ 
 							   $("#attach").html(response);
-							   $(".panel-body").show();
+							   //$(".panel-body").show();
 							   $.getScript(js);
+							   onresize();
 				});
 			}else{$("#attach").html(" ");}
 			

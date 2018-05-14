@@ -261,9 +261,9 @@ class SellerItemsController extends AppController
 							->group(['Categories.id'])
 							->autoFields(true);*/
 		$categories = $this->SellerItems->Categories->find('threaded');
-							$categories
-							->contain(['Items'=>function($q) use($user_id,$seller_item){
+						$categories->innerJoinWith('Items',function($q) use($seller_item){
 								return $q->where(['Items.id IN'=>$seller_item]);
+<<<<<<< HEAD
 							}
 							])
 							->group(['Categories.id'])
@@ -272,6 +272,15 @@ class SellerItemsController extends AppController
 		pr($categories->ToArray()); exit;
 =======
 >>>>>>> c1688719f4f668e4bccb5490fb856475f62bc6ab
+=======
+						})
+						->contain(['Items'=>function($q) use($seller_item){
+							return $q->where(['Items.id IN'=>$seller_item]);
+						}
+						])
+						->group(['Categories.id'])
+						->autoFields(true);
+>>>>>>> ca78892bb93db01a478c34028fda8751d4e86e3c
         $this->set(compact('itemVariation', 'categories','sellerItemCommision'));
     }
     /**
@@ -358,8 +367,15 @@ class SellerItemsController extends AppController
 	}
 	public function getItemInfo()
 	{
+		$user_id=$this->Auth->User('id');
 		$item_id = $this->request->query('item_id');
-		$item = $this->SellerItems->Items->find()->where(['Items.id'=>@$item_id])->contain(['ItemVariationMasters'=>['ItemVariations','UnitVariations'=>['Units']]])->first();
+		$item = $this->SellerItems->Items->find()->where(['Items.id'=>@$item_id])->contain(['SellerItems'=>function($q) use($user_id){
+				return $q->where(['seller_id'=>$user_id]);
+		},'ItemVariationMasters'=>['ItemVariations'=>function($q) use($user_id){
+				return $q->where(['seller_id'=>$user_id]);
+		},'UnitVariations'=>['Units']]])->first();
+		//pr($item->toArray());
+		//exit;
 		$this->set(compact('item'));
 	}
 	public function getItemVariationDetail()
