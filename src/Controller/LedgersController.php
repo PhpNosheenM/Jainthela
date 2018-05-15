@@ -78,16 +78,18 @@ class LedgersController extends AppController
 		}
 		$datadebtor[]=$SundryDebtor->id;
 		$SundryCredior = $this->Ledgers->AccountingGroups->find('all')->where(['seller'=>1])->first();
+
 		$accountingGroupcreditors = $this->Ledgers->AccountingGroups
 							->find('children', ['for' => $SundryCredior->id])
 							->find('all');
+
 		$creditorArray=[];
 		foreach($accountingGroupcreditors as $accountingGroupcreditor)
-		{ 
+		{  
 			$creditorArray[]= $accountingGroupcreditor->id;
 		}
 		$datacreditor[]=$SundryCredior->id;
-		$alldebtors=array_merge($datadebtor,$debtorArray,$datacreditor,$creditorArray);
+		$alldebtors=array_merge($datadebtor,$debtorArray,$datacreditor,$creditorArray);  pr($alldebtors); exit;
 		$accountingGroups = $this->Ledgers->AccountingGroups->find('list')->where(['id NOT IN'=>$alldebtors]);
         $ledgers = $this->paginate($this->Ledgers);
 		

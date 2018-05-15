@@ -26,7 +26,8 @@ class AccountingGroupsController extends AppController
         $state_id=$this->Auth->User('state_id'); 
         $this->viewBuilder()->layout('admin_portal');
         $this->paginate = [
-            'contain' => ['NatureOfGroups', 'ParentAccountingGroups', 'Locations']
+            'contain' => ['NatureOfGroups', 'ParentAccountingGroups', 'Locations'],
+             'limit' => 20
         ];
         $accountingGroups = $this->paginate($this->AccountingGroups);
         $natureOfGroups = $this->AccountingGroups->NatureOfGroups->find('list');
