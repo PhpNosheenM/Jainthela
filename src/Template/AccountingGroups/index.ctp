@@ -18,27 +18,20 @@
                         <div class="panel-heading">
                             <h3 class="panel-title">Create Ledger</h3>
                         </div>
-                        <?= $this->Form->create($accountingGroups,['id'=>"jvalidate"]) ?>
+                        <?= $this->Form->create($accountingGroup,['id'=>"jvalidate"]) ?>
                                 <div class="panel-body">
                                     <div class="form-group">
                                         <label>Name</label>
                                         <?= $this->Form->control('name',['class'=>'form-control','placeholder'=>'Name','label'=>false]) ?>
                                         <span class="help-block"></span>
                                     </div>
-                                    
-                                    <div class="form-group">           
-                                    <label >Opening balance</label>
-                                        <div class="">  
-                                            <div class="col-md-8">
-                                                   <?php echo $this->Form->control('parent_id',['class'=>'form-control input-sm select2me   calculation','label'=>false,'empty'=>'-Primary-', 'options' => $parentAccountingGroups]); ?>
-                                            </div>
-                                                <div class="col-md-4">  
-                                                    <?php echo $this->Form->control('nature_of_group_id',['class'=>'form-control input-sm select2me attributeRem','label'=>false,'empty'=>'-Nature of Group-', 'options' => $natureOfGroups,'required'=>'required']); ?>
-                                                
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+									<div class="form-group">           
+										<label >Under</label>
+										<?= $this->Form->select('parent_id',$parentAccountingGroups,['class'=>'form-control select', 'data-live-search'=>true, 'label'=>false]) ?>
+										<?php //echo $this->Form->control('parent_id',['class'=>'form-control select   calculation','label'=>false,'empty'=>'-Primary-', 'options' => $parentAccountingGroups]); ?>
+									</div>
+								</div>
+									 
                                 <div class="panel-footer">
                                     <div class="col-md-offset-3 col-md-4">
                                         <?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
@@ -76,22 +69,24 @@
                                         <thead>
                                         <tr>
                                         <th><?= ('SN.') ?></th>
+                                        <th><?= ('Nature of Group') ?></th>
                                         <th><?= ('Name') ?></th>
-                                        <th><?= ('Accounting Groups') ?></th>
+                                        <th><?= ('Parent') ?></th>
                                         <th scope="col" class="actions"><?= __('Actions') ?></th>
                                         </tr>
                                         </thead>
                                         <tbody>                                            
                                             <?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1);
                                                     //pr($ledgers->toArray()); exit;
-                                            foreach ($ledgers as $state): ?>
+                                            foreach ($accountingGroups as $accountingGroup):?>
                                             <tr>
                                             <td><?= $this->Number->format(++$i) ?></td>
-                                            <td><?= h($state->name) ?></td>
-                                            <td><?= h($state->accounting_group->name) ?></td>
+                                            <td><?= h(@$accountingGroup->nature_of_group->name) ?></td>
+                                            <td><?= h($accountingGroup->name) ?></td>
+                                            <td><?= h(@$accountingGroup->parent_accounting_group->name) ?></td>
                                             <td class="actions">
-                                            <?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $state->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
-                                            <?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $state->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete ?', $state->id),'escape'=>false]) ?>
+                                            <?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'edit', $accountingGroup->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+                                            <?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $accountingGroup->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete ?', $accountingGroup->id),'escape'=>false]) ?>
                                             </td>
                                             </tr>
                                             <?php endforeach; ?>

@@ -51,8 +51,8 @@ class AccountingGroupsTable extends Table
             'className' => 'AccountingGroups',
             'foreignKey' => 'parent_id'
         ]);
-        $this->belongsTo('Locations', [
-            'foreignKey' => 'location_id',
+        $this->belongsTo('Cities', [
+            'foreignKey' => 'city_id',
             'joinType' => 'INNER'
         ]);
         $this->hasMany('ChildAccountingGroups', [
@@ -116,10 +116,10 @@ class AccountingGroupsTable extends Table
             ->integer('credit_note_sales_account')
             ->allowEmpty('credit_note_sales_account');
 
-        $validator
+       /*  $validator
             ->integer('bank')
             ->requirePresence('bank', 'create')
-            ->notEmpty('bank');
+            ->notEmpty('bank'); */
 
         $validator
             ->boolean('cash')
@@ -191,7 +191,7 @@ class AccountingGroupsTable extends Table
     {
         $rules->add($rules->existsIn(['nature_of_group_id'], 'NatureOfGroups'));
         $rules->add($rules->existsIn(['parent_id'], 'ParentAccountingGroups'));
-        $rules->add($rules->existsIn(['location_id'], 'Locations'));
+       // $rules->add($rules->existsIn(['location_id'], 'Locations'));
 
         return $rules;
     }

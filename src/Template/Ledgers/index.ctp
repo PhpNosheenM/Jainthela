@@ -89,14 +89,22 @@
 										<tbody>                                            
 											<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1);
 													//pr($ledgers->toArray()); exit;
-											foreach ($ledgers as $state): ?>
+											foreach ($ledgers as $ledger): ?>
 											<tr>
 											<td><?= $this->Number->format(++$i) ?></td>
-											<td><?= h($state->name) ?></td>
-											<td><?= h($state->accounting_group->name) ?></td>
+											<td><?= h($ledger->name) ?></td>
+											<td><?= h($ledger->accounting_group->name) ?></td>
 											<td class="actions">
-											<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index', $state->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
-											<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $state->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete ?', $state->id),'escape'=>false]) ?>
+												<?php if(!empty($seller->customer_id))
+												{ ?>
+													<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['controller'=> 'customers' ,'action' => 'edit', $ledger->customer_id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+												<?php }
+												else if(!empty($ledger->seller_id)){ ?>
+												<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['controller'=> 'sellers' ,'action' => 'edit', $ledger->seller_id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+												<?php } else if(!empty($ledger->vendor_id)) { ?>
+													<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['controller'=> 'vendors' ,'action' => 'edit', $ledger->vendor_id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+												<?php } else { ?>
+												<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'edit', $ledger->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?><?php } ?>
 											</td>
 											</tr>
 											<?php endforeach; ?>

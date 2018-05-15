@@ -24,16 +24,31 @@ class AccountingGroupsController extends AppController
         $city_id=$this->Auth->User('city_id'); 
         $location_id=$this->Auth->User('location_id'); 
         $state_id=$this->Auth->User('state_id'); 
-        $this->viewBuilder()->layout('admin_portal');
+        $this->viewBuilder()->layout('super_admin_layout');
         $this->paginate = [
-            'contain' => ['NatureOfGroups', 'ParentAccountingGroups', 'Locations'],
+            'contain' => ['NatureOfGroups', 'ParentAccountingGroups', 'Cities'],
              'limit' => 20
         ];
+		 $accountingGroup = $this->AccountingGroups->newEntity();
+		 if ($this->request->is(['patch', 'post', 'put'])) {
+            $accountingGroup = $this->AccountingGroups->patchEntity($accountingGroup, $this->request->getData());
+			$accountingGroup->city_id = $city_id;
+			//pr($accountingGroup); exit;
+            if ($this->AccountingGroups->save($accountingGroup)) {
+                $this->Flash->success(__('The accounting group has been saved.'));
+//pr($accountingGroup); exit;
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The accounting group could not be saved. Please, try again.'));
+        }
+//pr($this->Auth->User()); exit;
         $accountingGroups = $this->paginate($this->AccountingGroups);
         $natureOfGroups = $this->AccountingGroups->NatureOfGroups->find('list');
-        $parentAccountingGroups = $this->AccountingGroups->ParentAccountingGroups->find('list')->where(['ParentAccountingGroups.location_id'=>$location_id]);
-
-        $this->set(compact('accountingGroups','natureOfGroups','parentAccountingGroups'));
+        $parentAccountingGroups = $this->AccountingGroups->ParentAccountingGroups->find('list')->where(['ParentAccountingGroups.city_id'=>$city_id]);
+		$natureOfGroups = $this->AccountingGroups->NatureOfGroups->find('list');
+        $parentAccountingGroups = $this->AccountingGroups->ParentAccountingGroups->find('list')->where(['ParentAccountingGroups.city_id'=>$city_id]);
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('accountingGroup','accountingGroups','natureOfGroups','parentAccountingGroups','paginate_limit'));
     }
 
     /**

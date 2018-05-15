@@ -69,10 +69,12 @@
 									<td><?= h($seller->gstin_holder_name) ?></td>
 									<td><?= h($seller->status) ?></td>
 									<td class="actions">
+										
 										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'edit', $seller->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
 										<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $seller->id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?', $seller->id),'escape'=>false]) ?>
 									
 									</td>
+									
 								</tr>
 								<?php endforeach; ?>
 							</tbody>

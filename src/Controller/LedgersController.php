@@ -23,7 +23,7 @@ class LedgersController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 		$ledger = $this->Ledgers->newEntity();
         $this->paginate = [
             'contain' => ['AccountingGroups'],
@@ -89,7 +89,7 @@ class LedgersController extends AppController
 			$creditorArray[]= $accountingGroupcreditor->id;
 		}
 		$datacreditor[]=$SundryCredior->id;
-		$alldebtors=array_merge($datadebtor,$debtorArray,$datacreditor,$creditorArray);  pr($alldebtors); exit;
+		$alldebtors=array_merge($datadebtor,$debtorArray,$datacreditor,$creditorArray);  //pr($alldebtors); exit;
 		$accountingGroups = $this->Ledgers->AccountingGroups->find('list')->where(['id NOT IN'=>$alldebtors]);
         $ledgers = $this->paginate($this->Ledgers);
 		

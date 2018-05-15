@@ -14,7 +14,7 @@ padding: 10px 5px;
 		<?php $js=''; ?>
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><strong> Admin Item Variations </strong></h3>
+					<h3 class="panel-title"><strong> Admin Item Variations Sales Rate</strong></h3>
 				</div>
 				<div class="panel-body">
 					<div class="row">
@@ -63,6 +63,82 @@ padding: 10px 5px;
 			}
 		});
 		
+		$(document).on("blur",".sales_rate",function(){
+			var sales_rate = parseFloat($(this).closest("tr").find("td input.sales_rate").val());
+			var mrp        = parseFloat($(this).closest("tr").find("td input.mrp").val());
+			if(!isNaN(sales_rate) & !isNaN(mrp))
+			{
+				if(sales_rate > mrp)
+				{
+					alert("Sales rate grater than mrp?.");
+					$(this).closest("tr").find("td input.sales_rate").val(mrp);
+					sales_rate=mrp;
+
+				}
+				var commission = parseFloat($(this).closest("tr").find("td input#commission").val()); 
+				var amt_after_commission = sales_rate-((sales_rate*commission)/100);
+				$(this).closest("tr").find("td input.purchase_rate").val(round(amt_after_commission));
+			}
+		});
+		
+		$(document).on("keyup",".calc",function(){
+			var mrp        = parseFloat($(this).closest("tr").find("td input.mrp").val());
+			$(this).closest("tr").find("td input.sales_rate").val(mrp)
+			var sales_rate = parseFloat($(this).closest("tr").find("td input.sales_rate").val());
+			var commission = parseFloat($(this).closest("tr").find("td input#commission").val()); 
+			
+			if(!isNaN(sales_rate))
+			{ 
+				var amt_after_commission = sales_rate-((sales_rate*commission)/100);
+				$(this).closest("tr").find("td input.purchase_rate").val(round(amt_after_commission)); 
+			}
+		});
+		
+		$(document).on("keyup",".addStock",function(){
+			var stock    = parseFloat($(this).val()); 
+			var oldStock = parseFloat($(this).closest("tr").find("td input.cStock").val());
+			var chstock = parseFloat($(this).closest("tr").find("td input#chstock").val());
+			
+			if(!isNaN(stock) & !isNaN(chstock))
+			{ 
+				var totalStock = stock+chstock;
+				$(this).closest("tr").find("td input.cStock").val(totalStock);
+			}
+			else if(!isNaN(stock) & isNaN(chstock))
+			{
+				$(this).closest("tr").find("td input.cStock").val(stock);
+			}
+			else if(isNaN(stock) & isNaN(chstock) & isNaN(chstock))
+			{
+				$(this).closest("tr").find("td input.cStock").val("");
+			}
+			else if(isNaN(stock) & !isNaN(chstock) & !isNaN(chstock))
+			{
+				$(this).closest("tr").find("td input.cStock").val(chstock);
+			}
+			
+			
+			
+			
+		});
+		
+		$(document).on("change",".single_item",function(){
+			var item_variation=$(this).val(); 
+			
+			if($(this).is(":checked"))
+			{
+				$(this).closest("tr").find("td input.entity_variation"+item_variation).prop("checked",true);
+				$(this).closest("tr").find("td input.entity_maximum"+item_variation).prop("disabled",false);
+				$(this).closest("tr").find("td select.entity_maximum"+item_variation).prop("disabled",false);
+			}
+			else
+			{
+				$(this).closest("tr").find("td input.entity_variation"+item_variation).prop("checked",false);
+				$(this).closest("tr").find("td input.entity_maximum"+item_variation).prop("disabled",true);
+				$(this).closest("tr").find("td select.entity_maximum"+item_variation).prop("disabled",true);
+			}
+		});
+		
 		$(document).on("change","#item_id",function(){
 			 var item_id=$("option:selected", this).val();
 		 
@@ -84,6 +160,7 @@ padding: 10px 5px;
 					//$(this).closest("td.item_variation").find("input.stst[type=text]").val("Yes");
 					$(this).closest("tr").find(".stst").val("Yes");
 					$("#btn_sbmt").show();
+					
 				}
 				else{
 					//$(this).closest("td.item_variation").find("input.stst[type=text]").val("No");

@@ -38,7 +38,7 @@ class ItemVariationMastersController extends AppController
             'limit' => 20
         ];
 		$itemVariation = $this->ItemVariationMasters->newEntity();
-		if ($this->request->is('post')) 
+		if ($this->request->is('post'))
 		{
 			$item_id=$this->request->data('item_id');
 			$item_variation_master_ids=$this->request->data('item_variation_master_id');
@@ -46,6 +46,12 @@ class ItemVariationMastersController extends AppController
 			$unit_variation_ids=$this->request->data('unit_variation_id');
 			$maximum_quantity_purchases=$this->request->data('maximum_quantity_purchase');
 			$current_stocks=$this->request->data('current_stock');
+			$add_stocks=$this->request->data('add_stock');
+			$mrps=$this->request->data('mrp');
+			$sales_rates=$this->request->data('sales_rate');
+			$commissionss=$this->request->data('commissions');
+			$purchase_rates=$this->request->data('purchase_rate');
+			$ready_to_sales=$this->request->data('ready_to_sale');
 			$t=0;
 			 foreach($statuss as $status){
 				
@@ -58,8 +64,9 @@ class ItemVariationMastersController extends AppController
 				$status;
 				
 				if($status=='Yes'){
-					$check_count1=$this->ItemVariationMasters->ItemVariations->find()->where(['ItemVariations.city_id'=>$city_id,'ItemVariations.item_id'=>$item_id,'ItemVariations.item_variation_master_id'=>$item_variation_master_ids[$t]])->count();
-					$check_values=$this->ItemVariationMasters->ItemVariations->find()->where(['ItemVariations.city_id'=>$city_id,'ItemVariations.item_id'=>$item_id,'ItemVariations.item_variation_master_id'=>$item_variation_master_ids[$t]])->contain(['ItemVariationMasters'])->first();
+					 $check_count1=$this->ItemVariationMasters->ItemVariations->find()->where(['ItemVariations.city_id'=>$city_id,'ItemVariations.item_id'=>$item_id,'ItemVariations.id'=>$item_variation_master_ids[$t]])->count();
+				 
+					$check_values=$this->ItemVariationMasters->ItemVariations->find()->where(['ItemVariations.city_id'=>$city_id,'ItemVariations.item_id'=>$item_id,'ItemVariations.id'=>$item_variation_master_ids[$t]])->contain(['ItemVariationMasters'])->first();
 					@$updated_id=$check_values->id;
 					  
 						if(empty($check_count1)){
@@ -67,14 +74,22 @@ class ItemVariationMastersController extends AppController
 							
 							}
 						}else{
-							$locationItem2=$this->LocationItems->get($updated_id);
+							$locationItem2=$this->ItemVariationMasters->ItemVariations->get($updated_id);
 
-							$locationItem2->location_id=$location_id;
+							 
 							$locationItem2->item_id=$item_id;
-							$locationItem2->section_show='No';
+							$locationItem2->maximum_quantity_purchase=$maximum_quantity_purchases[$t];
+							$locationItem2->current_stock=$current_stocks[$t];
+							$locationItem2->add_stock=$add_stocks[$t];
+							$locationItem2->mrp=$mrps[$t];
+							$locationItem2->sales_rate=$sales_rates[$t];
+							$locationItem2->commissions=$commissionss[$t];
+							$locationItem2->purchase_rate=$purchase_rates[$t];
+							$locationItem2->ready_to_sale=$ready_to_sales[$t];
+							$locationItem2->section_show=$status;
 							$locationItem2->unit_variation_id=$unit_variation_ids[$t];
 							$locationItem2->item_variation_master_id=$item_variation_master_ids[$t];
-							
+							 
 							$this->ItemVariationMasters->ItemVariations->save($locationItem2);
 							 
 						}
@@ -128,9 +143,9 @@ class ItemVariationMastersController extends AppController
 							
 							}
 						}else{
-							$locationItem2=$this->LocationItems->get($updated_id);
+							$locationItem2=$this->ItemVariationMasters->ItemVariations->get($updated_id);
 
-							$locationItem2->location_id=$location_id;
+							 
 							$locationItem2->item_id=$item_id;
 							$locationItem2->section_show='No';
 							$locationItem2->unit_variation_id=$unit_variation_ids[$t];
@@ -176,7 +191,7 @@ class ItemVariationMastersController extends AppController
 	{
 		$city_id=$this->Auth->User('city_id');
 		$item_id = $this->request->query('item_id');
-		$item = $this->ItemVariationMasters->Items->find()->where(['Items.id'=>@$item_id])->contain(['ItemVariationMasters'=>['ItemVariations','UnitVariations'=>['Units']]])->first();
+		$item = $this->ItemVariationMasters->ItemVariations->find()->where(['ItemVariations.item_id'=>@$item_id])->contain(['Items','UnitVariations'=>['Units']]);
 		$this->set(compact('item','check_master'));
 	}
     /**
