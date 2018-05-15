@@ -107,7 +107,7 @@ class Seller extends Entity
         'item_variations' => true,
         'items' => true,
         'ledgers' => true,
-        'reference_details' => true,
+        'reference_details' => false,
         'seller_details' => true,
         'seller_items' => true,
         'seller_ratings' => true,

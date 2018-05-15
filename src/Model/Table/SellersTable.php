@@ -79,7 +79,8 @@ class SellersTable extends Table
             'foreignKey' => 'seller_id'
         ]);
         $this->hasMany('ReferenceDetails', [
-            'foreignKey' => 'seller_id'
+            'foreignKey' => 'seller_id',
+			'saveStrategy'=>'replace'
         ]);
         $this->hasMany('SellerDetails', [
             'foreignKey' => 'seller_id',
