@@ -67,7 +67,7 @@ padding: 10px 5px;
 			 var item_id=$("option:selected", this).val();
 		 
 			 
-			var url =   "'.$this->Url->build(["controller"=>"ItemVariationMasters","action"=>"getItemInfo"]).'";
+			var url =   "'.$this->Url->build(["controller"=>"ItemVariationMasters","action"=>"getItemInfo1"]).'";
 			url =   url+"?item_id="+item_id;
 			
             $.ajax({

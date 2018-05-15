@@ -88,7 +88,7 @@ class LocationItemsController extends AppController
 			 }
 			 
 		}
-		$Items=$this->LocationItems->ItemVariationMasters->Items->find('list');
+		$Items=$this->LocationItems->ItemVariationMasters->Items->find('list')->where(['Items.ready_to_sale'=>'Yes']);
 		 
         
 		$paginate_limit=$this->paginate['limit'];
