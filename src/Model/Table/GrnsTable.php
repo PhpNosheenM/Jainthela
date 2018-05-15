@@ -61,10 +61,22 @@ class GrnsTable extends Table
             'joinType' => 'INNER'
         ]);
         $this->hasMany('GrnRows', [
-            'foreignKey' => 'grn_id'
+            'foreignKey' => 'grn_id',
+            'saveStrategy' => 'replace'
         ]);
+        
+        /*$this->hasMany('ItemLedgers', [
+            'foreignKey' => 'item_ledger_id',
+            'joinType' => 'INNER',
+            'saveStrategy' => 'replace'
+        ]);*/
         $this->hasMany('ItemLedgers', [
             'foreignKey' => 'grn_id'
+        ]);
+        $this->belongsTo('VendorLedgers', [
+            'className' => 'Ledgers',
+            'foreignKey' => 'vendor_ledger_id',
+            'joinType' => 'LEFT'
         ]);
     }
 

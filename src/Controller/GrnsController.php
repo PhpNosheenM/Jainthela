@@ -51,7 +51,7 @@ class GrnsController extends AppController
      */
      public function add()
     {
-        $this->viewBuilder()->layout('admin_portal');
+        $this->viewBuilder()->layout('super_admin_layout');
         $company_id=$this->Auth->User('company_id');
         $user_id=$this->Auth->User('id');
         //$companies = $this->Grns->Companies->find('list')->where(['id'=>$company_id]);
@@ -127,9 +127,8 @@ class GrnsController extends AppController
             $voucher_no=1;
         } 
         //$locations = $this->Grns->Locations->find('list', ['limit' => 200]);
-         $partyParentGroups = $this->Grns->GrnRows->Ledgers->AccountingGroups->find()
-                        ->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.
-                        vendor'=>'1']);
+         $partyParentGroups = $this->Grns->GrnRows->Ledgers->AccountingGroups->find('all')
+                        ->where(['AccountingGroups.city_id'=>$city_id, 'AccountingGroups.vendor'=>'1']);
         $partyGroups=[];
         
         foreach($partyParentGroups as $partyParentGroup)
@@ -143,9 +142,9 @@ class GrnsController extends AppController
         }
         if($partyGroups)
         {  
-            $Partyledgers = $this->Grns->SupplierLedgers->find()
-                            ->where(['SupplierLedgers.accounting_group_id IN' =>$partyGroups,'SupplierLedgers.company_id'=>$company_id])
-                            ->contain(['Suppliers']);
+            $Partyledgers = $this->Grns->VendorLedgers->find()
+                            ->where(['VendorLedgers.accounting_group_id IN' =>$partyGroups,'VendorLedgers.city_id'=>$city_id])
+                            ->contain(['Vendors']);
         }
         
         $partyOptions=[];

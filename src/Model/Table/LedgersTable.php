@@ -57,8 +57,8 @@ class LedgersTable extends Table
             'foreignKey' => 'location_id',
             'joinType' => 'INNER'
         ]);
-        $this->belongsTo('Suppliers', [
-            'foreignKey' => 'supplier_id',
+        $this->belongsTo('Vendors', [
+            'foreignKey' => 'vendor_id',
             'joinType' => 'INNER'
         ]);
 		
