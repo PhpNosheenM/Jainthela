@@ -263,24 +263,14 @@ class SellerItemsController extends AppController
 		$categories = $this->SellerItems->Categories->find('threaded');
 						$categories->innerJoinWith('Items',function($q) use($seller_item){
 								return $q->where(['Items.id IN'=>$seller_item]);
-<<<<<<< HEAD
-							}
-							])
-							->group(['Categories.id'])
-							->autoFields(true);
-<<<<<<< HEAD
-		pr($categories->ToArray()); exit;
-=======
->>>>>>> c1688719f4f668e4bccb5490fb856475f62bc6ab
-=======
-						})
+
+							})
 						->contain(['Items'=>function($q) use($seller_item){
 							return $q->where(['Items.id IN'=>$seller_item]);
 						}
 						])
 						->group(['Categories.id'])
 						->autoFields(true);
->>>>>>> ca78892bb93db01a478c34028fda8751d4e86e3c
         $this->set(compact('itemVariation', 'categories','sellerItemCommision'));
     }
     /**
