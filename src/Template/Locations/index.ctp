@@ -9,9 +9,9 @@
 
 </style><?php $this->set('title', 'Location'); ?>
 <div class="page-content-wrap">
-        <div class="page-title">                    
+        <div class="page-title">
 			<h2><span class="fa fa-arrow-circle-o-left"></span> Location</h2>
-		</div> 
+		</div>
 	<div class="row">
 				 
 	            <div class="col-md-12">
