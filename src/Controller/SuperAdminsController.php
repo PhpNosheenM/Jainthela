@@ -63,8 +63,8 @@ class SuperAdminsController extends AppController
 			{
 				$state = $this->SuperAdmins->Cities->get($user['city_id']);
                 $user['state_id']=$state->id;
-                $companies = $this->SuperAdmins->Companies->find()->where(['state_id'=>$state->id])->first();
-                $user['state_id']=$state->id;
+                $companies = $this->SuperAdmins->Companies->find('all')->where(['state_id'=>$state->id])->first();
+                $user['company_id']=$companies->id;
 				$user['user_type']='Super Admin';
 				$characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
                 $charactersLength = strlen($characters);

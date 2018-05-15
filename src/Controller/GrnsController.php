@@ -53,7 +53,8 @@ class GrnsController extends AppController
     {
         $this->viewBuilder()->layout('admin_portal');
         $company_id=$this->Auth->User('company_id');
-        $companies = $this->Grns->Companies->find('list')->where(['id'=>$company_id]);
+        $user_id=$this->Auth->User('id');
+        //$companies = $this->Grns->Companies->find('list')->where(['id'=>$company_id]);
         $city_id=$this->Auth->User('city_id');
         $grn = $this->Grns->newEntity();
         //$this->request->data['location_id'] =$location_id;
@@ -116,7 +117,7 @@ class GrnsController extends AppController
         {
             $itemOptions[]=['text' =>$item->item_code.' '.$item->name, 'value' => $item->id, 'gst_figure_tax_name'=>@$item->gst_figure->name];
         }
-        $Voucher_no = $this->Grns->find()->select(['voucher_no'])->where(['company_id'=>$company_id])->order(['voucher_no' => 'DESC'])->first();
+        $Voucher_no = $this->Grns->find()->select(['voucher_no'])->where(['super_admin_id'=>$user_id])->order(['voucher_no' => 'DESC'])->first();
         if($Voucher_no)
         {
             $voucher_no=$Voucher_no->voucher_no+1;
@@ -128,7 +129,7 @@ class GrnsController extends AppController
         //$locations = $this->Grns->Locations->find('list', ['limit' => 200]);
          $partyParentGroups = $this->Grns->GrnRows->Ledgers->AccountingGroups->find()
                         ->where(['AccountingGroups.company_id'=>$company_id, 'AccountingGroups.
-                        supplier'=>'1']);
+                        vendor'=>'1']);
         $partyGroups=[];
         
         foreach($partyParentGroups as $partyParentGroup)

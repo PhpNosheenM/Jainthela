@@ -9,12 +9,13 @@ use Cake\Validation\Validator;
 /**
  * Grns Model
  *
- * @property |\Cake\ORM\Association\BelongsTo $Sellers
- * @property |\Cake\ORM\Association\BelongsTo $Admins
+ * @property \App\Model\Table\SellersTable|\Cake\ORM\Association\BelongsTo $Sellers
+ * @property |\Cake\ORM\Association\BelongsTo $SuperAdmins
+ * @property |\Cake\ORM\Association\BelongsTo $Cities
  * @property \App\Model\Table\LocationsTable|\Cake\ORM\Association\BelongsTo $Locations
  * @property \App\Model\Table\OrdersTable|\Cake\ORM\Association\BelongsTo $Orders
  * @property \App\Model\Table\GrnRowsTable|\Cake\ORM\Association\HasMany $GrnRows
- * @property |\Cake\ORM\Association\HasMany $ItemLedgers
+ * @property \App\Model\Table\ItemLedgersTable|\Cake\ORM\Association\HasMany $ItemLedgers
  *
  * @method \App\Model\Entity\Grn get($primaryKey, $options = [])
  * @method \App\Model\Entity\Grn newEntity($data = null, array $options = [])
@@ -44,8 +45,12 @@ class GrnsTable extends Table
         $this->belongsTo('Sellers', [
             'foreignKey' => 'seller_id'
         ]);
-        $this->belongsTo('Admins', [
-            'foreignKey' => 'admin_id'
+        $this->belongsTo('SuperAdmins', [
+            'foreignKey' => 'super_admin_id'
+        ]);
+        $this->belongsTo('Cities', [
+            'foreignKey' => 'city_id',
+            'joinType' => 'INNER'
         ]);
         $this->belongsTo('Locations', [
             'foreignKey' => 'location_id',
@@ -135,7 +140,8 @@ class GrnsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['seller_id'], 'Sellers'));
-        $rules->add($rules->existsIn(['admin_id'], 'Admins'));
+        $rules->add($rules->existsIn(['super_admin_id'], 'SuperAdmins'));
+        $rules->add($rules->existsIn(['city_id'], 'Cities'));
         $rules->add($rules->existsIn(['location_id'], 'Locations'));
         $rules->add($rules->existsIn(['order_id'], 'Orders'));
 

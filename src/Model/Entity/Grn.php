@@ -8,9 +8,10 @@ use Cake\ORM\Entity;
  *
  * @property int $id
  * @property int $seller_id
- * @property int $admin_id
+ * @property int $super_admin_id
  * @property int $voucher_no
  * @property string $grn_no
+ * @property int $city_id
  * @property int $location_id
  * @property int $order_id
  * @property \Cake\I18n\FrozenDate $transaction_date
@@ -21,9 +22,12 @@ use Cake\ORM\Entity;
  * @property \Cake\I18n\FrozenTime $created_on
  * @property string $status
  *
+ * @property \App\Model\Entity\Seller $seller
+ * @property \App\Model\Entity\Admin $admin
  * @property \App\Model\Entity\Location $location
  * @property \App\Model\Entity\Order $order
  * @property \App\Model\Entity\GrnRow[] $grn_rows
+ * @property \App\Model\Entity\ItemLedger[] $item_ledgers
  */
 class Grn extends Entity
 {
@@ -39,9 +43,10 @@ class Grn extends Entity
      */
     protected $_accessible = [
         'seller_id' => true,
-        'admin_id' => true,
+        'super_admin_id' => true,
         'voucher_no' => true,
         'grn_no' => true,
+        'city_id' => true,
         'location_id' => true,
         'order_id' => true,
         'transaction_date' => true,
@@ -51,8 +56,11 @@ class Grn extends Entity
         'total_amount' => true,
         'created_on' => true,
         'status' => true,
+        'seller' => true,
+        'admin' => true,
         'location' => true,
         'order' => true,
-        'grn_rows' => true
+        'grn_rows' => true,
+        'item_ledgers' => true
     ];
 }

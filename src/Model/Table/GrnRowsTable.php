@@ -58,6 +58,7 @@ class GrnRowsTable extends Table
 		$this->hasMany('ItemLedgers', [
             'foreignKey' => 'item_ledger_id'
         ]);
+        $this->belongsTo('Ledgers');
     }
 
     /**
