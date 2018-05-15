@@ -53,7 +53,7 @@ class SellersController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
-		$this->viewBuilder()->layout('seller_layout');
+		$this->viewBuilder()->layout('super_admin_layout');
         $this->paginate = [
 			'limit' => 20
         ];
@@ -105,7 +105,7 @@ class SellersController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $seller = $this->Sellers->newEntity();
         if ($this->request->is('post')) {
 			
@@ -115,8 +115,8 @@ class SellersController extends AppController
 			$registration_date=$this->request->data['registration_date'];
 			$seller->registration_date=date('Y-m-d', strtotime($registration_date));
 			$bill_to_bill_accounting=$seller->bill_to_bill_accounting;
-			$data=$this->Sellers->Locations->get($location_id);
-		 
+			$data=$this->Sellers->Cities->get($city_id);
+		// pr($data); exit;
 			 if ($this->Sellers->save($seller)) {
 				
 				$accounting_group = $this->Sellers->Ledgers->AccountingGroups->find()->where(['seller'=>1])->first();
@@ -124,6 +124,7 @@ class SellersController extends AppController
 				$ledger->name = $seller->firm_name;
 				$ledger->accounting_group_id = $accounting_group->id;
 				$ledger->seller_id=$seller->id;
+				$ledger->city_id=$city_id;
 				$ledger->bill_to_bill_accounting=$bill_to_bill_accounting;
 				
 				if($this->Sellers->Ledgers->save($ledger))
@@ -146,7 +147,7 @@ class SellersController extends AppController
 						$AccountingEntry->credit       = $seller->opening_balance_value;
 					}
 					$AccountingEntry->transaction_date = date("Y-m-d",strtotime($transaction_date));
-					$AccountingEntry->location_id       = $location_id;
+					//$AccountingEntry->location_id       = $location_id;
 					$AccountingEntry->city_id       = $city_id;
 					$AccountingEntry->is_opening_balance = 'yes';
 					if($seller->opening_balance_value){
@@ -177,7 +178,7 @@ class SellersController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $seller = $this->Sellers->get($id, [
             'contain' => ['SellerDetails']
         ]);

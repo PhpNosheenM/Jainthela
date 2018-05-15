@@ -48,6 +48,7 @@ class City extends Entity
     protected $_accessible = [
         'state_id' => true,
         'name' => true,
+        'alise_name' => true,
         'created_on' => true,
         'created_by' => true,
         'status' => true,
@@ -55,6 +56,7 @@ class City extends Entity
         'app_notifications' => true,
         'banners' => true,
         'bulk_booking_leads' => true,
+        'books_beginning_from' => true,
         'carts' => true,
         'categories' => true,
         'combo_offers' => true,

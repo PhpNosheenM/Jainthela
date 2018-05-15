@@ -54,6 +54,10 @@ class CitiesTable extends Table
         $this->setDisplayField('name');
         $this->setPrimaryKey('id');
 
+		$this->hasMany('AccountingGroups', [
+            'foreignKey' => 'city_id'
+        ]);
+		$this->belongsTo('FinancialYears');
         $this->belongsTo('States', [
             'foreignKey' => 'state_id',
             'joinType' => 'INNER'
@@ -64,7 +68,10 @@ class CitiesTable extends Table
         $this->hasMany('Banners', [
             'foreignKey' => 'city_id'
         ]);
-        $this->hasMany('BulkBookingLeads', [
+        $this->hasMany('GstFigures', [
+            'foreignKey' => 'city_id'
+        ]);
+		$this->hasMany('BulkBookingLeads', [
             'foreignKey' => 'city_id'
         ]);
         $this->hasMany('Carts', [

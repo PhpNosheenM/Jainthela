@@ -30,7 +30,7 @@ class GstFigure extends Entity
      */
     protected $_accessible = [
         'name' => true,
-        'location_id' => true,
+        'city_id' => true,
         'tax_percentage' => true,
         'location' => true,
         'ledgers' => true,
