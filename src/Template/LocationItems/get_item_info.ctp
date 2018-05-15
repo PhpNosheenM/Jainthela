@@ -30,11 +30,11 @@
 			 
 			$first_item_id=$item_variation_master->item_id;
 			$first_item_variation_master_id=$item_variation_master->id;
-		 $fetch_menu_submenu = $this->requestAction(['controller'=>'LocationItems', 'action'=>'checking'],['pass'=>array($first_item_id,$first_item_variation_master_id)]);
-			 pr($fetch_menu_submenu); exit;
-			echo $check_master_count=$fetch_menu_submenu['check_master_count'];
-			echo $check_status=$fetch_menu_submenu['status'];
-			?>
+			$fetch_menu_submenu = $this->requestAction(['controller'=>'LocationItems', 'action'=>'checking'],['pass'=>array($first_item_id,$first_item_variation_master_id)]);
+			 
+			//echo $check_master_count=$fetch_menu_submenu['check_master_count'];
+			//echo $check_status=$fetch_menu_submenu['status'];
+			 ?>
 				<tr>
 					<td align="center">
 					<label style="margin-left:30px;">
@@ -47,7 +47,7 @@
 						<input name="test[]" type="checkbox"  value="<?php echo $item->id; ?>" class="entity_variation st2 entity_variation<?php echo $item_variation_master->unit_variation->id;?>" >
 					</td>
 				</tr>
-			<?php
+			<?php 
 					$k++;
 				} 
 			?>
