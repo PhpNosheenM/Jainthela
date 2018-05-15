@@ -73,6 +73,7 @@ padding: 10px 5px;
             $.ajax({
 					url: url,
 			}).done(function(response){
+				alert(response);
 				$(".addResult").html(response);
 			});	
 			  

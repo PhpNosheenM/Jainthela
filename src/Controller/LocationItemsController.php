@@ -110,8 +110,9 @@ class LocationItemsController extends AppController
 		$check_master=$this->LocationItems->find()->where(['item_id'=>$item_id,'location_id'=>$location_id,'item_variation_master_id'=>$item_variation_master_id])->first();
 		$status=$check_master->status;
 		$final=['check_master_count'=>$check_master_count,'status'=>$status]; 
-		
-		$this->response->body($final);
+		$final1=$check_master_count.','.$status; 
+		   
+		$this->response->body($final1);
 		return $this->response;
 	}
 

@@ -46,7 +46,7 @@ class SuperAdminsController extends AppController
      */
     public function index()
     {
-        $this->viewBuilder()->layout('admin_portal');
+        $this->viewBuilder()->layout('super_admin_layout');
 		
 		$this->set(compact(''));
     }
@@ -110,7 +110,7 @@ class SuperAdminsController extends AppController
 		
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 		 $this->paginate = [
             'limit' => 20
         ];
