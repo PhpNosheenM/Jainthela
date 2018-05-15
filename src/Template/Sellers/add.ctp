@@ -312,6 +312,11 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			
 		});
 		
+		$(document).on("click",".addRefRow",function(){
+				AddRefRow();
+				
+		});
+
 		$(document).on("blur",".balance",function(){ 
 			var main_amt=$(this).val();
 			var bill_accounting=$(".bill_to_bill option:selected").val();
