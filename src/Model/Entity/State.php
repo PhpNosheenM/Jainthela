@@ -28,6 +28,7 @@ class State extends Entity
      */
     protected $_accessible = [
         'name' => true,
+        'alias_name' => true,
         'created_on' => true,
         'created_by' => true,
         'status' => true,

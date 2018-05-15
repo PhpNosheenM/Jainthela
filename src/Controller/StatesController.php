@@ -21,7 +21,7 @@ class StatesController extends AppController
     public function index($id = null)
     {
 		$user_id=$this->Auth->User('id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 		$this->paginate= [
 					'limit'=>20
 		];
@@ -61,6 +61,7 @@ class StatesController extends AppController
 			$states->where([
 							'OR' => [
 									'States.name LIKE' => $search.'%',
+									'States.alias_name LIKE' => $search.'%',
 									'States.status LIKE' => $search.'%'
 							]
 			]);

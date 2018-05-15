@@ -25,6 +25,13 @@
 										<?= $this->Form->control('name',['class'=>'form-control','placeholder'=>'State Name','label'=>false]) ?>
 										<span class="help-block"></span>
 									</div>
+									
+									<div class="form-group">
+										<label>Alias Name</label>
+										<?= $this->Form->control('alias_name',['class'=>'form-control','placeholder'=>'Alias Name','label'=>false]) ?>
+										<span class="help-block"></span>
+									</div>
+									
 									<div class="form-group">
 										<label>Status</label>
 										<?php $options['Active'] = 'Active'; ?>
@@ -70,6 +77,7 @@
 										<tr>
 										<th><?= ('SN.') ?></th>
 										<th><?= ('State') ?></th>
+										<th><?= ('Alias Name') ?></th>
 										<th><?= ('Status') ?></th>
 										<th scope="col" class="actions"><?= __('Actions') ?></th>
 										</tr>
@@ -81,6 +89,7 @@
 											<tr>
 											<td><?= $this->Number->format(++$i) ?></td>
 											<td><?= h($state->name) ?></td>
+											<td><?= h($state->alias_name) ?></td>
 											<td><?= h($state->status) ?></td>
 											<td class="actions">
 											

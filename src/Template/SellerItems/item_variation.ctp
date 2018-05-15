@@ -22,7 +22,7 @@ padding: 10px 5px;
 								<div class="col-md-4"></div>    
 								<div class="col-md-4"> 
 									<!--<div class="panel-group accordion accordion-dc">
-										<?= $this->RecursiveCategories->categoryItemVariations($categories,$sellerItemCommision) ?>
+										<?php //$this->RecursiveCategories->categoryItemVariations($categories,$sellerItemCommision) ?>
 									</div>-->
 									<select class="form-control select change_option" label="false">
 									<option>--select--</option>
@@ -188,7 +188,7 @@ $js='
 				$(this).closest("tr").find("td select.entity_maximum"+item_variation).prop("disabled",true);
 			}
 		});
-		
+	
 ';
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 	
 ?>
