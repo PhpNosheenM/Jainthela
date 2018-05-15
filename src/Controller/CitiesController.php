@@ -26,7 +26,7 @@ class CitiesController extends AppController
     public function index($id = null)
     {
 		$user_id=$this->Auth->User('id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 		 $this->paginate = [
             'contain' => ['States'],
 			'limit' =>20
