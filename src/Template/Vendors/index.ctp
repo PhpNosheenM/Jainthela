@@ -18,7 +18,7 @@
 				<div class="pull-right">
 			<div class="pull-left">
 				<?= $this->Form->create('Search',['type'=>'GET']) ?>
-				<?= $this->Html->link(__('<span class="fa fa-plus"></span> Add New'), ['action' => 'index'],['style'=>'margin-top:-30px !important;','class'=>'btn btn-success','escape'=>false]) ?>
+				<?= $this->Html->link(__('<span class="fa fa-plus"></span> Add New'), ['action' => 'add'],['style'=>'margin-top:-30px !important;','class'=>'btn btn-success','escape'=>false]) ?>
 					<div class="form-group" style="display:inline-table">
 						<div class="input-group">
 							<div class="input-group-addon">
