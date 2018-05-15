@@ -21,7 +21,7 @@ class GrnsController extends AppController
     public function index()
     {
         $this->paginate = [
-            'contain' => ['Locations', 'Orders', 'SellerLedgers', 'PurchaseLedgers']
+            'contain' => ['Locations', 'Orders']
         ];
         $grns = $this->paginate($this->Grns);
 
@@ -38,7 +38,7 @@ class GrnsController extends AppController
     public function view($id = null)
     {
         $grn = $this->Grns->get($id, [
-            'contain' => ['Locations', 'Orders', 'SellerLedgers', 'PurchaseLedgers']
+            'contain' => ['Locations', 'Orders']
         ]);
 
         $this->set('grn', $grn);
@@ -52,15 +52,16 @@ class GrnsController extends AppController
      public function add()
     {
         $this->viewBuilder()->layout('admin_portal');
-        //$company_id=$this->Auth->User('session_company_id');
-        $location_id=$this->Auth->User('location_id');
+        $company_id=$this->Auth->User('company_id');
+        $companies = $this->Grns->Companies->find('list')->where(['id'=>$company_id]);
+        $city_id=$this->Auth->User('city_id');
         $grn = $this->Grns->newEntity();
         //$this->request->data['location_id'] =$location_id;
         if ($this->request->is('post')) 
         {
             $grn = $this->Grns->patchEntity($grn, $this->request->getData());
             $grn->transaction_date = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
-            $Voucher_no = $this->Grns->find()->select(['voucher_no'])->where(['location_id'=>$location_id])->order(['voucher_no' => 'DESC'])->first();
+            $Voucher_no = $this->Grns->find()->select(['voucher_no'])->where(['city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
             if($Voucher_no)
             {
                 $grn->voucher_no = $Voucher_no->voucher_no+1;
@@ -69,7 +70,7 @@ class GrnsController extends AppController
             {
                 $grn->voucher_no = 1;
             } 
-            $grn->location_id =$location_id;
+            $grn->city_id =$city_id;
             if ($this->Grns->save($grn)) 
             {
                 //Create Item_Ledger//
@@ -84,7 +85,7 @@ class GrnsController extends AppController
                     $item_ledger->rate = $grn_row->purchase_rate;
                     $item_ledger->sale_rate = $grn_row->sale_rate;
                    // $item_ledger->company_id  =$company_id;
-                    $item_ledger->location_id =$location_id;
+                    $item_ledger->city_id =$city_id;
                     $item_ledger->status ='in';
                     $item_ledger->amount=$grn_row->quantity*$grn_row->purchase_rate;
                     $this->Grns->ItemLedgers->save($item_ledger);
@@ -109,7 +110,6 @@ class GrnsController extends AppController
             $this->Flash->error(__('The grn could not be saved. Please, try again.'));
         }
         $items = $this->Grns->GrnRows->Items->find()
-                    ->where(['Items.company_id'=>$company_id])
                     ->contain(['GstFigures']);
         $itemOptions=[];
         foreach($items as $item)
@@ -152,7 +152,7 @@ class GrnsController extends AppController
             $partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id];
         }
         
-        $companies = $this->Grns->Companies->find('list');
+       
         $this->set(compact('grn','companies','voucher_no','itemOptions','partyOptions'));
         $this->set('_serialize', ['grn']);
     }
