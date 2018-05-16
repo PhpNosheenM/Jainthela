@@ -86,7 +86,7 @@ class VendorsController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $vendor = $this->Vendors->newEntity();
         if ($this->request->is('post')) {
             $vendor = $this->Vendors->patchEntity($vendor, $this->request->getData());
@@ -95,8 +95,9 @@ class VendorsController extends AppController
 			$registration_date=$this->request->data['registration_date'];
 			$vendor->registration_date=date('Y-m-d', strtotime($registration_date));
 			$bill_to_bill_accounting=$vendor->bill_to_bill_accounting;
-			//$data=$this->Sellers->Locations->get($location_id);
-			 
+			$data=$this->Vendors->Cities->get($city_id);
+			 $reference_details=$this->request->getData()['reference_details'];
+			// pr($this->request->getData()); exit;
             if ($this->Vendors->save($vendor)) {
 				
 				$accounting_group = $this->Vendors->Ledgers->AccountingGroups->find()->where(['vendor'=>1])->first();

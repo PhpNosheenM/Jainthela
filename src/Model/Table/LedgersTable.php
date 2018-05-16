@@ -180,7 +180,7 @@ class LedgersTable extends Table
     {
         $rules->add($rules->existsIn(['accounting_group_id'], 'AccountingGroups'));
         $rules->add($rules->existsIn(['location_id'], 'Locations'));
-        $rules->add($rules->existsIn(['supplier_id'], 'Suppliers'));
+        //$rules->add($rules->existsIn(['supplier_id'], 'Suppliers'));
         $rules->add($rules->existsIn(['customer_id'], 'Customers'));
         $rules->add($rules->existsIn(['gst_figure_id'], 'GstFigures'));
 
