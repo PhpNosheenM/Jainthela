@@ -99,6 +99,9 @@ class Customer extends Entity
         'sale_returns' => true,
         'sales_invoices' => true,
         'seller_ratings' => true,
+        'opening_balance_value' => true,
+        'bill_to_bill_accounting' => true,
+        'debit_credit' => true,
         'wallets' => true
     ];
 

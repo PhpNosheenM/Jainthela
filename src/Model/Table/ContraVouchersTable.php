@@ -44,6 +44,9 @@ class ContraVouchersTable extends Table
         $this->hasMany('AccountingEntries', [
             'foreignKey' => 'contra_voucher_id'
         ]);
+		$this->hasMany('ContraVoucherRows', [
+            'foreignKey' => 'contra_voucher_id'
+        ]);
     }
 
     /**
