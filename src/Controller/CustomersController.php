@@ -31,7 +31,7 @@ class CustomersController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $this->paginate = [
 			'limit' => 20
         ];
@@ -60,7 +60,7 @@ class CustomersController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $this->paginate = [
             'contain' => ['Cities'],
 			'limit' => 20
@@ -113,7 +113,7 @@ class CustomersController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
 		$location_id=$this->Auth->User('location_id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $customer = $this->Customers->newEntity();
         if ($this->request->is('post')) {
 
@@ -156,7 +156,7 @@ class CustomersController extends AppController
   		$user_id=$this->Auth->User('id');
   		$city_id=$this->Auth->User('city_id');
   		$location_id=$this->Auth->User('location_id');
-  		$this->viewBuilder()->layout('admin_portal');
+  		$this->viewBuilder()->layout('super_admin_layout');
         $customer = $this->Customers->get($id, [
             'contain' => ['CustomerAddresses']
         ]);

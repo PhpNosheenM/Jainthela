@@ -100,7 +100,7 @@ class VendorsController extends AppController
 			// pr($this->request->getData()); exit;
             if ($this->Vendors->save($vendor)) {
 				
-				$accounting_group = $this->Vendors->Ledgers->AccountingGroups->find()->where(['vendor'=>1])->first();
+				$accounting_group = $this->Vendors->Ledgers->AccountingGroups->find()->where(['AccountingGroups.vendor'=>1,'AccountingGroups.city_id'=>$city_id])->first();
 				$ledger = $this->Vendors->Ledgers->newEntity();
 				$ledger->name = $vendor->firm_name;
 				$ledger->accounting_group_id = $accounting_group->id;
