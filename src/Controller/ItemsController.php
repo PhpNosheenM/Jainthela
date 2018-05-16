@@ -30,7 +30,7 @@ class ItemsController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $this->paginate = [
             'contain' => ['Categories', 'Brands'],
 			'limit' => 20
@@ -62,7 +62,7 @@ class ItemsController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $this->paginate = [
             'contain' => ['Categories', 'Brands'],
 			'limit' => 20
@@ -114,7 +114,7 @@ class ItemsController extends AppController
     {
 		$city_id=$this->Auth->User('city_id');
 		$user_id=$this->Auth->User('id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $item = $this->Items->newEntity();
 
 
@@ -214,7 +214,7 @@ class ItemsController extends AppController
         $categories = $this->Items->Categories->find('list')->where(['Categories.city_id'=>$city_id]);
         $brands = $this->Items->Brands->find('list')->where(['Brands.city_id'=>$city_id]);
 
-		$gstFigures =  $this->Items->GstFigures->find('list');
+		$gstFigures =  $this->Items->GstFigures->find('list')->where(['city_id'=>$city_id]);
 		//pr($unitVariations->toArray());exit;
 		$this->set(compact('item', 'categories', 'brands', 'admins', 'sellers', 'cities','unitVariations','gstFigures','unit_option'));
     }
@@ -238,7 +238,7 @@ class ItemsController extends AppController
     {
 		$city_id=$this->Auth->User('city_id');
 		$user_id=$this->Auth->User('id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 
 		$city_id=$this->request->query('city_id');
 		$location_id=$this->request->query('location_id');
@@ -306,7 +306,7 @@ class ItemsController extends AppController
 	}
 
 	public function itemVariationWiseReport($item_variation_id=null,$transaction_date,$city_id){
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 		//$city_id=$this->Auth->User('city_id');
 		$location_id=$this->Auth->User('location_id');
 
@@ -367,7 +367,7 @@ class ItemsController extends AppController
 		exit;
 	}
 	public function itemWiseReport($item_id=null,$where=null){
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 		//$city_id=$this->Auth->User('city_id');
 		$location_id=$this->Auth->User('location_id');
 		//pr($where); exit;
@@ -442,7 +442,7 @@ class ItemsController extends AppController
 		
 		$city_id=$this->Auth->User('city_id');
 		$user_id=$this->Auth->User('id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $item = $this->Items->get($id, [
             'contain' => ['ItemVariationMasters'=>function ($q){
 				return $q->where(['ItemVariationMasters.status'=>'Active'])->contain(['UnitVariations']);
