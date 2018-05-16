@@ -137,12 +137,13 @@ class ItemVariationMastersController extends AppController
 					$check_count1=$this->ItemVariationMasters->ItemVariations->find()->where(['ItemVariations.city_id'=>$city_id,'ItemVariations.item_id'=>$item_id,'ItemVariations.item_variation_master_id'=>$item_variation_master_ids[$t]])->count();
 					$check_values=$this->ItemVariationMasters->ItemVariations->find()->where(['ItemVariations.city_id'=>$city_id,'ItemVariations.item_id'=>$item_id,'ItemVariations.item_variation_master_id'=>$item_variation_master_ids[$t]])->contain(['ItemVariationMasters'])->first();
 					@$updated_id=$check_values->id;
-					  
-						if(empty($check_count1)){
+					 
+						if(empty($check_count1)){  
 							if ($this->ItemVariationMasters->ItemVariations->save($itemVariation1)) {
 							
-							}
-						}else{
+							}else{ 
+}
+						}else{ 
 							$locationItem2=$this->ItemVariationMasters->ItemVariations->get($updated_id);
 
 							 

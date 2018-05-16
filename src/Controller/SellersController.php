@@ -120,14 +120,14 @@ class SellersController extends AppController
 			$reference_details=$this->request->getData()['reference_details'];  //pr($reference_details); exit;
 			 if ($this->Sellers->save($seller)) {
 				
-				$accounting_group = $this->Sellers->Ledgers->AccountingGroups->find()->where(['seller'=>1])->first();
+				$accounting_group = $this->Sellers->Ledgers->AccountingGroups->find()->where(['AccountingGroups.seller'=>1,'AccountingGroups.city_id'=>$city_id])->first();
 				$ledger = $this->Sellers->Ledgers->newEntity();
 				$ledger->name = $seller->firm_name;
 				$ledger->accounting_group_id = $accounting_group->id;
 				$ledger->seller_id=$seller->id;
 				$ledger->city_id=$city_id;
 				$ledger->bill_to_bill_accounting=$bill_to_bill_accounting;
-				//pr($ledger)
+				
 				if($this->Sellers->Ledgers->save($ledger))
 				{
 					

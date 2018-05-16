@@ -31,7 +31,7 @@ class VendorsController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
-		$this->viewBuilder()->layout('admin_portal'); 
+		$this->viewBuilder()->layout('super_admin_layout'); 
         $this->paginate = [
             'limit' => 20
         ];
@@ -86,7 +86,7 @@ class VendorsController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $vendor = $this->Vendors->newEntity();
         if ($this->request->is('post')) {
             $vendor = $this->Vendors->patchEntity($vendor, $this->request->getData());
@@ -95,9 +95,65 @@ class VendorsController extends AppController
 			$registration_date=$this->request->data['registration_date'];
 			$vendor->registration_date=date('Y-m-d', strtotime($registration_date));
 			$bill_to_bill_accounting=$vendor->bill_to_bill_accounting;
-			//$data=$this->Sellers->Locations->get($location_id);
-			 
+			$data=$this->Vendors->Cities->get($city_id);
+			 $reference_details=$this->request->getData()['reference_details'];
+			// pr($this->request->getData()); exit;
             if ($this->Vendors->save($vendor)) {
+				
+				$accounting_group = $this->Vendors->Ledgers->AccountingGroups->find()->where(['AccountingGroups.vendor'=>1,'AccountingGroups.city_id'=>$city_id])->first();
+				$ledger = $this->Vendors->Ledgers->newEntity();
+				$ledger->name = $vendor->firm_name;
+				$ledger->accounting_group_id = $accounting_group->id;
+				$ledger->vendor_id=$vendor->id;
+				$ledger->city_id=$city_id;
+				$ledger->bill_to_bill_accounting=$bill_to_bill_accounting;
+				
+				if($this->Vendors->Ledgers->save($ledger))
+				{
+				
+					//Create Accounting Entry//
+			        $transaction_date=$data->books_beginning_from;
+					$AccountingEntry = $this->Vendors->Ledgers->AccountingEntries->newEntity();
+					$AccountingEntry->ledger_id        = $ledger->id;
+					if($vendor->debit_credit=="Dr")
+					{
+						$AccountingEntry->debit        = $vendor->opening_balance_value;
+					}
+					if($vendor->debit_credit=="Cr")
+					{
+						$AccountingEntry->credit       = $vendor->opening_balance_value;
+					}
+					$AccountingEntry->transaction_date = date("Y-m-d",strtotime($transaction_date));
+					//$AccountingEntry->location_id       = $location_id;
+					$AccountingEntry->city_id       = $city_id;
+					$AccountingEntry->is_opening_balance = 'yes';
+					if($vendor->opening_balance_value){
+					$this->Vendors->Ledgers->AccountingEntries->save($AccountingEntry);
+
+					//Refrence Entry//
+					if($reference_details){
+					foreach($reference_details as $reference_detail){
+							$ReferenceDetail = $this->Vendors->ReferenceDetails->newEntity();
+							$ReferenceDetail->ref_name        = $reference_detail['ref_name'];
+							$ReferenceDetail->vendor_id        = $vendor->id;
+							$ReferenceDetail->city_id        = $city_id;
+							$ReferenceDetail->opening_balance        = "Yes";
+							$ReferenceDetail->ledger_id        = $ledger->id;
+							if($reference_detail['debit'] > 0)
+							{
+								$ReferenceDetail->debit        = $reference_detail['debit'];
+							}
+							else
+							{
+								$ReferenceDetail->credit       = $reference_detail['credit'];
+							}
+							$ReferenceDetail->transaction_date = date("Y-m-d",strtotime($data->books_beginning_from));
+							$ReferenceDetail = $this->Vendors->ReferenceDetails->save($ReferenceDetail);
+							}
+						}
+					}
+				}
+				
                 $this->Flash->success(__('The vendor has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
@@ -125,7 +181,7 @@ class VendorsController extends AppController
 		
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $vendor = $this->Vendors->get($id, [
             'contain' => ['VendorDetails']
         ]);

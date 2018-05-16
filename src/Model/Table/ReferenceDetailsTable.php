@@ -59,6 +59,10 @@ class ReferenceDetailsTable extends Table
         $this->belongsTo('Suppliers', [
             'foreignKey' => 'supplier_id'
         ]);
+		 $this->belongsTo('Vendors', [
+            'foreignKey' => 'vendor_id'
+        ]);
+		
         $this->belongsTo('Locations', [
             'foreignKey' => 'location_id',
             'joinType' => 'INNER'
@@ -77,6 +81,10 @@ class ReferenceDetailsTable extends Table
         ]);
         $this->belongsTo('PaymentRows', [
             'foreignKey' => 'payment_row_id',
+            'joinType' => 'INNER'
+        ]);
+		$this->belongsTo('ContraVoucherRows', [
+            'foreignKey' => 'contra_voucher_row_id',
             'joinType' => 'INNER'
         ]);
         $this->belongsTo('CreditNotes', [

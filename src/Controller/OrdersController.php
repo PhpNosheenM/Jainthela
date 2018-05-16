@@ -71,7 +71,7 @@ class OrdersController extends AppController
 	
 	public function orderDeliver($id = null)
     {
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
 		$location_id=$this->Auth->User('location_id'); 
@@ -235,12 +235,13 @@ class OrdersController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
-		$location_id=$this->Auth->User('location_id'); 
+		//$location_id=$this->Auth->User('location_id'); 
 		$state_id=$this->Auth->User('state_id'); 
 		$this->viewBuilder()->layout('admin_portal');
         $order = $this->Orders->newEntity();
-		$LocationData = $this->Orders->Locations->get($location_id);
-		$Voucher_no = $this->Orders->find()->select(['voucher_no'])->where(['Orders.location_id'=>$location_id])->order(['voucher_no' => 'DESC'])->first();
+		$CityData = $this->Orders->Cities->get($city_id);
+		$StateData = $this->Orders->Cities->States->get($CityData->state_id);
+		$Voucher_no = $this->Orders->find()->select(['voucher_no'])->where(['Orders.city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
 		$today_date=date("Y-m-d");
 		$orderdate = explode('-', $today_date);
 		$year = $orderdate[0];
@@ -254,8 +255,9 @@ class OrdersController extends AppController
 		{
 			$voucher_no=1;
 		} 
-		$purchaseInvoiceVoucherNo='IN'.'/'.$year.''.$month.''.$day.'/'.$voucher_no;
-		$order_no=$LocationData->alise.'/'.$purchaseInvoiceVoucherNo;
+		//$purchaseInvoiceVoucherNo=$voucher_no;
+		$order_no=$CityData->alise_name.'/'.$voucher_no;
+		$order_no=$StateData->alias_name.'/'.$order_no;
 		//pr($order_no); exit;
 		//pr($voucher_no); exit;
 		
@@ -272,7 +274,7 @@ class OrdersController extends AppController
 		$partyParentGroups = $this->Orders->AccountingGroups->find()
 						->where(['AccountingGroups.
 						purchase_invoice_party'=>'1']);
-
+pr($partyParentGroups->toArray()); exit;
 		$partyGroups=[];
 		foreach($partyParentGroups as $partyParentGroup)
 		{

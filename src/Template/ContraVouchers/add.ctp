@@ -110,8 +110,7 @@ $option_ref['New Ref']= 'New Ref';
 $option_ref['Against']= 'Against';
 $option_ref['Advance']= 'Advance';
 $option_ref['On Account']= 'On Account';
-?>
-<?php
+
 $option_type['Cr']='Cr';
 $option_type['Dr']='Dr';
 ?>
@@ -120,8 +119,7 @@ $option_type['Dr']='Dr';
 		<tr>
 			<td width="20%" valign="top"> 
 				<input type="hidden" class="ledgerIdContainer" />
-				<input type="hidden" class="locationIdContainer" />
-				<input type="hidden" class="cityIdContainer" />
+ 				<input type="hidden" class="cityIdContainer" />
 				<?php 
 				echo $this->Form->select('type',$option_ref, ['label' => false,'class' => 'form-control input-sm refType','required'=>'required']); ?>
 			</td>
@@ -494,7 +492,6 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 				}
 				
 				SelectedTr.find('input.ledgerIdContainer').val(ledger_id);
-				SelectedTr.find('input.locationIdContainer').val(".$location_id.");
 				SelectedTr.find('input.cityIdContainer').val(".$city_id.");
 				var row_no=SelectedTr.attr('row_no');
 				if(SelectedTr.find('td:nth-child(2) div.window table tbody tr').length>0){
@@ -601,40 +598,3 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 		";  
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		
 ?>
-
-
-
-
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\ContraVoucher $contraVoucher
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('List Contra Vouchers'), ['action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('List Locations'), ['controller' => 'Locations', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Location'), ['controller' => 'Locations', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Accounting Entries'), ['controller' => 'AccountingEntries', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Accounting Entry'), ['controller' => 'AccountingEntries', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="contraVouchers form large-9 medium-8 columns content">
-    <?= $this->Form->create($contraVoucher) ?>
-    <fieldset>
-        <legend><?= __('Add Contra Voucher') ?></legend>
-        <?php
-            echo $this->Form->control('voucher_no');
-            echo $this->Form->control('location_id', ['options' => $locations]);
-            echo $this->Form->control('transaction_date');
-            echo $this->Form->control('narration');
-            echo $this->Form->control('created_by');
-            echo $this->Form->control('created_on');
-            echo $this->Form->control('status');
-        ?>
-    </fieldset>
-    <?= $this->Form->button(__('Submit')) ?>
-    <?= $this->Form->end() ?>
-</div>

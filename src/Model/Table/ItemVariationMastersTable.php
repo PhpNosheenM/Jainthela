@@ -51,7 +51,8 @@ class ItemVariationMastersTable extends Table
         ]);
 		
 		 $this->hasMany('ItemVariations', [
-            'foreignKey' => 'item_variation_master_id'
+            'foreignKey' => 'item_variation_master_id',
+			'saveStrategy' =>'replace'
         ]);
     }
 

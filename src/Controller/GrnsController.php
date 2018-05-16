@@ -137,7 +137,7 @@ class GrnsController extends AppController
          $partyParentGroups = $this->Grns->GrnRows->Ledgers->AccountingGroups->find('all')
                         ->where(['AccountingGroups.city_id'=>$city_id, 'AccountingGroups.vendor'=>'1']);
         $partyGroups=[];
-        
+         //pr($partyParentGroups->toArray()); exit;
         foreach($partyParentGroups as $partyParentGroup)
         {
             $accountingGroups = $this->Grns->GrnRows->Ledgers->AccountingGroups
@@ -146,14 +146,14 @@ class GrnsController extends AppController
             foreach($accountingGroups as $accountingGroup){
                 $partyGroups[]=$accountingGroup->id;
             }
-        }
+        }	//pr($partyGroups); exit;
         if($partyGroups)
         {  
             $Partyledgers = $this->Grns->VendorLedgers->find()
                             ->where(['VendorLedgers.accounting_group_id IN' =>$partyGroups,'VendorLedgers.city_id'=>$city_id])
                             ->contain(['Vendors']);
         }
-        
+       // pr($Partyledgers); exit;
         $partyOptions=[];
         foreach($Partyledgers as $Partyledger){
             $partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id];
