@@ -199,7 +199,7 @@ $option_ref[]= ['value'=>'Advance','text'=>'Advance'];
 $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 
 ?>
-<table id="sampleForRef" style="display:;" width="100%">
+<table id="sampleForRef" style="display:none;" width="100%">
 	<tbody>
 		<tr>
 			<td width="20%" valign="top"> 

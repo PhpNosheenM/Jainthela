@@ -81,7 +81,7 @@ class CustomerAddressesTable extends Table
     {
         $rules->add($rules->existsIn(['customer_id'], 'Customers'));
         $rules->add($rules->existsIn(['city_id'], 'Cities'));
-        $rules->add($rules->existsIn(['location_id'], 'Locations'));
+        //$rules->add($rules->existsIn(['location_id'], 'Locations'));
 
         return $rules;
     }
