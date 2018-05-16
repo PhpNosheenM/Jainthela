@@ -31,7 +31,7 @@ class VendorsController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
-		$this->viewBuilder()->layout('admin_portal'); 
+		$this->viewBuilder()->layout('super_admin_layout'); 
         $this->paginate = [
             'limit' => 20
         ];
@@ -100,7 +100,7 @@ class VendorsController extends AppController
 			// pr($this->request->getData()); exit;
             if ($this->Vendors->save($vendor)) {
 				
-				$accounting_group = $this->Vendors->Ledgers->AccountingGroups->find()->where(['vendor'=>1])->first();
+				$accounting_group = $this->Vendors->Ledgers->AccountingGroups->find()->where(['AccountingGroups.vendor'=>1,'AccountingGroups.city_id'=>$city_id])->first();
 				$ledger = $this->Vendors->Ledgers->newEntity();
 				$ledger->name = $vendor->firm_name;
 				$ledger->accounting_group_id = $accounting_group->id;
@@ -181,7 +181,7 @@ class VendorsController extends AppController
 		
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $vendor = $this->Vendors->get($id, [
             'contain' => ['VendorDetails']
         ]);
