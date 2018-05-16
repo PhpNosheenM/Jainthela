@@ -44,6 +44,7 @@ class Grn extends Entity
     protected $_accessible = [
         'seller_id' => true,
         'super_admin_id' => true,
+        'vendor_ledger_id' => true,
         'voucher_no' => true,
         'grn_no' => true,
         'city_id' => true,

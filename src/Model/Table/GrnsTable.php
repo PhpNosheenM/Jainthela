@@ -78,6 +78,7 @@ class GrnsTable extends Table
             'foreignKey' => 'vendor_ledger_id',
             'joinType' => 'LEFT'
         ]);
+         $this->belongsTo('Units');
     }
 
     /**
@@ -97,18 +98,18 @@ class GrnsTable extends Table
             ->requirePresence('voucher_no', 'create')
             ->notEmpty('voucher_no');
 
-        $validator
+        /*$validator
             ->scalar('grn_no')
             ->maxLength('grn_no', 100)
             ->requirePresence('grn_no', 'create')
-            ->notEmpty('grn_no');
+            ->notEmpty('grn_no');*/
 
         $validator
             ->date('transaction_date')
             ->requirePresence('transaction_date', 'create')
             ->notEmpty('transaction_date');
 
-        $validator
+        /*$validator
             ->scalar('reference_no')
             ->maxLength('reference_no', 100)
             ->allowEmpty('reference_no');
@@ -137,7 +138,7 @@ class GrnsTable extends Table
             ->scalar('status')
             ->maxLength('status', 20)
             ->requirePresence('status', 'create')
-            ->notEmpty('status');
+            ->notEmpty('status');*/
 
         return $validator;
     }
