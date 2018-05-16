@@ -42,11 +42,15 @@ class ContraVoucherRowsTable extends Table
             'foreignKey' => 'contra_voucher_id',
             'joinType' => 'INNER'
         ]);
+		
         $this->belongsTo('Ledgers', [
             'foreignKey' => 'ledger_id',
             'joinType' => 'INNER'
         ]);
         $this->hasMany('AccountingEntries', [
+            'foreignKey' => 'contra_voucher_row_id'
+        ]);
+		 $this->hasMany('ReferenceDetails', [
             'foreignKey' => 'contra_voucher_row_id'
         ]);
     }

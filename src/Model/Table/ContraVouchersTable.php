@@ -61,21 +61,21 @@ class ContraVouchersTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
-        $validator
+        /* $validator
             ->integer('voucher_no')
             ->requirePresence('voucher_no', 'create')
             ->notEmpty('voucher_no');
 
-        $validator
+         $validator
             ->date('transaction_date')
             ->requirePresence('transaction_date', 'create')
             ->notEmpty('transaction_date');
-
+ */
         $validator
             ->scalar('narration')
             ->requirePresence('narration', 'create')
             ->notEmpty('narration');
-
+/* 
         $validator
             ->integer('created_by')
             ->requirePresence('created_by', 'create')
@@ -90,7 +90,7 @@ class ContraVouchersTable extends Table
             ->scalar('status')
             ->maxLength('status', 10)
             ->requirePresence('status', 'create')
-            ->notEmpty('status');
+            ->notEmpty('status'); */
 
         return $validator;
     }

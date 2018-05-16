@@ -2,6 +2,8 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Event\Event;
+use Cake\View\View;
 
 /**
  * ContraVouchers Controller
@@ -13,6 +15,11 @@ use App\Controller\AppController;
 class ContraVouchersController extends AppController
 {
 
+	public function beforeFilter(Event $event)
+	{
+		parent::beforeFilter($event);
+		 $this->Security->setConfig('unlockedActions', ['add','index']);
+	}
     /**
      * Index method
      *
@@ -67,15 +74,15 @@ class ContraVouchersController extends AppController
 			else
 			{
 				$contraVoucher->voucher_no = 1;
-			} 
+			}
 			$contraVoucher->location_id = $location_id;
 			
 			$contraVoucher = $this->ContraVouchers->patchEntity($contraVoucher, $this->request->getData(), [
-							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
+							'associated' => ['ContraVoucherRows','ContraVoucherRows.ReferenceDetails']
 						]);
 					
 			//transaction date for contraVoucher code start here--
-			foreach($contraVoucher->ContraVoucherRows as $payment_row)
+			foreach($contraVoucher->contra_voucher_row as $payment_row)
 			{
 				if(!empty($payment_row->reference_details))
 				{
@@ -89,7 +96,7 @@ class ContraVouchersController extends AppController
 			
 			if ($this->ContraVouchers->save($contraVoucher)) {
 				
-			foreach($contraVoucher->ContraVoucherRows as $payment_row)
+			foreach($contraVoucher->contra_voucher_row as $payment_row)
 				{
 					$accountEntry = $this->ContraVouchers->AccountingEntries->newEntity();
 					$accountEntry->ledger_id                  = $payment_row->ledger_id;
@@ -174,7 +181,7 @@ class ContraVouchersController extends AppController
 		
 		
         $locations = $this->ContraVouchers->Locations->find('list', ['limit' => 200]);
-        $this->set(compact('contraVoucher', 'locations', 'voucher_no','ledgerOptions'));
+        $this->set(compact('voucher_no','contraVoucher', 'locations', 'voucher_no','ledgerOptions','city_id'));
     }
 
     /**
