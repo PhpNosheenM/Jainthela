@@ -43,6 +43,7 @@ class ContraVoucherRow extends Entity
         'cheque_date' => true,
         'contra_voucher' => true,
         'ledger' => true,
+        'reference_details' => true,
         'accounting_entries' => true
     ];
 }

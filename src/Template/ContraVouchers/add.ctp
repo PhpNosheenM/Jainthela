@@ -110,8 +110,7 @@ $option_ref['New Ref']= 'New Ref';
 $option_ref['Against']= 'Against';
 $option_ref['Advance']= 'Advance';
 $option_ref['On Account']= 'On Account';
-?>
-<?php
+
 $option_type['Cr']='Cr';
 $option_type['Dr']='Dr';
 ?>
