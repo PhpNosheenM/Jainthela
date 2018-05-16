@@ -80,7 +80,7 @@ class ContraVouchersController extends AppController
 			$contraVoucher = $this->ContraVouchers->patchEntity($contraVoucher, $this->request->getData(), [
 							'associated' => ['ContraVoucherRows','ContraVoucherRows.ReferenceDetails']
 						]);
-					pr($contraVoucher); exit;
+					 
 			//transaction date for contraVoucher code start here--
 			foreach($contraVoucher->contra_voucher_rows as $payment_row)
 			{
