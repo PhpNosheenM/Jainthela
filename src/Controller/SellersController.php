@@ -127,7 +127,7 @@ class SellersController extends AppController
 				$ledger->seller_id=$seller->id;
 				$ledger->city_id=$city_id;
 				$ledger->bill_to_bill_accounting=$bill_to_bill_accounting;
-				//pr($ledger)
+				
 				if($this->Sellers->Ledgers->save($ledger))
 				{
 					

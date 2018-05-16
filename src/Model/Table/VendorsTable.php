@@ -46,6 +46,12 @@ class VendorsTable extends Table
         $this->hasMany('Ledgers', [
             'foreignKey' => 'vendor_id'
         ]);
+		
+		 $this->hasMany('ReferenceDetails', [
+            'foreignKey' => 'vendor_id',
+			'saveStrategy'=>'replace'
+        ]);
+		
         $this->hasMany('VendorDetails', [
             'foreignKey' => 'vendor_id',
 			'saveStrategy'=>'replace',

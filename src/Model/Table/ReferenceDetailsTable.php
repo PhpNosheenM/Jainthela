@@ -59,6 +59,9 @@ class ReferenceDetailsTable extends Table
         $this->belongsTo('Suppliers', [
             'foreignKey' => 'supplier_id'
         ]);
+		 $this->belongsTo('Vendors', [
+            'foreignKey' => 'vendor_id'
+        ]);
         $this->belongsTo('Locations', [
             'foreignKey' => 'location_id',
             'joinType' => 'INNER'
