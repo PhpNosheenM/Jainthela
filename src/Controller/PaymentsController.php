@@ -54,7 +54,7 @@ class PaymentsController extends AppController
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
 		$user_id=$this->Auth->User('id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $payment = $this->Payments->newEntity();
 		
 		if ($this->request->is('post')) {
@@ -166,7 +166,7 @@ class PaymentsController extends AppController
 				$partyGroups[]=$partyChildGroup->id;
 			}
 		}
-	
+	//pr($partyGroups->toArray()); exit;
 		$partyLedgers = $this->Payments->PaymentRows->Ledgers->find()
 		->where(['Ledgers.accounting_group_id IN' =>$partyGroups]);
 		
