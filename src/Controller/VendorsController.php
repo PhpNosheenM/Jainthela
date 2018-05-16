@@ -98,6 +98,61 @@ class VendorsController extends AppController
 			//$data=$this->Sellers->Locations->get($location_id);
 			 
             if ($this->Vendors->save($vendor)) {
+				
+				$accounting_group = $this->Vendors->Ledgers->AccountingGroups->find()->where(['vendor'=>1])->first();
+				$ledger = $this->Vendors->Ledgers->newEntity();
+				$ledger->name = $vendor->firm_name;
+				$ledger->accounting_group_id = $accounting_group->id;
+				$ledger->vendor_id=$vendor->id;
+				$ledger->city_id=$city_id;
+				$ledger->bill_to_bill_accounting=$bill_to_bill_accounting;
+				
+				if($this->Vendors->Ledgers->save($ledger))
+				{
+				
+					//Create Accounting Entry//
+			        $transaction_date=$data->books_beginning_from;
+					$AccountingEntry = $this->Vendors->Ledgers->AccountingEntries->newEntity();
+					$AccountingEntry->ledger_id        = $ledger->id;
+					if($vendor->debit_credit=="Dr")
+					{
+						$AccountingEntry->debit        = $vendor->opening_balance_value;
+					}
+					if($vendor->debit_credit=="Cr")
+					{
+						$AccountingEntry->credit       = $vendor->opening_balance_value;
+					}
+					$AccountingEntry->transaction_date = date("Y-m-d",strtotime($transaction_date));
+					//$AccountingEntry->location_id       = $location_id;
+					$AccountingEntry->city_id       = $city_id;
+					$AccountingEntry->is_opening_balance = 'yes';
+					if($vendor->opening_balance_value){
+					$this->Vendors->Ledgers->AccountingEntries->save($AccountingEntry);
+
+					//Refrence Entry//
+					if($reference_details){
+					foreach($reference_details as $reference_detail){
+							$ReferenceDetail = $this->Vendors->ReferenceDetails->newEntity();
+							$ReferenceDetail->ref_name        = $reference_detail['ref_name'];
+							$ReferenceDetail->vendor_id        = $vendor->id;
+							$ReferenceDetail->city_id        = $city_id;
+							$ReferenceDetail->opening_balance        = "Yes";
+							$ReferenceDetail->ledger_id        = $ledger->id;
+							if($reference_detail['debit'] > 0)
+							{
+								$ReferenceDetail->debit        = $reference_detail['debit'];
+							}
+							else
+							{
+								$ReferenceDetail->credit       = $reference_detail['credit'];
+							}
+							$ReferenceDetail->transaction_date = date("Y-m-d",strtotime($data->books_beginning_from));
+							$ReferenceDetail = $this->Vendors->ReferenceDetails->save($ReferenceDetail);
+							}
+						}
+					}
+				}
+				
                 $this->Flash->success(__('The vendor has been saved.'));
 
                 return $this->redirect(['action' => 'index']);

@@ -2,6 +2,8 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Event\Event;
+use Cake\View\View;
 
 /**
  * Units Controller
@@ -17,13 +19,19 @@ class UnitsController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
+	 public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Security->setConfig('unlockedActions', ['index']);
+
+    }
     public function index($id = null)
     {  
 
     	
 		$city_id=$this->Auth->User('city_id'); 
 		$user_id=$this->Auth->User('id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 		$this->paginate =[
 				'limit' => 20
 		];
