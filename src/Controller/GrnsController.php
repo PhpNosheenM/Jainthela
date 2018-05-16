@@ -130,7 +130,7 @@ class GrnsController extends AppController
          $partyParentGroups = $this->Grns->GrnRows->Ledgers->AccountingGroups->find('all')
                         ->where(['AccountingGroups.city_id'=>$city_id, 'AccountingGroups.vendor'=>'1']);
         $partyGroups=[];
-        
+         //pr($partyParentGroups->toArray()); exit;
         foreach($partyParentGroups as $partyParentGroup)
         {
             $accountingGroups = $this->Grns->GrnRows->Ledgers->AccountingGroups
