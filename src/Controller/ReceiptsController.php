@@ -69,7 +69,8 @@ class ReceiptsController extends AppController
             $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
 			$tdate=$this->request->data('transaction_date');
 			$receipt->transaction_date=date('Y-m-d',strtotime($tdate));
-			$receipt->location_id = $location_id;
+			$receipt->city_id = $city_id;
+			$receipt->created_by = $created_by;
 			$receipt->voucher_no = $voucher_no;
 		   //transaction date for receipt code start here--
 			foreach($receipt->receipt_rows as $receipt_row)
@@ -83,7 +84,7 @@ class ReceiptsController extends AppController
 				}
 			}
             if ($this->Receipts->save($receipt)) {
-				
+			
 			foreach($receipt->receipt_rows as $receipt_row)
 				{
 					$accountEntry = $this->Receipts->AccountingEntries->newEntity();
@@ -91,7 +92,7 @@ class ReceiptsController extends AppController
 					$accountEntry->debit                      = @$receipt_row->debit;
 					$accountEntry->credit                     = @$receipt_row->credit;
 					$accountEntry->transaction_date           = $receipt->transaction_date;
-					$accountEntry->location_id                = $location_id;
+					//$accountEntry->location_id                = $location_id;
 					$accountEntry->city_id                 	  = $city_id;
 					$accountEntry->receipt_id                 = $receipt->id;
 					$accountEntry->receipt_row_id             = $receipt_row->id;

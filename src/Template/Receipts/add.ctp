@@ -136,10 +136,6 @@ $option_type['Dr']='Dr';
 				<?php 
 				echo $this->Form->select('type_cr_dr',$option_type, ['label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Dr']); ?>
 			</td>
-			<td width="15%" style="padding-left:0px;" valign="top">
-				<?php 
-				echo $this->Form->input('due_days', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass dueDays','title'=>'Due Days','placeholder'=>'Default Days']);  ?>
-			</td>
 			<td width="5%" align="right" valign="top">
 				<a class="delete-tr-ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 			</td>
@@ -510,7 +506,7 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 						$(this).find('td:nth-child(2) select.refList').selectpicker();
 					}else if(is_input){
 						$(this).find('td:nth-child(2) input.ref_name').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
-						$(this).find('td:nth-child(5) input.dueDays').attr({name:'receipt_rows['+row_no+'][reference_details]['+i+'][due_days]',id:'receipt_rows-'+row_no+'-reference_details-'+i+'-due_days'});
+						 
 					}
 					$(this).find('td:nth-child(4) select.refDrCr').selectpicker();
 					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
