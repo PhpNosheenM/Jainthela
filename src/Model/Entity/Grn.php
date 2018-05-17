@@ -55,6 +55,8 @@ class Grn extends Entity
         'total_taxable_value' => true,
         'total_gst' => true,
         'total_amount' => true,
+        'total_purchase_rate' => true,
+        'total_sales_rate' => true,
         'created_on' => true,
         'status' => true,
         'seller' => true,
