@@ -1,7 +1,8 @@
 <?php
 namespace App\Controller;
-
 use App\Controller\AppController;
+use Cake\Event\Event;
+use Cake\View\View;
 
 /**
  * Receipts Controller
@@ -13,6 +14,12 @@ use App\Controller\AppController;
 class ReceiptsController extends AppController
 {
 
+	 public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Security->setConfig('unlockedActions', ['add','index']);
+
+    }
     /**
      * Index method
      *
@@ -70,7 +77,7 @@ class ReceiptsController extends AppController
 			$tdate=$this->request->data('transaction_date');
 			$receipt->transaction_date=date('Y-m-d',strtotime($tdate));
 			$receipt->city_id = $city_id;
-			$receipt->created_by = $created_by;
+			$receipt->created_by = $user_id;
 			$receipt->voucher_no = $voucher_no;
 		   //transaction date for receipt code start here--
 			foreach($receipt->receipt_rows as $receipt_row)
@@ -164,7 +171,7 @@ class ReceiptsController extends AppController
 		}
 	
 		$partyLedgers = $this->Receipts->ReceiptRows->Ledgers->find()
-		->where(['Ledgers.accounting_group_id IN' =>$partyGroups]);
+		->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.city_id'=>$city_id]);
 		
 		//$ledgers = $this->Payments->PaymentRows->Ledgers->find()->where(['company_id'=>$company_id]);
 		foreach($partyLedgers as $ledger){
