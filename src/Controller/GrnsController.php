@@ -105,7 +105,7 @@ class GrnsController extends AppController
             } 
             $grn->city_id =$city_id;
             $grn->super_admin_id =$user_id;
-        
+
             if ($this->Grns->save($grn)) 
             {
                 //Create Item_Ledger//
@@ -128,10 +128,11 @@ class GrnsController extends AppController
                     $item = $this->Grns->GrnRows->Items->find()->where(['Items.id'=>$grn_row->item_id])->first();
                     
                 }
-                $this->Flash->success(__('The grn has been saved.'));
+                $this->Flash->success(__('The challan has been saved.'));
                 return $this->redirect(['action' => 'add']);
             }
-            $this->Flash->error(__('The grn could not be saved. Please, try again.'));
+
+            $this->Flash->error(__('The challan could not be saved. Please, try again.'));
         }
         $items = $this->Grns->GrnRows->Items->find();
         
