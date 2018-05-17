@@ -109,10 +109,10 @@ class OrdersController extends AppController
 						$TotalPurchaseRate+=$Item->purchase_rate;
 						$TotalSaleRate+=$Item->sales_rate;
 					} 
-					// pr($TotalPurchaseRate);pr($TotalSaleRate); exit;
+					
 					$StateData = $this->Orders->Cities->get($city_id,['contain'=>['States']]);
-					//$StateData = $this->Orders->Cities->States->get($CityData->state_id);
-					 //pr($StateData); exit;
+					$sellerLedgerData = $this->Orders->AccountingEntries->Ledgers->find()->where(['seller_id'=>$key])->first();
+					//pr($sellerLedgerData->id); exit;
 					$Voucher_no = $this->Orders->Grns->find()->select(['voucher_no'])->where(['Grns.city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
 					if($Voucher_no){$voucher_no=$Voucher_no->voucher_no+1; }
 					else{$voucher_no=1;}   
@@ -126,6 +126,7 @@ class OrdersController extends AppController
 					$Grn->voucher_no=$voucher_no;
 					$Grn->grn_no=$purchaseInvoiceVoucherNo;
 					$Grn->transaction_date=$today_date;
+					$Grn->vendor_ledger_id=$sellerLedgerData->id;
 					$Grn->total_purchase_rate=$TotalPurchaseRate;
 					$Grn->total_sales_rate=$TotalSaleRate;
 					$Grn->city_id=$city_id;
@@ -169,7 +170,6 @@ class OrdersController extends AppController
 						$ItemLedger->grn_id=$Grn->id;
 						$ItemLedger->grn_row_id=$GrnRow->id;
 						$this->Orders->Grns->GrnRows->ItemLedgers->save($ItemLedger);
-						
 				}
 			}
 			
@@ -310,13 +310,13 @@ class OrdersController extends AppController
 							$ItemLedger->seller_id=$Item->seller_id;
 							$ItemLedger->transaction_date=$order->transaction_date;  
 							$ItemLedger->quantity=$order_detail->quantity;
-							$ItemLedger->rate=$order_detail->sales_rate;
-							$ItemLedger->purchase_rate=$order_detail->purchase_rate;
-							$ItemLedger->sales_rate=$order_detail->sales_rate; 
+							$ItemLedger->rate=$order_detail->rate;
+							$ItemLedger->purchase_rate=$Item->purchase_rate;
+							$ItemLedger->sales_rate=$order_detail->rate; 
 							$ItemLedger->status="Out";
 							$ItemLedger->city_id=$city_id;
 							$ItemLedger->order_id=$order->id;
-							$ItemLedger->order_detail_id=$order_detail->id;
+							$ItemLedger->order_detail_id=$order_detail->id; //pr($order_detail); exit;
 							$this->Orders->Grns->GrnRows->ItemLedgers->save($ItemLedger);
 							
 							$ItemVariationData = $this->Orders->OrderDetails->ItemVariations->get($order_detail->item_variation_id);
