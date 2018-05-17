@@ -44,6 +44,10 @@ class PaymentsTable extends Table
             'foreignKey' => 'location_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('Cities', [
+            'foreignKey' => 'city_id',
+            'joinType' => 'INNER'
+        ]);
         $this->hasMany('AccountingEntries', [
             'foreignKey' => 'payment_id'
         ]);

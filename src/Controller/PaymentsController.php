@@ -25,12 +25,31 @@ class PaymentsController extends AppController
      */
     public function index()
     {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$this->viewBuilder()->layout('super_admin_layout');
         $this->paginate = [
-            'contain' => ['Locations']
+            'contain' => ['Cities'],
+			'limit' => 20
         ];
-        $payments = $this->paginate($this->Payments);
-
-        $this->set(compact('payments'));
+		$paymentVouchers = $this->Payments->find()->where(['Payments.city_id'=>$city_id])->contain(['PaymentRows','Cities']);
+		
+		if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$paymentVouchers->where([
+							'OR' => [
+									'Payments.voucher_no LIKE' => $search.'%',
+									'Cities.name LIKE' => $search.'%',
+									'Payments.narration LIKE' => $search.'%',
+									'Payments.created_on LIKE' => $search.'%'
+									
+							]
+			]);
+		}
+        
+		$paymentVouchers=$this->paginate($paymentVouchers);
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('paymentVouchers','paginate_limit'));
     }
 
     /**
@@ -56,16 +75,16 @@ class PaymentsController extends AppController
      */
     public function add()
     {
-		$city_id=$this->Auth->User('city_id'); 
-		$location_id=$this->Auth->User('location_id'); 
+		$city_id=$this->Auth->User('city_id');
+		$location_id=$this->Auth->User('location_id');
 		$user_id=$this->Auth->User('id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $payment = $this->Payments->newEntity();
 		
 		if ($this->request->is('post')) {
-			
+		
 			//$this->request->data['transaction_date'] = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
-			$Voucher = $this->Payments->find()->select(['voucher_no'])->where(['location_id'=>$location_id])->order(['voucher_no' => 'DESC'])->first();
+			$Voucher = $this->Payments->find()->select(['voucher_no'])->where(['city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
 			if($Voucher)
 			{
 				$payment->voucher_no = $Voucher->voucher_no+1;
@@ -73,13 +92,16 @@ class PaymentsController extends AppController
 			else
 			{
 				$payment->voucher_no = 1;
-			} 
-			$payment->location_id = $location_id;
+			}
+			//$payment->location_id = $location_id;
+			$payment->city_id = $city_id;
+			$payment->created_by = $user_id;
+			$payment->transaction_date = date('Y-m-d', strtotime($this->request->data['transaction_date']));
 			
 			$payment = $this->Payments->patchEntity($payment, $this->request->getData(), [
 							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
 						]);
-					
+			
 			//transaction date for payment code start here--
 			foreach($payment->payment_rows as $payment_row)
 			{
@@ -87,7 +109,8 @@ class PaymentsController extends AppController
 				{
 					foreach($payment_row->reference_details as $reference_detail)
 					{
-						$reference_detail->transaction_date = $payment->transaction_date;
+						$reference_detail->transaction_date = date('Y-m-d', strtotime($payment->transaction_date));
+						$reference_detail->city_id = $city_id;
 					}
 				}
 			}
@@ -102,7 +125,6 @@ class PaymentsController extends AppController
 					$accountEntry->debit                      = @$payment_row->debit;
 					$accountEntry->credit                     = @$payment_row->credit;
 					$accountEntry->transaction_date           = $payment->transaction_date;
-					$accountEntry->location_id                = $location_id;
 					$accountEntry->city_id                    = $city_id;
 					$accountEntry->payment_id                 = $payment->id;
 					$accountEntry->payment_row_id             = $payment_row->id;
@@ -116,19 +138,19 @@ class PaymentsController extends AppController
 			
 			$this->Flash->error(__('The payment could not be saved. Please, try again.'));
 		}
-		$Voucher = $this->Payments->find()->select(['voucher_no'])->where(['location_id'=>$location_id])->order(['voucher_no' => 'DESC'])->first();
+		$Voucher = $this->Payments->find()->select(['voucher_no'])->where(['city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
 		if($Voucher)
 		{
 			$voucher_no=$Voucher->voucher_no+1;
 		}
 		else
-		{ 
+		{
 			$voucher_no=1;
-		} 		
+		}
 		//bank group
 		$bankParentGroups = $this->Payments->PaymentRows->Ledgers->AccountingGroups->find()
 						->where(['AccountingGroups.bank'=>'1']);
-						
+		
 		$bankGroups=[];
 		
 		foreach($bankParentGroups as $bankParentGroup)
@@ -173,7 +195,7 @@ class PaymentsController extends AppController
 		}
 	//pr($partyGroups->toArray()); exit;
 		$partyLedgers = $this->Payments->PaymentRows->Ledgers->find()
-		->where(['Ledgers.accounting_group_id IN' =>$partyGroups]);
+		->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.city_id'=>$city_id]);
 		
 		//$ledgers = $this->Payments->PaymentRows->Ledgers->find()->where(['company_id'=>$company_id]);
 		foreach($partyLedgers as $ledger){
