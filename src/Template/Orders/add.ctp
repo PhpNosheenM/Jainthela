@@ -22,7 +22,7 @@
 							<div class="form-group">
 								<label class=" control-label">Customer</label>
 								<div class="">                                            
-									<?= $this->Form->select('seller_ledger_id',$partyOptions,['empty'=>'---Select--','class'=>'form-control select','label'=>false]) ?>
+									<?= $this->Form->select('party_ledger_id',$partyOptions,['empty'=>'---Select--','class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
 						
@@ -36,9 +36,9 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<label class=" control-label">Purchase Account</label>
+								<label class=" control-label">Sales Account</label>
 								<div class="">                                            
-									<?= $this->Form->select('purchase_ledger_id',$Accountledgers,['class'=>'form-control select','label'=>false]) ?>
+									<?= $this->Form->select('sales_ledger_id',$Accountledgers,['class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
 							
@@ -94,13 +94,13 @@
 										<td colspan="2" style="text-align:right;">
 											<div class="form-group">
 												<div class="col-md-4">
-													<label class="check"><input name="order_type" type="radio" id="itm"  value="2"  class="iradio" name="iradio" checked="checked" />Credit</label>
+													<label class="check"><input name="order_type" type="radio" id="itm"  value="Credit"  class="iradio" name="iradio" checked="checked" />Credit</label>
 												</div>
 												<div class="col-md-4">
-													<label class="check"><input name="order_type" type="radio" id="slr"  value="3" class="iradio" name="iradio"/> Cash</label>
+													<label class="check"><input name="order_type" type="radio" id="slr"  value="COD" class="iradio" name="iradio"/> Cash</label>
 												</div>
 												<div class="col-md-4">
-													<label class="check"><input name="order_type" type="radio" id="cmbo"  value="4" class="iradio" name="iradio"/> OnLine</label>
+													<label class="check"><input name="order_type" type="radio" id="cmbo"  value="OnLine" class="iradio" name="iradio"/> OnLine</label>
 												</div>
 											</div>
 										</td>
@@ -176,10 +176,10 @@
    $js="var jvalidate = $('#jvalidate').validate({
 		ignore: [],
 		rules: {                                            
-				seller_ledger_id: {
+				party_ledger_id: {
 						required: true,
 				},
-				name: {
+				sales_ledger_id: {
 						required: true,
 				},
 				
@@ -256,7 +256,7 @@
 				$(this).find('select.item ').attr({name:'order_details['+i+'][item_variation_id]',id:'order_details['+i+'][item_variation_id]'}).rules('add', 'required');
 				$(this).find('.quantity ').attr({name:'order_details['+i+'][quantity]',id:'order_details['+i+'][quantity]'}).rules('add', 'required');
 				$(this).find('.rate ').attr({name:'order_details['+i+'][rate]',id:'order_details['+i+'][rate]'}).rules('add', 'required');
-				$(this).find('.taxable_value ').attr({name:'order_details['+i+'][taxable_value]',id:'order_details['+i+'][taxable_value]'});
+				$(this).find('.taxable_value ').attr({name:'order_details['+i+'][amount]',id:'order_details['+i+'][amount]'});
 				$(this).find('.gst_percentage ').attr({name:'order_details['+i+'][gst_percentage]',id:'order_details['+i+'][gst_percentage]'});
 				$(this).find('.gst_figure_id ').attr({name:'order_details['+i+'][gst_figure_id]',id:'order_details['+i+'][gst_figure_id]'});
 				$(this).find('.gst_value ').attr({name:'order_details['+i+'][gst_value]',id:'order_details['+i+'][gst_value]'});
@@ -295,7 +295,7 @@
 					var net_amount1=round(net_amount,2);
 					$(this).find('.net_amount').val(net_amount1);
 					total_taxable_value=total_taxable_value+taxable_value;
-					total_gst=total_gst+gst_rate;
+					//total_gst=total_gst+gst_rate;
 					total_amount=total_amount+net_amount1;
 					var per_item_purchase_rate=net_amount1/qty;
 					$(this).find('.purchase_rate').val(per_item_purchase_rate);

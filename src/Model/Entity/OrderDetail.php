@@ -32,11 +32,16 @@ class OrderDetail extends Entity
      */
     protected $_accessible = [
         'order_id' => true,
+        'item_id' => true,
         'item_variation_id' => true,
         'combo_offer_id' => true,
         'quantity' => true,
         'rate' => true,
         'amount' => true,
+        'gst_percentage' => true,
+        'gst_figure_id' => true,
+        'gst_value' => true,
+        'net_amount' => true,
         'order' => true,
         'item_variation' => true,
         'combo_offer' => true

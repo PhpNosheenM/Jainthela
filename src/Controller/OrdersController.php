@@ -2,7 +2,8 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\View\View;
 /**
  * Orders Controller
  *
@@ -18,6 +19,13 @@ class OrdersController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
+	 
+	   public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Security->setConfig('unlockedActions', ['add']);
+
+    }
     public function index()
     {
 		$this->viewBuilder()->layout('super_admin_layout');
@@ -70,26 +78,30 @@ class OrdersController extends AppController
 	
 	
 	public function orderDeliver($id = null)
-    {
+    { 
 		$this->viewBuilder()->layout('super_admin_layout');
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
-		$location_id=$this->Auth->User('location_id'); 
-		$Location = $this->Orders->Locations->get($location_id);
+		//$location_id=$this->Auth->User('location_id'); pr($city_id); exit;
+		//$Location = $this->Orders->Locations->get($location_id);
 		$today_date=date("Y-m-d");
 		$orderdate = explode('-', $today_date);
 		$year = $orderdate[0];
 		$month   = $orderdate[1];
 		$day  = $orderdate[2];
 		$order = $this->Orders->get($id, [
-            'contain' => ['OrderDetails'=>['ItemVariations'=>['Items'=>['GstFigures'],'Sellers']]]
+            'contain' => ['OrderDetails'=>['ItemVariations'=>['Items'=>['GstFigures']]]]
         ]);
+		
 	//	$UnitRateSerialItem = $this->addSalesInvoice($id);
 		$Totalsellers=[];
-		foreach($order->order_details as $order_detail){
-			$seller_id=$order_detail->item_variation->seller_id; 
-			$Totalsellers[$seller_id][]=$order_detail;
+		foreach($order->order_details as $order_detail){ 
+			if($order_detail->item_variation->seller_id > 0){
+				$seller_id=$order_detail->item_variation->seller_id; 
+				$Totalsellers[$seller_id][]=$order_detail;
+			}
 		}
+		pr($Totalsellers); exit;
 		foreach($Totalsellers as $key=>$Totalseller){
 			$Total_amount=0; $Tabable_amount=0;$TotalTaxableValue=0;$purchaseGST=0;
 					foreach($Totalseller as $data){
@@ -241,20 +253,16 @@ class OrdersController extends AppController
         $order = $this->Orders->newEntity();
 		$CityData = $this->Orders->Cities->get($city_id);
 		$StateData = $this->Orders->Cities->States->get($CityData->state_id);
+	
 		$Voucher_no = $this->Orders->find()->select(['voucher_no'])->where(['Orders.city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
-		$today_date=date("Y-m-d");
+		if($Voucher_no){$voucher_no=$Voucher_no->voucher_no+1;}
+		else{$voucher_no=1;} 
+		
+		/* $today_date=date("Y-m-d");
 		$orderdate = explode('-', $today_date);
 		$year = $orderdate[0];
 		$month   = $orderdate[1];
-		$day  = $orderdate[2];
-		if($Voucher_no)
-		{
-			$voucher_no=$Voucher_no->voucher_no+1;
-		}
-		else
-		{
-			$voucher_no=1;
-		} 
+		$day  = $orderdate[2]; */
 		//$purchaseInvoiceVoucherNo=$voucher_no;
 		$order_no=$CityData->alise_name.'/'.$voucher_no;
 		$order_no=$StateData->alias_name.'/'.$order_no;
@@ -263,8 +271,75 @@ class OrdersController extends AppController
 		
         if ($this->request->is('post')) {
             $order = $this->Orders->patchEntity($order, $this->request->getData());
-			pr($order); exit;
-            if ($this->Orders->save($order)) {
+			$Voucher_no = $this->Orders->find()->select(['voucher_no'])->where(['Orders.city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
+			if($Voucher_no){$voucher_no=$Voucher_no->voucher_no+1;}
+			else{$voucher_no=1;} 
+			$order->order_from="Web";
+			$order->city_id=$city_id;
+			$Custledgers = $this->Orders->SellerLedgers->get($order->party_ledger_id,['contain'=>['Customers'=>['Cities']]]);
+			//pr($order); exit;
+            if ($this->Orders->save($order)) { 
+					if($order->order_type=="Credit"){
+							
+						//	Party/Customer Ledger Entry
+						$AccountingEntrie = $this->Orders->AccountingEntries->newEntity(); 
+						$AccountingEntrie->ledger_id=$order->party_ledger_id;
+						$AccountingEntrie->debit=$order->total_amount;
+						$AccountingEntrie->credit=0;
+						$AccountingEntrie->transaction_date=$order->transaction_date;
+						$AccountingEntrie->city_id=$city_id;
+						$AccountingEntrie->entry_from="Web";
+						$AccountingEntrie->order_id=$order->id;  
+						$this->Orders->AccountingEntries->save($AccountingEntrie);
+						
+						// Sales Account Entry 
+						$AccountingEntrie = $this->Orders->AccountingEntries->newEntity(); 
+						$AccountingEntrie->ledger_id=$order->sales_ledger_id;
+						$AccountingEntrie->credit=$order->total_taxable_value;
+						$AccountingEntrie->debit=0;
+						$AccountingEntrie->transaction_date=$order->transaction_date;
+						$AccountingEntrie->city_id=$city_id;
+						$AccountingEntrie->entry_from="Web";
+						$AccountingEntrie->order_id=$order->id; 
+						$this->Orders->AccountingEntries->save($AccountingEntrie);
+						
+						if($Custledgers->customer->city->state_id==$state_id){
+							foreach($order->order_details as $order_detail){ 
+							$gstAmtdata=$order_detail->gst_value/2;
+							$gstAmtInsert=round($gstAmtdata,2);
+							//pr($order_detail->gst_figure_id); exit;
+							
+							//Accounting Entries for CGST//
+							$gstLedgerCGST = $this->Orders->Ledgers->find()
+							->where(['Ledgers.gst_figure_id' =>$order_detail->gst_figure_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'CGST','city_id'=>$city_id])->first();
+							$AccountingEntrieCGST = $this->Orders->AccountingEntries->newEntity();
+							$AccountingEntrieCGST->ledger_id=$gstLedgerCGST->id;
+							$AccountingEntrieCGST->credit=$gstAmtInsert;
+							$AccountingEntrieCGST->debit=0;
+							$AccountingEntrieCGST->transaction_date=$order->transaction_date;
+							$AccountingEntrieCGST->city_id=$city_id;
+							$AccountingEntrieCGST->entry_from="Web";
+							$AccountingEntrieCGST->order_id=$order->id;  
+							$this->Orders->AccountingEntries->save($AccountingEntrieCGST);
+							
+							//Accounting Entries for SGST//
+							 $gstLedgerSGST = $this->Orders->Ledgers->find()
+							->where(['Ledgers.gst_figure_id' =>$order_detail->gst_figure_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'SGST','city_id'=>$city_id])->first();
+							$AccountingEntrieSGST = $this->Orders->AccountingEntries->newEntity();
+							$AccountingEntrieSGST->ledger_id=$gstLedgerSGST->id;
+							$AccountingEntrieSGST->credit=$gstAmtInsert;
+							$AccountingEntrieSGST->debit=0;
+							$AccountingEntrieSGST->transaction_date=$order->transaction_date;
+							$AccountingEntrieSGST->city_id=$city_id;
+							$AccountingEntrieSGST->entry_from="Web";
+							$AccountingEntrieSGST->order_id=$order->id;  
+							$this->Orders->AccountingEntries->save($AccountingEntrieSGST);
+							
+						   }
+						}
+						$this->orderDeliver($order->id);
+					}
+					
                 $this->Flash->success(__('The order has been saved.'));
 
                 return $this->redirect(['action' => 'index']);

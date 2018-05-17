@@ -132,7 +132,7 @@ class OrdersTable extends Table
 
 
 
-        $validator
+        /* $validator
             ->decimal('amount_from_wallet')
             ->requirePresence('amount_from_wallet', 'create')
             ->notEmpty('amount_from_wallet');
@@ -188,7 +188,7 @@ class OrdersTable extends Table
             ->scalar('order_from')
             ->maxLength('order_from', 30)
             ->requirePresence('order_from', 'create')
-            ->notEmpty('order_from');
+            ->notEmpty('order_from'); */
 
         return $validator;
     }
