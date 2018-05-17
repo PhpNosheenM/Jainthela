@@ -57,6 +57,10 @@ class LedgersTable extends Table
             'foreignKey' => 'location_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('Cities', [
+            'foreignKey' => 'city_id',
+            'joinType' => 'INNER'
+        ]);
         $this->belongsTo('Vendors', [
             'foreignKey' => 'vendor_id',
             'joinType' => 'INNER'
@@ -179,7 +183,7 @@ class LedgersTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['accounting_group_id'], 'AccountingGroups'));
-        $rules->add($rules->existsIn(['location_id'], 'Locations'));
+        //$rules->add($rules->existsIn(['location_id'], 'Locations'));
         //$rules->add($rules->existsIn(['supplier_id'], 'Suppliers'));
         $rules->add($rules->existsIn(['customer_id'], 'Customers'));
         $rules->add($rules->existsIn(['gst_figure_id'], 'GstFigures'));

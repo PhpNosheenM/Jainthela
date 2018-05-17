@@ -36,10 +36,11 @@ class LedgersController extends AppController
             $ledger->accounting_group_id = $this->request->getData()['accounting_group_id'];
             $ledger->opening_balance_value = $this->request->getData()['opening_balance_value'];
             $ledger->debit_credit = $this->request->getData()['debit_credit'];
-			$data=$this->Ledgers->Locations->get($location_id);
+			$data=$this->Ledgers->Cities->get($city_id);
 			$ledger->location_id = $location_id;
+			$ledger->city_id = $city_id;
 			//pr($data->books_beginning_from); exit;
-			//pr($ledger); exit;
+			//pr($data); exit;
             if ($this->Ledgers->save($ledger)) 
 			{
 				if($ledger->opening_balance_value > 0){
@@ -63,7 +64,7 @@ class LedgersController extends AppController
                 $this->Flash->success(__('The ledger has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
-            }
+            } pr($ledger); exit;
             $this->Flash->error(__('The ledger could not be saved. Please, try again.'));
         }
 		

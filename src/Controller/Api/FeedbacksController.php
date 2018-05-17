@@ -30,8 +30,10 @@ class FeedbacksController extends AppController
 			$customer_id=$this->request->data['customer_id'];
 			$token ='';
 
+			//pr(getallheaders());exit;
+			
 			foreach(getallheaders() as $key => $value) {
-				if($key == 'Authorization')
+				if($key == 'Authorization' || $key == 'authorization')
 				{
 				  $token = $value;
 				}
@@ -39,8 +41,7 @@ class FeedbacksController extends AppController
 
 			 $token = str_replace("Bearer ","",$token);
 			$isValidToken = $this->checkToken($token);
-		if($isValidToken == 0)
-		{
+		
 
 			if(!empty($customer_id) and (!empty($city_id))){
 
@@ -70,10 +71,7 @@ class FeedbacksController extends AppController
 				$success = false;
 				$message = 'Empty customer id or city id';
 			}
-		}else{
-			 $success = false;
-             $message = 'Invalid Token';
-		}
+		
 
 	}
 		$this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);

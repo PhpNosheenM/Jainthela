@@ -46,7 +46,7 @@ class OrdersTable extends Table
         $this->setPrimaryKey('id');
 
         $this->belongsTo('Carts');
-
+        $this->belongsTo('Items');
         $this->belongsTo('GstFigures');
         $this->belongsTo('AccountingEntries');
         $this->belongsTo('AccountingGroups');
@@ -104,6 +104,11 @@ class OrdersTable extends Table
         ]);
         $this->hasMany('Wallets', [
             'foreignKey' => 'order_id'
+        ]);
+		 $this->belongsTo('SellerLedgers', [
+            'className' => 'Ledgers',
+            'foreignKey' => 'sales_ledger_id',
+            'joinType' => 'LEFT'
         ]);
     }
 
