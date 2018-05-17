@@ -20,7 +20,7 @@ class OrdersController extends AppController
      */
     public function index()
     {
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
 		$location_id=$this->Auth->User('location_id');
@@ -47,7 +47,7 @@ class OrdersController extends AppController
      */
     public function sellerOrderList($id = null)
     {
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 		$seller_id=$this->Auth->User('id');
 		$user_role=$this->Auth->User('user_role');
 		$location_id=$this->Auth->User('location_id');
@@ -237,7 +237,7 @@ class OrdersController extends AppController
 		$city_id=$this->Auth->User('city_id'); 
 		//$location_id=$this->Auth->User('location_id'); 
 		$state_id=$this->Auth->User('state_id'); 
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $order = $this->Orders->newEntity();
 		$CityData = $this->Orders->Cities->get($city_id);
 		$StateData = $this->Orders->Cities->States->get($CityData->state_id);
@@ -263,6 +263,7 @@ class OrdersController extends AppController
 		
         if ($this->request->is('post')) {
             $order = $this->Orders->patchEntity($order, $this->request->getData());
+			pr($order); exit;
             if ($this->Orders->save($order)) {
                 $this->Flash->success(__('The order has been saved.'));
 
@@ -273,40 +274,63 @@ class OrdersController extends AppController
 		
 		$partyParentGroups = $this->Orders->AccountingGroups->find()
 						->where(['AccountingGroups.
-						purchase_invoice_party'=>'1']);
-pr($partyParentGroups->toArray()); exit;
+						sale_invoice_party'=>'1','AccountingGroups.city_id'=>$city_id]); 
 		$partyGroups=[];
 		foreach($partyParentGroups as $partyParentGroup)
 		{
 			$accountingGroups = $this->Orders->AccountingGroups
-			->find('children', ['for' => $partyParentGroup->id])->toArray();
+			->find('children', ['for' => $partyParentGroup->id])->toArray(); 
 			$partyGroups[]=$partyParentGroup->id;
 			foreach($accountingGroups as $accountingGroup){
 				$partyGroups[]=$accountingGroup->id;
 			}
-		}
+		}  
 		if($partyGroups)
 		{  
 			$Partyledgers = $this->Orders->SellerLedgers->find()
 							->where(['SellerLedgers.accounting_group_id IN' =>$partyGroups])
-							->contain(['Sellers'=>['Locations'=>['Cities']]]);
-        }
+							->contain(['Customers'=>['Cities']]);
+        } 
 		$partyOptions=[];
-		foreach($Partyledgers as $Partyledger){ 
-			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id,'city_id'=>$Partyledger->seller->city_id,'state_id'=>$Partyledger->seller->location->city->state_id,'bill_to_bill_accounting'=>$Partyledger->bill_to_bill_accounting,'seller_id'=>$Partyledger->seller_id];
+		foreach($Partyledgers as $Partyledger){  	
+			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id,'city_id'=>$Partyledger->customer->city->id,'state_id'=>$Partyledger->customer->city->state_id,'bill_to_bill_accounting'=>$Partyledger->bill_to_bill_accounting,'customer_id'=>$Partyledger->customer_id];
 		}
 		
+		$accountLedgers = $this->Orders->AccountingGroups->find()->where(['AccountingGroups.sale_invoice_sales_account'=>1,'AccountingGroups.city_id'=>$city_id])->first();
+
+		$accountingGroups2 = $this->Orders->AccountingGroups
+		->find('children', ['for' => $accountLedgers->id])
+		->find('List')->toArray();
+		$accountingGroups2[$accountLedgers->id]=$accountLedgers->name;
+		ksort($accountingGroups2);
+		if($accountingGroups2)
+		{   
+			$account_ids="";
+			foreach($accountingGroups2 as $key=>$accountingGroup)
+			{
+				$account_ids .=$key.',';
+			}
+			$account_ids = explode(",",trim($account_ids,','));
+			$Accountledgers = $this->Orders->Ledgers->find('list')->where(['Ledgers.accounting_group_id IN' =>$account_ids]);
+        }
 		
+		$itemList=$this->Orders->Items->find()->contain(['ItemVariations'=> function ($q) {
+								return $q
+								->where(['ItemVariations.seller_id is NULL','ItemVariations.status'=>'Active','current_stock >'=>'0'])->contain(['UnitVariations'=>['Units']]);
+								}]);
+		//pr($itemList->toArray()); exit;
+		$items=array();
+		foreach($itemList as $data1){ 
+			foreach($data1->item_variations as $data){  //pr($data); exit;
+				$gstData=$this->Orders->GstFigures->get($data1->gst_figure_id);
+				$merge=$data1->name.'('.@$data->unit_variation->quantity_variation.'.'.@$data->unit_variation->unit->shortname.')';
+				$items[]=['text' => $merge,'value' => $data->id,'item_id'=>$data1->id,'quantity_factor'=>@$data->unit_variation->convert_unit_qty,'unit'=>@$data->unit_variation->unit->unit_name,'gst_figure_id'=>$data1->gst_figure_id,'gst_value'=>$gstData->tax_percentage,'commission'=>@$data->commission,'sale_rate'=>$data->sales_rate];
+			}
+		}
 		
-        $locations = $this->Orders->Locations->find('list', ['limit' => 200]);
-        $customers = $this->Orders->Customers->find('list', ['limit' => 200]);
-        $drivers = $this->Orders->Drivers->find('list', ['limit' => 200]);
-        $customerAddresses = $this->Orders->CustomerAddresses->find('list', ['limit' => 200]);
-        $promotionDetails = $this->Orders->PromotionDetails->find('list', ['limit' => 200]);
-        $deliveryCharges = $this->Orders->DeliveryCharges->find('list', ['limit' => 200]);
-        $deliveryTimes = $this->Orders->DeliveryTimes->find('list', ['limit' => 200]);
-        $cancelReasons = $this->Orders->CancelReasons->find('list', ['limit' => 200]);
-        $this->set(compact('order', 'locations', 'customers', 'drivers', 'customerAddresses', 'promotionDetails', 'deliveryCharges', 'deliveryTimes', 'cancelReasons','order_no'));
+		//pr($items); exit;
+		
+        $this->set(compact('order', 'locations', 'customers', 'drivers', 'customerAddresses', 'promotionDetails', 'deliveryCharges', 'deliveryTimes', 'cancelReasons','order_no','partyOptions','Accountledgers','items'));
     }
 
     /**
