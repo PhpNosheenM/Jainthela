@@ -53,7 +53,7 @@ class SellersController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
-		$this->viewBuilder()->layout('super_admin_layout');
+		$this->viewBuilder()->layout('seller_layout');
         $this->paginate = [
 			'limit' => 20
         ];

@@ -82,7 +82,7 @@ class SellerItemsController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $sellerItem = $this->SellerItems->newEntity();
         if ($this->request->is('post')) {
 			$commissions=$this->request->getData('commissions');
