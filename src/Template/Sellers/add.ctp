@@ -152,11 +152,17 @@
 						</div>
 						</div>
 						</div>
-					 
-							 
-							
-							
-							<div class="panel-body">    
+				<div class="panel-body">
+						<div class="row">		
+							<div class="col-md-7">
+								<div class="window" style="margin:auto;display:none;">
+										<table width="90%" class="refTbl">
+										<tbody></tbody>
+										<tfoot>
+										<tr style="border-top:#a5a1a1"><td colspan="2"><a role="button" class="addRefRow">Add Row</a></td><td valign="top"><input type="text" name="total" class="form-control input-sm rightAligntextClass total calculation " id="total" readonly></td><td valign="top"><input type="text" id="total_type" name="total_type" class="form-control input-sm total_type calculation " readonly></td></tr></tfoot></table>
+									</div>
+							</div>
+						</div>
 					<div class="row">
 						<div class="table-responsive">
 							<table class="table table-bordered main_table">
@@ -190,14 +196,16 @@
 							</table>
 						</div>
 					</div>
+		
+			
 				</div>
 							
-							<div class="panel-footer">
-								<center>
-									<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
-								</center>
-							</div>
-						</div>
+				<div class="panel-footer">
+					<center>
+						<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
+					</center>
+				</div>
+			</div>
 						
 			
 			<?= $this->Form->end() ?>
@@ -209,8 +217,38 @@
 $option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
 $option_ref[]= ['value'=>'Advance','text'=>'Advance'];
 $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
-?>
 
+?>
+<table id="sampleForRef" style="display:;" width="100%">
+	<tbody>
+		<tr>
+			<td width="20%" valign="top"> 
+				
+				<?php 
+				//echo $this->Form->input('type', ['empty'=>'--Select ref--','options'=>$option_ref,'label' => false,'class' => 'form-control select input-sm refType','value'=>'New Ref']); ?>
+				
+				<?= $this->Form->select('type',$option_ref,['class'=>'form-control', 'label'=>false]) ?>
+			</td>
+			<td width="" valign="top">
+				<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name']); ?>
+			</td>
+			
+			<td width="20%" style="padding-right:0px;" valign="top">
+				<?php echo $this->Form->input('amount', ['label' => false,'class' => 'form-control input-sm calculation rightAligntextClass','placeholder'=>'Amount']); ?>
+			</td>
+			<td width="10%" style="padding-left:0px;" valign="top">
+				<?php 
+				//echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Dr']); ?>
+				<?php $options =[['value'=>'Dr','text'=>'Dr'],['value'=>'Cr','text'=>'Cr']]; ?>
+				<?= $this->Form->select('type',$options,['class'=>'form-control calculation refDrCr', 'label'=>false]) ?>
+			</td>
+			
+			<td width="5%" align="right" valign="top">
+				<a class="delete_tr_ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+			</td>
+		</tr>
+	</tbody>
+</table>
 <table id="sampleTable" width="100%" style="display:none;">
 	<tbody class="sampleMainTbody">
 		<tr class="MainTr">
@@ -279,10 +317,15 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			
 		});
 		
-		$(document).on("blur",".balance",function(){
+		$(document).on("click",".addRefRow",function(){
+				AddRefRow();
+				
+		});
+
+		$(document).on("blur",".balance",function(){ 
 			var main_amt=$(this).val();
 			var bill_accounting=$(".bill_to_bill option:selected").val();
-			if(main_amt>0 && bill_accounting=="yes"){
+			if(main_amt>0 && bill_accounting=="yes"){ alert();
 					$(".window").show();
 					AddRefRow();
 				}
@@ -346,7 +389,13 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 					i++;
 			});
 		}
-		/* 
+		function AddRefRow(){
+			var refTr=$("#sampleForRef tbody tr").clone();
+			$("div.window table tbody").append(refTr);
+			renameRefRows();
+			calculation();
+		}
+		
 		function renameRefRows(){
 			var i=0;
 			var bill_accounting=$("option:selected", this).val();
@@ -357,12 +406,18 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			}else{
 					var eqlClassCr=$(".balance").attr("id");
 			}
-			$(".main_table tbody tr").each(function(){
-				alert();
-					$(this).find("td:nth-child(1) input.contact_person").attr({name:"seller_details["+i+"][contact_person]",id:"seller_details-"+i+"-contact_person"});
-					$(this).find("td:nth-child(2) input.contact_no").attr({name:"seller_details["+i+"][contact_no]",id:"seller_details-"+i+"-contact_no"});
-					$(this).find("td:nth-child(3) input.contact_email").attr({name:"seller_details["+i+"][contact_email]",id:"seller_details-"+i+"-contact_email"});
-					 
+			$("div.window table tbody tr").each(function(){
+					$(this).find("td:nth-child(1) select.refType").attr({name:"reference_details["+i+"][type]",id:"reference_details-"+i+"-type"}).addClass("select");
+					var is_input=$(this).find("td:nth-child(2) input.ref_name").length;
+					if(is_input){
+						$(this).find("td:nth-child(2) input.ref_name").attr({name:"reference_details["+i+"][ref_name]",id:"reference_details-"+i+"-ref_name"}).rules("add", "required");
+					}
+					var Dr_Cr=$(this).find("td:nth-child(4) select option:selected").val();
+					if(Dr_Cr=="Dr"){
+						$(this).find("td:nth-child(3) input").attr({name:"reference_details["+i+"][debit]",id:"reference_details-"+i+"-debit"}).rules("add", "required");
+					}else{
+						$(this).find("td:nth-child(3) input").attr({name:"reference_details["+i+"][credit]",id:"reference_details-"+i+"-credit"}).rules("add", "required");
+					}
 					i++;
 				});
 				
@@ -381,7 +436,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 							}
 						});
 		}
-		 */
+		
 		$(document).on("keyup, change",".calculation",function()
 			{ 
 				calculation();

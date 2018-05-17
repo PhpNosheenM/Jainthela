@@ -116,23 +116,76 @@ class CustomersController extends AppController
 		$this->viewBuilder()->layout('admin_portal');
         $customer = $this->Customers->newEntity();
         if ($this->request->is('post')) {
-
             $customer = $this->Customers->patchEntity($customer, $this->request->getData());
 			$customer->city_id=$city_id;
 			$customer->created_by=$user_id;
+			$data=$this->Customers->Cities->get($city_id);
+			$reference_details=$this->request->getData()['reference_details'];
+			
             if ($this->Customers->save($customer)) {
+				
 				if(!empty($customer->gstin)){
-					$accounting_group = $this->Customers->Ledgers->AccountingGroups->find()->where(['customer'=>1])->first();
+					
+					$accounting_group = $this->Customers->Ledgers->AccountingGroups->find()->where(['AccountingGroups.customer'=>1,'AccountingGroups.city_id'=>$city_id])->first();
 					$ledger = $this->Customers->Ledgers->newEntity();
 					$ledger->name = $customer->name;
+					$ledger->city_id = $city_id;
 					$ledger->accounting_group_id = $accounting_group->id;
 					$ledger->customer_id=$customer->id;
 					$ledger->bill_to_bill_accounting='yes';
-					$this->Customers->Ledgers->save($ledger);
+					 
+					
+				if($this->Customers->Ledgers->save($ledger))
+				{
+				
+					//Create Accounting Entry//
+			        $transaction_date=$data->books_beginning_from;
+					$AccountingEntry = $this->Customers->Ledgers->AccountingEntries->newEntity();
+					$AccountingEntry->ledger_id        = $ledger->id;
+					if($customer->debit_credit=="Dr")
+					{
+						$AccountingEntry->debit        = $customer->opening_balance_value;
+					}
+					if($customer->debit_credit=="Cr")
+					{
+						$AccountingEntry->credit       = $customer->opening_balance_value;
+					}
+					$AccountingEntry->transaction_date = date("Y-m-d",strtotime($transaction_date));
+					//$AccountingEntry->location_id       = $location_id;
+					$AccountingEntry->city_id       = $city_id;
+					$AccountingEntry->is_opening_balance = 'yes';
+					if($customer->opening_balance_value){
+					$this->Customers->Ledgers->AccountingEntries->save($AccountingEntry);
+
+					//Refrence Entry//
+					if($reference_details){
+					foreach($reference_details as $reference_detail){
+							$ReferenceDetail = $this->Customers->ReferenceDetails->newEntity();
+							$ReferenceDetail->ref_name        = $reference_detail['ref_name'];
+							$ReferenceDetail->customer_id        = $customer->id;
+							$ReferenceDetail->city_id        = $city_id;
+							$ReferenceDetail->opening_balance        = "Yes";
+							$ReferenceDetail->ledger_id        = $ledger->id;
+							if($reference_detail['debit'] > 0)
+							{
+								$ReferenceDetail->debit        = $reference_detail['debit'];
+							}
+							else
+							{
+								$ReferenceDetail->credit       = $reference_detail['credit'];
+							}
+							$ReferenceDetail->transaction_date = date("Y-m-d",strtotime($data->books_beginning_from));
+							$ReferenceDetail = $this->Customers->ReferenceDetails->save($ReferenceDetail);
+							}
+						}
+					}
+					
+				}
 				}
 				$this->Flash->success(__('The customer has been saved.'));
 				return $this->redirect(['action' => 'index']);
             }
+			pr($customer); exit;
   
             $this->Flash->error(__('The customer could not be saved. Please, try again.'));
         }

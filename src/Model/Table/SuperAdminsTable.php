@@ -45,6 +45,7 @@ class SuperAdminsTable extends Table
             'foreignKey' => 'role_id',
             'joinType' => 'INNER'
         ]);
+         $this->belongsTo('Companies');
     }
 
     /**

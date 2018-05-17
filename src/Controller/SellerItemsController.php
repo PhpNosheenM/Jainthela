@@ -161,7 +161,7 @@ class SellerItemsController extends AppController
 		$this->viewBuilder()->layout('seller_layout');
         $itemVariation = $this->SellerItems->ItemVariations->newEntity();
         if ($this->request->is('post')) 
-		{ 
+		{
 			$masterIds=[];$ItemIds=[];
 			$arr=$this->request->getData(); $i=1; 
          
@@ -243,6 +243,7 @@ class SellerItemsController extends AppController
 		$sellerItems = $this->SellerItems->find()
 							->where(['SellerItems.seller_id'=>$user_id]);
 		$sellerItemCommision=[];						
+		$seller_item=[];						
 		foreach($sellerItems as $sellerItem)
 		{
 			$seller_item[] = $sellerItem->item_id;
@@ -260,16 +261,24 @@ class SellerItemsController extends AppController
 							])
 							->group(['Categories.id'])
 							->autoFields(true);*/
+		if(empty(!$seller_item))	
+		{			
 		$categories = $this->SellerItems->Categories->find('threaded');
 						$categories->innerJoinWith('Items',function($q) use($seller_item){
 								return $q->where(['Items.id IN'=>$seller_item]);
-						})
+
+							})
 						->contain(['Items'=>function($q) use($seller_item){
 							return $q->where(['Items.id IN'=>$seller_item]);
 						}
 						])
 						->group(['Categories.id'])
 						->autoFields(true);
+		}
+		else
+		{
+			$categories=[];
+		}
         $this->set(compact('itemVariation', 'categories','sellerItemCommision'));
     }
     /**

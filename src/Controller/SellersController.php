@@ -53,7 +53,7 @@ class SellersController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
-		$this->viewBuilder()->layout('seller_layout');
+		$this->viewBuilder()->layout('super_admin_layout');
         $this->paginate = [
 			'limit' => 20
         ];
@@ -105,7 +105,7 @@ class SellersController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $seller = $this->Sellers->newEntity();
         if ($this->request->is('post')) {
 			
@@ -115,24 +115,22 @@ class SellersController extends AppController
 			$registration_date=$this->request->data['registration_date'];
 			$seller->registration_date=date('Y-m-d', strtotime($registration_date));
 			$bill_to_bill_accounting=$seller->bill_to_bill_accounting;
-			$data=$this->Sellers->Locations->get($location_id);
-		 
+			$data=$this->Sellers->Cities->get($city_id);
+			
+			$reference_details=$this->request->getData()['reference_details'];  //pr($reference_details); exit;
 			 if ($this->Sellers->save($seller)) {
 				
-				$accounting_group = $this->Sellers->Ledgers->AccountingGroups->find()->where(['seller'=>1])->first();
+				$accounting_group = $this->Sellers->Ledgers->AccountingGroups->find()->where(['AccountingGroups.seller'=>1,'AccountingGroups.city_id'=>$city_id])->first();
 				$ledger = $this->Sellers->Ledgers->newEntity();
 				$ledger->name = $seller->firm_name;
 				$ledger->accounting_group_id = $accounting_group->id;
 				$ledger->seller_id=$seller->id;
+				$ledger->city_id=$city_id;
 				$ledger->bill_to_bill_accounting=$bill_to_bill_accounting;
 				
 				if($this->Sellers->Ledgers->save($ledger))
 				{
-					$query=$this->Sellers->ReferenceDetails->query();
-						$result = $query->update()
-						->set(['ledger_id' => $ledger->id])
-						->where(['seller_id' => $seller->id])
-						->execute();
+					
 					//Create Accounting Entry//
 			        $transaction_date=$data->books_beginning_from;
 					$AccountingEntry = $this->Sellers->Ledgers->AccountingEntries->newEntity();
@@ -146,13 +144,35 @@ class SellersController extends AppController
 						$AccountingEntry->credit       = $seller->opening_balance_value;
 					}
 					$AccountingEntry->transaction_date = date("Y-m-d",strtotime($transaction_date));
-					$AccountingEntry->location_id       = $location_id;
+					//$AccountingEntry->location_id       = $location_id;
 					$AccountingEntry->city_id       = $city_id;
 					$AccountingEntry->is_opening_balance = 'yes';
 					if($seller->opening_balance_value){
 					$this->Sellers->Ledgers->AccountingEntries->save($AccountingEntry);
+
+					//Refrence Entry//
+					if($reference_details){
+					foreach($reference_details as $reference_detail){
+							$ReferenceDetail = $this->Sellers->ReferenceDetails->newEntity();
+							$ReferenceDetail->ref_name        = $reference_detail['ref_name'];
+							$ReferenceDetail->seller_id        = $seller->id;
+							$ReferenceDetail->city_id        = $city_id;
+							$ReferenceDetail->opening_balance        = "Yes";
+							$ReferenceDetail->ledger_id        = $ledger->id;
+							if($reference_detail['debit'] > 0)
+							{
+								$ReferenceDetail->debit        = $reference_detail['debit'];
+							}
+							else
+							{
+								$ReferenceDetail->credit       = $reference_detail['credit'];
+							}
+							$ReferenceDetail->transaction_date = date("Y-m-d",strtotime($data->books_beginning_from));
+							$ReferenceDetail = $this->Sellers->ReferenceDetails->save($ReferenceDetail);
+							}
+						}
 					}
-				}
+				} 
                 $this->Flash->success(__('The seller has been saved.'));
 
                 return $this->redirect(['action' => 'add']);
@@ -177,7 +197,7 @@ class SellersController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $seller = $this->Sellers->get($id, [
             'contain' => ['SellerDetails']
         ]);

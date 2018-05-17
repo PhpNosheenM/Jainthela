@@ -247,9 +247,9 @@ class PurchaseInvoicesController extends AppController
 
 	   $partyParentGroups = $this->PurchaseInvoices->AccountingGroups->find()
 						->where(['AccountingGroups.
-						purchase_invoice_party'=>'1']);
+						purchase_invoice_party'=>'1','AccountingGroups.location_id'=>$location_id]);
 
-
+pr($partyParentGroups->toArray()); exit;
 		$partyGroups=[];
 		foreach($partyParentGroups as $partyParentGroup)
 		{
@@ -259,20 +259,21 @@ class PurchaseInvoicesController extends AppController
 			foreach($accountingGroups as $accountingGroup){
 				$partyGroups[]=$accountingGroup->id;
 			}
-		}
+		} 
+		//pr($partyGroups); exit;
 		if($partyGroups)
 		{
 			$Partyledgers = $this->PurchaseInvoices->SellerLedgers->find()
 							->where(['SellerLedgers.accounting_group_id IN' =>$partyGroups])
 							->contain(['Sellers'=>['Locations'=>['Cities']]]);
-        }
+        } 
 		$partyOptions=[];
-		foreach($Partyledgers as $Partyledger){ 
+		foreach($Partyledgers as $Partyledger){  
 			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id,'city_id'=>$Partyledger->seller->city_id,'state_id'=>$Partyledger->seller->location->city->state_id,'bill_to_bill_accounting'=>$Partyledger->bill_to_bill_accounting,'seller_id'=>$Partyledger->seller_id];
 
 		}
-
-		$accountLedgers = $this->PurchaseInvoices->AccountingGroups->find()->where(['AccountingGroups.purchase_invoice_purchase_account'=>1])->first();
+		pr($Partyledgers->toArray()); exit;
+		$accountLedgers = $this->PurchaseInvoices->AccountingGroups->find()->where(['AccountingGroups.purchase_invoice_purchase_account'=>1,'AccountingGroups.location_id'=>$location_id])->first();
 
 		$accountingGroups2 = $this->PurchaseInvoices->AccountingGroups
 		->find('children', ['for' => $accountLedgers->id])

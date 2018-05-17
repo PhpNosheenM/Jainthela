@@ -42,11 +42,15 @@ class ContraVoucherRowsTable extends Table
             'foreignKey' => 'contra_voucher_id',
             'joinType' => 'INNER'
         ]);
+		
         $this->belongsTo('Ledgers', [
             'foreignKey' => 'ledger_id',
             'joinType' => 'INNER'
         ]);
         $this->hasMany('AccountingEntries', [
+            'foreignKey' => 'contra_voucher_row_id'
+        ]);
+		 $this->hasMany('ReferenceDetails', [
             'foreignKey' => 'contra_voucher_row_id'
         ]);
     }
@@ -63,11 +67,11 @@ class ContraVoucherRowsTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
-        $validator
+        /* $validator
             ->integer('cr_dr')
             ->requirePresence('cr_dr', 'create')
             ->notEmpty('cr_dr');
-
+ */
         $validator
             ->decimal('debit')
             ->allowEmpty('debit');
@@ -76,20 +80,20 @@ class ContraVoucherRowsTable extends Table
             ->decimal('credit')
             ->allowEmpty('credit');
 
-        $validator
+      /*   $validator
             ->integer('mode_of_payment')
             ->requirePresence('mode_of_payment', 'create')
-            ->notEmpty('mode_of_payment');
+            ->notEmpty('mode_of_payment'); */
 
-        $validator
+     /*    $validator
             ->integer('cheque_no')
             ->requirePresence('cheque_no', 'create')
-            ->notEmpty('cheque_no');
+            ->notEmpty('cheque_no'); */
 
-        $validator
+       /*  $validator
             ->integer('cheque_date')
             ->requirePresence('cheque_date', 'create')
-            ->notEmpty('cheque_date');
+            ->notEmpty('cheque_date'); */
 
         return $validator;
     }

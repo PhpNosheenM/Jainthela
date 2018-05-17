@@ -63,13 +63,13 @@ class LocationItemsTable extends Table
         $validator
             ->integer('id')
             ->allowEmpty('id', 'create');
-
+/* 
         $validator
-            ->scalar('status')
-            ->maxLength('status', 10)
+          //  ->scalar('status')
+            //->maxLength('status', 10)
             ->requirePresence('status', 'create')
             ->notEmpty('status');
-
+ */
         return $validator;
     }
 

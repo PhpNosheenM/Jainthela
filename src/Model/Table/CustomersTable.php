@@ -53,6 +53,10 @@ class CustomersTable extends Table
             'foreignKey' => 'city_id',
             'joinType' => 'INNER'
         ]);
+		 $this->hasMany('ReferenceDetails', [
+            'foreignKey' => 'customer_id',
+			'saveStrategy'=>'replace'
+        ]);
         $this->hasMany('AppNotificationCustomers', [
             'foreignKey' => 'customer_id'
         ]);

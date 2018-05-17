@@ -23,7 +23,7 @@ class LedgersController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 		$ledger = $this->Ledgers->newEntity();
         $this->paginate = [
             'contain' => ['AccountingGroups'],
@@ -37,6 +37,7 @@ class LedgersController extends AppController
             $ledger->opening_balance_value = $this->request->getData()['opening_balance_value'];
             $ledger->debit_credit = $this->request->getData()['debit_credit'];
 			$data=$this->Ledgers->Locations->get($location_id);
+			$ledger->location_id = $location_id;
 			//pr($data->books_beginning_from); exit;
 			//pr($ledger); exit;
             if ($this->Ledgers->save($ledger)) 
@@ -76,17 +77,19 @@ class LedgersController extends AppController
 			$debtorArray[]= $accountingGroupdebitor->id;
 		}
 		$datadebtor[]=$SundryDebtor->id;
-		$SundryCredior = $this->Ledgers->AccountingGroups->find('all')->where(['supplier'=>1])->first();
+		$SundryCredior = $this->Ledgers->AccountingGroups->find('all')->where(['seller'=>1])->first();
+
 		$accountingGroupcreditors = $this->Ledgers->AccountingGroups
 							->find('children', ['for' => $SundryCredior->id])
 							->find('all');
+
 		$creditorArray=[];
 		foreach($accountingGroupcreditors as $accountingGroupcreditor)
-		{ 
+		{  
 			$creditorArray[]= $accountingGroupcreditor->id;
 		}
 		$datacreditor[]=$SundryCredior->id;
-		$alldebtors=array_merge($datadebtor,$debtorArray,$datacreditor,$creditorArray);
+		$alldebtors=array_merge($datadebtor,$debtorArray,$datacreditor,$creditorArray);  //pr($alldebtors); exit;
 		$accountingGroups = $this->Ledgers->AccountingGroups->find('list')->where(['id NOT IN'=>$alldebtors]);
         $ledgers = $this->paginate($this->Ledgers);
 		

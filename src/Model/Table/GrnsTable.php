@@ -9,12 +9,13 @@ use Cake\Validation\Validator;
 /**
  * Grns Model
  *
- * @property |\Cake\ORM\Association\BelongsTo $Sellers
- * @property |\Cake\ORM\Association\BelongsTo $Admins
+ * @property \App\Model\Table\SellersTable|\Cake\ORM\Association\BelongsTo $Sellers
+ * @property |\Cake\ORM\Association\BelongsTo $SuperAdmins
+ * @property |\Cake\ORM\Association\BelongsTo $Cities
  * @property \App\Model\Table\LocationsTable|\Cake\ORM\Association\BelongsTo $Locations
  * @property \App\Model\Table\OrdersTable|\Cake\ORM\Association\BelongsTo $Orders
  * @property \App\Model\Table\GrnRowsTable|\Cake\ORM\Association\HasMany $GrnRows
- * @property |\Cake\ORM\Association\HasMany $ItemLedgers
+ * @property \App\Model\Table\ItemLedgersTable|\Cake\ORM\Association\HasMany $ItemLedgers
  *
  * @method \App\Model\Entity\Grn get($primaryKey, $options = [])
  * @method \App\Model\Entity\Grn newEntity($data = null, array $options = [])
@@ -44,8 +45,12 @@ class GrnsTable extends Table
         $this->belongsTo('Sellers', [
             'foreignKey' => 'seller_id'
         ]);
-        $this->belongsTo('Admins', [
-            'foreignKey' => 'admin_id'
+        $this->belongsTo('SuperAdmins', [
+            'foreignKey' => 'super_admin_id'
+        ]);
+        $this->belongsTo('Cities', [
+            'foreignKey' => 'city_id',
+            'joinType' => 'INNER'
         ]);
         $this->belongsTo('Locations', [
             'foreignKey' => 'location_id',
@@ -56,11 +61,24 @@ class GrnsTable extends Table
             'joinType' => 'INNER'
         ]);
         $this->hasMany('GrnRows', [
-            'foreignKey' => 'grn_id'
+            'foreignKey' => 'grn_id',
+            'saveStrategy' => 'replace'
         ]);
+        
+        /*$this->hasMany('ItemLedgers', [
+            'foreignKey' => 'item_ledger_id',
+            'joinType' => 'INNER',
+            'saveStrategy' => 'replace'
+        ]);*/
         $this->hasMany('ItemLedgers', [
             'foreignKey' => 'grn_id'
         ]);
+        $this->belongsTo('VendorLedgers', [
+            'className' => 'Ledgers',
+            'foreignKey' => 'vendor_ledger_id',
+            'joinType' => 'LEFT'
+        ]);
+         $this->belongsTo('Units');
     }
 
     /**
@@ -80,18 +98,18 @@ class GrnsTable extends Table
             ->requirePresence('voucher_no', 'create')
             ->notEmpty('voucher_no');
 
-        $validator
+        /*$validator
             ->scalar('grn_no')
             ->maxLength('grn_no', 100)
             ->requirePresence('grn_no', 'create')
-            ->notEmpty('grn_no');
+            ->notEmpty('grn_no');*/
 
         $validator
             ->date('transaction_date')
             ->requirePresence('transaction_date', 'create')
             ->notEmpty('transaction_date');
 
-        $validator
+        /*$validator
             ->scalar('reference_no')
             ->maxLength('reference_no', 100)
             ->allowEmpty('reference_no');
@@ -120,7 +138,7 @@ class GrnsTable extends Table
             ->scalar('status')
             ->maxLength('status', 20)
             ->requirePresence('status', 'create')
-            ->notEmpty('status');
+            ->notEmpty('status');*/
 
         return $validator;
     }
@@ -135,7 +153,8 @@ class GrnsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['seller_id'], 'Sellers'));
-        $rules->add($rules->existsIn(['admin_id'], 'Admins'));
+        $rules->add($rules->existsIn(['super_admin_id'], 'SuperAdmins'));
+        $rules->add($rules->existsIn(['city_id'], 'Cities'));
         $rules->add($rules->existsIn(['location_id'], 'Locations'));
         $rules->add($rules->existsIn(['order_id'], 'Orders'));
 

@@ -61,6 +61,7 @@ class ItemLedger extends Entity
     protected $_accessible = [
         'item_id' => true,
         'item_variation_id' => true,
+        'unit_variation_id' => true,
         'seller_id' => true,
         'transaction_date' => true,
         'quantity' => true,

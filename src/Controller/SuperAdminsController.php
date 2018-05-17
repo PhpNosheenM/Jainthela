@@ -46,7 +46,7 @@ class SuperAdminsController extends AppController
      */
     public function index()
     {
-        $this->viewBuilder()->layout('admin_portal');
+        $this->viewBuilder()->layout('super_admin_layout');
 		
 		$this->set(compact(''));
     }
@@ -63,6 +63,8 @@ class SuperAdminsController extends AppController
 			{
 				$state = $this->SuperAdmins->Cities->get($user['city_id']);
                 $user['state_id']=$state->id;
+                $companies = $this->SuperAdmins->Companies->find('all')->where(['state_id'=>$state->id])->first();
+                $user['company_id']=$companies->id;
 				$user['user_type']='Super Admin';
 				$characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
                 $charactersLength = strlen($characters);
@@ -110,7 +112,7 @@ class SuperAdminsController extends AppController
 		
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 		 $this->paginate = [
             'limit' => 20
         ];

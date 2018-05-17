@@ -6,14 +6,15 @@ padding: 10px 5px;text-align:center;
 padding: 10px 5px;
 }
 </style>
-<?php $this->set('title', 'Seller Item'); ?>
+<?php $this->set('title', 'Location Item'); ?>
 <div class="page-content-wrap">
 	<div class="row">
 		<div class="col-md-12">
 		<?= $this->Form->create($itemVariation,['id'=>"jvalidate",'class'=>"form-horizontal"]) ?>  
+		<?php $js=''; ?>
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><strong>Seller Item</strong></h3>
+					<h3 class="panel-title"><strong> Admin Item Variations Sales Rate</strong></h3>
 				</div>
 				<div class="panel-body">
 					<div class="row">
@@ -21,18 +22,14 @@ padding: 10px 5px;
 							<div class="form-group" style="text-align:center;">
 								<div class="col-md-4"></div>    
 								<div class="col-md-4"> 
-									<!--<div class="panel-group accordion accordion-dc">
-										<?php //$this->RecursiveCategories->categoryItemVariations($categories,$sellerItemCommision) ?>
-									</div>-->
-									<select class="form-control select change_option" label="false">
-									<option>--select--</option>
-									<?= $this->RecursiveCategories->categoryItemVariationsOption($categories) ?>
-									</select>
+									<?php echo $this->Form->select('item_id',$Items, ['empty'=>'--Select--','label' => false,'class' => 'form-control input-sm ledger select', 'data-live-search'=>true,'id'=>'item_id']); ?>
 								</div>
 								<div class="col-md-4"></div>
 							</div>
 						</div>
 					</div>
+					<br>
+					<br>
 					<div class="row">
 						<div class="col-md-12">
 							<div class="form-group addResult">
@@ -41,7 +38,7 @@ padding: 10px 5px;
 						</div>
 					</div>
 				</div>
-				<div class="panel-footer">
+				<div class="panel-footer" id="btn_sbmt" style="display:none">
 					<center>
 						<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
 					</center>
@@ -51,55 +48,21 @@ padding: 10px 5px;
 		</div>
 	</div>
 </div>
+<!-- END CONTENT FRAME -->
+<?= $this->Html->script('plugins/fileinput/fileinput.min.js',['block'=>'jsFileInput']) ?>
+<?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
+<?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
 <?php
-$js='
-		$(document).on("change",".check_all",function(){
-			if($(this).is(":checked"))
-			{
-				$(this).closest(".panel").find("input[type=checkbox]").prop("checked",true);
-				$(this).closest(".panel").find("input.single_item[type=checkbox]").prop("disabled",false);
-				$(this).closest(".panel").find("input.entity_maximum").prop("disabled",false);
-				$(this).closest(".panel").find("select.entity_maximum").prop("disabled",false);
-			}
-			else
-			{
-				$(this).closest(".panel").find("input[type=checkbox]").prop("checked",false);
-				$(this).closest(".panel").find("input.single_item[type=checkbox]").prop("disabled",true);
-				$(this).closest(".panel").find("input.entity_maximum").prop("disabled",true);
-				$(this).closest(".panel").find("select.entity_maximum").prop("disabled",true);
-			}
-		});
-		$(document).on("change",".check_all_item",function(){
-			if($(this).is(":checked"))
-			{
-				if($(this).closest(".item_variation").find("input.no_edit[type=checkbox]:checked"))
-				{
-				}
-				else
-				{
-					$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("checked",true);
-					$(this).closest(".item_variation").find("input.entity_variation[type=checkbox]").prop("checked",true);
-					$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("disabled",false);  
-					$(this).closest(".item_variation").find("input.entity_maximum").prop("disabled",false);
-					$(this).closest(".item_variation").find("select.entity_maximum").prop("disabled",false);
-				}
+   $js.='var jvalidate = $("#jvalidate").validate({
+		ignore: [],
+		rules: {                                            
+				name: {
+						required: true,
+				},
 				
 			}
-			else
-			{
-				if($(this).closest(".item_variation").find("input.no_edit[type=checkbox]:checked"))
-				{
-				}
-				else
-				{
-					$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("checked",false);
-					$(this).closest(".item_variation").find("input.entity_variation[type=checkbox]").prop("checked",false);
-					$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("disabled",true);
-					$(this).closest(".item_variation").find("input.entity_maximum").prop("disabled",true);
-					$(this).closest(".item_variation").find("select.entity_maximum").prop("disabled",true);
-				}
-			}
 		});
+		
 		$(document).on("blur",".sales_rate",function(){
 			var sales_rate = parseFloat($(this).closest("tr").find("td input.sales_rate").val());
 			var mrp        = parseFloat($(this).closest("tr").find("td input.mrp").val());
@@ -159,19 +122,6 @@ $js='
 			
 		});
 		
-		$(document).on("change",".change_option",function(){
-			var item_id  = $(this).val();
-			$(".addResult").html("<b> Loading... </b>");	
-			var url =   "'.$this->Url->build(["controller"=>"SellerItems","action"=>"getItemInfo"]).'";
-			url =   url+"?item_id="+item_id;
-			
-            $.ajax({
-							url: url,
-			}).done(function(response){ 
-					$(".addResult").html(response);
-			});
-		});
-		
 		$(document).on("change",".single_item",function(){
 			var item_variation=$(this).val(); 
 			
@@ -188,7 +138,58 @@ $js='
 				$(this).closest("tr").find("td select.entity_maximum"+item_variation).prop("disabled",true);
 			}
 		});
-	
-';
-echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 	
+		
+		$(document).on("change","#item_id",function(){
+			 var item_id=$("option:selected", this).val();
+		 
+			 
+			var url =   "'.$this->Url->build(["controller"=>"ItemVariationMasters","action"=>"getItemInfo1"]).'";
+			url =   url+"?item_id="+item_id;
+			
+            $.ajax({
+					url: url,
+			}).done(function(response){
+				 
+				$(".addResult").html(response);
+			});	
+			  
+			  $(document).on("change",".st2",function(){
+				if($(this).is(":checked"))
+				{
+					 
+					//$(this).closest("td.item_variation").find("input.stst[type=text]").val("Yes");
+					$(this).closest("tr").find(".stst").val("Yes");
+					$("#btn_sbmt").show();
+					
+				}
+				else{
+					//$(this).closest("td.item_variation").find("input.stst[type=text]").val("No");
+					$(this).closest("tr").find(".stst").val("No");
+				}	
+			});
+			$(document).on("change",".check_all_item",function(){
+			if($(this).is(":checked"))
+			{
+				$(".stst").val("Yes");
+				$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("checked",true);
+				$(this).closest(".item_variation").find("input.entity_variation[type=checkbox]").prop("checked",true);
+				$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("disabled",false);  
+				$(this).closest(".item_variation").find("input.entity_maximum").prop("disabled",false);
+				$(this).closest(".item_variation").find("select.entity_maximum").prop("disabled",false);
+				$("#btn_sbmt").show();
+			}
+			else
+			{
+				$(".stst").val("No");
+				$("#btn_sbmt").hide();
+				$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("checked",false);
+				$(this).closest(".item_variation").find("input.entity_variation[type=checkbox]").prop("checked",false);
+				$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("disabled",true);
+				$(this).closest(".item_variation").find("input.entity_maximum").prop("disabled",true);
+				$(this).closest(".item_variation").find("select.entity_maximum").prop("disabled",true);
+			}
+		});
+		});
+	';
+echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom'));
 ?>

@@ -31,6 +31,16 @@
 									<span class="help-block"></span>
 								</div>
 								<div class="form-group">
+									<label>Alise Name</label>
+									<?= $this->Form->control('alise_name',['class'=>'form-control','placeholder'=>'Alise Name','label'=>false]) ?>
+									<span class="help-block"></span>
+								</div>
+								 <div class="form-group">
+									<label>Books Beginning From</label>
+									<?= $this->Form->control('books_beginning_from',['class'=>'form-control datepicker','placeholder'=>'Books Beginning From','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>'']) ?> 
+									<span class="help-block"></span>
+								</div>
+								<div class="form-group">
 									<label>Status</label>
 									<?php $options['Active'] = 'Active'; ?>
 									<?php $options['Deactive'] = 'Deactive'; ?>
@@ -77,6 +87,7 @@
 											<th><?= ('SN.') ?></th>
 											<th><?= ('State') ?></th>
 											<th><?= ('City') ?></th>
+											<th><?= ('Alise Name') ?></th>
 											<th><?= ('Status') ?></th>
 											<th scope="col" class="actions"><?= __('Actions') ?></th>
 										</tr>
@@ -88,6 +99,7 @@
 											<td><?= $this->Number->format(++$i) ?></td>
 											<td><?= h($city->state->name) ?></td>
 											<td><?= h($city->name) ?></td>
+											<td><?= h($city->alise_name) ?></td>
 											<td><?= h($city->status) ?></td>
 											<td class="actions">
 											<?php
@@ -119,7 +131,8 @@
 				</div>
             </div>
 		</div>
-</div>		
+</div>	
+<?= $this->Html->script('plugins/bootstrap/bootstrap-datepicker.js',['block'=>'jsDatePicker']) ?>	
 <?= $this->Html->script('plugins/fileinput/fileinput.min.js',['block'=>'jsFileInput']) ?>
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>

@@ -2,7 +2,8 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\View\View;
 /**
  * Payments Controller
  *
@@ -12,7 +13,11 @@ use App\Controller\AppController;
  */
 class PaymentsController extends AppController
 {
-
+	public function beforeFilter(Event $event)
+	{
+		parent::beforeFilter($event);
+		 $this->Security->setConfig('unlockedActions', ['add','index']);
+	}
     /**
      * Index method
      *
@@ -166,7 +171,7 @@ class PaymentsController extends AppController
 				$partyGroups[]=$partyChildGroup->id;
 			}
 		}
-	
+	//pr($partyGroups->toArray()); exit;
 		$partyLedgers = $this->Payments->PaymentRows->Ledgers->find()
 		->where(['Ledgers.accounting_group_id IN' =>$partyGroups]);
 		

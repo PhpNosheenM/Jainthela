@@ -11,16 +11,21 @@ class AwsFileComponent extends Component
 	function initialize(array $config) 
 	{
 		parent::initialize($config);
+		
+	}
+	
+	/*     Connect to AWS S3   */
+	function awsAccess()
+	{
 		$this->AwsFiles = TableRegistry::get('AwsFiles');
 		$AwsFiles=$this->AwsFiles->get(1);
 		$this->bucketName=$AwsFiles->bucket_name;  // Bucket Name
 		$this->awsAccessKey=$AwsFiles->access_key; // Access Key
 		$this->awsSecretAccessKey=$AwsFiles->secret_access_key;  // Secret Access key
 	}
-	
-	/*     Connect to AWS S3   */
 	function configuration()
 	{
+		$this->awsAccess();
 		$config = [
 					'region'  => 'ap-south-1',
 					'version' => 'latest',

@@ -1,0 +1,4 @@
+---------------Gopal---------------
+1. financial_years change location_id to city_id.
+2. gst_figures change location_id to city_id.
+3. ledgers change location_id to city_id.
