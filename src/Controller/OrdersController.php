@@ -129,7 +129,8 @@ class OrdersController extends AppController
 					$Grn->total_purchase_rate=$TotalPurchaseRate;
 					$Grn->total_sales_rate=$TotalSaleRate;
 					$Grn->city_id=$city_id;
-					//$this->Orders->Grns->save($Grn);
+					$Grn->created_for="Seller";
+					$this->Orders->Grns->save($Grn);
 					
 				foreach($Totalseller as $data){ 
 						$Item1 = $this->Orders->OrderDetails->ItemVariations->get($data->item_variation_id); 
@@ -151,7 +152,7 @@ class OrdersController extends AppController
 						$GrnRow->quantity=$data->quantity;
 						$GrnRow->purchase_rate=$Item1->purchase_rate; 
 						$GrnRow->sales_rate=$Item1->sales_rate;
-						//$GrnRow = $this->Orders->Grns->GrnRows->save($GrnRow);
+						$GrnRow = $this->Orders->Grns->GrnRows->save($GrnRow);
 						
 						
 						$ItemLedger = $this->Orders->Grns->GrnRows->ItemLedgers->newEntity(); 
@@ -167,42 +168,13 @@ class OrdersController extends AppController
 						$ItemLedger->city_id=$city_id;
 						$ItemLedger->grn_id=$Grn->id;
 						$ItemLedger->grn_row_id=$GrnRow->id;
-						//$this->Orders->Grns->GrnRows->ItemLedgers->save($ItemLedger);
+						$this->Orders->Grns->GrnRows->ItemLedgers->save($ItemLedger);
 						
-						/* $ItemLedger = $this->Orders->Grns->GrnRows->ItemLedgers->newEntity(); 
-						$ItemLedger->item_id=$data->item_id; 
-						$ItemLedger->item_variation_id=$data->item_variation_id;
-						$ItemLedger->seller_id=$key;
-						$ItemLedger->transaction_date=$order->transaction_date;  
-						$ItemLedger->quantity=$data->quantity;
-						$ItemLedger->rate=$GrnRow->sales_rate;
-						$ItemLedger->purchase_rate=$GrnRow->purchase_rate;
-						$ItemLedger->sales_rate=$GrnRow->sales_rate; 
-						$ItemLedger->status="Out";
-						$ItemLedger->city_id=$city_id;
-						$ItemLedger->grn_id=$Grn->id;
-						$ItemLedger->grn_row_id=$GrnRow->id;
-						//$this->Orders->Grns->GrnRows->ItemLedgers->save($ItemLedger); */
-						
-						$ItemVariationData = $this->Orders->OrderDetails->ItemVariations->get($data->item_variation->id);
-						$current_stock=$ItemVariationData->current_stock-$GrnRow->quantity; 
-						$out_of_stock="No";
-						$ready_to_sale="Yes";
-						if($current_stock <= 0){
-							$ready_to_sale="No";
-							$out_of_stock="Yes";
-						}
-						
-						$query = $this->Orders->OrderDetails->ItemVariations->query();
-						$query->update()
-						->set(['current_stock'=>$current_stock,'out_of_stock'=>$out_of_stock,'ready_to_sale'=>$ready_to_sale])
-						->where(['id'=>$data->item_variation->id])
-						->execute(); 
-						pr("Success");	exit;
 				}
 			}
 			
-	pr("Success");	exit;
+				$this->Flash->success(__('The order has been saved.'));
+                return $this->redirect(['action' => 'index']);
 	}
 	public function checkSellerStock($seller_id = null,$item_id = null,$item_variation_id = null)
     {
@@ -271,8 +243,9 @@ class OrdersController extends AppController
 			else{$voucher_no=1;} 
 			$order->order_from="Web";
 			$order->city_id=$city_id;
+			$order->transaction_date=date('Y-m-d',strtotime($order->transaction_date));
 			$Custledgers = $this->Orders->SellerLedgers->get($order->party_ledger_id,['contain'=>['Customers'=>['Cities']]]);
-			//pr($order); exit;
+			
             if ($this->Orders->save($order)) { 
 					if($order->order_type=="Credit"){
 							
@@ -330,13 +303,43 @@ class OrdersController extends AppController
 							$AccountingEntrieSGST->order_id=$order->id;  
 							$this->Orders->AccountingEntries->save($AccountingEntrieSGST);
 							
+							$Item = $this->Orders->OrderDetails->ItemVariations->get($order_detail->item_variation_id);
+							$ItemLedger = $this->Orders->Grns->GrnRows->ItemLedgers->newEntity(); 
+							$ItemLedger->item_id=$order_detail->item_id; 
+							$ItemLedger->item_variation_id=$order_detail->item_variation_id;
+							$ItemLedger->seller_id=$Item->seller_id;
+							$ItemLedger->transaction_date=$order->transaction_date;  
+							$ItemLedger->quantity=$order_detail->quantity;
+							$ItemLedger->rate=$order_detail->sales_rate;
+							$ItemLedger->purchase_rate=$order_detail->purchase_rate;
+							$ItemLedger->sales_rate=$order_detail->sales_rate; 
+							$ItemLedger->status="Out";
+							$ItemLedger->city_id=$city_id;
+							$ItemLedger->order_id=$order->id;
+							$ItemLedger->order_detail_id=$order_detail->id;
+							$this->Orders->Grns->GrnRows->ItemLedgers->save($ItemLedger);
+							
+							$ItemVariationData = $this->Orders->OrderDetails->ItemVariations->get($order_detail->item_variation_id);
+							$current_stock=$ItemVariationData->current_stock-$order_detail->quantity; 
+							$out_of_stock="No";
+							$ready_to_sale="Yes";
+							if($current_stock <= 0){
+								$ready_to_sale="No";
+								$out_of_stock="Yes";
+							}
+							
+							$query = $this->Orders->OrderDetails->ItemVariations->query();
+							$query->update()
+							->set(['current_stock'=>$current_stock,'out_of_stock'=>$out_of_stock,'ready_to_sale'=>$ready_to_sale])
+							->where(['id'=>$order_detail->item_variation_id])
+							->execute(); 
+							
 						   }
 						}
 						$this->orderDeliver($order->id);
 					}
 					
                 $this->Flash->success(__('The order has been saved.'));
-
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('The order could not be saved. Please, try again.'));
@@ -384,9 +387,13 @@ class OrdersController extends AppController
 			$Accountledgers = $this->Orders->Ledgers->find('list')->where(['Ledgers.accounting_group_id IN' =>$account_ids]);
         }
 		
-		$itemList=$this->Orders->Items->find()->contain(['ItemVariations'=> function ($q) {
+		/* $itemList=$this->Orders->Items->find()->contain(['ItemVariations'=> function ($q) {
 								return $q
 								->where(['ItemVariations.seller_id is NULL','ItemVariations.status'=>'Active','current_stock >'=>'0'])->contain(['UnitVariations'=>['Units']]);
+								}]); */
+		$itemList=$this->Orders->Items->find()->contain(['ItemVariations'=> function ($q) {
+								return $q
+								->where(['ItemVariations.status'=>'Active','current_stock >'=>'0'])->contain(['UnitVariations'=>['Units']]);
 								}]);
 		//pr($itemList->toArray()); exit;
 		$items=array();

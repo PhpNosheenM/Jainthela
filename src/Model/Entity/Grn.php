@@ -48,6 +48,7 @@ class Grn extends Entity
         'voucher_no' => true,
         'grn_no' => true,
         'city_id' => true,
+        'created_for' => true,
         'location_id' => true,
         'order_id' => true,
         'transaction_date' => true,
