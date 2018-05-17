@@ -41,6 +41,10 @@ class ContraVouchersTable extends Table
             'foreignKey' => 'location_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('Cities', [
+            'foreignKey' => 'city_id',
+            'joinType' => 'INNER'
+        ]);
         $this->hasMany('AccountingEntries', [
             'foreignKey' => 'contra_voucher_id'
         ]);
