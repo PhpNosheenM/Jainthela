@@ -27,10 +27,26 @@ class GrnsController extends AppController
      */
     public function index()
     {
+        $this->viewBuilder()->layout('super_admin_layout');
+        $company_id=$this->Auth->User('company_id');
+        $user_id=$this->Auth->User('id');
+        $city_id=$this->Auth->User('city_id');
+        $search=$this->request->query('search');
         $this->paginate = [
-            'contain' => ['Locations', 'Orders']
+            'limit' => 10
         ];
-        $grns = $this->paginate($this->Grns);
+        $grns = $this->Grns->find()
+                            ->where(['Grns.super_admin_id'=>$user_id,'Grns.city_id'=>$city_id])
+                            ->where([ 'OR'=>['Grns.voucher_no' => $search,
+                                // ...
+                                'VendorLedgers.name LIKE' => '%'.$search.'%',
+                                //.....
+                                'Grns.reference_no LIKE' => '%'.$search.'%',
+                                //...
+                                'Grns.transaction_date ' => date('Y-m-d',strtotime($search))]])
+                            ->contain(['VendorLedgers']);
+      
+        $grns = $this->paginate($grns);
 
         $this->set(compact('grns'));
     }

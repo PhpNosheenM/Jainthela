@@ -152,7 +152,7 @@
         
         add_row();
 
-        $(document).on('click','.add_row',function(){ alert();
+        $(document).on('click','.add_row',function(){ 
             add_row();
         });
 

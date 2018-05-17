@@ -1,71 +1,79 @@
 <?php
 /**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\Grn[]|\Cake\Collection\CollectionInterface $grns
+ * @Author: PHP Poets IT Solutions Pvt. Ltd.
  */
+$this->set('title', 'Challan');
 ?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('New Grn'), ['action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Locations'), ['controller' => 'Locations', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Location'), ['controller' => 'Locations', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Orders'), ['controller' => 'Orders', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Order'), ['controller' => 'Orders', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Seller Ledgers'), ['controller' => 'Ledgers', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Seller Ledger'), ['controller' => 'Ledgers', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="grns index large-9 medium-8 columns content">
-    <h3><?= __('Grns') ?></h3>
-    <table cellpadding="0" cellspacing="0">
-        <thead>
-            <tr>
-                <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('grn_no') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('location_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('order_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('reference_no') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('status') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('total_taxable_value') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('total_gst') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('total_amount') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($grns as $grn): ?>
-            <tr>
-                <td><?= $this->Number->format($grn->id) ?></td>
-                <td><?= $this->Number->format($grn->voucher_no) ?></td>
-                <td><?= $this->Number->format($grn->grn_no) ?></td>
-                <td><?= $grn->has('location') ? $this->Html->link($grn->location->name, ['controller' => 'Locations', 'action' => 'view', $grn->location->id]) : '' ?></td>
-                <td><?= $grn->has('order') ? $this->Html->link($grn->order->id, ['controller' => 'Orders', 'action' => 'view', $grn->order->id]) : '' ?></td>
-                <td><?= h($grn->transaction_date) ?></td>
-                <td><?= h($grn->reference_no) ?></td>
-                <td><?= h($grn->status) ?></td>
-                <td><?= $this->Number->format($grn->total_taxable_value) ?></td>
-                <td><?= $this->Number->format($grn->total_gst) ?></td>
-                <td><?= $this->Number->format($grn->total_amount) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['action' => 'view', $grn->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $grn->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $grn->id], ['confirm' => __('Are you sure you want to delete # {0}?', $grn->id)]) ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+<div class="page-content-wrap">
+    <div class="page-title">                    
+        <h2><span class="fa fa-arrow-circle-o-left"></span> Create Challan</h2>
+    </div> 
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="actions">
+                        <form method="GET" id="">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <?php echo $this->Form->input('search',['class'=>'form-control input-sm pull-right','label'=>false, 'placeholder'=>'Search','autofocus'=>'autofocus','value'=>@$search]);
+                                    ?>
+                                </div>
+                                <div class="col-md-1">
+                                    <button type="submit" class="go btn blue-madison input-sm">Go</button>
+                                </div> 
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <div class="portlet-body">
+                <div class="table-responsive">
+                    <?php $page_no=$this->Paginator->current('Grns'); 
+                    $page_no=($page_no-1)*20; ?>
+                    <table class="table table-bordered table-hover table-condensed">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="actions">Sr. No.</th>
+                                <th scope="col">Voucher No</th>
+                                <th scope="col">Reference No</th>
+                                <th scope="col">Vendor</th>
+                                <th scope="col">Transaction Date</th>
+                                <th scope="col" class="actions"><?= __('Actions') ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php 
+                            foreach ($grns as $grn):
+                            ?>
+                            <tr>
+                                <td><?= h(++$page_no) ?></td>
+                                <td><?= h('#'.str_pad($grn->voucher_no, 4, '0', STR_PAD_LEFT)) ?></td>
+                                <td><?= h($grn->reference_no) ?></td>
+                                <td><?= h(@$grn->vendor_ledger->name) ?></td>
+                                <td><?= h($grn->transaction_date) ?></td>
+                                <td class="actions">
+                                 
+                                    
+                                    
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+                    <div class="paginator pull-right">
+                        <ul class="pagination">
+                            <?= $this->Paginator->first(__('First')) ?>
+                            <?= $this->Paginator->prev(__('Previous')) ?>
+                            <?= $this->Paginator->numbers() ?>
+                            <?= $this->Paginator->next(__('Next')) ?>
+                            <?= $this->Paginator->last(__('Last')) ?>
+                        </ul>
+                        <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+                    </div>
+            </div>
+        </div>
     </div>
 </div>
