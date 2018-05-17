@@ -2,7 +2,8 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\View\View;
 /**
  * Grns Controller
  *
@@ -13,6 +14,12 @@ use App\Controller\AppController;
 class GrnsController extends AppController
 {
 
+    public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Security->setConfig('unlockedActions', ['add']);
+
+    }
     /**
      * Index method
      *
@@ -49,7 +56,7 @@ class GrnsController extends AppController
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
-     public function add()
+    public function add()
     {
         $this->viewBuilder()->layout('super_admin_layout');
         $company_id=$this->Auth->User('company_id');
@@ -71,7 +78,18 @@ class GrnsController extends AppController
             {
                 $grn->voucher_no = 1;
             } 
+             $Grn_no = $this->Grns->find()->select(['grn_no'])->where(['city_id'=>$city_id])->order(['grn_no' => 'DESC'])->first();
+            if($Grn_no)
+            {
+                $grn->grn_no = $Grn_no->grn_no+1;
+            }
+            else
+            {
+                $grn->grn_no = 1;
+            } 
             $grn->city_id =$city_id;
+            $grn->super_admin_id =$user_id;
+        
             if ($this->Grns->save($grn)) 
             {
                 //Create Item_Ledger//
@@ -81,6 +99,7 @@ class GrnsController extends AppController
                     $item_ledger->transaction_date = $grn->transaction_date;
                     $item_ledger->grn_id = $grn->id;
                     $item_ledger->grn_row_id = $grn_row->id;
+                    $item_ledger->unit_variation_id = $grn_row->unit_variation_id;
                     $item_ledger->item_id = $grn_row->item_id;
                     $item_ledger->quantity = $grn_row->quantity;
                     $item_ledger->rate = $grn_row->purchase_rate;
@@ -92,30 +111,18 @@ class GrnsController extends AppController
                     $this->Grns->ItemLedgers->save($item_ledger);
                     $item = $this->Grns->GrnRows->Items->find()->where(['Items.id'=>$grn_row->item_id])->first();
                     
-                    
-                    if($item)
-                    {
-                        if($grn->transaction_date >= date("Y-m-d",strtotime($item->sales_rate_update_on)))
-                        {
-                            $query = $this->Grns->GrnRows->Items->query();
-                            $query->update()
-                                    ->set(['sales_rate' => $grn_row->sale_rate, 'sales_rate_update_on' => $grn->transaction_date])
-                                    ->where(['id' =>$grn_row->item_id])
-                                    ->execute();
-                        }
-                    }
                 }
                 $this->Flash->success(__('The grn has been saved.'));
                 return $this->redirect(['action' => 'add']);
             }
             $this->Flash->error(__('The grn could not be saved. Please, try again.'));
         }
-        $items = $this->Grns->GrnRows->Items->find()
-                    ->contain(['GstFigures']);
+        $items = $this->Grns->GrnRows->Items->find();
+        
         $itemOptions=[];
         foreach($items as $item)
         {
-            $itemOptions[]=['text' =>$item->item_code.' '.$item->name, 'value' => $item->id, 'gst_figure_tax_name'=>@$item->gst_figure->name];
+                $itemOptions[]=['text' =>$item->name, 'value' => $item->id];
         }
         $Voucher_no = $this->Grns->find()->select(['voucher_no'])->where(['super_admin_id'=>$user_id])->order(['voucher_no' => 'DESC'])->first();
         if($Voucher_no)
@@ -152,8 +159,17 @@ class GrnsController extends AppController
             $partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id];
         }
         
+       $units = $this->Grns->Units->find()->where(['status'=>'Active'])->contain(['UnitVariations']);
        
-        $this->set(compact('grn','companies','voucher_no','itemOptions','partyOptions'));
+        $unitVariationOptions=[];
+        foreach($units as $unit)
+        {
+            foreach ($unit->unit_variations as $unit_variation) {
+                
+                $unitVariationOptions[]=['text' =>$unit_variation->quantity_variation.' '.$unit->shortname, 'value' => $unit_variation->id];
+            }
+        }
+        $this->set(compact('grn','companies','voucher_no','itemOptions','partyOptions','unitVariationOptions'));
         $this->set('_serialize', ['grn']);
     }
     /*public function add()

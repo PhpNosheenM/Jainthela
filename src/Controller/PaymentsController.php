@@ -2,7 +2,8 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\View\View;
 /**
  * Payments Controller
  *
@@ -12,7 +13,11 @@ use App\Controller\AppController;
  */
 class PaymentsController extends AppController
 {
-
+	public function beforeFilter(Event $event)
+	{
+		parent::beforeFilter($event);
+		 $this->Security->setConfig('unlockedActions', ['add','index']);
+	}
     /**
      * Index method
      *
@@ -54,7 +59,7 @@ class PaymentsController extends AppController
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
 		$user_id=$this->Auth->User('id');
-		$this->viewBuilder()->layout('super_admin_layout');
+		$this->viewBuilder()->layout('admin_portal');
         $payment = $this->Payments->newEntity();
 		
 		if ($this->request->is('post')) {

@@ -46,7 +46,9 @@ class UnitsTable extends Table
             'foreignKey' => 'unit_id'
         ]);
 		 
-		
+		 $this->hasMany('UnitVariations', [
+            'foreignKey' => 'unit_id'
+        ]);
         $this->hasMany('ItemVariations', [
             'foreignKey' => 'unit_id'
         ]);

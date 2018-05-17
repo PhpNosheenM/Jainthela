@@ -129,10 +129,11 @@ class CustomersController extends AppController
 					$accounting_group = $this->Customers->Ledgers->AccountingGroups->find()->where(['AccountingGroups.customer'=>1,'AccountingGroups.city_id'=>$city_id])->first();
 					$ledger = $this->Customers->Ledgers->newEntity();
 					$ledger->name = $customer->name;
+					$ledger->city_id = $city_id;
 					$ledger->accounting_group_id = $accounting_group->id;
 					$ledger->customer_id=$customer->id;
 					$ledger->bill_to_bill_accounting='yes';
-					$this->Customers->Ledgers->save($ledger);
+					 
 					
 				if($this->Customers->Ledgers->save($ledger))
 				{
@@ -178,6 +179,7 @@ class CustomersController extends AppController
 							}
 						}
 					}
+					
 				}
 				}
 				$this->Flash->success(__('The customer has been saved.'));

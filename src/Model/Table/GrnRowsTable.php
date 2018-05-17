@@ -78,7 +78,7 @@ class GrnRowsTable extends Table
             ->requirePresence('quantity', 'create')
             ->notEmpty('quantity');
 
-        $validator
+       /* $validator
             ->decimal('rate')
             ->requirePresence('rate', 'create')
             ->notEmpty('rate');
@@ -102,7 +102,7 @@ class GrnRowsTable extends Table
             ->decimal('gst_value')
             ->requirePresence('gst_value', 'create')
             ->notEmpty('gst_value');
-
+*/
         $validator
             ->decimal('purchase_rate')
             ->requirePresence('purchase_rate', 'create')
@@ -113,7 +113,7 @@ class GrnRowsTable extends Table
             ->requirePresence('sales_rate', 'create')
             ->notEmpty('sales_rate');
 
-        $validator
+     /*   $validator
             ->scalar('gst_type')
             ->maxLength('gst_type', 100)
             ->requirePresence('gst_type', 'create')
@@ -123,7 +123,7 @@ class GrnRowsTable extends Table
             ->decimal('mrp')
             ->requirePresence('mrp', 'create')
             ->notEmpty('mrp');
-
+*/
         return $validator;
     }
 

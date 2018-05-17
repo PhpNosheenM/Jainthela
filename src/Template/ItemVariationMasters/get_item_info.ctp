@@ -43,7 +43,7 @@
 					</td>
 					<td style="width:15%" align="center">
 						<input type="hidden" name="item_variation_master_id[]" value="<?php echo $item_variation_master->id; ?>" />
-						<input type="hidden" name="unit_variation_id[]" value="<?php echo $item_variation_master->unit_variation->id; ?>" />
+						<input type="hidden" name="unit_variation_id[]" value="<?php echo $item_variation_master->unit_variation_id; ?>" />
 						<input type="hidden" name="status[]" value="No" class="stst" />
 						<input name="test[]" type="checkbox"  value="<?php echo $item->id; ?>" class="entity_variation st2 entity_variation<?php echo $item_variation_master->unit_variation->id;?>" >
 					</td>

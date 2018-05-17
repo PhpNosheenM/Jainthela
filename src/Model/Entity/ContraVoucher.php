@@ -39,6 +39,7 @@ class ContraVoucher extends Entity
         'created_on' => true,
         'status' => true,
         'location' => true,
+        'contra_voucher_rows' => true,
         'accounting_entries' => true
     ];
 }
