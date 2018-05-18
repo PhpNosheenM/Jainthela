@@ -55,7 +55,7 @@
 		?>
 		</td><td style="width:10%">
 		<?php echo $this->Form->control($item_variation_master->id.'[current_stock]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Current Stock','class'=>'form-control cStock  entity_maximum entity_maximum'.$item_variation_master->unit_variation->id,'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->current_stock,'required','readonly']);?>
-		<input type="hidden" value="<?php echo @$item_variation_master->item_variations[0]->current_stock;?>" id="chstock">
+		<input type="hidden" value="<?php echo @$item_variation_master->item_variations[0]->current_stock;?>" class="chstock">
 		</td><td style="width:10%">
 		<?php echo $this->Form->control($item_variation_master->id.'[add_stock]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Add Stock','class'=>'form-control addStock entity_maximum entity_maximum'.$item_variation_master->unit_variation->id,'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->add_stock]); ?>
 		</td><td style="width:12%">
@@ -64,7 +64,7 @@
 		<?php 
 		echo $this->Form->control($item_variation_master->id.'[sales_rate]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Sales Rate','class'=>'form-control sales_rate  entity_maximum entity_maximum'.$item_variation_master->unit_variation->id,'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->sales_rate,'required']);
 		?>
-		<input name="<?php echo $item_variation_master->id;?>[commissions]" type="hidden"  value="<?php echo @$item->seller_items[0]->commission_percentage; ?>" class="entity_maximum entity_maximum<?php echo $item_variation_master->unit_variation->id; ?>" id="commission">
+		<input name="<?php echo $item_variation_master->id;?>[commissions]" type="hidden"  value="<?php echo @$item->seller_items[0]->commission_percentage; ?>" class="commission entity_maximum entity_maximum<?php echo $item_variation_master->unit_variation->id; ?>" id="commission">
 		<?php 
 		echo $this->Form->control($item_variation_master->id.'[purchase_rate]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'hidden','placeholder'=>'Rate','class'=>'form-control entity_maximum  purchase_rate entity_maximum '.$item_variation_master['unit_variation']['id'],'style'=>'float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->purchase_rate]);
 		?>

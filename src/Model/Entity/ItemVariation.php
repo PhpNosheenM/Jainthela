@@ -50,6 +50,8 @@ class ItemVariation extends Entity
         'created_on' => true,
         'status' => true,
         'item' => true,
+        'seller_item_id' => true,
+        'city_id' => true,
         'commission' => true,
         'order_details' => true,
         'seller_id' => true,
