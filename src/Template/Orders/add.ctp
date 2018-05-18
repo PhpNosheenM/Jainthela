@@ -83,7 +83,7 @@
 									
 									<tr>
 										<td colspan="7" style="text-align:right;">Total Taxable</td>
-										<td colspan="2" style="text-align:right;"><?= $this->Form->control('total_taxable_value',['class'=>'form-control total_taxable_value','label'=>false,'readonly']) ?></td>
+										<td colspan="2" style="text-align:right;"><?= $this->Form->control('total_amount',['class'=>'form-control total_taxable_value','label'=>false,'readonly']) ?></td>
 									</tr>
 									
 									<tr>
@@ -97,7 +97,7 @@
 													<label class="check"><input name="order_type" type="radio" id="itm"  value="Credit"  class="iradio" name="iradio" checked="checked" />Credit</label>
 												</div>
 												<div class="col-md-4">
-													<label class="check"><input name="order_type" type="radio" id="slr"  value="COD" class="iradio" name="iradio"/> Cash</label>
+													<label class="check"><input name="order_type" type="radio" id="slr"  value="COD" class="iradio" name="iradio"/> COD</label>
 												</div>
 												<div class="col-md-4">
 													<label class="check"><input name="order_type" type="radio" id="cmbo"  value="OnLine" class="iradio" name="iradio"/> OnLine</label>
@@ -105,7 +105,7 @@
 											</div>
 										</td>
 										<td colspan="5" style="text-align:right;">Total Amount</td>
-										<td colspan="2" style="text-align:right;"><?= $this->Form->control('total_amount',['class'=>'form-control total_amt','label'=>false,'readonly']) ?></td>
+										<td colspan="2" style="text-align:right;"><?= $this->Form->control('grand_total',['class'=>'form-control total_amt','label'=>false,'readonly']) ?></td>
 									</tr>
 								</tfoot>
 							</table>
@@ -236,10 +236,12 @@
 			var sale_rate=$(this).find('option:selected', this).attr('sale_rate'); 
 			var gst_figure_id=$(this).find('option:selected', this).attr('gst_figure_id');  
 			var item_id=$(this).find('option:selected', this).attr('item_id');  
+			var current_stock=$(this).find('option:selected', this).attr('current_stock');  
 			$(this).closest('tr').find('.item_id').val(item_id);
 			$(this).closest('tr').find('.gst_percentage').val(gst_value);
 			$(this).closest('tr').find('.gst_figure_id').val(gst_figure_id);
 			$(this).closest('tr').find('.rate').val(sale_rate);
+			$(this).closest('tr').find('.quantity').attr('max',current_stock);
 			calculation();
 		});
 		
