@@ -104,6 +104,7 @@ class GrnsController extends AppController
                 $grn->grn_no = 1;
             } 
             $grn->city_id =$city_id;
+            $grn->created_for ='Jainthela';
             $grn->super_admin_id =$user_id;
 
             if ($this->Grns->save($grn)) 
