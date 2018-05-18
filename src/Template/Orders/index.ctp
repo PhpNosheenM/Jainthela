@@ -59,7 +59,7 @@
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
 									<td><?= h($order->order_no) ?></td>
-									<td><?= h($order->customer->name) ?></td>
+									<td><?= h($order->party_ledger->name) ?></td>
 									<td><?= h($order->location->name) ?></td>
 									<td><?= h($order->grand_total) ?></td>
 									<td><?= h($order->order_type) ?></td>
@@ -73,7 +73,7 @@
 									<td class="actions">
 										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'edit', $order->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
 										
-										<?= $this->Html->link(__('<span class="fa fa-credit-card"> Order Deliver</span>'), ['action' => 'orderDeliver', $order->id],['class'=>'btn btn-success btn-sm','escape'=>false]) ?>
+										<!--<?= $this->Html->link(__('<span class="fa fa-credit-card"> Order Deliver</span>'), ['action' => 'orderDeliver', $order->id],['class'=>'btn btn-success btn-sm','escape'=>false]) ?>-->
 										
 										
 										

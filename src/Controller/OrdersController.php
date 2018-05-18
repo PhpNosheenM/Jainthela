@@ -36,7 +36,7 @@ class OrdersController extends AppController
 	
 		
         $this->paginate = [
-            'contain' => ['Locations','Customers','OrderDetails'=>['ItemVariations']],
+            'contain' => ['OrderDetails'=>['ItemVariations'],'SellerLedgers','PartyLedgers','Locations'],
 			'limit' => 20
         ];
         
@@ -241,8 +241,10 @@ class OrdersController extends AppController
 			$Voucher_no = $this->Orders->find()->select(['voucher_no'])->where(['Orders.city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
 			if($Voucher_no){$voucher_no=$Voucher_no->voucher_no+1;}
 			else{$voucher_no=1;} 
-			$order->order_from="Web";
 			$order->city_id=$city_id;
+			$order->order_from="Web";
+			$order->voucher_no=$voucher_no;
+			$order->order_status="Pending";
 			$order->transaction_date=date('Y-m-d',strtotime($order->transaction_date));
 			$Custledgers = $this->Orders->SellerLedgers->get($order->party_ledger_id,['contain'=>['Customers'=>['Cities']]]);
 			
@@ -398,10 +400,10 @@ class OrdersController extends AppController
 		//pr($itemList->toArray()); exit;
 		$items=array();
 		foreach($itemList as $data1){ 
-			foreach($data1->item_variations as $data){  //pr($data); exit;
+			foreach($data1->item_variations as $data){  
 				$gstData=$this->Orders->GstFigures->get($data1->gst_figure_id);
 				$merge=$data1->name.'('.@$data->unit_variation->quantity_variation.'.'.@$data->unit_variation->unit->shortname.')';
-				$items[]=['text' => $merge,'value' => $data->id,'item_id'=>$data1->id,'quantity_factor'=>@$data->unit_variation->convert_unit_qty,'unit'=>@$data->unit_variation->unit->unit_name,'gst_figure_id'=>$data1->gst_figure_id,'gst_value'=>$gstData->tax_percentage,'commission'=>@$data->commission,'sale_rate'=>$data->sales_rate];
+				$items[]=['text' => $merge,'value' => $data->id,'item_id'=>$data1->id,'quantity_factor'=>@$data->unit_variation->convert_unit_qty,'unit'=>@$data->unit_variation->unit->unit_name,'gst_figure_id'=>$data1->gst_figure_id,'gst_value'=>$gstData->tax_percentage,'commission'=>@$data->commission,'sale_rate'=>$data->sales_rate,'current_stock'=>$data->current_stock];
 			}
 		}
 		
