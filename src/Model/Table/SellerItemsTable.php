@@ -58,6 +58,9 @@ class SellerItemsTable extends Table
         $this->hasMany('SellerItemVariations', [
             'foreignKey' => 'seller_item_id'
         ]);
+		$this->hasMany('ItemVariations', [
+            'foreignKey' => 'seller_item_id'
+        ]);
     }
 
     /**
