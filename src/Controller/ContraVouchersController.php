@@ -27,12 +27,30 @@ class ContraVouchersController extends AppController
      */
     public function index()
     {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$this->viewBuilder()->layout('super_admin_layout');
         $this->paginate = [
-            'contain' => ['Locations']
+            'contain' => ['Cities'],
+			'limit' => 20
         ];
-        $contraVouchers = $this->paginate($this->ContraVouchers);
-
-        $this->set(compact('contraVouchers'));
+		$contraVouchers = $this->ContraVouchers->find()->where(['ContraVouchers.city_id'=>$city_id])->contain(['ContraVoucherRows','Cities']);
+		if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$contraVouchers->where([
+							'OR' => [
+									'ContraVouchers.voucher_no LIKE' => $search.'%',
+									'Cities.name LIKE' => $search.'%',
+									'ContraVouchers.narration LIKE' => $search.'%',
+									'ContraVouchers.created_on LIKE' => $search.'%'
+									
+							]
+			]);
+		}
+       // pr($contraVouchers->toArray()); exit;
+		$contraVouchers=$this->paginate($contraVouchers);
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('contraVouchers','paginate_limit'));
     }
 
     /**
@@ -61,12 +79,12 @@ class ContraVouchersController extends AppController
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
 		$user_id=$this->Auth->User('id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $contraVoucher = $this->ContraVouchers->newEntity();
 		if ($this->request->is('post')) {
 			
 			//$this->request->data['transaction_date'] = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
-			$Voucher = $this->ContraVouchers->find()->select(['voucher_no'])->where(['location_id'=>$location_id])->order(['voucher_no' => 'DESC'])->first();
+			$Voucher = $this->ContraVouchers->find()->select(['voucher_no'])->where(['city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
 			if($Voucher)
 			{
 				$contraVoucher->voucher_no = $Voucher->voucher_no+1;
@@ -75,25 +93,32 @@ class ContraVouchersController extends AppController
 			{
 				$contraVoucher->voucher_no = 1;
 			}
-			$contraVoucher->location_id = $location_id;
+			//$contraVoucher->location_id = $location_id;
+			$contraVoucher->city_id = $city_id;
+			$contraVoucher->created_by = $user_id;
+			$contraVoucher->transaction_date = date('Y-m-d', strtotime($this->request->data['transaction_date']));
 			
 			$contraVoucher = $this->ContraVouchers->patchEntity($contraVoucher, $this->request->getData(), [
 							'associated' => ['ContraVoucherRows','ContraVoucherRows.ReferenceDetails']
 						]);
-					 
+						$vendor_id=$contraVoucher->vendor_id;
+					//pr($contraVoucher->contra_voucher_rows); exit;
 			//transaction date for contraVoucher code start here--
 			foreach($contraVoucher->contra_voucher_rows as $payment_row)
 			{
+				 
 				if(!empty($payment_row->reference_details))
 				{
 					foreach($payment_row->reference_details as $reference_detail)
 					{
-						$reference_detail->transaction_date = $contraVoucher->transaction_date;
+						$reference_detail->transaction_date = date('Y-m-d', strtotime($contraVoucher->transaction_date));
+						$reference_detail->city_id = $city_id;
+						//$reference_detail->vendor_id = $contraVoucher->vendor_id;
 					}
 				}
 			}
 			//transaction date for contraVoucher code close here-- 
-			
+			//pr($contraVoucher); exit;
 			if ($this->ContraVouchers->save($contraVoucher)) {
 				
 			foreach($contraVoucher->contra_voucher_rows as $payment_row)
@@ -103,7 +128,6 @@ class ContraVouchersController extends AppController
 					$accountEntry->debit                      = @$payment_row->debit;
 					$accountEntry->credit                     = @$payment_row->credit;
 					$accountEntry->transaction_date           = $contraVoucher->transaction_date;
-					$accountEntry->location_id                = $location_id;
 					$accountEntry->city_id                    = $city_id;
 					$accountEntry->contra_voucher_id                 = $contraVoucher->id;
 					$accountEntry->contra_voucher_row_id             = $payment_row->id;
@@ -119,7 +143,7 @@ class ContraVouchersController extends AppController
 		}
 		 
 		
-		$Voucher = $this->ContraVouchers->find()->select(['voucher_no'])->where(['location_id'=>$location_id])->order(['voucher_no' => 'DESC'])->first();
+		$Voucher = $this->ContraVouchers->find()->select(['voucher_no'])->where(['city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
 		if($Voucher)
 		{
 			$voucher_no=$Voucher->voucher_no+1;
@@ -127,11 +151,11 @@ class ContraVouchersController extends AppController
 		else
 		{
 			$voucher_no=1;
-		} 
+		}
 		
 		$bankParentGroups = $this->ContraVouchers->ContraVoucherRows->Ledgers->AccountingGroups->find()
 						->where(['AccountingGroups.bank'=>'1']);
-						
+		
 		$bankGroups=[];
 		
 		foreach($bankParentGroups as $bankParentGroup)
@@ -160,7 +184,7 @@ class ContraVouchersController extends AppController
 		}
 	
 		$partyLedgers = $this->ContraVouchers->ContraVoucherRows->Ledgers->find()
-		->where(['Ledgers.accounting_group_id IN' =>$partyGroups]);
+		->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.city_id'=>$city_id]);
 		
 		//$ledgers = $this->Payments->ContraVoucherRows->Ledgers->find()->where(['company_id'=>$company_id]);
 		foreach($partyLedgers as $ledger){

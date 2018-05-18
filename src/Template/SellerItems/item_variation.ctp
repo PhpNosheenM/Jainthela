@@ -71,9 +71,10 @@ $js='
 		});
 		$(document).on("change",".check_all_item",function(){
 			if($(this).is(":checked"))
-			{
-				if($(this).closest(".item_variation").find("input.no_edit[type=checkbox]:checked"))
-				{
+			{ 
+				if($(this).closest(".item_variation").find("input.no_edit[type=checkbox]").is(":checked"))
+				{ 
+					
 				}
 				else
 				{

@@ -1,7 +1,8 @@
 <?php
 namespace App\Controller;
-
 use App\Controller\AppController;
+use Cake\Event\Event;
+use Cake\View\View;
 
 /**
  * Receipts Controller
@@ -13,6 +14,12 @@ use App\Controller\AppController;
 class ReceiptsController extends AppController
 {
 
+	 public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Security->setConfig('unlockedActions', ['add','index']);
+
+    }
     /**
      * Index method
      *
@@ -69,7 +76,8 @@ class ReceiptsController extends AppController
             $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
 			$tdate=$this->request->data('transaction_date');
 			$receipt->transaction_date=date('Y-m-d',strtotime($tdate));
-			$receipt->location_id = $location_id;
+			$receipt->city_id = $city_id;
+			$receipt->created_by = $user_id;
 			$receipt->voucher_no = $voucher_no;
 		   //transaction date for receipt code start here--
 			foreach($receipt->receipt_rows as $receipt_row)
@@ -83,7 +91,7 @@ class ReceiptsController extends AppController
 				}
 			}
             if ($this->Receipts->save($receipt)) {
-				
+			
 			foreach($receipt->receipt_rows as $receipt_row)
 				{
 					$accountEntry = $this->Receipts->AccountingEntries->newEntity();
@@ -91,7 +99,7 @@ class ReceiptsController extends AppController
 					$accountEntry->debit                      = @$receipt_row->debit;
 					$accountEntry->credit                     = @$receipt_row->credit;
 					$accountEntry->transaction_date           = $receipt->transaction_date;
-					$accountEntry->location_id                = $location_id;
+					//$accountEntry->location_id                = $location_id;
 					$accountEntry->city_id                 	  = $city_id;
 					$accountEntry->receipt_id                 = $receipt->id;
 					$accountEntry->receipt_row_id             = $receipt_row->id;
@@ -163,7 +171,7 @@ class ReceiptsController extends AppController
 		}
 	
 		$partyLedgers = $this->Receipts->ReceiptRows->Ledgers->find()
-		->where(['Ledgers.accounting_group_id IN' =>$partyGroups]);
+		->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.city_id'=>$city_id]);
 		
 		//$ledgers = $this->Payments->PaymentRows->Ledgers->find()->where(['company_id'=>$company_id]);
 		foreach($partyLedgers as $ledger){

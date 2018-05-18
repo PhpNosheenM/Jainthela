@@ -78,7 +78,6 @@ class AccountingEntry extends Entity
         'debit' => true,
         'credit' => true,
         'transaction_date' => true,
-        'location_id' => true,
         'city_id' => true,
         'purchase_voucher_id' => true,
         'purchase_voucher_row_id' => true,

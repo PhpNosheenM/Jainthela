@@ -48,8 +48,9 @@
                         <?= $this->Form->select('vendor_ledger_id',$partyOptions,['class'=>'form-control select vendor_ledger_id', 'label'=>false,'data-live-search'=>true,'required'=>true]) ?>
                     </div>
                 </div>
-            <br/>
+            
             </div>
+            <br/>
             <div class="row">
                 <div class="table-responsive">
                     <table id="main_table" class="table table-condensed table-bordered" style="margin-bottom: 4px;" width="100%">
@@ -68,14 +69,14 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="2" >   
+                                <td colspan="3" >   
                                     <button type="button" class="add_row btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
                                 </td>
                                 <td>
-                                    <?php echo $this->Form->input('total_purchase', ['label' => false,'class' => 'form-control input-sm rightAligntextClass','placeholder'=>'0.00','readonly']); ?>
+                                    <?php echo $this->Form->input('total_purchase_rate', ['label' => false,'class' => 'form-control input-sm rightAligntextClass','placeholder'=>'0.00','readonly']); ?>
                                 </td>
                                 <td>
-                                    <?php echo $this->Form->input('total_sale', ['label' => false,'class' => 'form-control input-sm rightAligntextClass','placeholder'=>'0.00','readonly']); ?>
+                                    <?php echo $this->Form->input('total_sales_rate', ['label' => false,'class' => 'form-control input-sm rightAligntextClass','placeholder'=>'0.00','readonly']); ?>
                                 </td>
                                 <td></td>
                             </tr>
@@ -102,7 +103,7 @@
                 <?php echo $this->Form->input('unit_variation_id', ['empty'=>'---Select---','options'=>$unitVariationOptions,'label' => false,'class' => 'form-control input-medium ','required'=>'required']); ?>
             </td>
             <td width="" >
-                <?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass','placeholder'=>'Qty','required']); ?>
+                <?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass total','placeholder'=>'Qty','required']); ?>
             </td>
             <td width="">
                 <?php echo $this->Form->input('purchase_rate', ['label' => false,'class' => 'form-control input-sm total numberOnly rightAligntextClass','required'=>'required','placeholder'=>'Purchase Rate','required']); ?> 
@@ -112,6 +113,7 @@
             </td>
             <td align="center">
                 <a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+                 <?php echo $this->Form->input('net_amount', ['label' => false,'class' => 'form-control input-sm total numberOnly rightAligntextClass','required'=>'required','placeholder'=>'','required','style'=>'display:none']); ?> 
             </td>
         </tr>
     </tbody>
@@ -135,15 +137,23 @@
             
             $('#main_table tbody#main_tbody tr.main_tr').each(function()
             { 
+                var quantity=parseFloat($(this).find('td:nth-child(3) input').val());
+                if(!quantity){ quantity=0; }
+
                 var purchase_rate=parseFloat($(this).find('td:nth-child(4) input').val());
                 if(!purchase_rate){ purchase_rate=0; }
-                total_purchase=total_purchase+purchase_rate;
+                var net_mount = quantity*purchase_rate;
+               $(this).find('td:nth-child(6) input').val(round(net_mount,2));
+
+                total_purchase=total_purchase+round(net_mount,2);
+
                 var sale_rate=parseFloat($(this).find('td:nth-child(5) input').val());
                 if(!sale_rate){ sale_rate=0; }
-                total_sale=total_sale+sale_rate;
+                var net_mount_sales = quantity*sale_rate;
+                total_sale=total_sale+round(net_mount_sales,2);
             });
-            $('input[name=total_purchase]').val(round(total_purchase,2));
-            $('input[name=total_sale]').val(round(total_sale,2));
+            $('input[name=total_purchase_rate]').val(round(total_purchase,2));
+            $('input[name=total_sales_rate]').val(round(total_sale,2));
         }
          
         $(document).on('keyup','.total',function(){ 
@@ -152,7 +162,7 @@
         
         add_row();
 
-        $(document).on('click','.add_row',function(){ alert();
+        $(document).on('click','.add_row',function(){ 
             add_row();
         });
 
@@ -174,7 +184,7 @@
                 $(this).find('td:nth-child(3) input').attr({name:'grn_rows['+i+'][quantity]', id:'grn_rows-'+i+'-quantity'});
                 $(this).find('td:nth-child(4) input').attr({name:'grn_rows['+i+'][purchase_rate]', id:'grn_rows-'+i+'-purchase_rate'});
                 $(this).find('td:nth-child(5) input').attr({name:'grn_rows['+i+'][sales_rate]', id:'grn_rows-'+i+'-sale_rate'});
-
+                 $(this).find('td:nth-child(6) input').attr({name:'grn_rows['+i+'][net_amount]', id:'grn_rows-'+i+'-net_amount'});
                 i++;
             });
             calculate();

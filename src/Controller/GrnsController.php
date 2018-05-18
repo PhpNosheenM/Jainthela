@@ -27,10 +27,26 @@ class GrnsController extends AppController
      */
     public function index()
     {
+        $this->viewBuilder()->layout('super_admin_layout');
+        $company_id=$this->Auth->User('company_id');
+        $user_id=$this->Auth->User('id');
+        $city_id=$this->Auth->User('city_id');
+        $search=$this->request->query('search');
         $this->paginate = [
-            'contain' => ['Locations', 'Orders']
+            'limit' => 10
         ];
-        $grns = $this->paginate($this->Grns);
+        $grns = $this->Grns->find()
+                            ->where(['Grns.super_admin_id'=>$user_id,'Grns.city_id'=>$city_id])
+                            ->where([ 'OR'=>['Grns.voucher_no' => $search,
+                                // ...
+                                'VendorLedgers.name LIKE' => '%'.$search.'%',
+                                //.....
+                                'Grns.reference_no LIKE' => '%'.$search.'%',
+                                //...
+                                'Grns.transaction_date ' => date('Y-m-d',strtotime($search))]])
+                            ->contain(['VendorLedgers']);
+      
+        $grns = $this->paginate($grns);
 
         $this->set(compact('grns'));
     }
@@ -88,8 +104,9 @@ class GrnsController extends AppController
                 $grn->grn_no = 1;
             } 
             $grn->city_id =$city_id;
+            $grn->created_for ='Jainthela';
             $grn->super_admin_id =$user_id;
-        
+
             if ($this->Grns->save($grn)) 
             {
                 //Create Item_Ledger//
@@ -112,10 +129,11 @@ class GrnsController extends AppController
                     $item = $this->Grns->GrnRows->Items->find()->where(['Items.id'=>$grn_row->item_id])->first();
                     
                 }
-                $this->Flash->success(__('The grn has been saved.'));
+                $this->Flash->success(__('The challan has been saved.'));
                 return $this->redirect(['action' => 'add']);
             }
-            $this->Flash->error(__('The grn could not be saved. Please, try again.'));
+
+            $this->Flash->error(__('The challan could not be saved. Please, try again.'));
         }
         $items = $this->Grns->GrnRows->Items->find();
         

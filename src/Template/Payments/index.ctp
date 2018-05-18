@@ -1,59 +1,89 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\Payment[]|\Cake\Collection\CollectionInterface $payments
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('New Payment'), ['action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Locations'), ['controller' => 'Locations', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Location'), ['controller' => 'Locations', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Accounting Entries'), ['controller' => 'AccountingEntries', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Accounting Entry'), ['controller' => 'AccountingEntries', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Payment Rows'), ['controller' => 'PaymentRows', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Payment Row'), ['controller' => 'PaymentRows', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="payments index large-9 medium-8 columns content">
-    <h3><?= __('Payments') ?></h3>
-    <table cellpadding="0" cellspacing="0">
-        <thead>
-            <tr>
-                <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('location_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('status') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($payments as $payment): ?>
-            <tr>
-                <td><?= $this->Number->format($payment->id) ?></td>
-                <td><?= $this->Number->format($payment->voucher_no) ?></td>
-                <td><?= $payment->has('location') ? $this->Html->link($payment->location->name, ['controller' => 'Locations', 'action' => 'view', $payment->location->id]) : '' ?></td>
-                <td><?= h($payment->transaction_date) ?></td>
-                <td><?= h($payment->status) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['action' => 'view', $payment->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $payment->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $payment->id], ['confirm' => __('Are you sure you want to delete # {0}?', $payment->id)]) ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
-    </div>
+<style>
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    border-color: transparent;
+    padding: 8px 8px !important; 
+    background: #F0F4F9;
+    color: #656C78;
+    font-size: 13px;
+}
+</style>
+<?php $this->set('title', 'Payment Voucher'); ?>
+<div class="page-content-wrap">
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title"><strong>Payment Voucher</strong></h3>
+					<div class="pull-right">
+						<div class="pull-left">
+								<?= $this->Form->create('Search',['type'=>'GET']) ?>
+								<?= $this->Html->link(__('<span class="fa fa-plus"></span> Add New'), ['action' => 'add'],['style'=>'margin-top:-30px !important;','class'=>'btn btn-success','escape'=>false]) ?>
+								<div class="form-group" style="display:inline-table">
+									<div class="input-group">
+										<div class="input-group-addon">
+											<span class="fa fa-search"></span>
+										</div>
+										<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
+										<div class="input-group-btn">
+											<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
+										</div>
+									</div>
+								</div>
+							<?= $this->Form->end() ?>
+						</div>
+					</div>
+				</div>
+				<div class="panel-body">
+					<div class="table-responsive">
+						<table class="table table-bordered">
+							<thead>
+								<tr>
+									<th><?= ('SNo.') ?></th>
+									<th><?= ('Voucher No.') ?></th>
+									<th><?= ('City') ?></th>
+									<th><?= ('Narration') ?></th>
+									<th><?= ('Amount') ?></th>
+									<th><?= ('Created On') ?></th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); ?>
+								
+								  <?php foreach ($paymentVouchers as $paymentVoucher):
+								  
+											$transaction_date=date('d-M-Y', strtotime($paymentVoucher->transaction_date));
+											foreach($paymentVoucher->payment_rows as $data){
+												$amount=$data->credit;
+											}
+								  ?>
+								<tr>
+									<td><?= $this->Number->format(++$i) ?></td>
+									<td><?= h($paymentVoucher->voucher_no) ?></td>
+									<td><?= h($paymentVoucher->city->name) ?></td>
+									<td><?= h(@$paymentVoucher->narration) ?></td>
+									<td><?= h(@$amount) ?></td>
+									<td><?= h($paymentVoucher->created_on) ?></td>
+								</tr>
+								<?php endforeach; ?>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="panel-footer">
+					<div class="paginator pull-right">
+						<ul class="pagination">
+							<?= $this->Paginator->first(__('First')) ?>
+							<?= $this->Paginator->prev(__('Previous')) ?>
+							<?= $this->Paginator->numbers() ?>
+							<?= $this->Paginator->next(__('Next')) ?>
+							<?= $this->Paginator->last(__('Last')) ?>
+						</ul>
+						<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
 </div>

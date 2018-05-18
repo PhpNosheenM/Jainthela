@@ -78,6 +78,9 @@ class AccountingEntriesTable extends Table
 		 $this->belongsTo('Payments', [
             'foreignKey' => 'payment_id'
         ]);
+		$this->belongsTo('Orders', [
+            'foreignKey' => 'order_id'
+        ]);
 /*         $this->belongsTo('PurchaseVouchers', [
             'foreignKey' => 'purchase_voucher_id'
         ]);

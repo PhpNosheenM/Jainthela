@@ -283,7 +283,7 @@ class AccountingEntriesController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 		$ledger_id = $this->request->query('ledger_id');
 		$from_date = $this->request->query('from_date');
 		$to_date   = $this->request->query('to_date');
@@ -344,11 +344,11 @@ class AccountingEntriesController extends AppController
 				}
 			$opening_balance=round($opening_balance,2);
 			
-			 $AccountingLedgers=$this->AccountingEntries->find()->select(['total_credit_sum'=>'SUM(AccountingEntries.credit)','total_debit_sum'=>'SUM(AccountingEntries.debit)'])->contain(['Ledgers','PurchaseInvoices','Payments'])->where($where)->group(['AccountingEntries.payment_id','AccountingEntries.purchase_invoice_id','AccountingEntries.payment_id'])->autoFields(true); 
+			 $AccountingLedgers=$this->AccountingEntries->find()->select(['total_credit_sum'=>'SUM(AccountingEntries.credit)','total_debit_sum'=>'SUM(AccountingEntries.debit)'])->contain(['Ledgers','PurchaseInvoices','Payments','Orders'])->where($where)->group(['AccountingEntries.payment_id','AccountingEntries.purchase_invoice_id','AccountingEntries.payment_id','AccountingEntries.order_id'])->autoFields(true); 
 			}
 			
 			
-		//	pr($AccountingLedgers->toArray()); exit;	
+			//pr($AccountingLedgers->toArray()); exit;	
 			$Ledgers=$this->AccountingEntries->Ledgers->find('List');
 			
 			$this->set(compact('from_date','to_date', 'groupForPrint', 'closingValue', 'openingValue','Ledgers','AccountingLedgers','ledger_id'));

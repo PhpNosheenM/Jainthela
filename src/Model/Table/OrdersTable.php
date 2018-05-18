@@ -46,7 +46,7 @@ class OrdersTable extends Table
         $this->setPrimaryKey('id');
 
         $this->belongsTo('Carts');
-
+        $this->belongsTo('Items');
         $this->belongsTo('GstFigures');
         $this->belongsTo('AccountingEntries');
         $this->belongsTo('AccountingGroups');
@@ -105,6 +105,16 @@ class OrdersTable extends Table
         $this->hasMany('Wallets', [
             'foreignKey' => 'order_id'
         ]);
+		 $this->belongsTo('SellerLedgers', [
+            'className' => 'Ledgers',
+            'foreignKey' => 'sales_ledger_id',
+            'joinType' => 'LEFT'
+        ]);
+		$this->belongsTo('PartyLedgers', [
+            'className' => 'Ledgers',
+            'foreignKey' => 'party_ledger_id',
+            'joinType' => 'LEFT'
+        ]);
     }
 
     /**
@@ -127,7 +137,7 @@ class OrdersTable extends Table
 
 
 
-        $validator
+        /* $validator
             ->decimal('amount_from_wallet')
             ->requirePresence('amount_from_wallet', 'create')
             ->notEmpty('amount_from_wallet');
@@ -183,7 +193,7 @@ class OrdersTable extends Table
             ->scalar('order_from')
             ->maxLength('order_from', 30)
             ->requirePresence('order_from', 'create')
-            ->notEmpty('order_from');
+            ->notEmpty('order_from'); */
 
         return $validator;
     }
