@@ -39,7 +39,7 @@
 	?>
 		<tr>
 		<td style="width:10%">
-		<input name="<?php echo $item_variation_master->id;?>[item_id]" type="checkbox"  value="<?php echo $item->id; ?>" class="entity_variation entity_variation<?php echo $item_variation_master->unit_variation->id;  echo ' '; echo $v_class; ?>"  style="display:none;" <?php echo $chk; ?>>
+		<input name="<?php echo $item_variation_master->id;?>[item_id]" type="checkbox"  value="<?php echo $item->id; ?>" class="entity_variation entity_variation<?php echo $item_variation_master->unit_variation->id;  ?>"  style="display:none;" <?php echo $chk; ?>>
 
 		<input name="<?php echo $item_variation_master->id;?>[item_variation_master_id]" type="textbox"  value="<?php echo $item_variation_master->id;?>" class="entity_maximum entity_maximum<?php echo $item_variation_master->unit_variation->id;?>" <?php echo $disabled; ?> style="display:none;" >
 		<?php 
@@ -48,7 +48,7 @@
 			$class='single_item variation'.$item['id'];
 		}else{$class='';} ?>
 		
-		<label style="margin-left:30px;"><input name="<?php echo $item_variation_master->id;?>[unit_variation_id]" type="checkbox"   value="<?php echo $item_variation_master->unit_variation->id;?>" class="<?php echo $class; ?>" <?php echo $disabled; echo $chk;?> style="<?php echo $style;?>">&nbsp;&nbsp;<?php echo $item_variation_master->unit_variation->quantity_variation;?><?php echo $item_variation_master->unit_variation->unit->longname;?></label>
+		<label style="margin-left:30px;"><input name="<?php echo $item_variation_master->id;?>[unit_variation_id]" type="checkbox"   value="<?php echo $item_variation_master->unit_variation->id;?>" class="<?php echo $class;  echo ' '; echo $v_class; ?>" <?php echo $disabled; echo $chk; ?> style="<?php echo $style;?>">&nbsp;&nbsp;<?php echo $item_variation_master->unit_variation->quantity_variation;?><?php echo $item_variation_master->unit_variation->unit->longname;?></label>
 		</td><td style="width:20%">
 		<?php 
 		echo $this->Form->control($item_variation_master->id.'[maximum_quantity_purchase]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Maximum Quantity Purchase','class'=>'form-control entity_maximum entity_maximum'.$item_variation_master->unit_variation->id,'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->item_variations[0]->maximum_quantity_purchase,'required']);

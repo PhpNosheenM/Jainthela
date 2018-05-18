@@ -80,7 +80,7 @@ class SellerItemsController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
-		$location_id=$this->Auth->User('location_id');
+		//$location_id=$this->Auth->User('location_id');
 		$this->viewBuilder()->layout('super_admin_layout');
         $sellerItem = $this->SellerItems->newEntity();
         if ($this->request->is('post')) {
@@ -128,12 +128,13 @@ class SellerItemsController extends AppController
 				else
 				{ 
 					$query = $this->SellerItems->query();
-					$query->insert(['seller_id','category_id', 'item_id','commission_percentage']);
+					$query->insert(['seller_id','category_id', 'item_id','commission_percentage','city_id']);
 					$query->values([
 						'seller_id' => $seller_id,
 						'category_id' => $category_ids[$i],
 						'item_id' => $item_ids[$i],
-						'commission_percentage' => $commissions[$i]
+						'commission_percentage' => $commissions[$i],
+						'city_id' => $city_id
 					]);
 					$query->execute();
 					
