@@ -44,9 +44,6 @@
 									<th><?= ('Locality') ?></th>
 									<th><?= ('Grand Total') ?></th>
 									<th><?= ('Order Type') ?></th>
-									<th><?= ('Order Date') ?></th>
-									<th><?= ('Delivery Date	') ?></th>
-									<th><?= ('Delivery Time	') ?></th>
 									<th><?= ('Status') ?></th>
 									
 									<th scope="col" class="actions"><?= __('Actions') ?></th>
@@ -63,9 +60,6 @@
 									<td><?= h($order->location->name) ?></td>
 									<td><?= h($order->grand_total) ?></td>
 									<td><?= h($order->order_type) ?></td>
-									<td><?= h($order->order_date) ?></td>
-									<td><?= h($order->delivery_date) ?></td>
-									<td><?= h($order->delivery_date) ?></td>
 									<td><?= h($order->order_status) ?></td>
 									
 									

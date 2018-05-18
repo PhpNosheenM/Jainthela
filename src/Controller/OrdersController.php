@@ -338,6 +338,9 @@ class OrdersController extends AppController
 							
 						   }
 						}
+						
+						
+						
 						$this->orderDeliver($order->id);
 					}
 					
