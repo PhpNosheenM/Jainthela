@@ -7,23 +7,22 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * Receipts Model
+ * JournalVouchers Model
  *
  * @property \App\Model\Table\LocationsTable|\Cake\ORM\Association\BelongsTo $Locations
- * @property \App\Model\Table\SalesInvoicesTable|\Cake\ORM\Association\BelongsTo $SalesInvoices
+ * @property \App\Model\Table\CitiesTable|\Cake\ORM\Association\BelongsTo $Cities
  * @property \App\Model\Table\AccountingEntriesTable|\Cake\ORM\Association\HasMany $AccountingEntries
- * @property \App\Model\Table\ReceiptRowsTable|\Cake\ORM\Association\HasMany $ReceiptRows
- * @property \App\Model\Table\ReferenceDetailsTable|\Cake\ORM\Association\HasMany $ReferenceDetails
+ * @property \App\Model\Table\JournalVoucherRowsTable|\Cake\ORM\Association\HasMany $JournalVoucherRows
  *
- * @method \App\Model\Entity\Receipt get($primaryKey, $options = [])
- * @method \App\Model\Entity\Receipt newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\Receipt[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\Receipt|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\Receipt patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\Receipt[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\Receipt findOrCreate($search, callable $callback = null, $options = [])
+ * @method \App\Model\Entity\JournalVoucher get($primaryKey, $options = [])
+ * @method \App\Model\Entity\JournalVoucher newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\JournalVoucher[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\JournalVoucher|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\JournalVoucher patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\JournalVoucher[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\JournalVoucher findOrCreate($search, callable $callback = null, $options = [])
  */
-class ReceiptsTable extends Table
+class JournalVouchersTable extends Table
 {
 
     /**
@@ -36,7 +35,7 @@ class ReceiptsTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('receipts');
+        $this->setTable('journal_vouchers');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
@@ -44,27 +43,15 @@ class ReceiptsTable extends Table
             'foreignKey' => 'location_id',
             'joinType' => 'INNER'
         ]);
-		
         $this->belongsTo('Cities', [
             'foreignKey' => 'city_id',
             'joinType' => 'INNER'
         ]);
-		
-        $this->belongsTo('SalesInvoices', [
-            'foreignKey' => 'sales_invoice_id',
-            'joinType' => 'INNER'
-        ]);
         $this->hasMany('AccountingEntries', [
-            'foreignKey' => 'receipt_id',
-			'saveStrategy'=>'replace'
+            'foreignKey' => 'journal_voucher_id'
         ]);
-        $this->hasMany('ReceiptRows', [
-            'foreignKey' => 'receipt_id',
-			'saveStrategy'=>'replace'
-        ]);
-        $this->hasMany('ReferenceDetails', [
-            'foreignKey' => 'receipt_id',
-			'saveStrategy'=>'replace'
+        $this->hasMany('JournalVoucherRows', [
+            'foreignKey' => 'journal_voucher_id'
         ]);
     }
 
@@ -84,7 +71,12 @@ class ReceiptsTable extends Table
             ->integer('voucher_no')
             ->requirePresence('voucher_no', 'create')
             ->notEmpty('voucher_no');
-		/*
+
+        $validator
+            ->integer('reference_no')
+            ->requirePresence('reference_no', 'create')
+            ->notEmpty('reference_no');
+
         $validator
             ->date('transaction_date')
             ->requirePresence('transaction_date', 'create')
@@ -96,16 +88,30 @@ class ReceiptsTable extends Table
             ->notEmpty('narration');
 
         $validator
-            ->decimal('voucher_amount')
-            ->requirePresence('voucher_amount', 'create')
-            ->notEmpty('voucher_amount');
+            ->decimal('total_credit_amount')
+            ->requirePresence('total_credit_amount', 'create')
+            ->notEmpty('total_credit_amount');
 
         $validator
-            ->decimal('amount')
-            ->requirePresence('amount', 'create')
-            ->notEmpty('amount');
-		*/
-       
+            ->decimal('total_debit_amount')
+            ->requirePresence('total_debit_amount', 'create')
+            ->notEmpty('total_debit_amount');
+
+        $validator
+            ->scalar('status')
+            ->maxLength('status', 10)
+            ->requirePresence('status', 'create')
+            ->notEmpty('status');
+
+        $validator
+            ->integer('created_by')
+            ->requirePresence('created_by', 'create')
+            ->notEmpty('created_by');
+
+        $validator
+            ->dateTime('created_on')
+            ->requirePresence('created_on', 'create')
+            ->notEmpty('created_on');
 
         return $validator;
     }
@@ -120,7 +126,7 @@ class ReceiptsTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['location_id'], 'Locations'));
-        //$rules->add($rules->existsIn(['sales_invoice_id'], 'SalesInvoices'));
+        $rules->add($rules->existsIn(['city_id'], 'Cities'));
 
         return $rules;
     }

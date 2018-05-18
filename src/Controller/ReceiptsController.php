@@ -27,12 +27,32 @@ class ReceiptsController extends AppController
      */
     public function index()
     {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$this->viewBuilder()->layout('super_admin_layout');
         $this->paginate = [
-            'contain' => ['Locations', 'SalesInvoices']
+            'contain' => ['CIties'],
+			'limit' => 20
         ];
-        $receipts = $this->paginate($this->Receipts);
-
-        $this->set(compact('receipts'));
+		
+		$receipts = $this->Receipts->find()->where(['Receipts.city_id'=>$city_id])->contain(['ReceiptRows','Cities']);
+	 
+		if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$receipts->where([
+							'OR' => [
+									'Receipts.voucher_no LIKE' => $search.'%',
+									'Cities.name LIKE' => $search.'%',
+									'Receipts.narration LIKE' => $search.'%',
+									'Receipts.created_on LIKE' => $search.'%'
+									
+							]
+			]);
+		}
+		
+		$receipts=$this->paginate($receipts);
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('receipts','paginate_limit'));
     }
 
     /**
@@ -61,10 +81,10 @@ class ReceiptsController extends AppController
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
 		$user_id=$this->Auth->User('id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $receipt = $this->Receipts->newEntity();
         if ($this->request->is('post')) {
-			$Voucher_no = $this->Receipts->find()->select(['voucher_no'])->where(['location_id'=>$location_id])->order(['voucher_no' => 'DESC'])->first();
+			$Voucher_no = $this->Receipts->find()->select(['voucher_no'])->where(['city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
 			if($Voucher_no)
 			{
 				$voucher_no=$Voucher_no->voucher_no+1;
@@ -73,24 +93,43 @@ class ReceiptsController extends AppController
 			{
 				$voucher_no=1;
 			}
-            $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(),['associated' => ['ReceiptRows','ReceiptRows.ReferenceDetails']]);
+            $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData());
 			$tdate=$this->request->data('transaction_date');
 			$receipt->transaction_date=date('Y-m-d',strtotime($tdate));
 			$receipt->city_id = $city_id;
 			$receipt->created_by = $user_id;
 			$receipt->voucher_no = $voucher_no;
-		   //transaction date for receipt code start here--
+		    //transaction date for receipt code start here--
+			
+            if ($data=$this->Receipts->save($receipt)) {
+			
 			foreach($receipt->receipt_rows as $receipt_row)
 			{
 				if(!empty($receipt_row->reference_details))
 				{
-					foreach($receipt_row->reference_details as $reference_detail)
+					foreach($receipt_row->reference_details as $reference_detail1)
 					{
-						$reference_detail->transaction_date = $receipt->transaction_date;
+						//pr($reference_detail1['ledger_id']); exit;
+						$reference_detail = $this->Receipts->ReferenceDetails->newEntity();
+						$reference_detail->transaction_date = date('Y-m-d',strtotime($tdate));
+						$reference_detail->receipt_id =  $data->id;
+						$reference_detail->receipt_row_id =  $receipt_row->id;
+						$reference_detail->ref_name =  $reference_detail1['ref_name'];
+						$reference_detail->type =  $reference_detail1['type'];
+						$reference_detail->ledger_id =  $reference_detail1['ledger_id'];
+						$reference_detail->city_id =  $city_id;
+						$test_cr_dr=$receipt_row->cr_dr;
+						if($test_cr_dr=='Cr'){
+							$reference_detail->credit =  $reference_detail1['credit'];
+						}
+						if($test_cr_dr=='Dr'){
+							$reference_detail->debit =  $reference_detail1['debit'];
+						}
+						
+						$this->Receipts->ReferenceDetails->save($reference_detail);
 					}
 				}
 			}
-            if ($this->Receipts->save($receipt)) {
 			
 			foreach($receipt->receipt_rows as $receipt_row)
 				{
@@ -98,7 +137,7 @@ class ReceiptsController extends AppController
 					$accountEntry->ledger_id                  = $receipt_row->ledger_id;
 					$accountEntry->debit                      = @$receipt_row->debit;
 					$accountEntry->credit                     = @$receipt_row->credit;
-					$accountEntry->transaction_date           = $receipt->transaction_date;
+					$accountEntry->transaction_date           = date('Y-m-d',strtotime($tdate));
 					//$accountEntry->location_id                = $location_id;
 					$accountEntry->city_id                 	  = $city_id;
 					$accountEntry->receipt_id                 = $receipt->id;
@@ -110,10 +149,10 @@ class ReceiptsController extends AppController
 
                 return $this->redirect(['action' => 'index']);
             }
-			pr($receipt); exit;
+			 
             $this->Flash->error(__('The receipt could not be saved. Please, try again.'));
         }
-		$Voucher_no = $this->Receipts->find()->select(['voucher_no'])->where(['location_id'=>$location_id])->order(['voucher_no' => 'DESC'])->first();
+		$Voucher_no = $this->Receipts->find()->select(['voucher_no'])->where(['city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
 		if($Voucher_no)
 		{
 			$voucher_no=$Voucher_no->voucher_no+1;

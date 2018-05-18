@@ -1,69 +1,89 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\Receipt[]|\Cake\Collection\CollectionInterface $receipts
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('New Receipt'), ['action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Locations'), ['controller' => 'Locations', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Location'), ['controller' => 'Locations', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Sales Invoices'), ['controller' => 'SalesInvoices', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Sales Invoice'), ['controller' => 'SalesInvoices', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Accounting Entries'), ['controller' => 'AccountingEntries', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Accounting Entry'), ['controller' => 'AccountingEntries', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Receipt Rows'), ['controller' => 'ReceiptRows', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Receipt Row'), ['controller' => 'ReceiptRows', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Reference Details'), ['controller' => 'ReferenceDetails', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Reference Detail'), ['controller' => 'ReferenceDetails', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="receipts index large-9 medium-8 columns content">
-    <h3><?= __('Receipts') ?></h3>
-    <table cellpadding="0" cellspacing="0">
-        <thead>
-            <tr>
-                <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('location_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('voucher_amount') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('amount') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('sales_invoice_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('status') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($receipts as $receipt): ?>
-            <tr>
-                <td><?= $this->Number->format($receipt->id) ?></td>
-                <td><?= $this->Number->format($receipt->voucher_no) ?></td>
-                <td><?= $receipt->has('location') ? $this->Html->link($receipt->location->name, ['controller' => 'Locations', 'action' => 'view', $receipt->location->id]) : '' ?></td>
-                <td><?= h($receipt->transaction_date) ?></td>
-                <td><?= $this->Number->format($receipt->voucher_amount) ?></td>
-                <td><?= $this->Number->format($receipt->amount) ?></td>
-                <td><?= $receipt->has('sales_invoice') ? $this->Html->link($receipt->sales_invoice->id, ['controller' => 'SalesInvoices', 'action' => 'view', $receipt->sales_invoice->id]) : '' ?></td>
-                <td><?= h($receipt->status) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['action' => 'view', $receipt->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $receipt->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $receipt->id], ['confirm' => __('Are you sure you want to delete # {0}?', $receipt->id)]) ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
-    </div>
+<style>
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    border-color: transparent;
+    padding: 8px 8px !important; 
+    background: #F0F4F9;
+    color: #656C78;
+    font-size: 13px;
+}
+</style>
+<?php $this->set('title', 'Receipt Voucher'); ?>
+<div class="page-content-wrap">
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title"><strong>Receipt Voucher</strong></h3>
+					<div class="pull-right">
+						<div class="pull-left">
+								<?= $this->Form->create('Search',['type'=>'GET']) ?>
+								<?= $this->Html->link(__('<span class="fa fa-plus"></span> Add New'), ['action' => 'add'],['style'=>'margin-top:-30px !important;','class'=>'btn btn-success','escape'=>false]) ?>
+								<div class="form-group" style="display:inline-table">
+									<div class="input-group">
+										<div class="input-group-addon">
+											<span class="fa fa-search"></span>
+										</div>
+										<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
+										<div class="input-group-btn">
+											<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
+										</div>
+									</div>
+								</div>
+							<?= $this->Form->end() ?>
+						</div> 
+					</div> 	
+				</div>
+				<div class="panel-body">    
+					<div class="table-responsive">
+						<table class="table table-bordered">
+							<thead>
+								<tr>
+									<th><?= ('SNo.') ?></th>
+									<th><?= ('Voucher No.') ?></th>
+									<th><?= ('City') ?></th>
+									<th><?= ('Narration') ?></th>
+									<th><?= ('Amount') ?></th>
+									<th><?= ('Created On') ?></th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); ?>
+								
+								  <?php foreach ($receipts as $receipt): 
+								  
+											$transaction_date=date('d-M-Y', strtotime($receipt->transaction_date));
+											foreach($receipt->receipt_rows as $data){
+												$amount=$data->debit;
+											}
+								  ?>
+								<tr>
+									<td><?= $this->Number->format(++$i) ?></td>
+									<td><?= h($receipt->voucher_no) ?></td>
+									<td><?= h($receipt->city->name) ?></td>
+									<td><?= h(@$receipt->narration) ?></td>
+									<td><?= h(@$amount) ?></td>
+									<td><?= h($receipt->created_on) ?></td>
+								</tr>
+								<?php endforeach; ?>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="panel-footer">
+					<div class="paginator pull-right">
+						<ul class="pagination">
+							<?= $this->Paginator->first(__('First')) ?>
+							<?= $this->Paginator->prev(__('Previous')) ?>
+							<?= $this->Paginator->numbers() ?>
+							<?= $this->Paginator->next(__('Next')) ?>
+							<?= $this->Paginator->last(__('Last')) ?>
+						</ul>
+						<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
 </div>

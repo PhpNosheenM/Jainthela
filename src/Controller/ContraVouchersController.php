@@ -127,7 +127,7 @@ class ContraVouchersController extends AppController
 					$accountEntry->ledger_id                  = $payment_row->ledger_id;
 					$accountEntry->debit                      = @$payment_row->debit;
 					$accountEntry->credit                     = @$payment_row->credit;
-					$accountEntry->transaction_date           = $contraVoucher->transaction_date;
+					$accountEntry->transaction_date           = date('Y-m-d', strtotime($contraVoucher->transaction_date));
 					$accountEntry->city_id                    = $city_id;
 					$accountEntry->contra_voucher_id                 = $contraVoucher->id;
 					$accountEntry->contra_voucher_row_id             = $payment_row->id;
