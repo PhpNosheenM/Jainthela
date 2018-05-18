@@ -154,7 +154,7 @@ class JournalVouchersController extends AppController
 		
         $locations = $this->JournalVouchers->Locations->find('list', ['limit' => 200]);
         $cities = $this->JournalVouchers->Cities->find('list', ['limit' => 200]);
-        $this->set(compact('journalVoucher', 'locations', 'cities'));
+        $this->set(compact('journalVoucher', 'voucher_no', 'ledgerOptions', 'locations', 'city_id'));
     }
 
     /**
