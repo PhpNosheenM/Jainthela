@@ -160,7 +160,7 @@ class JournalVouchersController extends AppController
 
 				return $this->redirect(['action' => 'index']);
 			}
-			
+			pr($journalVoucher); exit;
 			
 			$this->Flash->error(__('The journalVoucher could not be saved. Please, try again.'));
 		}
