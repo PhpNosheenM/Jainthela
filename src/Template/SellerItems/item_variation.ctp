@@ -72,33 +72,37 @@ $js='
 		$(document).on("change",".check_all_item",function(){
 			if($(this).is(":checked"))
 			{ 
-				if($(this).closest(".item_variation").find("input.no_edit[type=checkbox]").is(":checked"))
-				{ 
-					
-				}
-				else
-				{
-					$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("checked",true);
-					$(this).closest(".item_variation").find("input.entity_variation[type=checkbox]").prop("checked",true);
-					$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("disabled",false);  
-					$(this).closest(".item_variation").find("input.entity_maximum").prop("disabled",false);
-					$(this).closest(".item_variation").find("select.entity_maximum").prop("disabled",false);
-				}
-				
+				$(this).closest(".item_variation").find(".table >tbody >tr").each(function(){
+					if($(this).closest("tr").find("input.no_edit[type=checkbox]").is(":checked"))
+					{ 
+						
+					}
+					else
+					{
+						$(this).closest("tr").find("input.single_item[type=checkbox]").prop("checked",true);
+						$(this).closest("tr").find("input.entity_variation[type=checkbox]").prop("checked",true);
+						$(this).closest("tr").find("input.single_item[type=checkbox]").prop("disabled",false);  
+						$(this).closest("tr").find("input.entity_maximum").prop("disabled",false);
+						$(this).closest("tr").find("select.entity_maximum").prop("disabled",false);
+					}
+				});
 			}
 			else
 			{
-				if($(this).closest(".item_variation").find("input.no_edit[type=checkbox]:checked"))
-				{
-				}
-				else
-				{
-					$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("checked",false);
-					$(this).closest(".item_variation").find("input.entity_variation[type=checkbox]").prop("checked",false);
-					$(this).closest(".item_variation").find("input.single_item[type=checkbox]").prop("disabled",true);
-					$(this).closest(".item_variation").find("input.entity_maximum").prop("disabled",true);
-					$(this).closest(".item_variation").find("select.entity_maximum").prop("disabled",true);
-				}
+				$(this).closest(".item_variation").find(".table >tbody >tr").each(function(){
+					if($(this).closest("tr").find("input.no_edit[type=checkbox]").is(":checked"))
+					{ 
+						
+					}
+					else
+					{
+						$(this).closest("tr").find("input.single_item[type=checkbox]").prop("checked",false);
+						$(this).closest("tr").find("input.entity_variation[type=checkbox]").prop("checked",false);
+						$(this).closest("tr").find("input.single_item[type=checkbox]").prop("disabled",true);  
+						$(this).closest("tr").find("input.entity_maximum").prop("disabled",true);
+						$(this).closest("tr").find("select.entity_maximum").prop("disabled",true);
+					}
+				});
 			}
 		});
 		$(document).on("blur",".sales_rate",function(){

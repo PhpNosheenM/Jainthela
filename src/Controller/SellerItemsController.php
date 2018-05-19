@@ -85,6 +85,7 @@ class SellerItemsController extends AppController
         $sellerItem = $this->SellerItems->newEntity();
         if ($this->request->is('post')) {
 			$commissions=$this->request->getData('commissions');
+			$brand_id=$this->request->getData('brand_id');
 			$item_ids=$this->request->getData('item_ids'); 
 			$category_ids=$this->request->getData('category_ids'); 
 			$ids=$this->request->getData('ids'); 
@@ -120,7 +121,7 @@ class SellerItemsController extends AppController
 				{
 					$query1 = $this->SellerItems->query();
 					  $query1->update()
-					  ->set(['commission_percentage' =>$commissions[$i]])
+					  ->set(['commission_percentage' =>$commissions[$i], 'brand_id' => $brand_id[$i]])
 					  ->where(['seller_id'=>$seller_id,'item_id'=>$item_ids[$i]])
 					  ->execute();
 					  
@@ -128,13 +129,14 @@ class SellerItemsController extends AppController
 				else
 				{ 
 					$query = $this->SellerItems->query();
-					$query->insert(['seller_id','category_id', 'item_id','commission_percentage','city_id']);
+					$query->insert(['seller_id','category_id', 'item_id','commission_percentage','city_id','brand_id']);
 					$query->values([
 						'seller_id' => $seller_id,
 						'category_id' => $category_ids[$i],
 						'item_id' => $item_ids[$i],
 						'commission_percentage' => $commissions[$i],
-						'city_id' => $city_id
+						'city_id' => $city_id,
+						'brand_id' => $brand_id[$i]
 					]);
 					$query->execute();
 					
@@ -144,7 +146,7 @@ class SellerItemsController extends AppController
             if($i!=0)
 			{
 				$this->Flash->success(__('The seller item has been saved.'));
-				return $this->redirect(['action' => 'index']);
+				return $this->redirect(['action' => 'add']);
 			}
 			
         }
@@ -153,7 +155,7 @@ class SellerItemsController extends AppController
         $sellers = $this->SellerItems->Sellers->find('list');
         $this->set(compact('sellerItem', 'categories', 'sellers'));
     }
-	 public function itemVariation()
+	public function itemVariation()
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
@@ -164,8 +166,7 @@ class SellerItemsController extends AppController
 		{
 			$masterIds=[];$ItemIds=[];
 			$arr=$this->request->getData(); $i=1; 
-         	pr($arr);
-         	exit;
+         	
 			foreach($arr as $key => $csm)
 			{
 				

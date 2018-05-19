@@ -38,6 +38,7 @@ class SellerItem extends Entity
         'item_id' => true,
         'category_id' => true,
         'seller_id' => true,
+        'brand_id' => true,
         'created_on' => true,
         'created_by' => true,
         'commission_percentage' => true,
