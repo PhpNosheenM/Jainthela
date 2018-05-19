@@ -72,6 +72,7 @@ class SellerItemsController extends AppController
 		->where(['SellerItems.city_id' => $city_id])
 		->where($sellerWhere)
 		->where($sellerItems_category)
+    ->group(['SellerItems.id'])
 		->autoFields(true);
 	
         if(!empty($items->toArray()))
