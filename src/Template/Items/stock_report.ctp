@@ -38,6 +38,7 @@
 								
 							</div>
 						</div>
+						
 						<div class="col-md-2">
 							<div class="form-group">
 								<label>From</label>
@@ -64,6 +65,7 @@
 						<?= $this->Form->end() ?>
 					</div>
 				</div>  
+				<?php if(empty($location_id)){ ?>
 				<div class="panel-body">    
 					<div class="table-responsive">
 						<table class="table table-bordered">
@@ -99,6 +101,44 @@
 						</table>
 					</div>
 				</div>
+				<?php }else{  ?>
+				<div class="panel-body">    
+					<div class="table-responsive">
+						<table class="table table-bordered">
+							<thead>
+								<tr>
+									<th><?= ('SNo.') ?></th>
+									<th><?= ('Item Name') ?></th>
+									<th><?= ('Closing Stock') ?></th>
+									<th><?= ('Unit rate') ?></th>
+									<th><?= ('Amount') ?></th>
+								</tr>
+							</thead>
+							<tbody>                                            
+								<?php $i = 0; $total_amt=0; ?>
+								
+								   <?php foreach($showItems as $showItem){ pr($showItem);
+								   $item_var_size=(sizeof($showItem));
+									$amt=$showItem['stock']*$showItem['unit_rate'];
+									$total_amt+=$amt;
+								   ?>
+								<tr>
+									<td><?= $this->Number->format(++$i) ?></td>
+									<td><?= h($showItem['item_name']) ?></td>
+									<td><?= h($showItem['stock']) ?></td>
+									<td><?= h($showItem['unit_rate']) ?></td>
+									<td><?= h($amt) ?></td>
+								</tr>
+								   <?php } ?>
+								<tr>
+									<th colspan="4" style="text-align:right">Total</th>
+									<td><?= h($total_amt) ?></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<?php } ?>
 			</div>
 		</div>
 	</div>                    
