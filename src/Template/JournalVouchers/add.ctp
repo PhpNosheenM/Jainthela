@@ -275,6 +275,10 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 				
 				
 		});
+		$(document).on('click','.addRefRow',function(){
+				var SelectedTr=$(this).closest('tr.MainTr');
+				AddRefRow(SelectedTr);
+			});
 	
 			$(document).on('click','.AddMainRow',function(){
 			addMainRow();
@@ -445,11 +449,7 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 				$('#MainTable tfoot tr td:nth-child(3) input#totalMainCr').val(main_credit);
 				$('#MainTable tfoot tr td:nth-child(1) input#totalBankCash').val(count_bank_cash);
 			}
-			$(document).on('click','.addRefRow',function(){
-				var SelectedTr=$(this).closest('tr.MainTr');
-				
-				AddRefRow(SelectedTr);
-			});
+			
 			
 			function AddRefRow(SelectedTr){
 				var refTr=$('#sampleForRef tbody tr').clone();
@@ -574,7 +574,7 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 			});
 			function calculation(SelectedTr)
 			{
-				var total_debit=0;var total_credit=0; var remaining=0; var i=0;
+				var total_debit=0; var total_credit=0; var remaining=0; var i=0;
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
 				var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
 				//console.log(Dr_Cr);
