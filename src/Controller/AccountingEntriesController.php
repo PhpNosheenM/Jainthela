@@ -295,6 +295,18 @@ class AccountingEntriesController extends AppController
 			$from_date = date("Y-m-d",strtotime($from_date));
 			$to_date= date("Y-m-d",strtotime($to_date));
 		}
+		
+		if(!empty($from_date))
+		{
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$where['AccountingEntries.transaction_date >=']=$from_date;
+		}
+		if(!empty($to_date))
+		{
+			$to_date   = date("Y-m-d",strtotime($to_date));
+			$where['AccountingEntries.transaction_date <=']=$to_date;
+		}
+		
 		if(!empty($ledger_id))
 		{
 			$where['AccountingEntries.ledger_id']=$ledger_id;
@@ -343,7 +355,7 @@ class AccountingEntriesController extends AppController
 				@$opening_balance_type='';	
 				}
 			$opening_balance=round($opening_balance,2);
-			
+			//pr($opening_balance); exit;
 			 $AccountingLedgers=$this->AccountingEntries->find()->select(['total_credit_sum'=>'SUM(AccountingEntries.credit)','total_debit_sum'=>'SUM(AccountingEntries.debit)'])->contain(['Ledgers','PurchaseInvoices','Payments','Orders'])->where($where)->group(['AccountingEntries.payment_id','AccountingEntries.purchase_invoice_id','AccountingEntries.payment_id','AccountingEntries.order_id'])->autoFields(true); 
 			}
 			
@@ -351,6 +363,6 @@ class AccountingEntriesController extends AppController
 			//pr($AccountingLedgers->toArray()); exit;	
 			$Ledgers=$this->AccountingEntries->Ledgers->find('List');
 			
-			$this->set(compact('from_date','to_date', 'groupForPrint', 'closingValue', 'openingValue','Ledgers','AccountingLedgers','ledger_id'));
+			$this->set(compact('from_date','to_date', 'groupForPrint', 'closingValue', 'openingValue','Ledgers','AccountingLedgers','ledger_id','opening_balance','opening_balance_type'));
 	}
 }

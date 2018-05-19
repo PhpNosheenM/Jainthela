@@ -26,15 +26,15 @@
 						
 						<div class="col-md-2">
 							<div class="form-group">
-								<label>Location</label>
-								<?php echo $this->Form->select('location_id',$Locations, ['empty'=>'--Select--','label' => false,'class' => 'form-control input-sm ledger select', 'data-live-search'=>true,'value'=>$location_id]); ?>
+								<label>City</label>
+								<?php echo $this->Form->select('city_id',$Cities, ['empty'=>'--Select--','label' => false,'class' => 'form-control input-sm ledger select', 'data-live-search'=>true,'value'=>$city_id]); ?>
 								
 							</div>
 						</div>
 						<div class="col-md-2">
 							<div class="form-group">
-								<label>Seller</label>
-								<?php echo $this->Form->select('seller_id',$Sellers, ['empty'=>'--Select--','label' => false,'class' => 'form-control input-sm ledger select', 'data-live-search'=>true,'value'=>$seller_id]); ?>
+								<label>Location</label>
+								<?php echo $this->Form->select('location_id',$Locations, ['empty'=>'--Select--','label' => false,'class' => 'form-control input-sm ledger select', 'data-live-search'=>true,'value'=>$location_id]); ?>
 								
 							</div>
 						</div>

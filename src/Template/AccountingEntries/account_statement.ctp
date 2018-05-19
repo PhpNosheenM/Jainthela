@@ -88,7 +88,7 @@
 							$total_credit=0;$total_debit=0;
 							//pr($AccountingLedgers->toArray());     exit;
 						foreach($AccountingLedgers as $AccountingLedger)
-						{   
+						{   // pr($AccountingLedger); exit;
 							$id= $AccountingLedger->id;
 						?>
 							<tr>
@@ -159,6 +159,10 @@
 									echo 'Debit Note Vouchers';
 									@$voucher_no=$AccountingLedger->debit_note->voucher_no;
 									@$url_link=$this->Html->link($voucher_no,['controller'=>'DebitNotes','action' => 'view', $AccountingLedger->debit_note_id],['target'=>'_blank']);
+								}else if(!empty($AccountingLedger->order_id)){
+									echo 'Orders'; //pr($AccountingLedger); exit;
+									@$voucher_no=$AccountingLedger->order->order_no;
+									@$url_link=$this->Html->link($voucher_no,['controller'=>'Orders','action' => 'view', $AccountingLedger->order_id],['target'=>'_blank']);
 								}
 								?>
 								</td>
