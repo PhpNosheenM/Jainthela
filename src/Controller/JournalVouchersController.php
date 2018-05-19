@@ -28,7 +28,7 @@ class JournalVouchersController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $this->paginate = [
             'contain' => ['Cities'],
 			'limit' => 20
@@ -79,7 +79,7 @@ class JournalVouchersController extends AppController
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
 		$user_id=$this->Auth->User('id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $journalVoucher = $this->JournalVouchers->newEntity();
 		
 		if ($this->request->is('post')) {
