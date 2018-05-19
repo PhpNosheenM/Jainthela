@@ -68,10 +68,11 @@ class SellerItemsController extends AppController
 		},'ItemVariations' => ['UnitVariations'=>['Units'],'ItemVariationMasters']])
 		->select(['total'=>$items->func()->count('ItemVariations.seller_item_id')])
 		->innerJoinWith('ItemVariations')
+		->having(['total' > 0])	
 		->where(['SellerItems.city_id' => $city_id])
 		->where($sellerWhere)
 		->where($sellerItems_category)
-		->autoFields(true); ;
+		->autoFields(true);
 	
         if(!empty($items->toArray()))
         {
