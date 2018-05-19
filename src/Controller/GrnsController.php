@@ -123,7 +123,7 @@ class GrnsController extends AppController
                     $item_ledger->sale_rate = $grn_row->sale_rate;
                    // $item_ledger->company_id  =$company_id;
                     $item_ledger->city_id =$city_id;
-                    $item_ledger->status ='in';
+                    $item_ledger->status ='In';
                     $item_ledger->amount=$grn_row->quantity*$grn_row->purchase_rate;
                     $this->Grns->ItemLedgers->save($item_ledger);
                     $item = $this->Grns->GrnRows->Items->find()->where(['Items.id'=>$grn_row->item_id])->first();

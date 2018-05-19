@@ -153,7 +153,7 @@ class SellerItemsController extends AppController
         $sellers = $this->SellerItems->Sellers->find('list');
         $this->set(compact('sellerItem', 'categories', 'sellers'));
     }
-	 public function itemVariation()
+	public function itemVariation()
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
@@ -164,8 +164,7 @@ class SellerItemsController extends AppController
 		{
 			$masterIds=[];$ItemIds=[];
 			$arr=$this->request->getData(); $i=1; 
-         	pr($arr);
-         	exit;
+         	
 			foreach($arr as $key => $csm)
 			{
 				
