@@ -256,10 +256,10 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 						alert('Error: zero amount payment can not be generated.');
 						return false;
 					}
-					else if(totalBankCash<=0){
+					/* else if(totalBankCash<=0){
 						alert('Error: No Bank or Cash Credited.');
 						return false;
-					}
+					} */
 					else{
 						if(confirm('Are you sure you want to submit!'))
 							{
@@ -279,6 +279,24 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 				var SelectedTr=$(this).closest('tr.MainTr');
 				AddRefRow(SelectedTr);
 			});
+			
+			$(document).on('keyup','.calculate_total',function()
+			{ 
+				 renameMainRows();
+			});
+			$(document).on('keyup', '.calculation', function()
+			{ 
+				var SelectedTr=$(this).closest('tr.MainTr');
+				calculation(SelectedTr);
+				
+			});
+			$(document).on('change', '.calculation',function()
+			{ 
+				var SelectedTr=$(this).closest('tr.MainTr');
+				calculation(SelectedTr);
+				
+			});
+			
 	
 			$(document).on('click','.AddMainRow',function(){
 			addMainRow();
@@ -556,24 +574,10 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 				}
 			}
 			
-			$(document).on('keyup','.calculate_total',function()
-			{ 
-				 renameMainRows();
-			});
-			$(document).on('keyup', '.calculation', function()
-			{ 
-				var SelectedTr=$(this).closest('tr.MainTr');
-				calculation(SelectedTr);
-				
-			});
-			$(document).on('change', '.calculation',function()
-			{ 
-				var SelectedTr=$(this).closest('tr.MainTr');
-				calculation(SelectedTr);
-				
-			});
+			
 			function calculation(SelectedTr)
 			{
+				 
 				var total_debit=0; var total_credit=0; var remaining=0; var i=0;
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
 				var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();

@@ -44,8 +44,11 @@ class SellerItemsTable extends Table
             'joinType' => 'INNER'
         ]);
 		
-        $this->belongsTo('ItemVariations');
+        //$this->belongsTo('ItemVariations');
         $this->belongsTo('ItemVariationMasters');
+
+		$this->belongsTo('Brands');
+		$this->belongsTo('Cities');
 		
         $this->belongsTo('Categories', [
             'foreignKey' => 'category_id',

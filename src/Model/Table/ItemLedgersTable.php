@@ -99,6 +99,10 @@ class ItemLedgersTable extends Table
             'foreignKey' => 'city_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('UnitVariations', [
+            'foreignKey' => 'unit_variation_id',
+            'joinType' => 'INNER'
+        ]);
     }
 
     /**

@@ -26,12 +26,31 @@ class JournalVouchersController extends AppController
      */
     public function index()
     {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$this->viewBuilder()->layout('super_admin_layout');
         $this->paginate = [
-            'contain' => ['Locations', 'Cities']
+            'contain' => ['Cities'],
+			'limit' => 20
         ];
-        $journalVouchers = $this->paginate($this->JournalVouchers);
-
-        $this->set(compact('journalVouchers'));
+		
+		$journalVouchers = $this->JournalVouchers->find()->where(['JournalVouchers.city_id'=>$city_id])->contain(['JournalVoucherRows','Cities']);
+		
+		if ($this->request->is(['get'])){
+			$search=$this->request->getQuery('search');
+			$journalVouchers->where([
+							'OR' => [
+									'JournalVouchers.voucher_no LIKE' => $search.'%',
+									'Cities.name LIKE' => $search.'%',
+									'JournalVouchers.narration LIKE' => $search.'%',
+									'JournalVouchers.created_on LIKE' => $search.'%'
+									
+							]
+			]);
+		}
+		$journalVouchers=$this->paginate($journalVouchers);
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('journalVouchers','paginate_limit'));
     }
 
     /**
@@ -60,9 +79,92 @@ class JournalVouchersController extends AppController
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
 		$user_id=$this->Auth->User('id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $journalVoucher = $this->JournalVouchers->newEntity();
 		
+		if ($this->request->is('post')) {
+			
+			//$this->request->data['transaction_date'] = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
+			$Voucher_no = $this->JournalVouchers->find()->select(['voucher_no'])->where(['city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
+			  if($Voucher_no)
+			{
+				$journalVoucher_no=$Voucher_no->voucher_no+1;
+			}
+			else
+			{
+				$journalVoucher_no=1;
+			}  
+			
+			//$contraVoucher->location_id = $location_id;
+			$tdate=$this->request->data('transaction_date');
+			 //$this->request->data['transaction_date']= date('Y-m-d', strtotime($this->request->data['transaction_date']));		
+				//	pr($this->request->getData());pr($journalVoucher); exit;	
+			$journalVoucher = $this->JournalVouchers->patchEntity($journalVoucher, $this->request->getData()); 	
+			
+			//$vendor_id=$journalVoucher->vendor_id;
+			$journalVoucher->city_id = $city_id;
+			$journalVoucher->voucher_no=$journalVoucher_no;
+			$journalVoucher->created_by = $user_id;
+			$journalVoucher->transaction_date = date('Y-m-d', strtotime($tdate));
+			 //	pr($journalVoucher);  
+			//pr($journalVoucher->journal_voucher_rows); exit;
+			//transaction date for contraVoucher code start here--
+			
+			//transaction date for journalVoucher code close here-- 
+		
+			
+			if ($this->JournalVouchers->save($journalVoucher)) {
+				
+				foreach($journalVoucher->journal_voucher_rows as $journal_row)
+			{
+				
+				if(!empty($journal_row->reference_details))
+				{
+					foreach($journal_row->reference_details as $reference_detail1)
+					{ 
+						$reference_detail = $this->JournalVouchers->ReferenceDetails->newEntity();
+						$reference_detail->transaction_date = date('Y-m-d',strtotime($tdate));
+						$reference_detail->journal_voucher_id =  $journalVoucher->id;
+						$reference_detail->journal_voucher_row_id =  $journal_row->id;
+						$reference_detail->ref_name =  $reference_detail1['ref_name'];
+						$reference_detail->type =  $reference_detail1['type'];
+						$reference_detail->ledger_id =  $reference_detail1['ledger_id'];
+						$reference_detail->city_id =  $city_id;
+						$test_cr_dr=$journal_row->cr_dr;
+						if($test_cr_dr=='Cr'){
+							$reference_detail->credit =  $reference_detail1['credit'];
+						}
+						if($test_cr_dr=='Dr'){
+							$reference_detail->debit =  $reference_detail1['debit'];
+						}
+						
+						$this->JournalVouchers->ReferenceDetails->save($reference_detail);
+					}
+				}
+			}
+		 
+			foreach($journalVoucher->journal_voucher_rows as $journal_row)
+				{
+					$accountEntry = $this->JournalVouchers->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $journal_row->ledger_id;
+					$accountEntry->debit                      = @$journal_row->debit;
+					$accountEntry->credit                     = @$journal_row->credit;
+					$accountEntry->transaction_date           = date('Y-m-d', strtotime($tdate));
+					$accountEntry->city_id                    = $city_id;
+					$accountEntry->journal_voucher_id         = $journalVoucher->id;
+					$accountEntry->journal_voucher_row_id     = $journal_row->id;
+					$accountEntry->entry_from                 = 'web';
+					$this->JournalVouchers->AccountingEntries->save($accountEntry);
+				}
+				$this->Flash->success(__('The journalVoucher has been saved.'));
+
+				return $this->redirect(['action' => 'index']);
+			}
+			
+			
+			$this->Flash->error(__('The journalVoucher could not be saved. Please, try again.'));
+		}
+		/* 
         if ($this->request->is('post')) {
             $journalVoucher = $this->JournalVouchers->patchEntity($journalVoucher, $this->request->getData());
             if ($this->JournalVouchers->save($journalVoucher)) {
@@ -71,7 +173,7 @@ class JournalVouchersController extends AppController
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('The journal voucher could not be saved. Please, try again.'));
-        }
+        } */
 		$Voucher_no = $this->JournalVouchers->find()->select(['voucher_no'])->where(['city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
 		if($Voucher_no)
 		{
@@ -148,7 +250,7 @@ class JournalVouchersController extends AppController
 				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no','bank_and_cash' => 'no' ];
 			}
 		}
-		$referenceDetails=$this->JournalVouchers->JournalVoucherRows->ReferenceDetails->find('list');
+		$referenceDetails=$this->JournalVouchers->ReferenceDetails->find('list');
 		
 		
 		

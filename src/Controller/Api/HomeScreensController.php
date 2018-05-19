@@ -122,31 +122,35 @@ class HomeScreensController extends AppController
 								return  $q->where(['ItemsVariations.status'=>'Active','ItemsVariations.section_show'=>'Yes']);
 							}]]); */
 
-							$Items=$this->HomeScreens->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])->contain(['ItemActive'=>['ItemsVariations'=>['ItemVariationMasters','UnitVariations'=>['Units']]]]);
-
-
+							$Items = $this->HomeScreens->Categories->find();
+							$Items->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])->contain(['SellerItems'=> function($q) use($city_id,$Items) { 
+								return $q->contain(['Items','ItemVariations'=>['ItemVariationMasters','UnitVariations'=>['Units']]])
+									->select(['SellerItems.category_id','sellerItemCount'=>$Items->func()->count('ItemVariations.seller_item_id')])
+									->innerJoinWith('ItemVariations')
+									->having(['sellerItemCount' > 0])	
+									->group(['SellerItems.id'])
+									->where(['SellerItems.city_id' => $city_id,'SellerItems.status'=>'Active'])
+									->autoFields(true);
+											
+								}   
+							]);
 
 							if(!empty($Items->toArray())){
-
-								foreach ($Items as $Item) {
-									foreach ($Item->item_active as $key=> $itemData) {
-										/* if(empty($itemData->items_variations)){
-											unset($Item->item_active[$key]);
-										} */
-										foreach ($itemData->items_variations as $items_variation) {
+								
+							foreach($Items as $itemData)
+							{	
+								foreach ($itemData->seller_items as $Item) {
+									foreach ($Item->item_variations as $items_variation) {
 											$count_cart = $this->HomeScreens->Carts->find()->select(['Carts.cart_count'])->where(['Carts.item_variation_id'=>$items_variation->id,'Carts.customer_id'=>$customer_id]);
 											$items_variation->cart_count = 0;
 											$count_value = 0;
-
 											foreach ($count_cart as $count) {
-			                  $count_value = $count->cart_count;
-			                }
-			                $items_variation->cart_count = $count_value;
+											  $count_value = $count->cart_count;
+											}			
+											$items_variation->cart_count = $count_value;
 										}
-
-									}
 								}
-
+							}	
 								$Itemc=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"category_id"=>$HomeScreen->category_id,"HomeScreens"=>$Items);
 								array_push($dynamic,$Itemc);
 
@@ -154,7 +158,7 @@ class HomeScreensController extends AppController
 								$Item=[];
 							}
 						}
-
+						
 						if($HomeScreen->model_name=='Combooffer'){
 							$Combooffers=$this->HomeScreens->ComboOffers->find()->where(['status'=>'Active','city_id'=>$city_id])->limit(3);
 
@@ -182,34 +186,48 @@ class HomeScreensController extends AppController
 							}
 						}
 
-
-
 						if($HomeScreen->model_name=='Categorytwoitem'){
-							$Singleimagetwoitems=$this->HomeScreens->Categories->find()
+							$Singleimagetwoitems=$this->HomeScreens->Categories->find();
+							$Singleimagetwoitems->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])
+							->contain(['SellerItems'=> function($q) use($city_id,$Items)
+								{ 
+									return $q->contain(['Items' => function($q) {
+											return $q->limit(2);
+									} ,'ItemVariations'=>['ItemVariationMasters','UnitVariations'=>['Units']]])
+									->select(['SellerItems.category_id','sellerItemCount'=>$Items->func()->count('ItemVariations.seller_item_id')])
+									->innerJoinWith('ItemVariations')
+									->having(['sellerItemCount' > 0])	
+									->group(['SellerItems.id'])
+									->where(['SellerItems.city_id' => $city_id,'SellerItems.status'=>'Active'])
+									->autoFields(true);
+								}   
+							]);
+						
+							
+						/* 	$Singleimagetwoitems=$this->HomeScreens->Categories->find()
 							->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])
 							->contain(['Items'=>function($q){
 								return $q->where(['status'=>'Active','section_show'=>'Yes'])
 								->limit(2)
 								->contain(['ItemsVariations'=>['ItemVariationMasters','UnitVariations'=>['Units']]]);
-							}]);
+							}]); */
 						//	pr($Singleimagetwoitems->toArray());exit;
+							
 							if($Singleimagetwoitems){
 								foreach ($Singleimagetwoitems as $Item) {
-									foreach ($Item->items as $key=> $itemData) {
-										/* if(empty($itemData->items_variations)){
-											unset($Item->items[$key]);
-										} */
-										foreach ($itemData->items_variations as $items_variation) {
+									foreach($Item->seller_items as $itemData)
+									{
+										foreach($itemData->item_variations as $items_variation) {
 											$count_cart = $this->HomeScreens->Carts->find()->select(['Carts.cart_count'])->where(['Carts.item_variation_id'=>$items_variation->id,'Carts.customer_id'=>$customer_id]);
 											$items_variation->cart_count = 0;
 											$count_value = 0;
 
 											foreach ($count_cart as $count) {
-			                  $count_value = $count->cart_count;
-			                }
-			                $items_variation->cart_count = $count_value;
+											  $count_value = $count->cart_count;
+											}
+											$items_variation->cart_count = $count_value;
 										}
-									}
+									}	
 								}
 								$Singleimagetwoitem=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,'Image'=>$HomeScreen->image,"HomeScreens"=>$Singleimagetwoitems);
 								array_push($dynamic,$Singleimagetwoitem);
@@ -218,9 +236,6 @@ class HomeScreensController extends AppController
 								$Singleimagetwoitem=[];
 							}
 						}
-
-
-
 				}
 				$cart_item_count = $this->HomeScreens->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])->count();
 				//$dynamic=array($Express,$Brand);
