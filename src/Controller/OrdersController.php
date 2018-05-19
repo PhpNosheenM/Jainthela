@@ -238,7 +238,7 @@ class OrdersController extends AppController
 		
         if ($this->request->is('post')) {
             $order = $this->Orders->patchEntity($order, $this->request->getData());
-			$Voucher_no = $this->Orders->find()->select(['voucher_no'])->where(['Orders.city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
+			$Voucher_no = $this->Orders->find()->select(['voucher_no'])->where(['Orders.city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first(); 
 			if($Voucher_no){$voucher_no=$Voucher_no->voucher_no+1;}
 			else{$voucher_no=1;} 
 			$order->city_id=$city_id;
@@ -247,10 +247,7 @@ class OrdersController extends AppController
 			$order->order_status="Pending";
 			$order->transaction_date=date('Y-m-d',strtotime($order->transaction_date));
 			$Custledgers = $this->Orders->SellerLedgers->get($order->party_ledger_id,['contain'=>['Customers'=>['Cities']]]);
-			
-			//pr($order); exit;
-			
-            if ($this->Orders->save($order)) { 
+			 if ($this->Orders->save($order)) { 
 			
 					if($order->order_type=="Credit"){
 							
@@ -453,7 +450,101 @@ class OrdersController extends AppController
 					
 					//Grn entry
 					$this->orderDeliver($order->id);
-				}
+				}else if($order->order_type=="OnLine"){
+				// Cash Account Entry 
+					$LedgerData = $this->Orders->Ledgers->find()->where(['Ledgers.ccavenue' =>'yes','Ledgers.city_id'=>$city_id])->first(); 
+					$AccountingEntrie = $this->Orders->AccountingEntries->newEntity(); 
+					$AccountingEntrie->ledger_id=$LedgerData->id;
+					$AccountingEntrie->debit=$order->grand_total;
+					$AccountingEntrie->credit=0;
+					$AccountingEntrie->transaction_date=$order->transaction_date;
+					$AccountingEntrie->city_id=$city_id;
+					$AccountingEntrie->entry_from="Web";
+					$AccountingEntrie->order_id=$order->id; 
+					$this->Orders->AccountingEntries->save($AccountingEntrie);
+					
+					// Sales Account Entry 
+					$AccountingEntrie = $this->Orders->AccountingEntries->newEntity(); 
+					$AccountingEntrie->ledger_id=$order->sales_ledger_id;
+					$AccountingEntrie->credit=$order->total_amount;
+					$AccountingEntrie->debit=0;
+					$AccountingEntrie->transaction_date=$order->transaction_date;
+					$AccountingEntrie->city_id=$city_id;
+					$AccountingEntrie->entry_from="Web";
+					$AccountingEntrie->order_id=$order->id; 
+					$this->Orders->AccountingEntries->save($AccountingEntrie);
+					
+					if($Custledgers->customer->city->state_id==$state_id){ 
+								foreach($order->order_details as $order_detail){ 
+								$gstAmtdata=$order_detail->gst_value/2;
+								$gstAmtInsert=round($gstAmtdata,2);
+								
+								
+								//Accounting Entries for CGST//
+								$gstLedgerCGST = $this->Orders->Ledgers->find()
+								->where(['Ledgers.gst_figure_id' =>$order_detail->gst_figure_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'CGST','city_id'=>$city_id])->first();
+								$AccountingEntrieCGST = $this->Orders->AccountingEntries->newEntity();
+								$AccountingEntrieCGST->ledger_id=$gstLedgerCGST->id;
+								$AccountingEntrieCGST->credit=$gstAmtInsert;
+								$AccountingEntrieCGST->debit=0;
+								$AccountingEntrieCGST->transaction_date=$order->transaction_date;
+								$AccountingEntrieCGST->city_id=$city_id;
+								$AccountingEntrieCGST->entry_from="Web";
+								$AccountingEntrieCGST->order_id=$order->id;   
+								$this->Orders->AccountingEntries->save($AccountingEntrieCGST);
+								
+								//Accounting Entries for SGST//
+								 $gstLedgerSGST = $this->Orders->Ledgers->find()
+								->where(['Ledgers.gst_figure_id' =>$order_detail->gst_figure_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'SGST','city_id'=>$city_id])->first();
+								$AccountingEntrieSGST = $this->Orders->AccountingEntries->newEntity();
+								$AccountingEntrieSGST->ledger_id=$gstLedgerSGST->id;
+								$AccountingEntrieSGST->credit=$gstAmtInsert;
+								$AccountingEntrieSGST->debit=0;
+								$AccountingEntrieSGST->transaction_date=$order->transaction_date;
+								$AccountingEntrieSGST->city_id=$city_id;
+								$AccountingEntrieSGST->entry_from="Web";
+								$AccountingEntrieSGST->order_id=$order->id;  
+								$this->Orders->AccountingEntries->save($AccountingEntrieSGST);
+								
+								$Item = $this->Orders->OrderDetails->ItemVariations->get($order_detail->item_variation_id);
+								$ItemLedger = $this->Orders->Grns->GrnRows->ItemLedgers->newEntity(); 
+								$ItemLedger->item_id=$order_detail->item_id; 
+								$ItemLedger->item_variation_id=$order_detail->item_variation_id;
+								$ItemLedger->seller_id=$Item->seller_id;
+								$ItemLedger->transaction_date=$order->transaction_date;  
+								$ItemLedger->quantity=$order_detail->quantity;
+								$ItemLedger->rate=$order_detail->rate;
+								$ItemLedger->purchase_rate=$Item->purchase_rate;
+								$ItemLedger->sales_rate=$order_detail->rate; 
+								$ItemLedger->status="Out";
+								$ItemLedger->city_id=$city_id;
+								$ItemLedger->order_id=$order->id;
+								$ItemLedger->order_detail_id=$order_detail->id; 
+								$this->Orders->Grns->GrnRows->ItemLedgers->save($ItemLedger);
+								
+								$ItemVariationData = $this->Orders->OrderDetails->ItemVariations->get($order_detail->item_variation_id);
+								$current_stock=$ItemVariationData->current_stock-$order_detail->quantity;
+								$out_of_stock="No";
+								$ready_to_sale="Yes";
+								if($current_stock <= 0){
+									$ready_to_sale="No";
+									$out_of_stock="Yes";
+								}
+								//pr($current_stock); exit;
+								$query = $this->Orders->OrderDetails->ItemVariations->query();
+								$query->update()
+								->set(['current_stock'=>$current_stock,'out_of_stock'=>$out_of_stock,'ready_to_sale'=>$ready_to_sale])
+								->where(['id'=>$order_detail->item_variation_id])
+								->execute(); 
+								
+							   }
+							}else{
+								exit;
+							}
+					
+					//Grn entry
+					$this->orderDeliver($order->id);
+			}
 					
                 $this->Flash->success(__('The order has been saved.'));
                 return $this->redirect(['action' => 'index']);

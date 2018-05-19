@@ -158,7 +158,11 @@ class ItemsTable extends Table
             'className' => 'ItemVariations',
 			      'foreignKey' => 'item_id'
         ])->setConditions(['ItemsVariations.section_show'=>'Yes']);
-
+		
+		$this->hasMany('ItemsVariationsData', [
+            'className' => 'ItemVariations',
+			      'foreignKey' => 'item_id'
+        ]);
         // HomeScreen Model used in Item (product detail) api
 
         $this->belongsTo('WishLists', [
@@ -170,6 +174,8 @@ class ItemsTable extends Table
             'foreignKey' => 'item_id',
             'joinType' => 'INNER'
         ]);
+        
+         $this->belongsTo('SellerItems');
 
         $this->belongsTo('HomeScreens');
 
