@@ -338,7 +338,57 @@ class OrdersController extends AppController
 							
 						   }
 						}else{
-							exit;
+							foreach($order->order_details as $order_detail){ 
+							$gstAmtdata=$order_detail->gst_value/2;
+							$gstAmtInsert=round($gstAmtdata,2);
+							//pr($order_detail->gst_figure_id); exit;
+							
+							//Accounting Entries for CGST//
+							$gstLedgerCGST = $this->Orders->Ledgers->find()
+							->where(['Ledgers.gst_figure_id' =>$order_detail->gst_figure_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'IGST','city_id'=>$city_id])->first();
+							$AccountingEntrieCGST = $this->Orders->AccountingEntries->newEntity();
+							$AccountingEntrieCGST->ledger_id=$gstLedgerCGST->id;
+							$AccountingEntrieCGST->credit=$gstAmtInsert;
+							$AccountingEntrieCGST->debit=0;
+							$AccountingEntrieCGST->transaction_date=$order->transaction_date;
+							$AccountingEntrieCGST->city_id=$city_id;
+							$AccountingEntrieCGST->entry_from="Web";
+							$AccountingEntrieCGST->order_id=$order->id;  
+							$this->Orders->AccountingEntries->save($AccountingEntrieCGST);
+							
+							
+							$Item = $this->Orders->OrderDetails->ItemVariations->get($order_detail->item_variation_id);
+							$ItemLedger = $this->Orders->Grns->GrnRows->ItemLedgers->newEntity(); 
+							$ItemLedger->item_id=$order_detail->item_id; 
+							$ItemLedger->item_variation_id=$order_detail->item_variation_id;
+							$ItemLedger->seller_id=$Item->seller_id;
+							$ItemLedger->transaction_date=$order->transaction_date;  
+							$ItemLedger->quantity=$order_detail->quantity;
+							$ItemLedger->rate=$order_detail->rate;
+							$ItemLedger->purchase_rate=$Item->purchase_rate;
+							$ItemLedger->sales_rate=$order_detail->rate; 
+							$ItemLedger->status="Out";
+							$ItemLedger->city_id=$city_id;
+							$ItemLedger->order_id=$order->id;
+							$ItemLedger->order_detail_id=$order_detail->id; //pr($order_detail); exit;
+							$this->Orders->Grns->GrnRows->ItemLedgers->save($ItemLedger);
+							
+							$ItemVariationData = $this->Orders->OrderDetails->ItemVariations->get($order_detail->item_variation_id);
+							$current_stock=$ItemVariationData->current_stock-$order_detail->quantity; 
+							$out_of_stock="No";
+							$ready_to_sale="Yes";
+							if($current_stock <= 0){
+								$ready_to_sale="No";
+								$out_of_stock="Yes";
+							}
+							
+							$query = $this->Orders->OrderDetails->ItemVariations->query();
+							$query->update()
+							->set(['current_stock'=>$current_stock,'out_of_stock'=>$out_of_stock,'ready_to_sale'=>$ready_to_sale])
+							->where(['id'=>$order_detail->item_variation_id])
+							->execute(); 
+							
+						   }
 						}
 						
 						//Accounting Entries for Reference Details//

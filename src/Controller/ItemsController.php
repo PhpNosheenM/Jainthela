@@ -271,16 +271,17 @@ class ItemsController extends AppController
 		$showItems=[];
 		
 		 if($location_id){ //exit;
-			$ItemsVariations=$this->Items->ItemsVariationsData->find()->toArray(); //pr($ItemsVariations);exit;
+			$LocationData=$this->Items->Locations->get($location_id);
+			$ItemsVariations=$this->Items->ItemsVariationsData->find()->toArray(); //pr($LocationData);exit;
 			foreach($ItemsVariations as  $ItemsVariation){ 
 					 
 						//$location_id=1;
-						$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['ItemLedgers.item_variation_id'=>$ItemsVariation->id,'ItemLedgers.city_id'=>$city_id,'ItemLedgers.location_id'=>$location_id,'ItemLedgers.seller_id IS NULL'])->where($where1)->contain(['Items','UnitVariations'=>['Units']])->first();
+						$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['ItemLedgers.item_variation_id'=>$ItemsVariation->id,'ItemLedgers.city_id'=>$LocationData->city_id,'ItemLedgers.location_id'=>$location_id,'ItemLedgers.seller_id IS NULL'])->where($where1)->contain(['Items','UnitVariations'=>['Units']])->first();
 						
 						$merge=@$ItemLedgers->item->name.'('.@$ItemLedgers->unit_variation->quantity_variation.'.'.@$ItemLedgers->unit_variation->unit->shortname.')';
 						//pr($merge); exit;
 						if($ItemLedgers){
-						$UnitRateSerialItem = $this->itemVariationWiseReport($ItemsVariation->id,$transaction_date,$city_id,$where1);
+						$UnitRateSerialItem = $this->itemVariationWiseReport($ItemsVariation->id,$transaction_date,$LocationData->city_id,$where1);
 						
 						$showItems[$ItemLedgers->item->id][]=['item_name'=>$ItemLedgers->item->name,'item_variation_name'=>$merge,'stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem['unit_rate']];
 						//pr($showItems); exit;

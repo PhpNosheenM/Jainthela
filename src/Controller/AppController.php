@@ -173,7 +173,8 @@ class AppController extends Controller
 	public function stockReportApp($city_id = null,$from_date = null,$transaction_date = null)
     {
 		$this->loadModel('Items');
-		$user_id=$this->Auth->User('id'); 
+		$user_id=$this->Auth->User('id');
+		$this->viewBuilder()->layout('super_admin_layout');
 		//$city_id=$this->request->query('city_id');
 		//$location_id=$this->request->query('location_id');
 		//$transaction_date=date("Y-m-d");
@@ -218,7 +219,7 @@ class AppController extends Controller
 	}
 
 	public function itemVariationWiseReport1($item_variation_id=null,$transaction_date,$city_id){ 
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 		//$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
 		
@@ -281,7 +282,7 @@ class AppController extends Controller
 	}
 	
 	public function sellerStockItemVariationWiseReport($seller_id=null,$item_id,$item_variation_id){ 
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 		$this->loadModel('Items');
 		$location_id=$this->Auth->User('location_id'); 
 		$today_date=date("Y-m-d");
@@ -345,7 +346,7 @@ class AppController extends Controller
 	
 	public function sellerStockItemWiseReport($seller_id = null,$item_id = null){ 
 		$this->loadModel('Items');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 		//$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
 		$today_date=date("Y-m-d");
@@ -407,7 +408,7 @@ class AppController extends Controller
 	}
 	
 	public function itemWiseReport1($item_id=null,$transaction_date,$city_id){ 
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 		//$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
 		
