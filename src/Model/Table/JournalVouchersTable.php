@@ -53,6 +53,9 @@ class JournalVouchersTable extends Table
         $this->hasMany('JournalVoucherRows', [
             'foreignKey' => 'journal_voucher_id'
         ]);
+		 $this->hasMany('ReferenceDetails', [
+            'foreignKey' => 'journal_voucher_id'
+        ]);
     }
 
     /**
@@ -67,7 +70,7 @@ class JournalVouchersTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
-        $validator
+        /* $validator
             ->integer('voucher_no')
             ->requirePresence('voucher_no', 'create')
             ->notEmpty('voucher_no');
@@ -81,13 +84,13 @@ class JournalVouchersTable extends Table
             ->date('transaction_date')
             ->requirePresence('transaction_date', 'create')
             ->notEmpty('transaction_date');
-
+ */
         $validator
             ->scalar('narration')
             ->requirePresence('narration', 'create')
             ->notEmpty('narration');
 
-        $validator
+      /*   $validator
             ->decimal('total_credit_amount')
             ->requirePresence('total_credit_amount', 'create')
             ->notEmpty('total_credit_amount');
@@ -96,8 +99,8 @@ class JournalVouchersTable extends Table
             ->decimal('total_debit_amount')
             ->requirePresence('total_debit_amount', 'create')
             ->notEmpty('total_debit_amount');
-
-        $validator
+ */
+      /*   $validator
             ->scalar('status')
             ->maxLength('status', 10)
             ->requirePresence('status', 'create')
@@ -112,7 +115,7 @@ class JournalVouchersTable extends Table
             ->dateTime('created_on')
             ->requirePresence('created_on', 'create')
             ->notEmpty('created_on');
-
+ */
         return $validator;
     }
 
