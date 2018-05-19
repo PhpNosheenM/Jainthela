@@ -6,7 +6,7 @@ padding: 10px 5px;text-align:center;
 padding: 10px 5px;
 }
 </style>
-<?php $this->set('title', 'Location Item'); ?>
+<?php $this->set('title', 'Item Variation'); ?>
 <div class="page-content-wrap">
 	<div class="row">
 		<div class="col-md-12">

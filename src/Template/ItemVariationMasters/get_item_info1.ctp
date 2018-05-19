@@ -48,14 +48,14 @@
 			 
 			$first_item_id=$item_variation_master->item_id;
 			$first_item_variation_master_id=$item_variation_master->id;
-			 
+			
 			 ?>
 				<tr>
 					<td style="width:5%" align="center">
-						<input type="hidden" name="item_variation_master_id[]" value="<?php echo $item_variation_master->id; ?>" />
-						<input type="hidden" name="unit_variation_id[]" value="<?php echo $item_variation_master->unit_variation_id; ?>" />
-						<input type="hidden" name="status[]" value="No" class="stst" />
-						<input name="test[]" type="checkbox"  value="<?php echo $item_variation_master->item_id; ?>" class="entity_variation st2 entity_variation<?php echo $item_variation_master->unit_variation->id;?>" >
+						<input type="hidden" class="entity_maximum<?php echo $item_variation_master->unit_variation->id; ?>" name="item_variation_master_id[]" value="<?php echo $item_variation_master->id; ?>" disabled />
+						<input type="hidden" class="entity_maximum<?php echo $item_variation_master->unit_variation->id; ?>" name="unit_variation_id[]" value="<?php echo $item_variation_master->unit_variation_id; ?>" disabled/>
+						<input type="hidden" class="stst entity_maximum<?php echo $item_variation_master->unit_variation->id; ?>" name="status[]" value="No" disabled />
+						<input name="test[]" type="checkbox"  value="<?php echo $item_variation_master->unit_variation->id; ?>" class="entity_variation single_item st2 entity_variation<?php echo $item_variation_master->unit_variation->id;?>" >
 					</td>
 					<td align="center">
 					<label style="margin-left:30px;">
@@ -72,7 +72,7 @@
 		<?php echo $this->Form->control('current_stock[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Current Stock','class'=>'form-control cStock  entity_maximum entity_maximum'.$item_variation_master->unit_variation->id,'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->current_stock,'required','readonly']);?>
 		<input type="hidden" value="<?php echo @$item_variation_master->current_stock;?>" id="chstock">
 		</td><td style="width:10%">
-		<?php echo $this->Form->control('add_stock[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Add Stock','class'=>'form-control addStock entity_maximum entity_maximum'.$item_variation_master->unit_variation->id,'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->add_stock]); ?>
+		<?php echo $this->Form->control('add_stock[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Add Stock','class'=>'form-control addStock entity_maximum entity_maximum'.$item_variation_master->unit_variation->id,'style'=>'display:inline !important;float:none;',$disabled]); ?>
 		</td><td style="width:12%">
 		<?php echo $this->Form->control('mrp[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'MRP','class'=>'form-control mrp calc entity_maximum entity_maximum'.$item_variation_master->unit_variation->id,'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->mrp,'required']); ?>
 		</td><td style="width:13%">
@@ -81,10 +81,10 @@
 		?>
 		<input name="commissions[]" type="hidden"  value="<?php echo @$item->seller_items[0]->commission_percentage; ?>" class="entity_maximum entity_maximum<?php echo $item_variation_master->unit_variation->id; ?>" id="commission">
 		<?php 
-		echo $this->Form->control('purchase_rate[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'hidden','placeholder'=>'Rate','class'=>'form-control entity_maximum  purchase_rate entity_maximum '.$item_variation_master['unit_variation']['id'],'style'=>'float:none;',$disabled,'value'=>@$item_variation_master->purchase_rate]);
+		echo $this->Form->control('purchase_rate[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'hidden','placeholder'=>'Rate','class'=>'form-control entity_maximum  purchase_rate entity_maximum'.$item_variation_master->unit_variation->id,'style'=>'float:none;',$disabled,'value'=>@$item_variation_master->purchase_rate]);
 		?>
 		</td><td style="width:15%">
-		<?= $this->Form->select('ready_to_sale[]',$status,['empty'=>'---Select--','class'=>'form-control entity_maximum entity_maximum'.$item_variation_master['unit_variation']['id'],'label'=>false,$disabled,'style'=>'display:inline !important;float:none;','placeholder'=>'Select...','value'=>@$item_variation_master->ready_to_sale,'style'=>'display:inline !important;float:none;']) ?>
+		<?= $this->Form->select('ready_to_sale[]',$status,['empty'=>'---Select--','class'=>'form-control entity_maximum entity_maximum'.$item_variation_master->unit_variation->id,'label'=>false,$disabled,'style'=>'display:inline !important;float:none;','placeholder'=>'Select...','value'=>@$item_variation_master->ready_to_sale,'style'=>'display:inline !important;float:none;']) ?>
 		</td>
 					
 				</tr>
