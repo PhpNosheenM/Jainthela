@@ -39,6 +39,7 @@ class JournalVoucher extends Entity
     protected $_accessible = [
         'voucher_no' => true,
         'reference_no' => true,
+        'city_id' => true,
         'location_id' => true,
         'city_id' => true,
         'transaction_date' => true,

@@ -37,14 +37,20 @@ class HomeScreensTable extends Table
         $this->setPrimaryKey('id');
         $this->belongsTo('Carts');
         $this->belongsTo('Banners');
-    		$this->belongsTo('Brands');
-    		$this->belongsTo('ApiVersions');
-    		$this->belongsTo('ExpressDeliveries');
-    		$this->belongsTo('ComboOffers');
+		$this->belongsTo('Brands');
+		$this->belongsTo('ApiVersions');
+		$this->belongsTo('ExpressDeliveries');
+		$this->belongsTo('ComboOffers');
+		
         $this->belongsTo('Categories', [
             'foreignKey' => 'category_id',
             'joinType' => 'INNER'
         ]);
+		
+		$this->hasMany('SellerItems', [
+			'foreignKey' => 'category_id'
+        ]);				
+	
     }
 
     /**

@@ -35,7 +35,7 @@ class SellerItemsController extends AppController
     $cart_item_count = 0;
     if(!empty($seller_id)) { $sellerWhere = ['seller_id' =>$seller_id]; } else {$sellerWhere ='';}
     $limit=10;
-    $items = [];
+    $sellerItem = [];
     $filters = [];
     if(!empty($city_id) && !empty($category_id) && (!empty($page)))
     {
@@ -56,30 +56,29 @@ class SellerItemsController extends AppController
           $category_id = explode(',',$category_id);
           $categoryWhere = ['Items.category_id IN'=>$category_id];
 		  $sellerItems_category = ['SellerItems.category_id IN'=>$category_id];
-        }else { $categoryWhere =''; }
+        }else { $categoryWhere =''; $sellerItems_category = ''; }
 
-        $items = $this->SellerItems->find();
-         $items->contain(['Sellers','Items' => function($q) use($city_id,$categoryWhere,$brandWhere,$limit,$page) {
-			return $q->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id])
-			->where($categoryWhere)
+        $sellerItem = $this->SellerItems->find();
+         $sellerItem->contain(['Sellers','Items' => function($q) use($city_id,$categoryWhere,$brandWhere,$limit,$page) {
+			return $q->where($categoryWhere)
 			->where($brandWhere) 
 			->limit($limit)
 			->page($page);
 		},'ItemVariations' => ['UnitVariations'=>['Units'],'ItemVariationMasters']])
-		->select(['total'=>$items->func()->count('ItemVariations.seller_item_id')])
+		->select(['sellerItemCount'=>$sellerItem->func()->count('ItemVariations.seller_item_id')])
 		->innerJoinWith('ItemVariations')
-		->having(['total' > 0])	
-		->where(['SellerItems.city_id' => $city_id])
+		->having(['sellerItemCount' > 0])	
+		->where(['SellerItems.city_id' => $city_id,'SellerItems.status'=>'Active'])
 		->where($sellerWhere)
 		->where($sellerItems_category)
-    ->group(['SellerItems.id'])
+		->group(['SellerItems.id'])
 		->autoFields(true);
 	
-        if(!empty($items->toArray()))
+        if(!empty($sellerItem->toArray()))
         {
           $count_value = 0;
           $inWishList = 0;
-          foreach($items as $item){
+          foreach($sellerItem as $item){
             foreach ($item->item_variations as $items_variation_data) {
               $item_id=$item->id;
               $items_variation_id = $items_variation_data->id;
@@ -159,7 +158,7 @@ class SellerItemsController extends AppController
         $success = false;
         $message = 'Empty city or category id or page';
       }
-      $this->set(['success' => $success,'message'=>$message,'filters'=>$filters,'items' => $items,'cart_item_count'=>$cart_item_count,'_serialize' => ['success','message','cart_item_count','filters','items']]);
+      $this->set(['success' => $success,'message'=>$message,'filters'=>$filters,'sellerItem' => $sellerItem,'cart_item_count'=>$cart_item_count,'_serialize' => ['success','message','cart_item_count','filters','sellerItem']]);
     }  
   
   

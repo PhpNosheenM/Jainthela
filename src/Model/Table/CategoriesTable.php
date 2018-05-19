@@ -70,10 +70,10 @@ class CategoriesTable extends Table
         $this->hasMany('SellerItems', [
             'foreignKey' => 'category_id'
         ]);
-		  $this->hasMany('ItemActive', [
+		 /*  $this->hasMany('ItemActive', [
 			'className' => 'Items',
             'foreignKey' => 'category_id'
-        ])->setConditions(['section_show'=>'Yes']);
+        ])->setConditions(['section_show'=>'Yes']); */
     }
 
     /**
