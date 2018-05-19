@@ -36,7 +36,7 @@ class GrnsController extends AppController
             'limit' => 10
         ];
         $grns = $this->Grns->find()
-                            ->where(['Grns.super_admin_id'=>$user_id,'Grns.city_id'=>$city_id])
+                            ->where(['Grns.city_id'=>$city_id])
                             ->where([ 'OR'=>['Grns.voucher_no' => $search,
                                 // ...
                                 'VendorLedgers.name LIKE' => '%'.$search.'%',

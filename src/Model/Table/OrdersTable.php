@@ -102,6 +102,10 @@ class OrdersTable extends Table
         $this->hasMany('OrderDetails', [
             'foreignKey' => 'order_id'
         ]);
+		$this->hasMany('ReferenceDetails', [
+            'foreignKey' => 'order_id',
+			'saveStretegy'=>'replace'
+        ]);
         $this->hasMany('Wallets', [
             'foreignKey' => 'order_id'
         ]);

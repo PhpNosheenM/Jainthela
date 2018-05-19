@@ -251,9 +251,9 @@ class ItemsController extends AppController
 		{
 			$where['ItemLedgers.location_id']=$location_id;
 		}
-		if(!empty($seller_id))
+		if(!empty($city_id))
 		{
-			$where['ItemLedgers.seller_id']=$seller_id;
+			$where['ItemLedgers.city_id']=$city_id;
 		}
 		if($from_date!="1970-01-01")
 		{
@@ -265,32 +265,39 @@ class ItemsController extends AppController
 		}
 		//pr($where); exit;
 		$showItems=[];
-		if($where){
+		if($city_id){
 			 $Items = $this->Items->find()->toArray();
 				foreach($Items as  $Item){
-					if($Item->item_maintain_by=="itemwise"){
-						$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$Item->id])->where($where)->toArray(); // pr($ItemLedgers); exit;
-						if($ItemLedgers){
-							$UnitRateSerialItem = $this->itemWiseReport($Item->id,$where);
-							$showItems[$Item->id]=['item_name'=>$Item->name,'stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem['unit_rate']];
-						}
-
-					}else{
 						$ItemsVariations=$this->Items->ItemsVariations->find()->contain(['UnitVariations'=>['Units']])->where(['item_id'=>$Item->id])->toArray();
-						foreach($ItemsVariations as $ItemsVariation){
+						foreach($ItemsVariations as $ItemsVariation){ 
 							$merge=$Item->name.'('.@$ItemsVariation->unit_variation->convert_unit_qty.'.'.@$ItemsVariation->unit_variation->unit->print_unit.')';
-							$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$Item->id,'city_id'=>$city_id])->toArray();
+							$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$Item->id,'city_id'=>$city_id,'seller_id IS NULL'])->toArray();
+							
 							if($ItemLedgers){
-							$UnitRateSerialItem = $this->itemVariationWiseReport($ItemsVariation->id,$transaction_date,$city_id);
-
+							$UnitRateSerialItem = $this->itemWiseReport($Item->id,$transaction_date,$city_id);
+							
 							$showItems[$Item->id]=['item_name'=>$merge,'stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem['unit_rate']];
-							}
 						}
 					}
 				}
-
-		}
-		//pr($showItems); exit;
+			}else{
+				$Items = $this->Items->find()->toArray();
+				foreach($Items as  $Item){
+						$ItemsVariations=$this->Items->ItemsVariations->find()->contain(['UnitVariations'=>['Units']])->where(['item_id'=>$Item->id])->toArray();
+						foreach($ItemsVariations as $ItemsVariation){ 
+							$merge=$Item->name.'('.@$ItemsVariation->unit_variation->convert_unit_qty.'.'.@$ItemsVariation->unit_variation->unit->print_unit.')';
+							$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$Item->id,'city_id'=>$city_id,'seller_id IS NULL'])->toArray();
+							
+							if($ItemLedgers){
+							$UnitRateSerialItem = $this->itemVariationWiseReport($ItemsVariation->id,$transaction_date,$city_id);
+							
+							$showItems[$Item->id]=['item_name'=>$merge,'stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem['unit_rate']];
+						}
+					}
+				}
+			}
+			
+		
 		if($from_date=="1970-01-01")
 		{
 			$from_date=date("d-m-Y");
@@ -305,6 +312,10 @@ class ItemsController extends AppController
 		$this->set(compact('Locations','Cities','showItems','city_id','location_id','Sellers','seller_id','from_date','to_date'));
 	}
 
+	/* public function itemWiseReport($item_id=null,$transaction_date,$city_id){
+		pr($item_id); exit;
+		
+	} */
 	public function itemVariationWiseReport($item_variation_id=null,$transaction_date,$city_id){
 		$this->viewBuilder()->layout('super_admin_layout');
 		//$city_id=$this->Auth->User('city_id');
@@ -354,6 +365,7 @@ class ItemsController extends AppController
 		$closingValue=0;
 		$total_stock=0;
 		$total_amt=0;
+		$unit_rate=0;
 		foreach($stockNew as $qw){
 			$total_stock+=$qw['qty'];
 			$total_amt+=$qw['rate']*$qw['qty'];
