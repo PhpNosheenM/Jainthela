@@ -71,9 +71,10 @@ $js='
 		});
 		$(document).on("change",".check_all_item",function(){
 			if($(this).is(":checked"))
-			{ alert();
-				if($(this).closest(".item_variation").find("input.no_edit[type=checkbox]:checked"))
-				{
+			{ 
+				if($(this).closest(".item_variation").find("input.no_edit[type=checkbox]").is(":checked"))
+				{ 
+					
 				}
 				else
 				{
@@ -112,7 +113,8 @@ $js='
 					sales_rate=mrp;
 
 				}
-				var commission = parseFloat($(this).closest("tr").find("td input#commission").val()); 
+				var commission = parseFloat($(this).closest("tr").find("td input.commission").val()); 
+				
 				var amt_after_commission = sales_rate-((sales_rate*commission)/100);
 				$(this).closest("tr").find("td input.purchase_rate").val(round(amt_after_commission));
 			}
@@ -122,7 +124,7 @@ $js='
 			var mrp        = parseFloat($(this).closest("tr").find("td input.mrp").val());
 			$(this).closest("tr").find("td input.sales_rate").val(mrp)
 			var sales_rate = parseFloat($(this).closest("tr").find("td input.sales_rate").val());
-			var commission = parseFloat($(this).closest("tr").find("td input#commission").val()); 
+			var commission = parseFloat($(this).closest("tr").find("td input.commission").val()); 
 			
 			if(!isNaN(sales_rate))
 			{ 
@@ -134,7 +136,7 @@ $js='
 		$(document).on("keyup",".addStock",function(){
 			var stock    = parseFloat($(this).val()); 
 			var oldStock = parseFloat($(this).closest("tr").find("td input.cStock").val());
-			var chstock = parseFloat($(this).closest("tr").find("td input#chstock").val());
+			var chstock = parseFloat($(this).closest("tr").find("td input.chstock").val());
 			
 			if(!isNaN(stock) & !isNaN(chstock))
 			{ 

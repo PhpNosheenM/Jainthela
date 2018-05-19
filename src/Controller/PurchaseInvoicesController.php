@@ -23,9 +23,9 @@ class PurchaseInvoicesController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
 		$location_id=$this->Auth->User('location_id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $this->paginate = [
-            'contain' => ['Locations', 'Cities','SellerLedgers'=>['Sellers']],
+            'contain' => ['Cities','SellerLedgers'=>['Sellers']],
 			'limit' => 20
         ];
         $purchaseInvoices = $this->paginate($this->PurchaseInvoices);
@@ -44,7 +44,7 @@ class PurchaseInvoicesController extends AppController
     public function view($id = null)
     {
         $purchaseInvoice = $this->PurchaseInvoices->get($id, [
-            'contain' => ['Locations', 'SellerLedgers', 'PurchaseLedgers', 'Cities', 'AccountingEntries', 'ItemLedgers', 'PurchaseInvoiceRows', 'PurchaseReturns', 'ReferenceDetails']
+            'contain' => ['SellerLedgers', 'PurchaseLedgers', 'Cities', 'AccountingEntries', 'ItemLedgers', 'PurchaseInvoiceRows', 'PurchaseReturns', 'ReferenceDetails']
         ]);
 
         $this->set('purchaseInvoice', $purchaseInvoice);
@@ -59,14 +59,13 @@ class PurchaseInvoicesController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
-		$location_id=$this->Auth->User('location_id'); 
 		$state_id=$this->Auth->User('state_id'); 
 
 		$this->viewBuilder()->layout('admin_portal');
 		
         $purchaseInvoice = $this->PurchaseInvoices->newEntity();
-		$LocationData = $this->PurchaseInvoices->Locations->get($location_id);
-		$Voucher_no = $this->PurchaseInvoices->find()->select(['voucher_no'])->where(['PurchaseInvoices.location_id'=>$location_id])->order(['voucher_no' => 'DESC'])->first();
+		$CitiesData = $this->PurchaseInvoices->Cities->get($city_id);
+		$Voucher_no = $this->PurchaseInvoices->find()->select(['voucher_no'])->where(['PurchaseInvoices.city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
 		$today_date=date("Y-m-d");
 		$orderdate = explode('-', $today_date);
 		$year = $orderdate[0];
@@ -84,13 +83,13 @@ class PurchaseInvoicesController extends AppController
         if ($this->request->is('post')) {
             $purchaseInvoice = $this->PurchaseInvoices->patchEntity($purchaseInvoice, $this->request->getData());
             $purchaseInvoice->voucher_no=$voucher_no;
-            $purchaseInvoice->location_id=$location_id;
+            //$purchaseInvoice->location_id=$location_id;
             $purchaseInvoice->city_id=$city_id;
             $purchaseInvoice->created_by=$user_id;
             $purchaseInvoice->created_on=date('Y-m-d');
             $purchaseInvoice->entry_from="Web";
 			$purchaseInvoiceVoucherNo='PI'.'/'.$year.''.$month.''.$day.'/'.$voucher_no;
-			$purchaseInvoice->invoice_no=$LocationData->alise.'/'.$purchaseInvoiceVoucherNo;
+			$purchaseInvoice->invoice_no=$CitiesData->alise.'/'.$purchaseInvoiceVoucherNo;
 			
 			$seller_ledger = $this->PurchaseInvoices->SellerLedgers->get($purchaseInvoice->seller_ledger_id);
 			$sellerData = $this->PurchaseInvoices->Sellers->get($seller_ledger->seller_id, [
@@ -107,7 +106,7 @@ class PurchaseInvoicesController extends AppController
 			$AccountingEntrie->debit=$purchaseInvoice->total_taxable_value;
 			$AccountingEntrie->credit=0;
 			$AccountingEntrie->transaction_date=$purchaseInvoice->transaction_date;
-			$AccountingEntrie->location_id=$location_id;
+			//$AccountingEntrie->location_id=$location_id;
 			$AccountingEntrie->city_id=$city_id;
 			$AccountingEntrie->entry_from="Web";
 			$AccountingEntrie->purchase_invoice_id=$purchaseInvoice->id; 
@@ -119,7 +118,7 @@ class PurchaseInvoicesController extends AppController
 			$AccountingEntrie->credit=$purchaseInvoice->total_amount;
 			$AccountingEntrie->debit=0;
 			$AccountingEntrie->transaction_date=$purchaseInvoice->transaction_date;
-			$AccountingEntrie->location_id=$location_id;
+			//$AccountingEntrie->location_id=$location_id;
 			$AccountingEntrie->city_id=$city_id;
 			$AccountingEntrie->entry_from="Web";
 			$AccountingEntrie->purchase_invoice_id=$purchaseInvoice->id;
@@ -139,7 +138,7 @@ class PurchaseInvoicesController extends AppController
 					$AccountingEntrieCGST->debit=$gstAmtInsert;
 					$AccountingEntrieCGST->credit=0;
 					$AccountingEntrieCGST->transaction_date=$purchaseInvoice->transaction_date;
-					$AccountingEntrieCGST->location_id=$location_id;
+					//$AccountingEntrieCGST->location_id=$location_id;
 					$AccountingEntrieCGST->city_id=$city_id;
 					$AccountingEntrieCGST->entry_from="Web";
 					$AccountingEntrieCGST->purchase_invoice_id=$purchaseInvoice->id;
@@ -153,7 +152,7 @@ class PurchaseInvoicesController extends AppController
 					$AccountingEntrieSGST->debit=$gstAmtInsert;
 					$AccountingEntrieSGST->credit=0;
 					$AccountingEntrieSGST->transaction_date=$purchaseInvoice->transaction_date;
-					$AccountingEntrieSGST->location_id=$location_id;
+					//$AccountingEntrieSGST->location_id=$location_id;
 					$AccountingEntrieSGST->city_id=$city_id;
 					$AccountingEntrieSGST->entry_from="Web";
 					$AccountingEntrieSGST->purchase_invoice_id=$purchaseInvoice->id; 
@@ -173,7 +172,7 @@ class PurchaseInvoicesController extends AppController
 					$AccountingEntrieIGST->debit=$gstAmtInsert;
 					$AccountingEntrieIGST->credit=0;
 					$AccountingEntrieIGST->transaction_date=$purchaseInvoice->transaction_date;
-					$AccountingEntrieIGST->location_id=$location_id;
+					//$AccountingEntrieIGST->location_id=$location_id;
 					$AccountingEntrieIGST->city_id=$city_id;
 					$AccountingEntrieIGST->entry_from="Web";
 					$AccountingEntrieIGST->purchase_invoice_id=$purchaseInvoice->id; 
@@ -188,7 +187,7 @@ class PurchaseInvoicesController extends AppController
 			$ReferenceDetail->credit=$purchaseInvoice->total_amount;
 			$ReferenceDetail->debit=0;
 			$ReferenceDetail->transaction_date=$purchaseInvoice->transaction_date;
-			$ReferenceDetail->location_id=$location_id;
+			//$ReferenceDetail->location_id=$location_id;
 			$ReferenceDetail->city_id=$city_id;
 			$ReferenceDetail->entry_from="Web";
 			$ReferenceDetail->type='New Ref';
@@ -209,7 +208,7 @@ class PurchaseInvoicesController extends AppController
 				$ItemLedger->sales_rate=$purchase_invoice_row->sales_rate;
 				$ItemLedger->mrp=$purchase_invoice_row->mrp;
 				$ItemLedger->status="In";
-				$ItemLedger->location_id=$location_id;
+				//$ItemLedger->location_id=$location_id;
 				$ItemLedger->city_id=$city_id;
 				$ItemLedger->purchase_invoice_id=$purchaseInvoice->id;
 				$ItemLedger->purchase_invoice_row_id=$purchase_invoice_row->id;
@@ -247,7 +246,7 @@ class PurchaseInvoicesController extends AppController
 
 	   $partyParentGroups = $this->PurchaseInvoices->AccountingGroups->find()
 						->where(['AccountingGroups.
-						purchase_invoice_party'=>'1','AccountingGroups.location_id'=>$location_id]);
+						purchase_invoice_party'=>'1','AccountingGroups.city_id'=>$city_id]);
 
 pr($partyParentGroups->toArray()); exit;
 		$partyGroups=[];
