@@ -158,13 +158,13 @@ padding: 10px 5px;
 				{
 					 
 					//$(this).closest("td.item_variation").find("input.stst[type=text]").val("Yes");
-					$(this).closest("tr").find(".stst").val("Yes");
+					$(this).closest("tr").find("input.stst").val("Yes");
 					$("#btn_sbmt").show();
 					
 				}
 				else{
 					//$(this).closest("td.item_variation").find("input.stst[type=text]").val("No");
-					$(this).closest("tr").find(".stst").val("No");
+					$(this).closest("tr").find("input.stst").val("No");
 				}	
 			});
 			$(document).on("change",".check_all_item",function(){

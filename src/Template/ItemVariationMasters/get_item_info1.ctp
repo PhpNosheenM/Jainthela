@@ -54,7 +54,7 @@
 					<td style="width:5%" align="center">
 						<input type="hidden" class="entity_maximum<?php echo $item_variation_master->unit_variation->id; ?>" name="item_variation_master_id[]" value="<?php echo $item_variation_master->id; ?>" disabled />
 						<input type="hidden" class="entity_maximum<?php echo $item_variation_master->unit_variation->id; ?>" name="unit_variation_id[]" value="<?php echo $item_variation_master->unit_variation_id; ?>" disabled/>
-						<input type="hidden" class="entity_maximum<?php echo $item_variation_master->unit_variation->id; ?>" name="status[]" value="No" class="stst" disabled />
+						<input type="hidden" class="stst entity_maximum<?php echo $item_variation_master->unit_variation->id; ?>" name="status[]" value="No" disabled />
 						<input name="test[]" type="checkbox"  value="<?php echo $item_variation_master->unit_variation->id; ?>" class="entity_variation single_item st2 entity_variation<?php echo $item_variation_master->unit_variation->id;?>" >
 					</td>
 					<td align="center">

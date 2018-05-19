@@ -54,7 +54,7 @@ class ItemVariationMastersController extends AppController
 			$purchase_rates=$this->request->data('purchase_rate');
 			$ready_to_sales=$this->request->data('ready_to_sale');
 			$t=0;
-		
+	 
 			 foreach($statuss as $status){
 				
 				$itemVariation1 = $this->ItemVariationMasters->ItemVariations->newEntity();
@@ -71,8 +71,8 @@ class ItemVariationMastersController extends AppController
 				
 					$check_values=$this->ItemVariationMasters->ItemVariations->find()->where(['ItemVariations.city_id'=>$city_id,'ItemVariations.item_id'=>$item_id,'ItemVariations.id'=>$item_variation_master_ids[$t],'ItemVariations.seller_id IS NULL'])->contain(['ItemVariationMasters'])->first();
 
-					echo @$updated_id=$check_values->id;
-					  exit;
+					 @$updated_id=$check_values->id;
+					   
 						if(empty($check_count1)){
 							if ($this->ItemVariationMasters->ItemVariations->save($itemVariation1)) {
 							
@@ -93,15 +93,14 @@ class ItemVariationMastersController extends AppController
 							$locationItem2->section_show=$status;
 							$locationItem2->unit_variation_id=$unit_variation_ids[$t];
 							$locationItem2->item_variation_master_id=$item_variation_master_ids[$t];
-							 pr($locationItem2);
-							 exit;
+							  
 							$this->ItemVariationMasters->ItemVariations->save($locationItem2);
 							 
 						}
-						$t++;
+						
 						
 				}
-				
+				$t++;
 			 }
 			  //$this->Flash->success(__('The item variation master has been added.'));
     		return $this->redirect(['action' => 'index1']);
