@@ -271,12 +271,12 @@ class ItemsController extends AppController
 		$showItems=[];
 		
 		 if($location_id){ //exit;
-			$ItemsVariations=$this->Items->ItemsVariations->find()->toArray();
+			$ItemsVariations=$this->Items->ItemsVariationsData->find()->toArray(); //pr($ItemsVariations);exit;
 			foreach($ItemsVariations as  $ItemsVariation){ 
 					 
 						//$location_id=1;
 						$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['ItemLedgers.item_variation_id'=>$ItemsVariation->id,'ItemLedgers.city_id'=>$city_id,'ItemLedgers.location_id'=>$location_id,'ItemLedgers.seller_id IS NULL'])->where($where1)->contain(['Items','UnitVariations'=>['Units']])->first();
-						//pr($ItemLedgers);
+						
 						$merge=@$ItemLedgers->item->name.'('.@$ItemLedgers->unit_variation->quantity_variation.'.'.@$ItemLedgers->unit_variation->unit->shortname.')';
 						//pr($merge); exit;
 						if($ItemLedgers){
@@ -298,7 +298,7 @@ class ItemsController extends AppController
 							if($ItemLedgers){  
 							
 							$UnitRateSerialItem = $this->itemWiseReport($Item->id,$transaction_date,$city_id,$where1);
-							
+							//pr($transaction_date); exit;
 							$showItems[$Item->id]=['item_name'=>$merge,'stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem['unit_rate']]; 
 						}
 				}
@@ -329,7 +329,7 @@ class ItemsController extends AppController
 		$location_id=$this->Auth->User('location_id');
 
 		$StockLedgers =  $this->Items->ItemLedgers->find()->where(['item_variation_id'=>$item_variation_id,'transaction_date <='=>$transaction_date])->order(['ItemLedgers.transaction_date'=>'ASC'])->toArray();
-
+		
 		 $stockNew=[];
 		foreach($StockLedgers as $StockLedger){
 			if($StockLedger->status=='In'){
@@ -391,10 +391,11 @@ class ItemsController extends AppController
 		//$city_id=$this->Auth->User('city_id');
 		$location_id=$this->Auth->User('location_id');
 	
-		$StockLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$item_id,'seller_id IS NULL'])->order(['ItemLedgers.transaction_date'=>'ASC'])->where($where)->toArray(); 
+		$StockLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$item_id,'seller_id IS NULL','location_id'=>0,'transaction_date <='=>$transaction_date])->order(['ItemLedgers.transaction_date'=>'ASC'])->toArray(); 
 		 $stockNew=[]; 
+		 
 		foreach($StockLedgers as $StockLedger){
-			if($StockLedger->status=='In'){ //pr($StockLedger); exit;
+			if($StockLedger->status=='In'){ //
 				$stockNew[]=['qty'=>$StockLedger->quantity,'rate'=>$StockLedger->rate];
 			}
 		}

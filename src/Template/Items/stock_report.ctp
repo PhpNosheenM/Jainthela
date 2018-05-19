@@ -109,6 +109,7 @@
 								<tr>
 									<th><?= ('SNo.') ?></th>
 									<th><?= ('Item Name') ?></th>
+									<th><?= ('Item Variation') ?></th>
 									<th><?= ('Closing Stock') ?></th>
 									<th><?= ('Unit rate') ?></th>
 									<th><?= ('Amount') ?></th>
@@ -117,21 +118,39 @@
 							<tbody>                                            
 								<?php $i = 0; $total_amt=0; ?>
 								
-								   <?php foreach($showItems as $showItem){ pr($showItem);
+								   <?php foreach($showItems as $showItem){
 								   $item_var_size=(sizeof($showItem));
-									$amt=$showItem['stock']*$showItem['unit_rate'];
-									$total_amt+=$amt;
+									//$amt=$showItem['stock']*$showItem['unit_rate'];
+									//$total_amt+=$amt;
+									//echo $item_var_size;
 								   ?>
 								<tr>
-									<td><?= $this->Number->format(++$i) ?></td>
-									<td><?= h($showItem['item_name']) ?></td>
-									<td><?= h($showItem['stock']) ?></td>
-									<td><?= h($showItem['unit_rate']) ?></td>
-									<td><?= h($amt) ?></td>
-								</tr>
+									<td rowspan="<?php echo $item_var_size; ?>"><?= $this->Number->format(++$i) ?></td>
+									<td rowspan="<?php echo $item_var_size; ?>"><?php echo ($showItem[0]['item_name']); ?></td>
+									<?php 
+									$jk=0;
+									foreach($showItem as $data){ 
+									$amt=$data['stock']*$data['unit_rate'];
+									$total_amt+=$amt;
+									if($jk > 0)
+									{
+										?>
+										<tr>
+										<?php
+									}
+									$jk++;
+									?>
+									
+										<td><?php echo ($data['item_variation_name']); ?></td>
+										<td><?php echo ($data['stock']); ?></td>
+										<td><?php echo ($data['unit_rate']); ?></td>
+										<td><?= h($amt) ?></td>
+										</tr>
+								   <?php } ?>
+								
 								   <?php } ?>
 								<tr>
-									<th colspan="4" style="text-align:right">Total</th>
+									<th colspan="5" style="text-align:right">Total</th>
 									<td><?= h($total_amt) ?></td>
 								</tr>
 							</tbody>

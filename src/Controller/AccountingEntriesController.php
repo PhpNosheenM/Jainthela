@@ -159,14 +159,14 @@ class AccountingEntriesController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 		$from_date = $this->request->query('from_date');
 		$to_date   = $this->request->query('to_date');
 		$from_date = date("Y-m-d",strtotime($from_date));
 		$to_date   = date("Y-m-d",strtotime($to_date));
 		
 		$AccountingGroups=$this->AccountingEntries->Ledgers->AccountingGroups->find()
-		->where(['AccountingGroups.nature_of_group_id IN'=>[1,2]]);
+		->where(['AccountingGroups.nature_of_group_id IN'=>[1,2],'AccountingGroups.city_id'=>$city_id]);
 		$Groups=[];
 		foreach($AccountingGroups as $AccountingGroup){
 			$Groups[$AccountingGroup->id]['ids'][]=$AccountingGroup->id;
@@ -218,18 +218,18 @@ class AccountingEntriesController extends AppController
 	}
 	
 	public function ProfitLossStatement()
-    {
+    { 
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 		$from_date = $this->request->query('from_date');
 		$to_date   = $this->request->query('to_date');
 		$from_date = date("Y-m-d",strtotime($from_date));
 		$to_date   = date("Y-m-d",strtotime($to_date));
 		
 		$AccountingGroups=$this->AccountingEntries->Ledgers->AccountingGroups->find()
-		->where(['AccountingGroups.nature_of_group_id IN'=>[3,4]]);
+		->where(['AccountingGroups.nature_of_group_id IN'=>[3,4],'AccountingGroups.city_id'=>$city_id]);
 		$Groups=[];
 		foreach($AccountingGroups as $AccountingGroup){
 			$Groups[$AccountingGroup->id]['ids'][]=$AccountingGroup->id;
@@ -250,7 +250,7 @@ class AccountingEntriesController extends AppController
 		$query=$this->AccountingEntries->find();
 		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
 				->group('AccountingEntries.ledger_id')
-				->where(['AccountingEntries.location_id'=>$location_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date])
+				->where(['AccountingEntries.city_id'=>$city_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date])
 				->contain(['Ledgers'=>function($q){
 					return $q->select(['Ledgers.accounting_group_id','Ledgers.id']);
 				}]);
