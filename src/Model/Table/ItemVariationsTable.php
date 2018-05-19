@@ -42,6 +42,7 @@ class ItemVariationsTable extends Table
             'foreignKey' => 'item_id',
             'joinType' => 'INNER'
         ]);
+		
         $this->belongsTo('UnitVariations', [
             'foreignKey' => 'unit_variation_id',
             'joinType' => 'INNER'
@@ -51,15 +52,19 @@ class ItemVariationsTable extends Table
             'foreignKey' => 'seller_id',
             'joinType' => 'INNER'
         ]);
+		
 		$this->belongsTo('ItemVariationMasters', [
-					'foreignKey' => 'item_variation_master_id',
-					'joinType' => 'INNER'
-				]);
+			'foreignKey' => 'item_variation_master_id',
+			'joinType' => 'INNER'
+		]);
+		
         $this->hasMany('OrderDetails', [
             'foreignKey' => 'item_variation_id'
         ]);
  
+		 $this->belongsTo('ItemVariationMasters');
 		
+
 		//$this->belongsToMany('Units');
 	/* 	
         $this->belongsToMany('UnitVariations', [
@@ -68,16 +73,12 @@ class ItemVariationsTable extends Table
             'joinTable' => 'item_variation_masters'
         ]); */
  
-
-        $this->belongsTo('ItemVariationMasters');
-
         /* $this->belongsToMany('UnitVariations', [
             'foreignKey' => 'item_id',
             'targetForeignKey'=>'unit_variation_id',
             'joinTable' => 'item_variation_masters'
         ])->setConditions(['status' => 'Active']); */
-        
- 
+		
     }
 
     /**
