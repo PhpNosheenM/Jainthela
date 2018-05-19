@@ -61,16 +61,17 @@ class SellerItemsController extends AppController
         $items = $this->SellerItems->find();
          $items->contain(['Sellers','Items' => function($q) use($city_id,$categoryWhere,$brandWhere,$limit,$page) {
 			return $q->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id])
-			    ->where($categoryWhere)
-				->where($brandWhere) 
-				->limit($limit)
-				->page($page);
+			->where($categoryWhere)
+			->where($brandWhere) 
+			->limit($limit)
+			->page($page);
 		},'ItemVariations' => ['UnitVariations'=>['Units'],'ItemVariationMasters']])
 		->select(['total'=>$items->func()->count('ItemVariations.seller_item_id')])
-		->group(['SellerItems.id'])
-		->having(['total'>0])
+		->innerJoinWith('ItemVariations')
+		->where(['SellerItems.city_id' => $city_id])
 		->where($sellerWhere)
-		->where($sellerItems_category);
+		->where($sellerItems_category)
+		->autoFields(true); ;
 	
         if(!empty($items->toArray()))
         {
