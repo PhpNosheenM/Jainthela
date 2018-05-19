@@ -58,21 +58,20 @@ class SellerItemsController extends AppController
 		  $sellerItems_category = ['SellerItems.category_id IN'=>$category_id];
         }else { $categoryWhere =''; }
 
-        $items = $this->SellerItems->find()
-        ->contain(['Sellers','Items' => function($q) use($city_id,$categoryWhere,$brandWhere,$limit,$page) {
+        $items = $this->SellerItems->find();
+         $items->contain(['Sellers','Items' => function($q) use($city_id,$categoryWhere,$brandWhere,$limit,$page) {
 			return $q->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id])
 			    ->where($categoryWhere)
 				->where($brandWhere) 
 				->limit($limit)
 				->page($page);
 		},'ItemVariations' => ['UnitVariations'=>['Units'],'ItemVariationMasters']])
+		->select(['total'=>$items->func()->count('ItemVariations.seller_item_id')])
+		->group(['SellerItems.id'])
+		->having(['total'>0])
 		->where($sellerWhere)
 		->where($sellerItems_category);
-		
-		
-		
-		
-		
+	
         if(!empty($items->toArray()))
         {
           $count_value = 0;
