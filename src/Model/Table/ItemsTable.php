@@ -170,6 +170,8 @@ class ItemsTable extends Table
             'foreignKey' => 'item_id',
             'joinType' => 'INNER'
         ]);
+        
+         $this->belongsTo('SellerItems');
 
         $this->belongsTo('HomeScreens');
 

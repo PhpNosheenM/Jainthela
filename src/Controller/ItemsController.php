@@ -126,7 +126,11 @@ class ItemsController extends AppController
 			$item->city_id=$city_id;
 			$item->created_by=$user_id;
             if ($item_data=$this->Items->save($item)) {
-				
+				$seller_item = $this->Items->SellerItems->query();
+				$seller_item->update()
+					->set(['brand_id' => $item_data->brand_id])
+					->where(['item_id' => $item_data->id])
+					->execute();
 				
             	$dir_name=[];
 				foreach ($this->request->getData('item_variation_row') as $value) {
@@ -212,7 +216,7 @@ class ItemsController extends AppController
 			$unit_option[]=['text'=>$unitVariation->quantity_variation .' ' .$unitVariation->unit->unit_name ,'value'=>$unitVariation->id ];
 		}
         $categories = $this->Items->Categories->find('list')->where(['Categories.city_id'=>$city_id]);
-        $brands = $this->Items->Brands->find('list')->where(['Brands.city_id'=>$city_id]);
+        $brands = $this->Items->Brands->find('list');
 
 		$gstFigures =  $this->Items->GstFigures->find('list')->where(['city_id'=>$city_id]);
 		//pr($unitVariations->toArray());exit;
@@ -476,6 +480,11 @@ class ItemsController extends AppController
 			if ($item_data=$this->Items->save($item)) { 
 				$dir_name=[];
 				$unitVariationIds=[];
+				$seller_item = $this->Items->SellerItems->query();
+				$seller_item->update()
+					->set(['brand_id' => $item_data->brand_id])
+					->where(['item_id' => $item_data->id])
+					->execute();
 				foreach ($this->request->getData('item_variation_row') as $value) {
 					$unitVariationIds[]=$value['unit_variation_id'];
         			if(!empty($value['unit_variation_id']))
