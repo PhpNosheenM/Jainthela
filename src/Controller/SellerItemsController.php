@@ -80,7 +80,7 @@ class SellerItemsController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
-		$location_id=$this->Auth->User('location_id');
+		//$location_id=$this->Auth->User('location_id');
 		$this->viewBuilder()->layout('super_admin_layout');
         $sellerItem = $this->SellerItems->newEntity();
         if ($this->request->is('post')) {
@@ -128,12 +128,13 @@ class SellerItemsController extends AppController
 				else
 				{ 
 					$query = $this->SellerItems->query();
-					$query->insert(['seller_id','category_id', 'item_id','commission_percentage']);
+					$query->insert(['seller_id','category_id', 'item_id','commission_percentage','city_id']);
 					$query->values([
 						'seller_id' => $seller_id,
 						'category_id' => $category_ids[$i],
 						'item_id' => $item_ids[$i],
-						'commission_percentage' => $commissions[$i]
+						'commission_percentage' => $commissions[$i],
+						'city_id' => $city_id
 					]);
 					$query->execute();
 					
@@ -156,14 +157,15 @@ class SellerItemsController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
-		$location_id=$this->Auth->User('location_id');
+		//$location_id=$this->Auth->User('location_id');
 		$this->viewBuilder()->layout('seller_layout');
         $itemVariation = $this->SellerItems->ItemVariations->newEntity();
         if ($this->request->is('post')) 
 		{
 			$masterIds=[];$ItemIds=[];
 			$arr=$this->request->getData(); $i=1; 
-         
+         	pr($arr);
+         	exit;
 			foreach($arr as $key => $csm)
 			{
 				
@@ -183,7 +185,9 @@ class SellerItemsController extends AppController
 				}
 				else{
 					$arr[$key]['seller_id']  = $user_id;
+					$arr[$key]['city_id']  = $city_id;
 					$arr[$key]['commission'] = $SellerItemdata[0]->commission_percentage;
+					$arr[$key]['seller_item_id'] = $SellerItemdata[0]->id;
 				}
 				
 				$i++;
@@ -366,13 +370,12 @@ class SellerItemsController extends AppController
 	{
 		$user_id=$this->Auth->User('id');
 		$item_id = $this->request->query('item_id');
-		$item = $this->SellerItems->Items->find()->where(['Items.id'=>@$item_id])->contain(['SellerItems'=>function($q) use($user_id){
-				return $q->where(['seller_id'=>$user_id]);
-		},'ItemVariationMasters'=>['ItemVariations'=>function($q) use($user_id){
-				return $q->where(['seller_id'=>$user_id]);
+		$item = $this->SellerItems->Items->find()->where(['Items.id'=>@$item_id])->contain(['SellerItems'=>function($q) use($user_id,$item_id){
+				return $q->where(['seller_id'=>$user_id,'SellerItems.item_id'=>@$item_id]);
+		},'ItemVariationMasters'=>['ItemVariations'=>function($q) use($user_id,$item_id){
+				return $q->where(['seller_id'=>$user_id,'ItemVariations.item_id'=>@$item_id]);
 		},'UnitVariations'=>['Units']]])->first();
-		//pr($item->toArray());
-		//exit;
+		
 		$this->set(compact('item'));
 	}
 	public function getItemVariationDetail()

@@ -69,6 +69,7 @@ class ReferenceDetail extends Entity
         'supplier_id' => true,
         'transaction_date' => true,
         'location_id' => true,
+        'city_id' => true,
         'ledger_id' => true,
         'type' => true,
         'ref_name' => true,

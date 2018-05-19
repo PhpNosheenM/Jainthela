@@ -124,7 +124,7 @@ class PaymentsController extends AppController
 					$accountEntry->ledger_id                  = $payment_row->ledger_id;
 					$accountEntry->debit                      = @$payment_row->debit;
 					$accountEntry->credit                     = @$payment_row->credit;
-					$accountEntry->transaction_date           = $payment->transaction_date;
+					$accountEntry->transaction_date           = date('Y-m-d', strtotime($payment->transaction_date));
 					$accountEntry->city_id                    = $city_id;
 					$accountEntry->payment_id                 = $payment->id;
 					$accountEntry->payment_row_id             = $payment_row->id;
