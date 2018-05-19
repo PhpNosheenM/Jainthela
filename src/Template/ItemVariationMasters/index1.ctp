@@ -75,8 +75,8 @@ padding: 10px 5px;
 					sales_rate=mrp;
 
 				}
-				var commission = parseFloat($(this).closest("tr").find("td input#commission").val()); 
-				var amt_after_commission = sales_rate-((sales_rate*commission)/100);
+				//var commission = parseFloat($(this).closest("tr").find("td input#commission").val()); 
+				var amt_after_commission = sales_rate-((sales_rate)/100);
 				$(this).closest("tr").find("td input.purchase_rate").val(round(amt_after_commission));
 			}
 		});
@@ -85,11 +85,11 @@ padding: 10px 5px;
 			var mrp        = parseFloat($(this).closest("tr").find("td input.mrp").val());
 			$(this).closest("tr").find("td input.sales_rate").val(mrp)
 			var sales_rate = parseFloat($(this).closest("tr").find("td input.sales_rate").val());
-			var commission = parseFloat($(this).closest("tr").find("td input#commission").val()); 
+			//var commission = parseFloat($(this).closest("tr").find("td input.commission").val()); 
 			
 			if(!isNaN(sales_rate))
 			{ 
-				var amt_after_commission = sales_rate-((sales_rate*commission)/100);
+				var amt_after_commission = sales_rate-((sales_rate)/100);
 				$(this).closest("tr").find("td input.purchase_rate").val(round(amt_after_commission)); 
 			}
 		});
