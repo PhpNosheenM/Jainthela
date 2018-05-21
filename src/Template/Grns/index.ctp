@@ -54,8 +54,9 @@ $this->set('title', 'Challan');
                                 <td><?= h(@$grn->vendor_ledger->name) ?></td>
                                 <td><?= h($grn->transaction_date) ?></td>
                                 <td class="actions">
-                                 
-                                    
+                                    <?php  if($grn->status=="Pending"){ ?>
+                                    <?= $this->Html->link(__('Stock Transfer'), ['controller'=>'StockTransferVouchers','action' => 'add', $grn->id]) ?>
+                                    <?php } ?>
                                     
                                 </td>
                             </tr>
