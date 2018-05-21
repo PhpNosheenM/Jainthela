@@ -66,6 +66,7 @@ class SuperAdminsController extends AppController
                 $companies = $this->SuperAdmins->Companies->find('all')->where(['state_id'=>$state->id])->first();
                 $user['company_id']=$companies->id;
 				$user['user_type']='Super Admin';
+				$user['financial_year_id']=1;
 				$characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
                 $charactersLength = strlen($characters);
                 $randomString = '';

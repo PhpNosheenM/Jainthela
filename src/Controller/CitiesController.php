@@ -353,6 +353,7 @@ class CitiesController extends AppController
 				$accountingGroup->name='Input GST';
 				$accountingGroup->parent_id=$accountingParentGroup->id;
 				$accountingGroup->city_id=$city->id;
+				$accountingGroup->input_output_gst="Input";
 				$this->Cities->AccountingGroups->save($accountingGroup);
 				
 				$accountingGroup = $this->Cities->AccountingGroups->newEntity();
@@ -360,6 +361,7 @@ class CitiesController extends AppController
 				$accountingGroup->name='Output GST';
 				$accountingGroup->parent_id=$accountingParentGroup->id;
 				$accountingGroup->city_id=$city->id;
+				$accountingGroup->input_output_gst="Output";
 				$this->Cities->AccountingGroups->save($accountingGroup);
 
 				$financialY=date('Y', strtotime($city->books_beginning_from));

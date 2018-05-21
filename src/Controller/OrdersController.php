@@ -338,7 +338,57 @@ class OrdersController extends AppController
 							
 						   }
 						}else{
-							exit;
+							foreach($order->order_details as $order_detail){ 
+							//$gstAmtdata=$order_detail->gst_value/2;
+							$gstAmtInsert=round($gstAmtdata,2);
+							//pr($order_detail->gst_figure_id); exit;
+							
+							//Accounting Entries for IGST//
+							$gstLedgerCGST = $this->Orders->Ledgers->find()
+							->where(['Ledgers.gst_figure_id' =>$order_detail->gst_figure_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'IGST','city_id'=>$city_id])->first();
+							$AccountingEntrieCGST = $this->Orders->AccountingEntries->newEntity();
+							$AccountingEntrieCGST->ledger_id=$gstLedgerCGST->id;
+							$AccountingEntrieCGST->credit=$gstAmtInsert;
+							$AccountingEntrieCGST->debit=0;
+							$AccountingEntrieCGST->transaction_date=$order->transaction_date;
+							$AccountingEntrieCGST->city_id=$city_id;
+							$AccountingEntrieCGST->entry_from="Web";
+							$AccountingEntrieCGST->order_id=$order->id;  
+							$this->Orders->AccountingEntries->save($AccountingEntrieCGST);
+							
+							
+							$Item = $this->Orders->OrderDetails->ItemVariations->get($order_detail->item_variation_id);
+							$ItemLedger = $this->Orders->Grns->GrnRows->ItemLedgers->newEntity(); 
+							$ItemLedger->item_id=$order_detail->item_id; 
+							$ItemLedger->item_variation_id=$order_detail->item_variation_id;
+							$ItemLedger->seller_id=$Item->seller_id;
+							$ItemLedger->transaction_date=$order->transaction_date;  
+							$ItemLedger->quantity=$order_detail->quantity;
+							$ItemLedger->rate=$order_detail->rate;
+							$ItemLedger->purchase_rate=$Item->purchase_rate;
+							$ItemLedger->sales_rate=$order_detail->rate; 
+							$ItemLedger->status="Out";
+							$ItemLedger->city_id=$city_id;
+							$ItemLedger->order_id=$order->id;
+							$ItemLedger->order_detail_id=$order_detail->id; //pr($order_detail); exit;
+							$this->Orders->Grns->GrnRows->ItemLedgers->save($ItemLedger);
+							
+							$ItemVariationData = $this->Orders->OrderDetails->ItemVariations->get($order_detail->item_variation_id);
+							$current_stock=$ItemVariationData->current_stock-$order_detail->quantity; 
+							$out_of_stock="No";
+							$ready_to_sale="Yes";
+							if($current_stock <= 0){
+								$ready_to_sale="No";
+								$out_of_stock="Yes";
+							}
+							
+							$query = $this->Orders->OrderDetails->ItemVariations->query();
+							$query->update()
+							->set(['current_stock'=>$current_stock,'out_of_stock'=>$out_of_stock,'ready_to_sale'=>$ready_to_sale])
+							->where(['id'=>$order_detail->item_variation_id])
+							->execute(); 
+							
+						   }
 						}
 						
 						//Accounting Entries for Reference Details//
@@ -445,7 +495,57 @@ class OrdersController extends AppController
 								
 							   }
 							}else{
-								exit;
+								foreach($order->order_details as $order_detail){ 
+								//$gstAmtdata=$order_detail->gst_value/2;
+								$gstAmtInsert=round($gstAmtdata,2);
+								//pr($order_detail->gst_figure_id); exit;
+								
+								//Accounting Entries for IGST//
+								$gstLedgerCGST = $this->Orders->Ledgers->find()
+								->where(['Ledgers.gst_figure_id' =>$order_detail->gst_figure_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'IGST','city_id'=>$city_id])->first();
+								$AccountingEntrieCGST = $this->Orders->AccountingEntries->newEntity();
+								$AccountingEntrieCGST->ledger_id=$gstLedgerCGST->id;
+								$AccountingEntrieCGST->credit=$gstAmtInsert;
+								$AccountingEntrieCGST->debit=0;
+								$AccountingEntrieCGST->transaction_date=$order->transaction_date;
+								$AccountingEntrieCGST->city_id=$city_id;
+								$AccountingEntrieCGST->entry_from="Web";
+								$AccountingEntrieCGST->order_id=$order->id;  
+								$this->Orders->AccountingEntries->save($AccountingEntrieCGST);
+								
+								
+								$Item = $this->Orders->OrderDetails->ItemVariations->get($order_detail->item_variation_id);
+								$ItemLedger = $this->Orders->Grns->GrnRows->ItemLedgers->newEntity(); 
+								$ItemLedger->item_id=$order_detail->item_id; 
+								$ItemLedger->item_variation_id=$order_detail->item_variation_id;
+								$ItemLedger->seller_id=$Item->seller_id;
+								$ItemLedger->transaction_date=$order->transaction_date;  
+								$ItemLedger->quantity=$order_detail->quantity;
+								$ItemLedger->rate=$order_detail->rate;
+								$ItemLedger->purchase_rate=$Item->purchase_rate;
+								$ItemLedger->sales_rate=$order_detail->rate; 
+								$ItemLedger->status="Out";
+								$ItemLedger->city_id=$city_id;
+								$ItemLedger->order_id=$order->id;
+								$ItemLedger->order_detail_id=$order_detail->id; //pr($order_detail); exit;
+								$this->Orders->Grns->GrnRows->ItemLedgers->save($ItemLedger);
+								
+								$ItemVariationData = $this->Orders->OrderDetails->ItemVariations->get($order_detail->item_variation_id);
+								$current_stock=$ItemVariationData->current_stock-$order_detail->quantity; 
+								$out_of_stock="No";
+								$ready_to_sale="Yes";
+								if($current_stock <= 0){
+									$ready_to_sale="No";
+									$out_of_stock="Yes";
+								}
+								
+								$query = $this->Orders->OrderDetails->ItemVariations->query();
+								$query->update()
+								->set(['current_stock'=>$current_stock,'out_of_stock'=>$out_of_stock,'ready_to_sale'=>$ready_to_sale])
+								->where(['id'=>$order_detail->item_variation_id])
+								->execute(); 
+								
+							   }
 							}
 					
 					//Grn entry
@@ -539,9 +639,71 @@ class OrdersController extends AppController
 								
 							   }
 							}else{
-								exit;
+								foreach($order->order_details as $order_detail){ 
+								//$gstAmtdata=$order_detail->gst_value/2;
+								$gstAmtInsert=round($gstAmtdata,2);
+								//pr($order_detail->gst_figure_id); exit;
+								
+								//Accounting Entries for IGST//
+								$gstLedgerCGST = $this->Orders->Ledgers->find()
+								->where(['Ledgers.gst_figure_id' =>$order_detail->gst_figure_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'IGST','city_id'=>$city_id])->first();
+								$AccountingEntrieCGST = $this->Orders->AccountingEntries->newEntity();
+								$AccountingEntrieCGST->ledger_id=$gstLedgerCGST->id;
+								$AccountingEntrieCGST->credit=$gstAmtInsert;
+								$AccountingEntrieCGST->debit=0;
+								$AccountingEntrieCGST->transaction_date=$order->transaction_date;
+								$AccountingEntrieCGST->city_id=$city_id;
+								$AccountingEntrieCGST->entry_from="Web";
+								$AccountingEntrieCGST->order_id=$order->id;  
+								$this->Orders->AccountingEntries->save($AccountingEntrieCGST);
+								
+								
+								$Item = $this->Orders->OrderDetails->ItemVariations->get($order_detail->item_variation_id);
+								$ItemLedger = $this->Orders->Grns->GrnRows->ItemLedgers->newEntity(); 
+								$ItemLedger->item_id=$order_detail->item_id; 
+								$ItemLedger->item_variation_id=$order_detail->item_variation_id;
+								$ItemLedger->seller_id=$Item->seller_id;
+								$ItemLedger->transaction_date=$order->transaction_date;  
+								$ItemLedger->quantity=$order_detail->quantity;
+								$ItemLedger->rate=$order_detail->rate;
+								$ItemLedger->purchase_rate=$Item->purchase_rate;
+								$ItemLedger->sales_rate=$order_detail->rate; 
+								$ItemLedger->status="Out";
+								$ItemLedger->city_id=$city_id;
+								$ItemLedger->order_id=$order->id;
+								$ItemLedger->order_detail_id=$order_detail->id; //pr($order_detail); exit;
+								$this->Orders->Grns->GrnRows->ItemLedgers->save($ItemLedger);
+								
+								$ItemVariationData = $this->Orders->OrderDetails->ItemVariations->get($order_detail->item_variation_id);
+								$current_stock=$ItemVariationData->current_stock-$order_detail->quantity; 
+								$out_of_stock="No";
+								$ready_to_sale="Yes";
+								if($current_stock <= 0){
+									$ready_to_sale="No";
+									$out_of_stock="Yes";
+								}
+								
+								$query = $this->Orders->OrderDetails->ItemVariations->query();
+								$query->update()
+								->set(['current_stock'=>$current_stock,'out_of_stock'=>$out_of_stock,'ready_to_sale'=>$ready_to_sale])
+								->where(['id'=>$order_detail->item_variation_id])
+								->execute(); 
+								
+							   }
 							}
-					
+					//Accounting Entries for Reference Details//
+						$ReferenceDetail = $this->Orders->ReferenceDetails->newEntity(); 
+						$ReferenceDetail->ledger_id=$LedgerData->id;
+						$ReferenceDetail->debit=$order->grand_total;
+						$ReferenceDetail->credit=0;
+						$ReferenceDetail->transaction_date=$order->transaction_date;
+						$ReferenceDetail->city_id=$city_id;
+						$ReferenceDetail->entry_from="Web";
+						$ReferenceDetail->type='New Ref';
+						$ReferenceDetail->ref_name=$order->order_no;
+						$ReferenceDetail->order_id=$order->id;
+						$this->Orders->ReferenceDetails->save($ReferenceDetail);
+						
 					//Grn entry
 					$this->orderDeliver($order->id);
 			}
@@ -624,6 +786,45 @@ class OrdersController extends AppController
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
+	public function cashCreditReport()
+    {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
+		$this->viewBuilder()->layout('super_admin_layout');
+		$location_id = $this->request->query('location_id');
+		$from_date = $this->request->query('from_date');
+		$to_date   = $this->request->query('to_date');
+		if(empty($from_date) || empty($to_date))
+		{
+			$from_date = date("Y-m-01");
+			$to_date   = date("Y-m-d");
+		}else{
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$to_date= date("Y-m-d",strtotime($to_date));
+		}
+		if(!empty($from_date))
+		{
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$where['Orders.transaction_date >=']=$from_date;
+		}
+		if(!empty($to_date))
+		{
+			$to_date   = date("Y-m-d",strtotime($to_date));
+			$where['Orders.transaction_date <=']=$to_date;
+		}
+		if(!empty($location_id))
+		{
+			//$to_date   = date("Y-m-d",strtotime($to_date));
+			$where['Orders.location_id']=$location_id;
+		}
+	//	pr($from_date); exit;
+		$orders = $this->Orders->find()->contain(['Locations'])->where($where);
+		$Locations = $this->Orders->Locations->find('list');
+		//pr($orders); exit;
+		$this->set(compact('from_date','to_date','orders','Locations','location_id'));
+	}
+	 
     public function edit($id = null)
     {
         $order = $this->Orders->get($id, [
