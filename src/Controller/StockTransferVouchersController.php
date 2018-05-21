@@ -51,6 +51,9 @@ class StockTransferVouchersController extends AppController
      */
     public function add()
     {
+        $user_id=$this->Auth->User('id');
+        $city_id=$this->Auth->User('city_id');
+        $this->viewBuilder()->layout('super_admin_layout');
         $stockTransferVoucher = $this->StockTransferVouchers->newEntity();
         if ($this->request->is('post')) {
             $stockTransferVoucher = $this->StockTransferVouchers->patchEntity($stockTransferVoucher, $this->request->getData());
