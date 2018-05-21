@@ -695,8 +695,43 @@ class ItemsController extends AppController
 		}
 	//	pr($from_date); exit;
 		$orders = $this->Items->Orders->find()->contain(['Locations'])->where($where);
-		$Locations = $this->Items->Orders->Locations->find('list');
+		$Locations = $this->Items->Orders->Locations->find('list')->where(['city_id'=>$city_id]);
 		//pr($orders); exit;
 		$this->set(compact('from_date','to_date','orders','Locations','location_id'));
+	}
+	
+		public function PurchaseReport()
+    { 
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
+		$this->viewBuilder()->layout('super_admin_layout');
+		$location_id = $this->request->query('location_id');
+		$from_date = $this->request->query('from_date');
+		$to_date   = $this->request->query('to_date');
+		if(empty($from_date) || empty($to_date))
+		{
+			$from_date = date("Y-m-01");
+			$to_date   = date("Y-m-d");
+		}else{
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$to_date= date("Y-m-d",strtotime($to_date));
+		}
+		if(!empty($from_date))
+		{
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$where['PurchaseInvoices.transaction_date >=']=$from_date;
+		}
+		if(!empty($to_date))
+		{
+			$to_date   = date("Y-m-d",strtotime($to_date));
+			$where['PurchaseInvoices.transaction_date <=']=$to_date;
+		}
+		
+	//	pr($from_date); exit;
+		$PurchaseInvoices = $this->Items->PurchaseInvoices->find()->contain(['Locations'])->where($where);
+		$Locations = $this->Items->Orders->Locations->find('list');
+		//pr($orders); exit;
+		$this->set(compact('from_date','to_date','PurchaseInvoices','Locations','location_id'));
 	}
 }

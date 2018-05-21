@@ -46,7 +46,9 @@
 				<div class="panel-body">    
 					<div class="table-responsive" class="col-md-10">
 						<div class="form-group" >
-								<div class="col-md-6" align="center" style="font-weight: bold">INPUT TAX (GST) - PURCHASE
+								<div class="col-md-6" align="center" style="font-weight: bold">INPUT TAX (GST) - 
+								<?php $purchase="PURCHASE REPORT";  ?>
+								<?= $this->Html->link($purchase, ['controller' => 'Items', 'action' => 'PurchaseReport'],['target'=>'_blank']) ?>
 									<table class="table table-bordered  table-condensed" width="100%" border="1">
 										<thead>
 											<tr>
@@ -74,7 +76,9 @@
 										</tfoot>
 									</table>
 								</div>
-								<div class="col-md-6" align="center" style="font-weight: bold">OUTPUT TAX (GST) - SALES
+								<div class="col-md-6" align="center" style="font-weight: bold">OUTPUT TAX (GST) - 
+										<?php $purchase="SALES REPORT";  ?>
+										<?= $this->Html->link($purchase, ['controller' => 'Items', 'action' => 'SalesReport','location_id'=>'','from_date'=>date('d-m-Y',strtotime($from_date)),'to_date'=>date('d-m-Y',strtotime($to_date))],['target'=>'_blank']) ?>
 										<table class="table table-bordered  table-condensed" width="100%" border="1">
 										<thead>
 											
