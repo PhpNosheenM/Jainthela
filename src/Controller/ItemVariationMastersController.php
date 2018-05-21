@@ -65,7 +65,7 @@ class ItemVariationMastersController extends AppController
 				$itemVariation1->unit_variation_id=$unit_variation_ids[$t];
 
 				
-				if($status=='Yes'){ 
+				if($status=='Yes'){
 					 $check_count1=$this->ItemVariationMasters->ItemVariations->find()->where(['ItemVariations.city_id'=>$city_id,'ItemVariations.item_id'=>$item_id,'ItemVariations.id'=>$item_variation_master_ids[$t],'ItemVariations.seller_id IS NULL'])->count();
 
 				
