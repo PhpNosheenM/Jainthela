@@ -7,14 +7,14 @@
     font-size: 13px;
 }
 </style>
-<?php $this->set('title', 'Sales Report'); ?><!-- PAGE CONTENT WRAPPER -->
+<?php $this->set('title', 'Purchase Report'); ?><!-- PAGE CONTENT WRAPPER -->
 <div class="page-content-wrap">
 
 	<div class="row">
 		<div class="col-md-12">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><strong>SALES REPORT</strong></h3>
+					<h3 class="panel-title"><strong>PURCHASE REPORT</strong></h3>
 					<div class="pull-right">
 						<div class="pull-left">
 						</div> 
@@ -24,13 +24,6 @@
 					<div class="row">
 					<?= $this->Form->create('Search',['type'=>'GET']) ?>
 						<div class="form-group">
-								<div class="col-md-4 col-xs-12">
-									<div class="input-group">
-									<span class="input-group-addon add-on"> Location </span>
-										<?php echo $this->Form->select('location_id',$Locations, ['empty'=>'--Select--','label' => false,'class' => 'form-control input-sm ledger select', 'data-live-search'=>true,'value'=>$location_id]); ?>
-										</div>
-								</div>
-								
 								<div class="col-md-4 col-xs-12">
 									<div class="input-group">
 									<span class="input-group-addon add-on"> FROM </span>
@@ -48,7 +41,7 @@
 					</div>
 				</div>  
 				<?php $LeftTotal=0; $RightTotal=0;
-				if($orders){
+				if($PurchaseInvoices){
 				?>
 				<div class="panel-body">    
 					<div class="table-responsive">
@@ -59,14 +52,14 @@
 									<th><?= ('Order No') ?></th>
 									<th><?= ('Transaction Date') ?></th>
 									<th><?= ('Location') ?></th>
-									<th><?= ('Sales Amount') ?></th>
+									<th><?= ('Purchase Amount') ?></th>
 									<th><?= ('GST') ?></th>
 									<th><?= ('Total') ?></th>
 								</tr>
 							</thead>
 							<tbody>                                            
 								<?php $i = 0; $total_sales_amount=0; $total_gst_amount=0; $total_amount=0;?>
-								  <?php foreach ($orders as $order): //pr($order); exit; ?>
+								  <?php foreach ($PurchaseInvoices as $order): //pr($order); exit; ?>
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
 									<td><?php echo $this->Html->link($order->order_no,['controller'=>'Orders','action' => 'view', $order->id],['target'=>'_blank']); ?></td>

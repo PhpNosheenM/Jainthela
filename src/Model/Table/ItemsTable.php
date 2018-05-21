@@ -52,6 +52,7 @@ class ItemsTable extends Table
         $this->setPrimaryKey('id');
 
           $this->belongsTo('Filters');
+          $this->belongsTo('PurchaseInvoices');
 
         $this->belongsTo('Categories', [
             'foreignKey' => 'category_id',
