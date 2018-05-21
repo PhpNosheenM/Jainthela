@@ -659,4 +659,38 @@ class ItemsController extends AppController
 		}
 		exit;
 	}
+		
+		
+	public function SalesReport()
+    { 
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
+		$this->viewBuilder()->layout('super_admin_layout');
+		$ledger_id = $this->request->query('ledger_id');
+		$from_date = $this->request->query('from_date');
+		$to_date   = $this->request->query('to_date');
+		if(empty($from_date) || empty($to_date))
+		{
+			$from_date = date("Y-m-01");
+			$to_date   = date("Y-m-d");
+		}else{
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$to_date= date("Y-m-d",strtotime($to_date));
+		}
+		if(!empty($from_date))
+		{
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$where['Orders.transaction_date >=']=$from_date;
+		}
+		if(!empty($to_date))
+		{
+			$to_date   = date("Y-m-d",strtotime($to_date));
+			$where['Orders.transaction_date <=']=$to_date;
+		}
+	//	pr($from_date); exit;
+		$orders = $this->Items->Orders->find()->contain(['Locations']);
+		//pr($orders); exit;
+		$this->set(compact('from_date','to_date','orders'));
+	}
 }

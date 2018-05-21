@@ -289,7 +289,7 @@ class AccountingEntriesController extends AppController
 		$to_date   = $this->request->query('to_date');
 		if(empty($from_date) || empty($to_date))
 		{
-			$from_date = date("Y-m-d");
+			$from_date = date("Y-m-01");
 			$to_date   = date("Y-m-d");
 		}else{
 			$from_date = date("Y-m-d",strtotime($from_date));
@@ -379,7 +379,7 @@ class AccountingEntriesController extends AppController
 		//$to_date   ="2019-04-31";
 		if(empty($from_date) || empty($to_date))
 		{
-			$from_date = date("Y-m-d");
+			$from_date = date("Y-m-01");
 			$to_date   = date("Y-m-d");
 		}else{
 			$from_date = date("Y-m-d",strtotime($from_date));

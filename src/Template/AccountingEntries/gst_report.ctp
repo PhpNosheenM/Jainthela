@@ -58,7 +58,7 @@
 										<?php $totalgstinput=0; foreach($GstFigures as $GstFigure) {?>
 											<tr>
 												<td><?php echo $GstFigure->name; ?></td>
-												<td><?php echo @$inputgst[@$GstFigure->id]; ?></td>
+												<td align="right"><?php echo @$inputgst[@$GstFigure->id]; ?></td>
 												<?php $totalgstinput+=@$inputgst[@$GstFigure->id]; ?>
 											</tr>
 										<?php } ?>
@@ -87,7 +87,7 @@
 										<?php $totalgstoutput=0; foreach($GstFigures as $GstFigure) {?>
 											<tr>
 												<td><?php echo $GstFigure->name; ?></td>
-												<td><?php echo @$outputgst[@$GstFigure->id]; ?></td>
+												<td  align="right"><?php echo @$outputgst[@$GstFigure->id]; ?></td>
 												<?php $totalgstoutput+=@$outputgst[@$GstFigure->id]; ?>
 											</tr>
 										<?php } ?>
