@@ -289,7 +289,7 @@ class AccountingEntriesController extends AppController
 		$to_date   = $this->request->query('to_date');
 		if(empty($from_date) || empty($to_date))
 		{
-			$from_date = date("Y-m-d");
+			$from_date = date("Y-m-01");
 			$to_date   = date("Y-m-d");
 		}else{
 			$from_date = date("Y-m-d",strtotime($from_date));
@@ -364,5 +364,117 @@ class AccountingEntriesController extends AppController
 			$Ledgers=$this->AccountingEntries->Ledgers->find('List');
 			
 			$this->set(compact('from_date','to_date', 'groupForPrint', 'closingValue', 'openingValue','Ledgers','AccountingLedgers','ledger_id','opening_balance','opening_balance_type'));
+	}
+	
+	public function gstReport()
+    {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
+		$this->viewBuilder()->layout('super_admin_layout');
+		$ledger_id = $this->request->query('ledger_id');
+		$from_date = $this->request->query('from_date');
+		$to_date   = $this->request->query('to_date');
+		//$from_date   ="2018-04-01";
+		//$to_date   ="2019-04-31";
+		if(empty($from_date) || empty($to_date))
+		{
+			$from_date = date("Y-m-01");
+			$to_date   = date("Y-m-d");
+		}else{
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$to_date= date("Y-m-d",strtotime($to_date));
+		}
+		
+		// OutPut GST Code
+		$AccountingGroupOutputGst=$this->AccountingEntries->Ledgers->AccountingGroups->find()
+		->where(['AccountingGroups.input_output_gst'=>'Output','AccountingGroups.city_id'=>$city_id])->first();
+		$query=$this->AccountingEntries->find();
+		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
+				->group('AccountingEntries.ledger_id')
+				->where(['AccountingEntries.city_id'=>$city_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date])
+				->contain(['Ledgers'=>function($q){
+					return $q->select(['Ledgers.accounting_group_id','Ledgers.id','Ledgers.gst_figure_id']);
+				}]);
+		$query->matching('Ledgers', function ($q) use($AccountingGroupOutputGst){
+			return $q->where(['Ledgers.accounting_group_id IN' => $AccountingGroupOutputGst->id,'gst_type !='=>'IGST']);
+		});
+		$balanceOfLedgers=$query;
+		$outputgst=[];
+		foreach($balanceOfLedgers as $balanceOfLedger){ 
+			if($balanceOfLedger->totalCredit > 0){
+				@$outputgst[@$balanceOfLedger->ledger->gst_figure_id]+=@$balanceOfLedger->totalCredit;
+			}
+		} 
+		
+		//OutPut IGST Code
+		$AccountingGroupOutputGst=$this->AccountingEntries->Ledgers->AccountingGroups->find()
+		->where(['AccountingGroups.input_output_gst'=>'Output','AccountingGroups.city_id'=>$city_id])->first();
+		$query=$this->AccountingEntries->find();
+		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
+				->group('AccountingEntries.ledger_id')
+				->where(['AccountingEntries.city_id'=>$city_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date])
+				->contain(['Ledgers'=>function($q){
+					return $q->select(['Ledgers.accounting_group_id','Ledgers.id','Ledgers.gst_figure_id']);
+				}]);
+		$query->matching('Ledgers', function ($q) use($AccountingGroupOutputGst){
+			return $q->where(['Ledgers.accounting_group_id IN' => $AccountingGroupOutputGst->id,'gst_type'=>'IGST']);
+		});
+		$balanceOfLedgers=$query;
+		$outputIgst=[]; 
+		foreach($balanceOfLedgers as $balanceOfLedger){ 
+			if($balanceOfLedger->totalCredit > 0){
+				@$outputIgst[@$balanceOfLedger->ledger->gst_figure_id]+=@$balanceOfLedger->totalCredit;
+			}
+		} 
+		
+		
+		// InPut GST Code
+		$AccountingGroupOutputGst=$this->AccountingEntries->Ledgers->AccountingGroups->find()
+		->where(['AccountingGroups.input_output_gst'=>'Input','AccountingGroups.city_id'=>$city_id])->first();
+		$query=$this->AccountingEntries->find();
+		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
+				->group('AccountingEntries.ledger_id')
+				->where(['AccountingEntries.city_id'=>$city_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date])
+				->contain(['Ledgers'=>function($q){
+					return $q->select(['Ledgers.accounting_group_id','Ledgers.id','Ledgers.gst_figure_id']);
+				}]);
+		$query->matching('Ledgers', function ($q) use($AccountingGroupOutputGst){
+			return $q->where(['Ledgers.accounting_group_id IN' => $AccountingGroupOutputGst->id,'gst_type !='=>'IGST']);
+		});
+		$balanceOfLedgers=$query;
+		$inputgst=[];
+		foreach($balanceOfLedgers as $balanceOfLedger){ 
+			if($balanceOfLedger->totalCredit > 0){
+				@$inputgst[@$balanceOfLedger->ledger->gst_figure_id]+=@$balanceOfLedger->totalCredit;
+			}
+		} 
+		
+		//InPut IGST Code
+		$AccountingGroupOutputGst=$this->AccountingEntries->Ledgers->AccountingGroups->find()
+		->where(['AccountingGroups.input_output_gst'=>'Input','AccountingGroups.city_id'=>$city_id])->first();
+		$query=$this->AccountingEntries->find();
+		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
+				->group('AccountingEntries.ledger_id')
+				->where(['AccountingEntries.city_id'=>$city_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date])
+				->contain(['Ledgers'=>function($q){
+					return $q->select(['Ledgers.accounting_group_id','Ledgers.id','Ledgers.gst_figure_id']);
+				}]);
+		$query->matching('Ledgers', function ($q) use($AccountingGroupOutputGst){
+			return $q->where(['Ledgers.accounting_group_id IN' => $AccountingGroupOutputGst->id,'gst_type'=>'IGST']);
+		});
+		$balanceOfLedgers=$query;
+		$inputIgst=[]; 
+		foreach($balanceOfLedgers as $balanceOfLedger){ 
+			if($balanceOfLedger->totalCredit > 0){
+				@$inputIgst[@$balanceOfLedger->ledger->gst_figure_id]+=@$balanceOfLedger->totalCredit;
+			}
+		} 
+		
+		
+		
+		
+		$GstFigures=$this->AccountingEntries->Ledgers->GstFigures->find();
+		$this->set(compact('GstFigures','outputgst','outputIgst','inputgst','inputIgst','from_date','to_date'));
 	}
 }
