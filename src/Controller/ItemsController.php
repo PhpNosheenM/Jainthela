@@ -667,7 +667,7 @@ class ItemsController extends AppController
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
 		$this->viewBuilder()->layout('super_admin_layout');
-		$ledger_id = $this->request->query('ledger_id');
+		$location_id = $this->request->query('location_id');
 		$from_date = $this->request->query('from_date');
 		$to_date   = $this->request->query('to_date');
 		if(empty($from_date) || empty($to_date))
@@ -688,9 +688,15 @@ class ItemsController extends AppController
 			$to_date   = date("Y-m-d",strtotime($to_date));
 			$where['Orders.transaction_date <=']=$to_date;
 		}
+		if(!empty($location_id))
+		{
+			//$to_date   = date("Y-m-d",strtotime($to_date));
+			$where['Orders.location_id']=$location_id;
+		}
 	//	pr($from_date); exit;
-		$orders = $this->Items->Orders->find()->contain(['Locations']);
+		$orders = $this->Items->Orders->find()->contain(['Locations'])->where($where);
+		$Locations = $this->Items->Orders->Locations->find('list');
 		//pr($orders); exit;
-		$this->set(compact('from_date','to_date','orders'));
+		$this->set(compact('from_date','to_date','orders','Locations','location_id'));
 	}
 }

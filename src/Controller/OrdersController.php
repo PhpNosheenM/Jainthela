@@ -691,7 +691,19 @@ class OrdersController extends AppController
 								
 							   }
 							}
-					
+					//Accounting Entries for Reference Details//
+						$ReferenceDetail = $this->Orders->ReferenceDetails->newEntity(); 
+						$ReferenceDetail->ledger_id=$LedgerData->id;
+						$ReferenceDetail->debit=$order->grand_total;
+						$ReferenceDetail->credit=0;
+						$ReferenceDetail->transaction_date=$order->transaction_date;
+						$ReferenceDetail->city_id=$city_id;
+						$ReferenceDetail->entry_from="Web";
+						$ReferenceDetail->type='New Ref';
+						$ReferenceDetail->ref_name=$order->order_no;
+						$ReferenceDetail->order_id=$order->id;
+						$this->Orders->ReferenceDetails->save($ReferenceDetail);
+						
 					//Grn entry
 					$this->orderDeliver($order->id);
 			}
@@ -774,6 +786,45 @@ class OrdersController extends AppController
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
+	public function cashCreditReport()
+    {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
+		$this->viewBuilder()->layout('super_admin_layout');
+		$location_id = $this->request->query('location_id');
+		$from_date = $this->request->query('from_date');
+		$to_date   = $this->request->query('to_date');
+		if(empty($from_date) || empty($to_date))
+		{
+			$from_date = date("Y-m-01");
+			$to_date   = date("Y-m-d");
+		}else{
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$to_date= date("Y-m-d",strtotime($to_date));
+		}
+		if(!empty($from_date))
+		{
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$where['Orders.transaction_date >=']=$from_date;
+		}
+		if(!empty($to_date))
+		{
+			$to_date   = date("Y-m-d",strtotime($to_date));
+			$where['Orders.transaction_date <=']=$to_date;
+		}
+		if(!empty($location_id))
+		{
+			//$to_date   = date("Y-m-d",strtotime($to_date));
+			$where['Orders.location_id']=$location_id;
+		}
+	//	pr($from_date); exit;
+		$orders = $this->Orders->find()->contain(['Locations'])->where($where);
+		$Locations = $this->Orders->Locations->find('list');
+		//pr($orders); exit;
+		$this->set(compact('from_date','to_date','orders','Locations','location_id'));
+	}
+	 
     public function edit($id = null)
     {
         $order = $this->Orders->get($id, [

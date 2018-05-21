@@ -24,7 +24,12 @@
 					<div class="row">
 					<?= $this->Form->create('Search',['type'=>'GET']) ?>
 						<div class="form-group">
-								
+								<div class="col-md-4 col-xs-12">
+									<div class="input-group">
+									<span class="input-group-addon add-on"> Location </span>
+										<?php echo $this->Form->select('location_id',$Locations, ['empty'=>'--Select--','label' => false,'class' => 'form-control input-sm ledger select', 'data-live-search'=>true,'value'=>$location_id]); ?>
+										</div>
+								</div>
 								
 								<div class="col-md-4 col-xs-12">
 									<div class="input-group">
@@ -52,6 +57,7 @@
 								<tr>
 									<th><?= ('SNo.') ?></th>
 									<th><?= ('Order No') ?></th>
+									<th><?= ('Transaction Date') ?></th>
 									<th><?= ('Location') ?></th>
 									<th><?= ('Sales Amount') ?></th>
 									<th><?= ('GST') ?></th>
@@ -64,11 +70,13 @@
 								  <?php foreach ($orders as $order): //pr($order); exit; ?>
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
-									<td><?= h($order->order_no) ?></td>
+									<td><?php echo $this->Html->link($order->order_no,['controller'=>'Orders','action' => 'view', $order->id],['target'=>'_blank']); ?></td>
+									<td><?= h(date("d-m-Y",strtotime($order->transaction_date))) ?></td>
 									<td><?= h($order->location->name) ?></td>
-									<td><?= h($order->total_amount) ?></td>
-									<td><?= h($order->total_gst) ?></td>
-									<td><?= h($order->grand_total) ?></td>
+									<td><?php echo $this->Money->moneyFormatIndia($order->total_amount,2); ?></td>
+									<td><?php echo $this->Money->moneyFormatIndia($order->total_gst,2); ?></td>
+									<td><?php echo $this->Money->moneyFormatIndia($order->grand_total,2); ?></td>
+									
 								</tr>
 								<?php endforeach; ?>
 							</tbody>
