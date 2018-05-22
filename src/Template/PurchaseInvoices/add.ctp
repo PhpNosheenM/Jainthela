@@ -89,16 +89,18 @@
 									</tr>
 								</thead>
 								<tbody class="MainTbody"> 
-								<?php foreach($total_grn_rows as $total_grn_row){ //pr($total_grn_row->item->gst_figure->id); ?>
+								<?php foreach($total_grn_rows as $total_grn_row){ ?>
 									<tr class="MainTr">
 										<td  valign="top">1</td>
 										 <td width="">
 											<?php echo @$total_grn_row->item->name;  ?>
-											<?= $this->Form->control('item_id',['type'=>'hidden','class'=>'form-control item_id','label'=>false,'value'=>$total_grn_row->item->id]) ?>
+											<input type="hidden" value="<?php echo $total_grn_row->item_id; ?>" class="item_id1" >
+											
 										</td>
 										<td width="">
-											<?php echo $this->Form->input('unit_variation_id', ['empty'=>'---Select---','options'=>$unitVariationOptions,'label' => false,'class' => 'form-control input-medium select','required'=>'required','value'=>$total_grn_row->unit_variation_id]); ?>
-											<?= $this->Form->control('unit_variation_id',['type'=>'hidden','class'=>'form-control unit_variation_id','label'=>false,'value'=>$total_grn_row->item->id]) ?>
+											<?php echo $total_grn_row->unit_variation->quantity_variation.' '.$total_grn_row->unit_variation->unit->shortname; ?>
+											<input type="hidden" value="<?php echo $total_grn_row->unit_variation_id; ?>" class="unit_variation_id1" >
+											
 										</td>
 										
 										<td  valign="top">
@@ -172,8 +174,10 @@
 											<?php 
 											$merge=$total_grn_row->item_variation->item->name.'('.@$total_grn_row->item_variation->unit_variation->quantity_variation.'.'.@$total_grn_row->item_variation->unit_variation->unit->shortname.')';
 											echo @$merge;  ?>
-											<?= $this->Form->control('item_variation_id',['type'=>'hidden','class'=>'form-control item_variation_id','label'=>false,'value'=>$total_grn_row->item_variation_id]) ?>
-											<?= $this->Form->control('item_id',['type'=>'hidden','class'=>'form-control item_id','label'=>false,'value'=>$total_grn_row->item_id]) ?>
+											
+											<input type="hidden" value="<?php echo $total_grn_row->item_id; ?>" class="item_id2" >
+											<input type="hidden" value="<?php echo $total_grn_row->item_variation_id; ?>" class="item_variation_id2" >
+											
 										</td>
 										
 										
@@ -334,8 +338,9 @@
 					$('.main_table tbody tr').each(function(){ 
 							 $(this).attr('row_no',i);
 							$(this).find('td:nth-child(1)').html(++i); i--;
-							$(this).find('input.item_id ').attr({name:'purchase_invoice_rows['+i+'][item_id]',id:'purchase_invoice_rows['+i+'][item_id]'})
-							$(this).find('input.unit_variation_id ').attr({name:'purchase_invoice_rows['+i+'][unit_variation_id]',id:'purchase_invoice_rows['+i+'][unit_variation_id]'}).rules('add', 'required');
+							$(this).find('.item_id1 ').attr({name:'purchase_invoice_rows['+i+'][item_id]',id:'purchase_invoice_rows['+i+'][item_id]'});
+							
+							$(this).find('.unit_variation_id1 ').attr({name:'purchase_invoice_rows['+i+'][unit_variation_id]',id:'purchase_invoice_rows['+i+'][unit_variation_id]'}).rules('add', 'required')
 							$(this).find('.quantity ').attr({name:'purchase_invoice_rows['+i+'][quantity]',id:'purchase_invoice_rows['+i+'][quantity]'}).rules('add', 'required');
 							$(this).find('.rate ').attr({name:'purchase_invoice_rows['+i+'][purchase_rate]',id:'purchase_invoice_rows['+i+'][purchase_rate]'}).rules('add', 'required');
 							$(this).find('.taxable_value ').attr({name:'purchase_invoice_rows['+i+'][taxable_value]',id:'purchase_invoice_rows['+i+'][taxable_value]'});
@@ -349,8 +354,8 @@
 					$('.main_table tbody tr').each(function(){
 							 $(this).attr('row_no',i);
 							$(this).find('td:nth-child(1)').html(++i); i--;
-							$(this).find('input.item_id ').attr({name:'purchase_invoice_rows['+i+'][item_id]',id:'purchase_invoice_rows['+i+'][item_id]'})
-							$(this).find('input.item_variation_id ').attr({name:'purchase_invoice_rows['+i+'][item_variation_id]',id:'purchase_invoice_rows['+i+'][item_variation_id]'}).rules('add', 'required');
+							$(this).find('input.item_id2 ').attr({name:'purchase_invoice_rows['+i+'][item_id]',id:'purchase_invoice_rows['+i+'][item_id]'})
+							$(this).find('input.item_variation_id2 ').attr({name:'purchase_invoice_rows['+i+'][item_variation_id]',id:'purchase_invoice_rows['+i+'][item_variation_id]'}).rules('add', 'required');
 							$(this).find('.quantity ').attr({name:'purchase_invoice_rows['+i+'][quantity]',id:'purchase_invoice_rows['+i+'][quantity]'}).rules('add', 'required');
 							$(this).find('.rate ').attr({name:'purchase_invoice_rows['+i+'][purchase_rate]',id:'purchase_invoice_rows['+i+'][purchase_rate]'}).rules('add', 'required');
 							$(this).find('.taxable_value ').attr({name:'purchase_invoice_rows['+i+'][taxable_value]',id:'purchase_invoice_rows['+i+'][taxable_value]'});

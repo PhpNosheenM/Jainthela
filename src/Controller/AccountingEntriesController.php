@@ -433,6 +433,7 @@ class AccountingEntriesController extends AppController
 		// InPut GST Code
 		$AccountingGroupOutputGst=$this->AccountingEntries->Ledgers->AccountingGroups->find()
 		->where(['AccountingGroups.input_output_gst'=>'Input','AccountingGroups.city_id'=>$city_id])->first();
+		
 		$query=$this->AccountingEntries->find();
 		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
 				->group('AccountingEntries.ledger_id')
@@ -443,11 +444,11 @@ class AccountingEntriesController extends AppController
 		$query->matching('Ledgers', function ($q) use($AccountingGroupOutputGst){
 			return $q->where(['Ledgers.accounting_group_id IN' => $AccountingGroupOutputGst->id,'gst_type !='=>'IGST']);
 		});
-		$balanceOfLedgers=$query;
+		$balanceOfLedgers=$query; //pr($balanceOfLedgers->toArray()); exit;
 		$inputgst=[];
 		foreach($balanceOfLedgers as $balanceOfLedger){ 
-			if($balanceOfLedger->totalCredit > 0){
-				@$inputgst[@$balanceOfLedger->ledger->gst_figure_id]+=@$balanceOfLedger->totalCredit;
+			if($balanceOfLedger->totalDebit > 0){
+				@$inputgst[@$balanceOfLedger->ledger->gst_figure_id]+=@$balanceOfLedger->totalDebit;
 			}
 		} 
 		

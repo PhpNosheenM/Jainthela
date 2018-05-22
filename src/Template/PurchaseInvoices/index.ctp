@@ -15,23 +15,23 @@
 			<div class="panel panel-default">
 				<div class="panel-heading">
 					<h3 class="panel-title"><strong>Purchase Invoice</strong></h3>
-				<div class="pull-right">
-			<div class="pull-left">
-				<?= $this->Form->create('Search',['type'=>'GET']) ?>
-					<div class="form-group" style="display:inline-table">
-						<div class="input-group">
-							<div class="input-group-addon">
-								<span class="fa fa-search"></span>
-							</div>
-							<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
-							<div class="input-group-btn">
-								<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
-							</div>
-						</div>
-					</div>
-				<?= $this->Form->end() ?>
-			</div> 
-		</div> 	
+						<div class="pull-right">
+						<div class="pull-left">
+							<?= $this->Form->create('Search',['type'=>'GET']) ?>
+								<div class="form-group" style="display:inline-table">
+									<div class="input-group">
+										<div class="input-group-addon">
+											<span class="fa fa-search"></span>
+										</div>
+										<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
+										<div class="input-group-btn">
+											<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
+										</div>
+									</div>
+								</div>
+							<?= $this->Form->end() ?>
+						</div> 
+					</div> 	
 				</div>
 				<div class="panel-body">    
 					<div class="table-responsive">
@@ -41,7 +41,6 @@
 									<th><?= ('SNo.') ?></th>
 									<th><?= ('Invoice No') ?></th>
 									<th><?= ('Party') ?></th>
-									<th><?= ('Location') ?></th>
 									<th><?= ('Amount') ?></th>
 									
 									<th scope="col" class="actions"><?= __('Actions') ?></th>
@@ -55,7 +54,6 @@
 									<td><?= $this->Number->format(++$i) ?></td>
 									<td><?= h($purchaseInvoice->invoice_no) ?></td>
 									<td><?= h($purchaseInvoice->seller_ledger->seller->name) ?></td>
-									<td><?= h($purchaseInvoice->location->name) ?></td>
 									<td><?= h($purchaseInvoice->total_amount) ?></td>
 									
 									<td class="actions">

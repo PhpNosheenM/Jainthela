@@ -97,6 +97,8 @@ class PurchaseInvoicesController extends AppController
 				$total_grn_rows[]=$data1;
 			}
 		}
+		
+		 //exit;
 		//pr($total_grn_rows); exit;
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
@@ -152,9 +154,15 @@ class PurchaseInvoicesController extends AppController
             $purchaseInvoice->created_on=date('Y-m-d');
             $purchaseInvoice->entry_from="Web";
 			
+			if($Grn1->created_for=="Jainthela"){
+				$sellerData = $this->PurchaseInvoices->SellerLedgers->get($purchaseInvoice->seller_ledger_id,['contain'=>['Vendors'=>['Cities']]]);
+				$gstCity=$sellerData->vendor->city->state_id;
+			}else{
+				$sellerData = $this->PurchaseInvoices->SellerLedgers->get($purchaseInvoice->seller_ledger_id,['contain'=>['Sellers'=>['Cities']]]);
+				$gstCity=$sellerData->seller->city->state_id;
+			}
 			
-			
-			pr($purchaseInvoice); exit;
+			//pr($gstCity); exit;
 			if ($this->PurchaseInvoices->save($purchaseInvoice)) {
 				
 			//Accounting Entries for Purchase account//
@@ -167,9 +175,9 @@ class PurchaseInvoicesController extends AppController
 			$AccountingEntrie->city_id=$city_id;
 			$AccountingEntrie->entry_from="Web";
 			$AccountingEntrie->purchase_invoice_id=$purchaseInvoice->id; 
-			$this->PurchaseInvoices->AccountingEntries->save($AccountingEntrie);
+			$this->PurchaseInvoices->AccountingEntries->save($AccountingEntrie);  
 	
-			//Accounting Entries for Supplier account//
+			//Accounting Entries for Seller & Vendor account//
 			$AccountingEntrie = $this->PurchaseInvoices->AccountingEntries->newEntity(); 
 			$AccountingEntrie->ledger_id=$purchaseInvoice->seller_ledger_id;
 			$AccountingEntrie->credit=$purchaseInvoice->total_amount;
@@ -182,9 +190,9 @@ class PurchaseInvoicesController extends AppController
 			$this->PurchaseInvoices->AccountingEntries->save($AccountingEntrie);
 		
 			
-			if($sellerData->location->city->state_id==$state_id){
+			if($gstCity==$state_id){
 				foreach($purchaseInvoice->purchase_invoice_rows as $purchase_invoice_row){ 
-					$gstAmtdata=$purchase_invoice_row->gst_value/2;
+					$gstAmtdata=round($purchase_invoice_row->gst_value/2,2);
 					$gstAmtInsert=round($gstAmtdata,2);
 					
 					//Accounting Entries for CGST//
@@ -218,7 +226,7 @@ class PurchaseInvoicesController extends AppController
 				   }
 			}else{
 				foreach($purchaseInvoice->purchase_invoice_rows as $purchase_invoice_row){ 
-					$gstAmtdata=round($purchase_invoice_row->gst_value/2,2);
+					$gstAmtdata=round($purchase_invoice_row->gst_value,2);
 					$gstAmtInsert=round($gstAmtdata*2,2); 
 					
 					//Accounting Entries for IGST//
@@ -248,55 +256,26 @@ class PurchaseInvoicesController extends AppController
 			$ReferenceDetail->city_id=$city_id;
 			$ReferenceDetail->entry_from="Web";
 			$ReferenceDetail->type='New Ref';
-			$ReferenceDetail->ref_name=$LocationData->alise.'/'.$purchaseInvoiceVoucherNo;
+			$ReferenceDetail->ref_name=$purchaseInvoice->invoice_no;
 			$ReferenceDetail->purchase_invoice_id=$purchaseInvoice->id;
 			$this->PurchaseInvoices->ReferenceDetails->save($ReferenceDetail);
 			
-			foreach($purchaseInvoice->purchase_invoice_rows as $purchase_invoice_row){ 
-				
-				$ItemLedger = $this->PurchaseInvoices->ItemLedgers->newEntity(); 
-				$ItemLedger->item_id=$purchase_invoice_row->item_id;
-				$ItemLedger->item_variation_id=$purchase_invoice_row->item_variation_id;
-				$ItemLedger->seller_id=$seller_ledger->seller_id;
-				$ItemLedger->transaction_date=$purchaseInvoice->transaction_date;
-				$ItemLedger->quantity=$purchase_invoice_row->quantity;
-				$ItemLedger->rate=$purchase_invoice_row->rate;
-				$ItemLedger->purchase_rate=$purchase_invoice_row->purchase_rate;
-				$ItemLedger->sales_rate=$purchase_invoice_row->sales_rate;
-				$ItemLedger->mrp=$purchase_invoice_row->mrp;
-				$ItemLedger->status="In";
-				//$ItemLedger->location_id=$location_id;
-				$ItemLedger->city_id=$city_id;
-				$ItemLedger->purchase_invoice_id=$purchaseInvoice->id;
-				$ItemLedger->purchase_invoice_row_id=$purchase_invoice_row->id;
-				$ItemLedger->entry_from="Web";
-				$this->PurchaseInvoices->ItemLedgers->save($ItemLedger);
-			}
-			
-			foreach($purchaseInvoice->purchase_invoice_rows as $purchase_invoice_row){ 
-				if($purchase_invoice_row->item_variation_id==0){
-					$query = $this->PurchaseInvoices->Items->ItemVariations->query();
+			foreach($to_be_send as $id=>$qty){ 
+				if($qty > 0){
+					$query = $this->PurchaseInvoices->Grns->query();
 					$query->update()
-					->set(['purchase_rate'=>$purchase_invoice_row->purchase_rate,'sales_rate'=>$purchase_invoice_row->sales_rate,'mrp'=>$purchase_invoice_row->mrp,'out_of_stock'=>'No','ready_to_sale'=>'Yes','update_on'=>$today_date])
-					->where(['item_id' => $purchase_invoice_row->item_id,'seller_id'=>$seller_ledger->seller_id])
-					->execute();
-					
-				}else{
-					
-					$query = $this->PurchaseInvoices->Items->ItemVariations->query();
-					$query->update()
-					->set(['purchase_rate'=>$purchase_invoice_row->purchase_rate,'sales_rate'=>$purchase_invoice_row->sales_rate,'mrp'=>$purchase_invoice_row->mrp,'print_rate'=>$purchase_invoice_row->mrp,'update_on'=>$today_date,'out_of_stock'=>'No','ready_to_sale'=>'Yes'])
-					->where(['item_id' => $purchase_invoice_row->item_id,'seller_id'=>$seller_ledger->seller_id])
+					->set(['purchase_invoice_status'=>'Complete'])
+					->where(['id'=>$qty])
 					->execute();
 				}
 			}
 				
 				
-                $this->Flash->success(__('The purchase invoice has been saved.'));
+			$this->Flash->success(__('The purchase invoice has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+			return $this->redirect(['action' => 'index']);
             }else{
-				//pr($purchaseInvoice); exit;
+				pr($purchaseInvoice); exit;
 			}
             $this->Flash->error(__('The purchase invoice could not be saved. Please, try again.'));
         }
@@ -332,7 +311,6 @@ class PurchaseInvoicesController extends AppController
 			//pr($partyOptions); exit;
 		}else{
 			$Partyledger = $this->PurchaseInvoices->SellerLedgers->get($grnData->vendor_ledger_id,['contain'=>['Cities']]);
-			
 			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id,'city_id'=>$Partyledger->city_id,'state_id'=>$Partyledger->city->state_id,'bill_to_bill_accounting'=>$Partyledger->bill_to_bill_accounting,'vendor_id'=>$Partyledger->vendor_id];
 		}
 		

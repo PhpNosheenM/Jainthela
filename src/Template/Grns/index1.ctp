@@ -5,13 +5,31 @@
 $this->set('title', 'Challan');
 ?>
 <div class="page-content-wrap">
-    <div class="page-title">                    
-        <h2><span class="fa fa-arrow-circle-o-left"></span> Create Challan</h2>
-    </div> 
-
-    <div class="panel panel-default">
-        <div class="panel-body">
-          
+	<div class="row">
+		<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+						<h3 class="panel-title"><strong>Challan</strong></h3>
+					<div class="pull-right">
+					<div class="pull-left">
+							<?= $this->Form->create('Search',['type'=>'GET']) ?>
+								<div class="form-group" style="display:inline-table">
+									<div class="input-group">
+										<div class="input-group-addon">
+											<span class="input-group-addon add-on"> Vendor/Seller </span>
+										</div>
+										<?php echo $this->Form->select('ledger_id',$partyOptions, ['empty'=>'--Select--','label' => false,'class' => 'form-control input-md ledger select', 'data-live-search'=>true,'value'=>$ledger_id]); ?>
+										<div class="input-group-btn">
+											<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
+										</div>
+									</div>
+								</div>
+							<?= $this->Form->end() ?>
+						</div> 
+				</div> 	
+			</div>
+			<div class="panel-body">
+			  
             <div class="portlet-body">
 			<?= $this->Form->create($newGrns) ?>
                 <div class="table-responsive">
@@ -39,9 +57,7 @@ $this->set('title', 'Challan');
                                 <td><?= h(@$grn->vendor_ledger->name) ?></td>
                                 <td><?= h($grn->transaction_date) ?></td>
                                 <td class="actions">
-                                    <?php  if($grn->status=="Pending"){ ?>
-                                    <?= $this->Html->link(__('Stock Transfer'), ['controller'=>'StockTransferVouchers','action' => 'add', $grn->id]) ?>
-                                    <?php } ?>
+                                    
 									<?php  ?>
 									<div class="checkbox pull-left">
 										<label><?php echo $this->Form->input('to_be_send['.$grn->id.']', ['label' => false,'type'=>'checkbox','class'=>'rename_check qty','value' => @$grn->id]);  ?></label>
@@ -56,7 +72,7 @@ $this->set('title', 'Challan');
                         </tbody>
                     </table>
 					<div align="right" class="form-actions">
-						<button type="submit" class="btn btn-primary btns" >Pull & Create Purchase Order</button>
+						<button type="submit" class="btn btn-primary btns" >Create Purchase Invoice</button>
 					</div>
                 </div>
                    

@@ -58,29 +58,53 @@ class GrnsController extends AppController
         $user_id=$this->Auth->User('id');
         $city_id=$this->Auth->User('city_id');
         $search=$this->request->query('search');
+		$ledger_id = $this->request->query('ledger_id');
         $this->paginate = [
             'limit' => 10
         ];
+		
 		$newGrns=$this->Grns->newEntity();
-        $grns = $this->Grns->find()
-                            ->where(['Grns.city_id'=>$city_id])
-                            ->where([ 'OR'=>['Grns.voucher_no' => $search,
-                                // ...
-                                'VendorLedgers.name LIKE' => '%'.$search.'%',
-                                //.....
-                                'Grns.reference_no LIKE' => '%'.$search.'%',
-                                //...
-                                'Grns.transaction_date ' => date('Y-m-d',strtotime($search))]])
-                            ->contain(['VendorLedgers']);
+        
 		if ($this->request->is(['post'])) {
 			$to_be_send=$this->request->data['to_be_send'];
 			//pr($to_be_send); exit;
 			$this->redirect(['controller'=>'PurchaseInvoices','action' => 'add/'.json_encode($to_be_send).'']);
 		}
-      
+		
+		 $partyParentGroups = $this->Grns->GrnRows->Ledgers->AccountingGroups->find('all')
+                        ->where(['AccountingGroups.city_id'=>$city_id, 'AccountingGroups.vendor'=>'1'])
+						->orWhere(['AccountingGroups.city_id'=>$city_id, 'AccountingGroups.seller'=>'1']);
+        $partyGroups=[];
+        //pr($partyParentGroups->toArray()); exit;
+        foreach($partyParentGroups as $partyParentGroup)
+        {
+            $accountingGroups = $this->Grns->GrnRows->Ledgers->AccountingGroups
+            ->find('children', ['for' => $partyParentGroup->id])->toArray();
+            $partyGroups[]=$partyParentGroup->id;
+            foreach($accountingGroups as $accountingGroup){
+                $partyGroups[]=$accountingGroup->id;
+            }
+        }	//
+		//pr($partyGroups); exit;
+        if($partyGroups)
+        {  
+            $Partyledgers = $this->Grns->VendorLedgers->find()
+                            ->where(['VendorLedgers.accounting_group_id IN' =>$partyGroups,'VendorLedgers.city_id'=>$city_id]);
+        }
+     //pr($Partyledgers->toArray()); exit;
+        $partyOptions=[];
+        foreach($Partyledgers as $Partyledger){
+            $partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id];
+        }
+		
+	  if($ledger_id > 0){
+		 $grns = $this->Grns->find()->where(['Grns.city_id'=>$city_id,'purchase_invoice_status'=>'Pending','vendor_ledger_id'=>$ledger_id,'Grns.seller_id IS  NOT NULL '])->contain(['VendorLedgers']);
         $grns = $this->paginate($grns);
+	  }else{
+		  $grns = $this->Grns->find()->where(['Grns.city_id'=>$city_id,'Grns.purchase_invoice_status'=>'Pending','Grns.seller_id IS NULL '])->contain(['VendorLedgers']);
+	  }
 
-        $this->set(compact('grns','newGrns'));
+        $this->set(compact('grns','newGrns','partyOptions','ledger_id'));
     }
 
     /**
