@@ -43,15 +43,54 @@ $this->set('title', 'Create Stock Transfer Voucher');
                                                 <tr align="center">
                                                     <td><label>Sr<label></td>
                                                     <td><label>Item<label></td>
-                                                    <td><label>Qty<label></td>
+                                                    <td><label>Transfer Qty<label></td>
                                                     <td></td>
                                                 </tr>
                                             </thead>
                                             <tbody id='main_tbody' class="tab">
-                                                <tr class="main_tr" class="tab">
-                                                    
-                                                </tr>
+                                            <?php
+                                            $i=0;
+                                            foreach($grns->grn_rows as $grn_row){
+                                               
+                                                ?>
                                                 
+                                                <tr class="main_tr" class="tab">
+                                                    <td width="7%" align="center"><?= $i+1 ?></td>
+                                                    <td width="20%">
+                                                        <input type="hidden" name="" class="outStock" value="0">
+                                                        <input type="hidden" name="" class="totStock " value="0">
+                                                        <?php 
+                                                        echo $this->Form->select('item_id',[$grn_row->id=>$grn_row->item->name.' '.$grn_row->unit_variation->quantity_variation.' '.$grn_row->unit_variation->unit->shortname], ['label' => false,'class' => 'form-control itemStock','required'=>'required']); ?>
+                                                        <span class="itemQty" style="color:red ;font-size:10px;">current stock is <?php echo $convert_qty= $grn_row->total_quantity * $grn_row->unit_variation->convert_unit_qty ; ?> <?= ' '.$grn_row->unit_variation->unit->shortname ?> </span>
+                                                        </td>
+                                                    
+                                                    <td width="25%" >
+                                                        <table>
+                                                            <?php
+                                                            foreach($grn_row->item->item_variations as $item_variation){ ?>
+                                                            <tr>
+                                                                <td>
+                                                                     <?php 
+                                                                     echo $this->Form->select('item_id',[$item_variation->id=>$item_variation->unit_variation->quantity_variation.' '.$item_variation->unit_variation->unit->shortname], ['label' => false,'class' => 'form-control itemStock','required'=>'required']); ?>
+                                                                </td>
+                                                                <td>
+                                                                    <?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm rightAligntextClass numberOnly quantity','placeholder'=>'Quantity','max'=>$convert_qty]); ?>
+                                                                </td>
+                                                            </tr>
+                                                            <?php
+                                                            }
+                                                            ?>
+                                                        </table>
+                                                        
+                                                    </td>
+                                                    <td align="center">
+                                                        <a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+                                                    </td>
+                                                </tr>
+                                            <?php
+                                             $i++;
+                                            }
+                                            ?>
                                             </tbody>
                                             <tfoot>
                                                 <tr>
@@ -92,7 +131,7 @@ $this->set('title', 'Create Stock Transfer Voucher');
             <td width="50%">
                 <input type="hidden" name="" class="outStock" value="0">
                 <input type="hidden" name="" class="totStock " value="0">
-                <?php echo $this->Form->control('item_id', ['options' => $itemOptions,'label' => false,'class' => 'form-control input-sm itemStock','required'=>'required','empty'=>'--select--']); ?>
+                <?php echo $this->Form->select('item_id',$itemOptions, ['label' => false,'class' => 'form-control itemStock','required'=>'required','empty'=>'--select--']); ?>
                 <span class="itemQty" style="color:red ;font-size:10px;"></span>
                 </td>
             
@@ -111,7 +150,7 @@ $this->set('title', 'Create Stock Transfer Voucher');
     $js="
     $(document).ready(function() {
     
-        $(document).on('change','.itemStock',function(){
+        $(document).on('change','.itemStock',function(){ alert();
             var itemQ=$(this).closest('tr'); 
             var itemId=$(this).val();
             var url='".$this->Url->build(["controller" => "StockTransferVouchers", "action" => "ajaxItemQuantity"])."';
@@ -120,20 +159,8 @@ $this->set('title', 'Create Stock Transfer Voucher');
                 url: url,
                 type: 'GET'
                 //dataType: 'text'
-            }).done(function(response) {
-                var fetch=$.parseJSON(response);
-                var text=fetch.text;
-                var type=fetch.type;
-                var mainStock=fetch.mainStock;
-                itemQ.find('.itemQty').html(text);
-                itemQ.find('.totStock').val(mainStock);
-                if(type=='true')
-                {
-                    itemQ.find('.outStock').val(1);
-                }
-                else{
-                    itemQ.find('.outStock').val(0);
-                }
+            }).done(function(response) { alert(response);
+               
             }); 
         });
         
@@ -156,15 +183,14 @@ $this->set('title', 'Create Stock Transfer Voucher');
             rename_rows();
         }
 
-        add_row();
+        //add_row();
 
         function rename_rows()
         {
             var i=0;
             $('#main_table tbody#main_tbody tr.main_tr').each(function(){ 
-                
-                $(this).find('td:nth-child(1)').html(i);
-                $(this).find('td:nth-child(2) select').select2().attr({name:'intra_location_stock_transfer_voucher_rows['+i+'][item_id]',id:'intra_location_stock_transfer_voucher_rows-'+i+'-item_id'});   
+                $(this).find('td:nth-child(1)').html(i+1);
+                $(this).find('td:nth-child(2) select').select().attr({name:'stock_transfer_voucher_rows['+i+'][item_id]',id:'stock_transfer_voucher_rows-'+i+'-item_id'});   
 
                 $(this).find('td:nth-child(3) input').attr({name:'intra_location_stock_transfer_voucher_rows['+i+'][quantity]', id:'intra_location_stock_transfer_voucher_rows-'+i+'-quantity'});
                 
