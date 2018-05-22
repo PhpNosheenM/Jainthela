@@ -120,7 +120,7 @@ class JournalVouchersController extends AppController
 				
 				if(!empty($journal_row->reference_details))
 				{
-					foreach($journal_row->reference_details as $reference_detail1)
+					foreach($	->reference_details as $reference_detail1)
 					{ 
 						$reference_detail = $this->JournalVouchers->ReferenceDetails->newEntity();
 						$reference_detail->transaction_date = date('Y-m-d',strtotime($tdate));
