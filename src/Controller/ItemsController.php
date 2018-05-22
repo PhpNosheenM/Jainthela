@@ -271,16 +271,17 @@ class ItemsController extends AppController
 		$showItems=[];
 		
 		 if($location_id){ //exit;
-			$ItemsVariations=$this->Items->ItemsVariationsData->find()->toArray(); //pr($ItemsVariations);exit;
+			$LocationData=$this->Items->Locations->get($location_id);
+			$ItemsVariations=$this->Items->ItemsVariationsData->find()->toArray(); //pr($LocationData);exit;
 			foreach($ItemsVariations as  $ItemsVariation){ 
 					 
 						//$location_id=1;
-						$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['ItemLedgers.item_variation_id'=>$ItemsVariation->id,'ItemLedgers.city_id'=>$city_id,'ItemLedgers.location_id'=>$location_id,'ItemLedgers.seller_id IS NULL'])->where($where1)->contain(['Items','UnitVariations'=>['Units']])->first();
+						$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['ItemLedgers.item_variation_id'=>$ItemsVariation->id,'ItemLedgers.city_id'=>$LocationData->city_id,'ItemLedgers.location_id'=>$location_id,'ItemLedgers.seller_id IS NULL'])->where($where1)->contain(['Items','UnitVariations'=>['Units']])->first();
 						
 						$merge=@$ItemLedgers->item->name.'('.@$ItemLedgers->unit_variation->quantity_variation.'.'.@$ItemLedgers->unit_variation->unit->shortname.')';
 						//pr($merge); exit;
 						if($ItemLedgers){
-						$UnitRateSerialItem = $this->itemVariationWiseReport($ItemsVariation->id,$transaction_date,$city_id,$where1);
+						$UnitRateSerialItem = $this->itemVariationWiseReport($ItemsVariation->id,$transaction_date,$LocationData->city_id,$where1);
 						
 						$showItems[$ItemLedgers->item->id][]=['item_name'=>$ItemLedgers->item->name,'item_variation_name'=>$merge,'stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem['unit_rate']];
 						//pr($showItems); exit;
@@ -657,5 +658,80 @@ class ItemsController extends AppController
 			echo 'not_exist';
 		}
 		exit;
+	}
+		
+		
+	public function SalesReport()
+    { 
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
+		$this->viewBuilder()->layout('super_admin_layout');
+		$location_id = $this->request->query('location_id');
+		$from_date = $this->request->query('from_date');
+		$to_date   = $this->request->query('to_date');
+		if(empty($from_date) || empty($to_date))
+		{
+			$from_date = date("Y-m-01");
+			$to_date   = date("Y-m-d");
+		}else{
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$to_date= date("Y-m-d",strtotime($to_date));
+		}
+		if(!empty($from_date))
+		{
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$where['Orders.transaction_date >=']=$from_date;
+		}
+		if(!empty($to_date))
+		{
+			$to_date   = date("Y-m-d",strtotime($to_date));
+			$where['Orders.transaction_date <=']=$to_date;
+		}
+		if(!empty($location_id))
+		{
+			//$to_date   = date("Y-m-d",strtotime($to_date));
+			$where['Orders.location_id']=$location_id;
+		}
+	//	pr($from_date); exit;
+		$orders = $this->Items->Orders->find()->contain(['Locations'])->where($where);
+		$Locations = $this->Items->Orders->Locations->find('list')->where(['city_id'=>$city_id]);
+		//pr($orders); exit;
+		$this->set(compact('from_date','to_date','orders','Locations','location_id'));
+	}
+	
+		public function PurchaseReport()
+    { 
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
+		$this->viewBuilder()->layout('super_admin_layout');
+		$location_id = $this->request->query('location_id');
+		$from_date = $this->request->query('from_date');
+		$to_date   = $this->request->query('to_date');
+		if(empty($from_date) || empty($to_date))
+		{
+			$from_date = date("Y-m-01");
+			$to_date   = date("Y-m-d");
+		}else{
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$to_date= date("Y-m-d",strtotime($to_date));
+		}
+		if(!empty($from_date))
+		{
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$where['PurchaseInvoices.transaction_date >=']=$from_date;
+		}
+		if(!empty($to_date))
+		{
+			$to_date   = date("Y-m-d",strtotime($to_date));
+			$where['PurchaseInvoices.transaction_date <=']=$to_date;
+		}
+		
+	//	pr($from_date); exit;
+		$PurchaseInvoices = $this->Items->PurchaseInvoices->find()->contain(['Locations'])->where($where);
+		$Locations = $this->Items->Orders->Locations->find('list');
+		//pr($orders); exit;
+		$this->set(compact('from_date','to_date','PurchaseInvoices','Locations','location_id'));
 	}
 }

@@ -52,6 +52,7 @@ class ItemsTable extends Table
         $this->setPrimaryKey('id');
 
           $this->belongsTo('Filters');
+          $this->belongsTo('PurchaseInvoices');
 
         $this->belongsTo('Categories', [
             'foreignKey' => 'category_id',
@@ -175,9 +176,9 @@ class ItemsTable extends Table
             'joinType' => 'INNER'
         ]);
         
-         $this->belongsTo('SellerItems');
-
-        $this->belongsTo('HomeScreens');
+		$this->belongsTo('SellerItems');
+		$this->belongsTo('Orders');
+		$this->belongsTo('HomeScreens');
 
     }
 

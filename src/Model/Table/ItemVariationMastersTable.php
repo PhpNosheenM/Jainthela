@@ -50,10 +50,14 @@ class ItemVariationMastersTable extends Table
 			'foreignKey'=>'item_id'
         ]);
 		
-		 $this->hasMany('ItemVariations', [
+		$this->hasMany('ItemVariations', [
             'foreignKey' => 'item_variation_master_id',
 			'saveStrategy' =>'replace'
         ]);
+
+        $this->belongsTo('SellerItems');
+
+
     }
 
     /**

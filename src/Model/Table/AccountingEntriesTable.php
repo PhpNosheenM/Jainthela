@@ -81,7 +81,7 @@ class AccountingEntriesTable extends Table
 		$this->belongsTo('Orders', [
             'foreignKey' => 'order_id'
         ]);
-/*         $this->belongsTo('PurchaseVouchers', [
+         $this->belongsTo('PurchaseVouchers', [
             'foreignKey' => 'purchase_voucher_id'
         ]);
         $this->belongsTo('PurchaseVoucherRows', [
@@ -141,7 +141,7 @@ class AccountingEntriesTable extends Table
         ]);
         $this->belongsTo('ContraVoucherRows', [
             'foreignKey' => 'contra_voucher_row_id'
-        ]); */
+        ]); 
     }
 
     /**

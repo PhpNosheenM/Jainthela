@@ -104,8 +104,13 @@ class SellerItemsController extends AppController
 						
 						if(!in_array(@$seller_record->item_id,@$item_ids))
 						{
-							$sr=$this->SellerItems->get($seller_record->id);
-							$this->SellerItems->delete($sr);
+							//$sr=$this->SellerItems->get($seller_record->id);
+							//$this->SellerItems->delete($sr);
+							$query1 = $this->SellerItems->query();
+							  $query1->update()
+							  ->set(['status' =>'Deactive'])
+							  ->where(['seller_id'=>$seller_id,'item_id'=>$seller_record->id])
+							  ->execute();
 						}
 						
 					}
