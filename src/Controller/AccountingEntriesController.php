@@ -402,10 +402,11 @@ class AccountingEntriesController extends AppController
 		$balanceOfLedgers=$query;
 		$outputgst=[];
 		foreach($balanceOfLedgers as $balanceOfLedger){ 
-			if($balanceOfLedger->totalCredit > 0){
+			if($balanceOfLedger->totalCredit > 0){ 
 				@$outputgst[@$balanceOfLedger->ledger->gst_figure_id]+=@$balanceOfLedger->totalCredit;
 			}
 		} 
+		
 		
 		//OutPut IGST Code
 		$AccountingGroupOutputGst=$this->AccountingEntries->Ledgers->AccountingGroups->find()

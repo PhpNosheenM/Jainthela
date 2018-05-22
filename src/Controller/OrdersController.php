@@ -96,12 +96,12 @@ class OrdersController extends AppController
 	//	$UnitRateSerialItem = $this->addSalesInvoice($id);
 		$Totalsellers=[];
 		foreach($order->order_details as $order_detail){ 
-			if($order_detail->item_variation->seller_id > 0){
+			if($order_detail->item_variation->seller_id > 0){ 
 				$seller_id=$order_detail->item_variation->seller_id; 
 				$Totalsellers[$seller_id][]=$order_detail;
 			}
 		}
-		
+		//pr($Totalsellers); exit;
 		foreach($Totalsellers as $key=>$Totalseller){
 			$Total_amount=0; $Tabable_amount=0;$TotalSaleRate=0;$TotalPurchaseRate=0;
 					foreach($Totalseller as $data){

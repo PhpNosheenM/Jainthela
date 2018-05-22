@@ -50,6 +50,38 @@ class GrnsController extends AppController
 
         $this->set(compact('grns'));
     }
+	
+	    public function index1()
+    {
+        $this->viewBuilder()->layout('super_admin_layout');
+        $company_id=$this->Auth->User('company_id');
+        $user_id=$this->Auth->User('id');
+        $city_id=$this->Auth->User('city_id');
+        $search=$this->request->query('search');
+        $this->paginate = [
+            'limit' => 10
+        ];
+		$newGrns=$this->Grns->newEntity();
+        $grns = $this->Grns->find()
+                            ->where(['Grns.city_id'=>$city_id])
+                            ->where([ 'OR'=>['Grns.voucher_no' => $search,
+                                // ...
+                                'VendorLedgers.name LIKE' => '%'.$search.'%',
+                                //.....
+                                'Grns.reference_no LIKE' => '%'.$search.'%',
+                                //...
+                                'Grns.transaction_date ' => date('Y-m-d',strtotime($search))]])
+                            ->contain(['VendorLedgers']);
+		if ($this->request->is(['post'])) {
+			$to_be_send=$this->request->data['to_be_send'];
+			//pr($to_be_send); exit;
+			$this->redirect(['controller'=>'PurchaseInvoices','action' => 'add/'.json_encode($to_be_send).'']);
+		}
+      
+        $grns = $this->paginate($grns);
+
+        $this->set(compact('grns','newGrns'));
+    }
 
     /**
      * View method
