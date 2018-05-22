@@ -356,7 +356,7 @@ class AccountingEntriesController extends AppController
 				}
 			$opening_balance=round($opening_balance,2);
 			//pr($opening_balance); exit;
-			 $AccountingLedgers=$this->AccountingEntries->find()->select(['total_credit_sum'=>'SUM(AccountingEntries.credit)','total_debit_sum'=>'SUM(AccountingEntries.debit)'])->contain(['Ledgers','PurchaseInvoices','Payments','Orders'])->where($where)->group(['AccountingEntries.payment_id','AccountingEntries.purchase_invoice_id','AccountingEntries.payment_id','AccountingEntries.order_id'])->autoFields(true); 
+			 $AccountingLedgers=$this->AccountingEntries->find()->select(['total_credit_sum'=>'SUM(AccountingEntries.credit)','total_debit_sum'=>'SUM(AccountingEntries.debit)'])->contain(['Ledgers','PurchaseInvoices','Payments','Orders','Receipts'])->where($where)->group(['AccountingEntries.payment_id','AccountingEntries.purchase_invoice_id','AccountingEntries.payment_id','AccountingEntries.order_id'])->autoFields(true); 
 			}
 			
 			

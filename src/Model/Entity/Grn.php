@@ -60,6 +60,7 @@ class Grn extends Entity
         'total_sales_rate' => true,
         'created_on' => true,
         'status' => true,
+        'stock_transfer_status' => true,
         'seller' => true,
         'admin' => true,
         'location' => true,

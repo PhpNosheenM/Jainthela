@@ -287,6 +287,100 @@ class LedgersController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
+	 public function overDueReportReceivable()
+	{
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
+		$this->viewBuilder()->layout('super_admin_layout');
+		$ledger_id = $this->request->query('ledger_id');
+		//$from_date = $this->request->query('from_date');
+		$to_date   = $this->request->query('to_date');
+		if(empty($to_date))
+		{
+			$to_date   = date("Y-m-d");
+		}else{
+			$to_date= date("Y-m-d",strtotime($to_date));
+		}
+		$parentSundryDebtors = $this->Ledgers->AccountingGroups->find()
+				->where(['AccountingGroups.city_id'=>$city_id, 'AccountingGroups.customer'=>'1']);
+		$childSundryDebtors=[];
+		
+		foreach($parentSundryDebtors as $parentSundryDebtor)
+		{
+			$accountingGroups = $this->Ledgers->AccountingGroups->find('children', ['for' => $parentSundryDebtor->id]);
+			$childSundryDebtors[]=$parentSundryDebtor->id;
+			foreach($accountingGroups as $accountingGroup){
+				$childSundryDebtors[]=$accountingGroup->id;
+			}			
+		}
+		
+		$ledgerAccounts = $this->Ledgers->find()->where(['accounting_group_id IN'=>$childSundryDebtors]);	
+		
+		$ledgerAccounts = $this->Ledgers->find()->where(['accounting_group_id IN'=>$childSundryDebtors]);
+		
+		$ledgerAccountids = [];
+
+		foreach($ledgerAccounts as $ledgerAccount)
+		{
+			$ledgerAccountids[]=$ledgerAccount->id;
+		}
+		$reference_details = $this->Ledgers->ReferenceDetails->find()->contain(['Ledgers'])->where(['ReferenceDetails.city_id'=>$city_id, 'ReferenceDetails.type != ' => 'On Account']);
+		$reference_details->select(['total_debit' => $reference_details->func()->sum('ReferenceDetails.debit'),'total_credit' => $reference_details->func()->sum('ReferenceDetails.credit')])
+		->where(['ReferenceDetails.ledger_id IN '=> $ledgerAccountids,'ReferenceDetails.transaction_date <=' => $to_date])
+		->group(['ReferenceDetails.ref_name','ReferenceDetails.ledger_id'])->autoFields(true);	
+		$this->set(compact('companies','reference_details','run_time_date','url','status','to_date'));
+		//pr($reference_details->toArray()); exit;
+			
+	}
+	
+	 public function overDueReportPayable()
+	{
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
+		$this->viewBuilder()->layout('super_admin_layout');
+		$ledger_id = $this->request->query('ledger_id');
+		$from_date = $this->request->query('from_date');
+		$to_date   = $this->request->query('to_date');
+		if(empty($to_date))
+		{
+			$to_date   = date("Y-m-d");
+		}else{
+			$to_date= date("Y-m-d",strtotime($to_date));
+		}
+		$parentSundryDebtors = $this->Ledgers->AccountingGroups->find()
+				->where(['AccountingGroups.city_id'=>$city_id, 'AccountingGroups.vendor'=>'1'])->orWhere(['AccountingGroups.city_id'=>$city_id, 'AccountingGroups.seller'=>'1']);
+		$childSundryDebtors=[];
+		
+		foreach($parentSundryDebtors as $parentSundryDebtor)
+		{
+			$accountingGroups = $this->Ledgers->AccountingGroups->find('children', ['for' => $parentSundryDebtor->id]);
+			$childSundryDebtors[]=$parentSundryDebtor->id;
+			foreach($accountingGroups as $accountingGroup){
+				$childSundryDebtors[]=$accountingGroup->id;
+			}			
+		}
+		
+		$ledgerAccounts = $this->Ledgers->find()->where(['accounting_group_id IN'=>$childSundryDebtors]);	
+		
+		$ledgerAccounts = $this->Ledgers->find()->where(['accounting_group_id IN'=>$childSundryDebtors]);
+		
+		$ledgerAccountids = [];
+
+		foreach($ledgerAccounts as $ledgerAccount)
+		{
+			$ledgerAccountids[]=$ledgerAccount->id;
+		}
+		$reference_details = $this->Ledgers->ReferenceDetails->find()->contain(['Ledgers'])->where(['ReferenceDetails.city_id'=>$city_id, 'ReferenceDetails.type != ' => 'On Account']);
+		$reference_details->select(['total_debit' => $reference_details->func()->sum('ReferenceDetails.debit'),'total_credit' => $reference_details->func()->sum('ReferenceDetails.credit')])
+		->where(['ReferenceDetails.ledger_id IN '=> $ledgerAccountids,'ReferenceDetails.transaction_date <=' => $to_date])
+		->group(['ReferenceDetails.ref_name','ReferenceDetails.ledger_id'])->autoFields(true);	
+		$this->set(compact('companies','reference_details','run_time_date','url','status','to_date'));
+		//pr($reference_details->toArray()); exit;
+			
+	}
+	
     public function delete($id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
