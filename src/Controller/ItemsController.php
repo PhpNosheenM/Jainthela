@@ -729,9 +729,9 @@ class ItemsController extends AppController
 		}
 		
 	//	pr($from_date); exit;
-		$PurchaseInvoices = $this->Items->PurchaseInvoices->find()->contain(['Locations'])->where($where);
+		$PurchaseInvoices = $this->Items->PurchaseInvoices->find()->contain(['Cities'])->where($where);
 		$Locations = $this->Items->Orders->Locations->find('list');
-		//pr($orders); exit;
+		//pr($PurchaseInvoices->toArray()); exit;
 		$this->set(compact('from_date','to_date','PurchaseInvoices','Locations','location_id'));
 	}
 }

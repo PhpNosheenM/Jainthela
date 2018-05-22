@@ -50,9 +50,14 @@ class PurchaseInvoicesTable extends Table
             'foreignKey' => 'location_id',
             'joinType' => 'INNER'
         ]);
+		$this->belongsTo('Grns', [
+            'foreignKey' => 'grn_id',
+            'joinType' => 'INNER'
+        ]);
        
 		$this->belongsTo('GstFigures');
 		$this->belongsTo('Items');
+		$this->belongsTo('Units');
 		$this->belongsTo('Sellers');
 		$this->belongsTo('SellerLedgers', [
 			'className' => 'Ledgers',

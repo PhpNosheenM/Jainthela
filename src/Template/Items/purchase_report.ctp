@@ -49,9 +49,8 @@
 							<thead>
 								<tr>
 									<th><?= ('SNo.') ?></th>
-									<th><?= ('Order No') ?></th>
+									<th><?= ('Invoice No') ?></th>
 									<th><?= ('Transaction Date') ?></th>
-									<th><?= ('Location') ?></th>
 									<th><?= ('Purchase Amount') ?></th>
 									<th><?= ('GST') ?></th>
 									<th><?= ('Total') ?></th>
@@ -62,16 +61,15 @@
 								  <?php foreach ($PurchaseInvoices as $order): //pr($order); exit; ?>
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
-									<td><?php echo $this->Html->link($order->order_no,['controller'=>'Orders','action' => 'view', $order->id],['target'=>'_blank']); ?></td>
+									<td><?php echo $this->Html->link($order->invoice_no,['controller'=>'Orders','action' => 'view', $order->id],['target'=>'_blank']); ?></td>
 									<td><?= h(date("d-m-Y",strtotime($order->transaction_date))) ?></td>
-									<td><?= h($order->location->name) ?></td>
 									<td><?php echo $this->Money->moneyFormatIndia($order->total_amount,2); ?></td>
 									<td><?php echo $this->Money->moneyFormatIndia($order->total_gst,2); ?></td>
 									<td><?php echo $this->Money->moneyFormatIndia($order->grand_total,2); ?></td>
 									<?php
-										$total_sales_amount+=$order->total_amount;
+										$total_sales_amount+=$order->total_taxable_value;
 										$total_gst_amount+=$order->total_gst;
-										$total_amount+=$order->grand_total;
+										$total_amount+=$order->total_amount;
 									?>
 								</tr>
 								<?php endforeach; ?>
@@ -79,7 +77,7 @@
 							<tfoot>
 								<?php if($total_sales_amount > 0){ ?>
 								<tr>
-									<td colspan="4" align="right"><b>Total</b></td>
+									<td colspan="3" align="right"><b>Total</b></td>
 									<td><b><?php echo $this->Money->moneyFormatIndia($total_sales_amount,2); ?></b></td>
 									<td><b><?php echo $this->Money->moneyFormatIndia($total_gst_amount,2); ?></b></td>
 									<td><b><?php echo $this->Money->moneyFormatIndia($total_amount,2); ?></b></td>

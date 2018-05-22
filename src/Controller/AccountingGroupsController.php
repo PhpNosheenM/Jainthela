@@ -1,8 +1,8 @@
 <?php
 namespace App\Controller;
-
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\View\View;
 /**
  * AccountingGroups Controller
  *
@@ -12,12 +12,62 @@ use App\Controller\AppController;
  */
 class AccountingGroupsController extends AppController
 {
+	public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Security->setConfig('unlockedActions', ['add' , 'index' , 'list' ,'accountList', 'accountView', 'getItemInfo']);
+
+    }
+	
+	public function getItemInfo()
+	{
+		$nm = $this->request->query('nm');
+		$updt_id = $this->request->query('updt_id');
+		
+		$query = $this->AccountingGroups->query();
+		$query->update()
+			->set([$nm =>'1'])
+			->where(['AccountingGroups.id' => $updt_id])
+			->execute();
+	}
 
     /**
      * Index method
      *
      * @return \Cake\Http\Response|void
      */
+	
+	public function accountView($id)
+    {
+        $user_id=$this->Auth->User('id');
+        $city_id=$this->Auth->User('city_id'); 
+        $location_id=$this->Auth->User('location_id'); 
+        $state_id=$this->Auth->User('state_id'); 
+        $this->viewBuilder()->layout('super_admin_layout');
+        $this->paginate = [
+             'limit' => 20
+        ];
+        $accountingGroups = $this->paginate($this->AccountingGroups->find()->where(['AccountingGroups.id'=>$id])->contain(['NatureOfGroups','ParentAccountingGroups']))->first();
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('accountingGroups','paginate_limit'));
+    }
+		
+	 
+	 public function accountList()
+    {
+        $user_id=$this->Auth->User('id');
+        $city_id=$this->Auth->User('city_id'); 
+        $location_id=$this->Auth->User('location_id'); 
+        $state_id=$this->Auth->User('state_id'); 
+        $this->viewBuilder()->layout('super_admin_layout');
+        $this->paginate = [
+             'limit' => 20
+        ];
+        $accountingGroups = $this->paginate($this->AccountingGroups->find()->where(['AccountingGroups.city_id'=>$city_id])->contain(['NatureOfGroups','ParentAccountingGroups']));
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('accountingGroups','paginate_limit'));
+    }
+	
     public function index()
     {
         $user_id=$this->Auth->User('id');

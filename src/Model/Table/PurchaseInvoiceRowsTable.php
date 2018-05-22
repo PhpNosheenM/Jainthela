@@ -80,10 +80,10 @@ class PurchaseInvoiceRowsTable extends Table
             ->requirePresence('quantity', 'create')
             ->notEmpty('quantity');
 
-        $validator
+       /*  $validator
             ->decimal('rate')
             ->requirePresence('rate', 'create')
-            ->notEmpty('rate');
+            ->notEmpty('rate'); */
 
         $validator
             ->decimal('discount_percentage')

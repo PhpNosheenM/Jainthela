@@ -44,6 +44,7 @@ class PurchaseInvoiceRow extends Entity
         'purchase_invoice_id' => true,
         'item_id' => true,
         'item_variation_id' => true,
+        'unit_variation_id' => true,
         'quantity' => true,
         'rate' => true,
         'discount_percentage' => true,

@@ -2,7 +2,8 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\View\View;
 /**
  * PurchaseInvoices Controller
  *
@@ -18,6 +19,13 @@ class PurchaseInvoicesController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
+	 
+	 public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Security->setConfig('unlockedActions', ['add']);
+
+    }
     public function index()
     {
 		$user_id=$this->Auth->User('id');
@@ -55,18 +63,65 @@ class PurchaseInvoicesController extends AppController
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
-    public function add()
+   public function add($to_be_send=null)
     {
+		if($to_be_send){
+			$to_be_send=json_decode($to_be_send);
+			$to_be_send2=[];
+			$grnData=[];
+			foreach($to_be_send as $id=>$qty){ 
+				if($qty > 0){
+					$Grn1=$this->PurchaseInvoices->Grns->get($id);
+					
+					if($Grn1->created_for=="Jainthela"){
+						$Grn=$this->PurchaseInvoices->Grns->get($id, [
+							'contain' => ['GrnRows'=>['Items'=>['GstFigures'],'UnitVariations'=>['Units']]]
+						]);
+						$grnData=$Grn;
+						$to_be_send2[$id]=$Grn->grn_rows;
+					}else{
+						$Grn=$this->PurchaseInvoices->Grns->get($id, [
+							'contain' => ['GrnRows'=>['ItemVariations'=>['Items'=>['GstFigures'],'UnitVariations'=>['Units']]]]
+						]);
+						$grnData=$Grn;
+						$to_be_send2[$id]=$Grn->grn_rows;
+					}
+					
+				}
+			}
+		}
+		 //pr($grnData); exit;
+		$total_grn_rows=[];
+		foreach($to_be_send2 as $data){  
+			foreach($data as $data1){
+				$total_grn_rows[]=$data1;
+			}
+		}
+		
+		 //exit;
+		//pr($total_grn_rows); exit;
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$state_id=$this->Auth->User('state_id'); 
 
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 		
         $purchaseInvoice = $this->PurchaseInvoices->newEntity();
-		$CitiesData = $this->PurchaseInvoices->Cities->get($city_id);
+		//$CitiesData = $this->PurchaseInvoices->Cities->get($city_id);
+		//$Voucher_no = $this->PurchaseInvoices->find()->select(['voucher_no'])->where(['PurchaseInvoices.city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
+		$CityData = $this->PurchaseInvoices->Cities->get($city_id);
+		$StateData = $this->PurchaseInvoices->Cities->States->get($CityData->state_id);
+	
 		$Voucher_no = $this->PurchaseInvoices->find()->select(['voucher_no'])->where(['PurchaseInvoices.city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
-		$today_date=date("Y-m-d");
+		if($Voucher_no){$voucher_no=$Voucher_no->voucher_no+1;}
+		else{$voucher_no=1;}
+		$order_no=$CityData->alise_name.'/PI/'.$voucher_no;
+		$voucher_no=$StateData->alias_name.'/'.$order_no;
+		
+		//pr($voucher_no); exit;
+		//pr($order_no); exit;
+		
+		/* $today_date=date("Y-m-d");
 		$orderdate = explode('-', $today_date);
 		$year = $orderdate[0];
 		$month   = $orderdate[1];
@@ -78,26 +133,36 @@ class PurchaseInvoicesController extends AppController
 		else
 		{
 			$voucher_no=1;
-		} 
+		}  */
 
         if ($this->request->is('post')) {
             $purchaseInvoice = $this->PurchaseInvoices->patchEntity($purchaseInvoice, $this->request->getData());
-            $purchaseInvoice->voucher_no=$voucher_no;
+			$Voucher_no = $this->PurchaseInvoices->find()->select(['voucher_no'])->where(['PurchaseInvoices.city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
+			if($Voucher_no){$voucher_no=$Voucher_no->voucher_no+1;}
+			else{$voucher_no=1;}
+			$voucher_no1=$voucher_no;
+			$order_no=$CityData->alise_name.'/PI/'.$voucher_no;
+			$voucher_no=$StateData->alias_name.'/'.$order_no;
+			
+			
+			
+            $purchaseInvoice->voucher_no=$voucher_no1;
+            $purchaseInvoice->invoice_no=$voucher_no;
             //$purchaseInvoice->location_id=$location_id;
             $purchaseInvoice->city_id=$city_id;
             $purchaseInvoice->created_by=$user_id;
             $purchaseInvoice->created_on=date('Y-m-d');
             $purchaseInvoice->entry_from="Web";
-			$purchaseInvoiceVoucherNo='PI'.'/'.$year.''.$month.''.$day.'/'.$voucher_no;
-			$purchaseInvoice->invoice_no=$CitiesData->alise.'/'.$purchaseInvoiceVoucherNo;
 			
-			$seller_ledger = $this->PurchaseInvoices->SellerLedgers->get($purchaseInvoice->seller_ledger_id);
-			$sellerData = $this->PurchaseInvoices->Sellers->get($seller_ledger->seller_id, [
-				'contain' => (['Locations'=>['Cities']])
-			]);
+			if($Grn1->created_for=="Jainthela"){
+				$sellerData = $this->PurchaseInvoices->SellerLedgers->get($purchaseInvoice->seller_ledger_id,['contain'=>['Vendors'=>['Cities']]]);
+				$gstCity=$sellerData->vendor->city->state_id;
+			}else{
+				$sellerData = $this->PurchaseInvoices->SellerLedgers->get($purchaseInvoice->seller_ledger_id,['contain'=>['Sellers'=>['Cities']]]);
+				$gstCity=$sellerData->seller->city->state_id;
+			}
 			
-			
-			//pr($sellerData->location->city->state_id); exit;
+			//pr($gstCity); exit;
 			if ($this->PurchaseInvoices->save($purchaseInvoice)) {
 				
 			//Accounting Entries for Purchase account//
@@ -110,9 +175,9 @@ class PurchaseInvoicesController extends AppController
 			$AccountingEntrie->city_id=$city_id;
 			$AccountingEntrie->entry_from="Web";
 			$AccountingEntrie->purchase_invoice_id=$purchaseInvoice->id; 
-			$this->PurchaseInvoices->AccountingEntries->save($AccountingEntrie);
+			$this->PurchaseInvoices->AccountingEntries->save($AccountingEntrie);  
 	
-			//Accounting Entries for Supplier account//
+			//Accounting Entries for Seller & Vendor account//
 			$AccountingEntrie = $this->PurchaseInvoices->AccountingEntries->newEntity(); 
 			$AccountingEntrie->ledger_id=$purchaseInvoice->seller_ledger_id;
 			$AccountingEntrie->credit=$purchaseInvoice->total_amount;
@@ -125,9 +190,9 @@ class PurchaseInvoicesController extends AppController
 			$this->PurchaseInvoices->AccountingEntries->save($AccountingEntrie);
 		
 			
-			if($sellerData->location->city->state_id==$state_id){
+			if($gstCity==$state_id){
 				foreach($purchaseInvoice->purchase_invoice_rows as $purchase_invoice_row){ 
-					$gstAmtdata=$purchase_invoice_row->gst_value/2;
+					$gstAmtdata=round($purchase_invoice_row->gst_value/2,2);
 					$gstAmtInsert=round($gstAmtdata,2);
 					
 					//Accounting Entries for CGST//
@@ -161,7 +226,7 @@ class PurchaseInvoicesController extends AppController
 				   }
 			}else{
 				foreach($purchaseInvoice->purchase_invoice_rows as $purchase_invoice_row){ 
-					$gstAmtdata=round($purchase_invoice_row->gst_value/2,2);
+					$gstAmtdata=round($purchase_invoice_row->gst_value,2);
 					$gstAmtInsert=round($gstAmtdata*2,2); 
 					
 					//Accounting Entries for IGST//
@@ -191,64 +256,35 @@ class PurchaseInvoicesController extends AppController
 			$ReferenceDetail->city_id=$city_id;
 			$ReferenceDetail->entry_from="Web";
 			$ReferenceDetail->type='New Ref';
-			$ReferenceDetail->ref_name=$LocationData->alise.'/'.$purchaseInvoiceVoucherNo;
+			$ReferenceDetail->ref_name=$purchaseInvoice->invoice_no;
 			$ReferenceDetail->purchase_invoice_id=$purchaseInvoice->id;
 			$this->PurchaseInvoices->ReferenceDetails->save($ReferenceDetail);
 			
-			foreach($purchaseInvoice->purchase_invoice_rows as $purchase_invoice_row){ 
-				
-				$ItemLedger = $this->PurchaseInvoices->ItemLedgers->newEntity(); 
-				$ItemLedger->item_id=$purchase_invoice_row->item_id;
-				$ItemLedger->item_variation_id=$purchase_invoice_row->item_variation_id;
-				$ItemLedger->seller_id=$seller_ledger->seller_id;
-				$ItemLedger->transaction_date=$purchaseInvoice->transaction_date;
-				$ItemLedger->quantity=$purchase_invoice_row->quantity;
-				$ItemLedger->rate=$purchase_invoice_row->rate;
-				$ItemLedger->purchase_rate=$purchase_invoice_row->purchase_rate;
-				$ItemLedger->sales_rate=$purchase_invoice_row->sales_rate;
-				$ItemLedger->mrp=$purchase_invoice_row->mrp;
-				$ItemLedger->status="In";
-				//$ItemLedger->location_id=$location_id;
-				$ItemLedger->city_id=$city_id;
-				$ItemLedger->purchase_invoice_id=$purchaseInvoice->id;
-				$ItemLedger->purchase_invoice_row_id=$purchase_invoice_row->id;
-				$ItemLedger->entry_from="Web";
-				$this->PurchaseInvoices->ItemLedgers->save($ItemLedger);
-			}
-			
-			foreach($purchaseInvoice->purchase_invoice_rows as $purchase_invoice_row){ 
-				if($purchase_invoice_row->item_variation_id==0){
-					$query = $this->PurchaseInvoices->Items->ItemVariations->query();
+			foreach($to_be_send as $id=>$qty){ 
+				if($qty > 0){
+					$query = $this->PurchaseInvoices->Grns->query();
 					$query->update()
-					->set(['purchase_rate'=>$purchase_invoice_row->purchase_rate,'sales_rate'=>$purchase_invoice_row->sales_rate,'mrp'=>$purchase_invoice_row->mrp,'out_of_stock'=>'No','ready_to_sale'=>'Yes','update_on'=>$today_date])
-					->where(['item_id' => $purchase_invoice_row->item_id,'seller_id'=>$seller_ledger->seller_id])
-					->execute();
-					
-				}else{
-					
-					$query = $this->PurchaseInvoices->Items->ItemVariations->query();
-					$query->update()
-					->set(['purchase_rate'=>$purchase_invoice_row->purchase_rate,'sales_rate'=>$purchase_invoice_row->sales_rate,'mrp'=>$purchase_invoice_row->mrp,'print_rate'=>$purchase_invoice_row->mrp,'update_on'=>$today_date,'out_of_stock'=>'No','ready_to_sale'=>'Yes'])
-					->where(['item_id' => $purchase_invoice_row->item_id,'seller_id'=>$seller_ledger->seller_id])
+					->set(['purchase_invoice_status'=>'Complete'])
+					->where(['id'=>$qty])
 					->execute();
 				}
 			}
 				
 				
-                $this->Flash->success(__('The purchase invoice has been saved.'));
+			$this->Flash->success(__('The purchase invoice has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+			return $this->redirect(['action' => 'index']);
             }else{
-				//pr($purchaseInvoice); exit;
+				pr($purchaseInvoice); exit;
 			}
             $this->Flash->error(__('The purchase invoice could not be saved. Please, try again.'));
         }
 
-	   $partyParentGroups = $this->PurchaseInvoices->AccountingGroups->find()
+	   /* $partyParentGroups = $this->PurchaseInvoices->AccountingGroups->find()
 						->where(['AccountingGroups.
 						purchase_invoice_party'=>'1','AccountingGroups.city_id'=>$city_id]);
 
-pr($partyParentGroups->toArray()); exit;
+//pr($partyParentGroups->toArray()); exit;
 		$partyGroups=[];
 		foreach($partyParentGroups as $partyParentGroup)
 		{
@@ -264,20 +300,33 @@ pr($partyParentGroups->toArray()); exit;
 		{
 			$Partyledgers = $this->PurchaseInvoices->SellerLedgers->find()
 							->where(['SellerLedgers.accounting_group_id IN' =>$partyGroups])
-							->contain(['Sellers'=>['Locations'=>['Cities']]]);
-        } 
+							->contain(['Sellers'=>['Cities']]);
+        }  */
+		
 		$partyOptions=[];
+		if($grnData->created_for=="Jainthela"){
+			$Partyledger = $this->PurchaseInvoices->SellerLedgers->get($grnData->vendor_ledger_id,['contain'=>['Cities']]);
+			//pr($Partyledgers); 
+			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id,'city_id'=>$Partyledger->city_id,'state_id'=>$Partyledger->city->state_id,'bill_to_bill_accounting'=>$Partyledger->bill_to_bill_accounting,'vendor_id'=>$Partyledger->vendor_id];
+			//pr($partyOptions); exit;
+		}else{
+			$Partyledger = $this->PurchaseInvoices->SellerLedgers->get($grnData->vendor_ledger_id,['contain'=>['Cities']]);
+			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id,'city_id'=>$Partyledger->city_id,'state_id'=>$Partyledger->city->state_id,'bill_to_bill_accounting'=>$Partyledger->bill_to_bill_accounting,'vendor_id'=>$Partyledger->vendor_id];
+		}
+		
+		//pr($partyOptions); exit;
+		/* $partyOptions=[];
 		foreach($Partyledgers as $Partyledger){  
 			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id,'city_id'=>$Partyledger->seller->city_id,'state_id'=>$Partyledger->seller->location->city->state_id,'bill_to_bill_accounting'=>$Partyledger->bill_to_bill_accounting,'seller_id'=>$Partyledger->seller_id];
 
-		}
-		pr($Partyledgers->toArray()); exit;
-		$accountLedgers = $this->PurchaseInvoices->AccountingGroups->find()->where(['AccountingGroups.purchase_invoice_purchase_account'=>1,'AccountingGroups.location_id'=>$location_id])->first();
-
+		} */
+		//pr($Partyledgers->toArray()); exit;
+		$accountLedgers = $this->PurchaseInvoices->AccountingGroups->find()->where(['AccountingGroups.purchase_invoice_purchase_account'=>1,'AccountingGroups.city_id'=>$city_id])->first();
+		
 		$accountingGroups2 = $this->PurchaseInvoices->AccountingGroups
 		->find('children', ['for' => $accountLedgers->id])
 		->find('List')->toArray();
-
+		
 		$accountingGroups2[$accountLedgers->id]=$accountLedgers->name;
 		ksort($accountingGroups2);
 		if($accountingGroups2)
@@ -290,13 +339,34 @@ pr($partyParentGroups->toArray()); exit;
 			$account_ids = explode(",",trim($account_ids,','));
 			$Accountledgers = $this->PurchaseInvoices->AccountingGroups->Ledgers->find('list')->where(['Ledgers.accounting_group_id IN' =>$account_ids]);
         }
-		$GstFigures1 = $this->PurchaseInvoices->GstFigures->find();
+		//pr($Accountledgers->toArray()); exit;
+		$GstFigures1 = $this->PurchaseInvoices->GstFigures->find()->where(['city_id'=>$city_id]);
 
 		$GstFigures=array();
 				foreach($GstFigures1 as $data){
 					$GstFigures[]=['text' => $data->name,'value' => $data->id,'tax_percentage' => $data->tax_percentage];
 				}
-        $this->set(compact('purchaseInvoice', 'locations', 'partyOptions', 'Accountledgers', 'items','GstFigures','voucher_no','LocationData'));
+		//pr($GstFigures); exit;
+		$items = $this->PurchaseInvoices->PurchaseInvoiceRows->Items->find();
+        
+        $itemOptions=[];
+        foreach($items as $item)
+        {
+                $itemOptions[]=['text' =>$item->name, 'value' => $item->id];
+        }
+		
+		$units = $this->PurchaseInvoices->Units->find()->where(['status'=>'Active'])->contain(['UnitVariations']);
+      // pr($units->toArray()); exit;
+        $unitVariationOptions=[];
+        foreach($units as $unit)
+        {
+            foreach ($unit->unit_variations as $unit_variation) {
+                
+                $unitVariationOptions[]=['text' =>$unit_variation->quantity_variation.' '.$unit->shortname, 'value' => $unit_variation->id];
+            }
+        }
+		
+        $this->set(compact('purchaseInvoice', 'locations', 'partyOptions', 'Accountledgers', 'items','GstFigures','voucher_no','LocationData','total_grn_rows','grnData','itemOptions','unitVariationOptions'));
     }
 
     /**
