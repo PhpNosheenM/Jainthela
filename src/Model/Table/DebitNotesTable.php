@@ -7,24 +7,23 @@ use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
 /**
- * CreditNotes Model
+ * DebitNotes Model
  *
  * @property \App\Model\Table\LocationsTable|\Cake\ORM\Association\BelongsTo $Locations
  * @property \App\Model\Table\CitiesTable|\Cake\ORM\Association\BelongsTo $Cities
  * @property \App\Model\Table\AccountingEntriesTable|\Cake\ORM\Association\HasMany $AccountingEntries
- * @property \App\Model\Table\CreditNoteRowsTable|\Cake\ORM\Association\HasMany $CreditNoteRows
- * @property \App\Model\Table\ItemLedgersTable|\Cake\ORM\Association\HasMany $ItemLedgers
+ * @property \App\Model\Table\DebitNoteRowsTable|\Cake\ORM\Association\HasMany $DebitNoteRows
  * @property \App\Model\Table\ReferenceDetailsTable|\Cake\ORM\Association\HasMany $ReferenceDetails
  *
- * @method \App\Model\Entity\CreditNote get($primaryKey, $options = [])
- * @method \App\Model\Entity\CreditNote newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\CreditNote[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\CreditNote|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\CreditNote patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\CreditNote[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\CreditNote findOrCreate($search, callable $callback = null, $options = [])
+ * @method \App\Model\Entity\DebitNote get($primaryKey, $options = [])
+ * @method \App\Model\Entity\DebitNote newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\DebitNote[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\DebitNote|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\DebitNote patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\DebitNote[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\DebitNote findOrCreate($search, callable $callback = null, $options = [])
  */
-class CreditNotesTable extends Table
+class DebitNotesTable extends Table
 {
 
     /**
@@ -37,7 +36,7 @@ class CreditNotesTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('credit_notes');
+        $this->setTable('debit_notes');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
@@ -50,16 +49,13 @@ class CreditNotesTable extends Table
             'joinType' => 'INNER'
         ]);
         $this->hasMany('AccountingEntries', [
-            'foreignKey' => 'credit_note_id'
+            'foreignKey' => 'debit_note_id'
         ]);
-        $this->hasMany('CreditNoteRows', [
-            'foreignKey' => 'credit_note_id'
-        ]);
-        $this->hasMany('ItemLedgers', [
-            'foreignKey' => 'credit_note_id'
+        $this->hasMany('DebitNoteRows', [
+            'foreignKey' => 'debit_note_id'
         ]);
         $this->hasMany('ReferenceDetails', [
-            'foreignKey' => 'credit_note_id'
+            'foreignKey' => 'debit_note_id'
         ]);
     }
 
@@ -75,21 +71,10 @@ class CreditNotesTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
-       /*  $validator
-            ->scalar('status')
-            ->maxLength('status', 10)
-            ->requirePresence('status', 'create')
-            ->notEmpty('status');
- */
         $validator
             ->integer('voucher_no')
             ->requirePresence('voucher_no', 'create')
             ->notEmpty('voucher_no');
-
-        $validator
-            ->date('transaction_date')
-            ->requirePresence('transaction_date', 'create')
-            ->notEmpty('transaction_date');
 
         $validator
             ->decimal('total_credit_amount')
@@ -102,20 +87,31 @@ class CreditNotesTable extends Table
             ->notEmpty('total_debit_amount');
 
         $validator
+            ->date('transaction_date')
+            ->requirePresence('transaction_date', 'create')
+            ->notEmpty('transaction_date');
+
+        $validator
             ->scalar('narration')
             ->requirePresence('narration', 'create')
             ->notEmpty('narration');
+/* 
+        $validator
+            ->scalar('status')
+            ->maxLength('status', 10)
+            ->requirePresence('status', 'create')
+            ->notEmpty('status'); */
 
         $validator
             ->integer('created_by')
             ->requirePresence('created_by', 'create')
             ->notEmpty('created_by');
-/* 
-        $validator
+
+   /*      $validator
             ->dateTime('created_on')
             ->requirePresence('created_on', 'create')
-            ->notEmpty('created_on');
- */
+            ->notEmpty('created_on'); */
+
         return $validator;
     }
 

@@ -4,13 +4,13 @@ use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\View\View;
 /**
- * CreditNotes Controller
+ * DebitNotes Controller
  *
- * @property \App\Model\Table\CreditNotesTable $CreditNotes
+ * @property \App\Model\Table\DebitNotesTable $DebitNotes
  *
- * @method \App\Model\Entity\CreditNote[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
+ * @method \App\Model\Entity\DebitNote[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
-class CreditNotesController extends AppController
+class DebitNotesController extends AppController
 {
 	public function beforeFilter(Event $event)
     {
@@ -18,7 +18,7 @@ class CreditNotesController extends AppController
         $this->Security->setConfig('unlockedActions', ['add','index']);
 
     }
-	
+
     /**
      * Index method
      *
@@ -33,41 +33,41 @@ class CreditNotesController extends AppController
             'contain' => ['Cities'],
 			'limit' => 20
         ];
-		
-		$creditNotes = $this->CreditNotes->find()->where(['CreditNotes.city_id'=>$city_id])->contain(['CreditNoteRows','Cities']);
-		
+
+		$debitNotes = $this->DebitNotes->find()->where(['DebitNotes.city_id'=>$city_id])->contain(['DebitNoteRows','Cities']);
+
 		if ($this->request->is(['get'])){
 			$search=$this->request->getQuery('search');
-			$creditNotes->where([
+			$debitNotes->where([
 							'OR' => [
-									'CreditNotes.voucher_no LIKE' => $search.'%',
+									'DebitNotes.voucher_no LIKE' => $search.'%',
 									'Cities.name LIKE' => $search.'%',
-									'CreditNotes.narration LIKE' => $search.'%',
-									'CreditNotes.created_on LIKE' => $search.'%'
+									'DebitNotes.narration LIKE' => $search.'%',
+									'DebitNotes.created_on LIKE' => $search.'%'
 									
 							]
 			]);
 		}
 		
-		$creditNotes=$this->paginate($creditNotes);
+		$debitNotes=$this->paginate($debitNotes);
 		$paginate_limit=$this->paginate['limit'];
-        $this->set(compact('creditNotes','paginate_limit'));
+        $this->set(compact('debitNotes','paginate_limit'));
     }
 
     /**
      * View method
      *
-     * @param string|null $id Credit Note id.
+     * @param string|null $id Debit Note id.
      * @return \Cake\Http\Response|void
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function view($id = null)
     {
-        $creditNote = $this->CreditNotes->get($id, [
-            'contain' => ['Locations', 'Cities', 'AccountingEntries', 'CreditNoteRows', 'ItemLedgers', 'ReferenceDetails']
+        $debitNote = $this->DebitNotes->get($id, [
+            'contain' => ['Locations', 'Cities', 'AccountingEntries', 'DebitNoteRows', 'ReferenceDetails']
         ]);
 
-        $this->set('creditNote', $creditNote);
+        $this->set('debitNote', $debitNote);
     }
 
     /**
@@ -81,10 +81,23 @@ class CreditNotesController extends AppController
 		$location_id=$this->Auth->User('location_id'); 
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('super_admin_layout');
-        $creditNote = $this->CreditNotes->newEntity();
-       if ($this->request->is('post')) {
+        $debitNote = $this->DebitNotes->newEntity();
+		
+        if ($this->request->is('post')) {
+            $debitNote = $this->DebitNotes->patchEntity($debitNote, $this->request->getData());
+            if ($this->DebitNotes->save($debitNote)) {
+                $this->Flash->success(__('The debit note has been saved.'));
+
+                return $this->redirect(['action' => 'index']);
+            }
+            $this->Flash->error(__('The debit note could not be saved. Please, try again.'));
+        }
+		
+		
+		
+		 if ($this->request->is('post')) {
 		   
-		   $Voucher_no = $this->CreditNotes->find()->select(['voucher_no'])->where(['city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
+		   $Voucher_no = $this->DebitNotes->find()->select(['voucher_no'])->where(['city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
 			  if($Voucher_no)
 			{
 				$creditVoucher_no=$Voucher_no->voucher_no+1;
@@ -94,62 +107,61 @@ class CreditNotesController extends AppController
 				$creditVoucher_no=1;
 			} 
 			
-		$creditNote = $this->CreditNotes->patchEntity($creditNote, $this->request->getData());
+		$debitNote = $this->DebitNotes->patchEntity($debitNote, $this->request->getData());
 		
 			$tdate=$this->request->data('transaction_date');
-			$creditNote->transaction_date=date('Y-m-d',strtotime($tdate));
-			$creditNote->city_id = $city_id;
-			$creditNote->voucher_no=$creditVoucher_no;
-			$creditNote->created_by = $user_id;
+			$debitNote->transaction_date=date('Y-m-d',strtotime($tdate));
+			$debitNote->city_id = $city_id;
+			$debitNote->voucher_no=$creditVoucher_no;
+			$debitNote->created_by = $user_id;
 			
-		//pr($creditNote);exit;
+		//pr($this->request->getData());exit;
 		//transaction date for credit note code start here--
 			
-			//pr($creditNote);exit;
+			 
 			//transaction date for credit note code close here--
-		 //pr($this->request->getData()); exit;
-            if ($data=$this->CreditNotes->save($creditNote)) {
+            if ($data=$this->DebitNotes->save($debitNote)) {
 				
-			foreach($creditNote->credit_note_rows as $credit_note_row)
+			foreach($debitNote->debit_note_rows as $debit_note_row)
 			{
-				if(!empty($credit_note_row->reference_details))
+				if(!empty($debit_note_row->reference_details))
 				{
-					foreach($credit_note_row->reference_details as $reference_detail1)
+					foreach($debit_note_row->reference_details as $reference_detail1)
 					{
-						$reference_detail = $this->CreditNotes->ReferenceDetails->newEntity();
+						$reference_detail = $this->DebitNotes->ReferenceDetails->newEntity();
 						$reference_detail->transaction_date = date('Y-m-d',strtotime($tdate));
-						$reference_detail->credit_note_id =  $creditNote->id;
-						$reference_detail->credit_note_row_id =  $credit_note_row->id;
+						$reference_detail->debit_note_id =  $debitNote->id;
+						$reference_detail->debit_note_row_id =  $debit_note_row->id;
 						$reference_detail->ref_name =  $reference_detail1['ref_name'];
 						$reference_detail->type =  $reference_detail1['type'];
 						$reference_detail->ledger_id =  $reference_detail1['ledger_id'];
 						$reference_detail->city_id =  $city_id;
-						$test_cr_dr=$credit_note_row->cr_dr;
+						$test_cr_dr=$debit_note_row->cr_dr;
 						if($test_cr_dr=='Cr'){
 							$reference_detail->credit =  $reference_detail1['credit'];
 						}
 						if($test_cr_dr=='Dr'){
 							$reference_detail->debit =  $reference_detail1['debit'];
 						}
-						
-						$this->CreditNotes->ReferenceDetails->save($reference_detail);
+						 
+						$this->DebitNotes->ReferenceDetails->save($reference_detail);
 					}
 				}
 			}
 			
 			
-			foreach($creditNote->credit_note_rows as $credit_note_row)
+			foreach($debitNote->debit_note_rows as $debit_note_row)
 				{
-					$accountEntry = $this->CreditNotes->AccountingEntries->newEntity();
-					$accountEntry->ledger_id                  = $credit_note_row->ledger_id;
-					$accountEntry->debit                      = @$credit_note_row->debit;
-					$accountEntry->credit                     = @$credit_note_row->credit;
-					$accountEntry->transaction_date           = $creditNote->transaction_date;
+					$accountEntry = $this->DebitNotes->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $debit_note_row->ledger_id;
+					$accountEntry->debit                      = @$debit_note_row->debit;
+					$accountEntry->credit                     = @$debit_note_row->credit;
+					$accountEntry->transaction_date           = $debitNote->transaction_date;
 					$accountEntry->city_id                 	  = $city_id;
 					$accountEntry->entry_from                 ='Web';
-					$accountEntry->credit_note_id             = $creditNote->id;
-					$accountEntry->credit_note_row_id         = $credit_note_row->id;
-					$this->CreditNotes->AccountingEntries->save($accountEntry);
+					$accountEntry->debit_note_id             = $debitNote->id;
+					$accountEntry->debit_note_row_id         = $debit_note_row->id;
+					$this->DebitNotes->AccountingEntries->save($accountEntry);
 				}
 			
                 $this->Flash->success(__('The Credit Note has been saved.'));
@@ -158,7 +170,7 @@ class CreditNotesController extends AppController
 			
             $this->Flash->error(__('The Credit Note could not be saved. Please, try again.'));
         }
-		$Voucher_no = $this->CreditNotes->find()->select(['voucher_no'])->where(['city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
+		$Voucher_no = $this->DebitNotes->find()->select(['voucher_no'])->where(['city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
 		if($Voucher_no)
 		{
 			$voucher_no=$Voucher_no->voucher_no+1;
@@ -169,14 +181,14 @@ class CreditNotesController extends AppController
 		}
 		
 		//frst row options
-		$bankParentGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find()
+		$bankParentGroups = $this->DebitNotes->DebitNoteRows->Ledgers->AccountingGroups->find()
 						->where(['AccountingGroups.city_id'=>$city_id, 'AccountingGroups.bank'=>'1']);
 						
 		$bankGroups=[];
 		
 		foreach($bankParentGroups as $bankParentGroup)
 		{
-			$accountingGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups
+			$accountingGroups = $this->DebitNotes->DebitNoteRows->Ledgers->AccountingGroups
 			->find('children', ['for' => $bankParentGroup->id])->toArray();
 			$bankGroups[]=$bankParentGroup->id;
 			foreach($accountingGroups as $accountingGroup){
@@ -185,14 +197,14 @@ class CreditNotesController extends AppController
 		}
 		
 		//cash-in-hand group
-		$cashParentGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find()
+		$cashParentGroups = $this->DebitNotes->DebitNoteRows->Ledgers->AccountingGroups->find()
 						->where(['AccountingGroups.city_id'=>$city_id, 'AccountingGroups.cash'=>'1']);
 						
 		$cashGroups=[];
 		
 		foreach($cashParentGroups as $cashParentGroup)
 		{
-			$cashChildGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups
+			$cashChildGroups = $this->DebitNotes->DebitNoteRows->Ledgers->AccountingGroups
 			->find('children', ['for' => $cashParentGroup->id])->toArray();
 			$cashGroups[]=$cashParentGroup->id;
 			foreach($cashChildGroups as $cashChildGroup){
@@ -200,7 +212,7 @@ class CreditNotesController extends AppController
 			}
 		}
 		
-		$partyParentGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find()
+		$partyParentGroups = $this->DebitNotes->DebitNoteRows->Ledgers->AccountingGroups->find()
 							->where(['AccountingGroups.city_id'=>$city_id, 'AccountingGroups.credit_note_first_row'=>1]);
 
 		$partyGroups=[];
@@ -208,14 +220,14 @@ class CreditNotesController extends AppController
 		foreach($partyParentGroups as $partyParentGroup)
 		{
 			
-			$partyChildGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find('children', ['for' => $partyParentGroup->id]);
+			$partyChildGroups = $this->DebitNotes->DebitNoteRows->Ledgers->AccountingGroups->find('children', ['for' => $partyParentGroup->id]);
 			$partyGroups[]=$partyParentGroup->id;
 			foreach($partyChildGroups as $partyChildGroup){
 				$partyGroups[]=$partyChildGroup->id;
 			}
 		}
 	
-		$partyLedgers = $this->CreditNotes->CreditNoteRows->Ledgers->find()
+		$partyLedgers = $this->DebitNotes->DebitNoteRows->Ledgers->find()
 		->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.city_id'=>$city_id]);
 		
 		//$ledgers = $this->Payments->PaymentRows->Ledgers->find()->where(['city_id'=>$city_id]);
@@ -236,14 +248,14 @@ class CreditNotesController extends AppController
 		
 		
 		//2nd bank group
-		$bankParentGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find()
+		$bankParentGroups = $this->DebitNotes->DebitNoteRows->Ledgers->AccountingGroups->find()
 						->where(['AccountingGroups.city_id'=>$city_id, 'AccountingGroups.bank'=>'1']);
 						
 		$bankGroups=[];
 		
 		foreach($bankParentGroups as $bankParentGroup)
 		{
-			$accountingGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups
+			$accountingGroups = $this->DebitNotes->DebitNoteRows->Ledgers->AccountingGroups
 			->find('children', ['for' => $bankParentGroup->id])->toArray();
 			$bankGroups[]=$bankParentGroup->id;
 			foreach($accountingGroups as $accountingGroup){
@@ -252,14 +264,14 @@ class CreditNotesController extends AppController
 		}
 		
 		//cash-in-hand group
-		$cashParentGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find()
+		$cashParentGroups = $this->DebitNotes->DebitNoteRows->Ledgers->AccountingGroups->find()
 						->where(['AccountingGroups.city_id'=>$city_id, 'AccountingGroups.cash'=>'1']);
 						
 		$cashGroups=[];
 		
 		foreach($cashParentGroups as $cashParentGroup)
 		{
-			$cashChildGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups
+			$cashChildGroups = $this->DebitNotes->DebitNoteRows->Ledgers->AccountingGroups
 			->find('children', ['for' => $cashParentGroup->id])->toArray();
 			$cashGroups[]=$cashParentGroup->id;
 			foreach($cashChildGroups as $cashChildGroup){
@@ -267,22 +279,22 @@ class CreditNotesController extends AppController
 			}
 		}
 		
-		$partyParentGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find()
-							->where(['AccountingGroups.city_id'=>$city_id, 'AccountingGroups.credit_note_all_row'=>1]);
+		$partyParentGroups = $this->DebitNotes->DebitNoteRows->Ledgers->AccountingGroups->find()
+							->where(['AccountingGroups.city_id'=>$city_id, 'AccountingGroups.debit_note_all_row'=>1]);
 
 		$partyGroups=[];
 		
 		foreach($partyParentGroups as $partyParentGroup)
 		{
 			
-			$partyChildGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups->find('children', ['for' => $partyParentGroup->id]);
+			$partyChildGroups = $this->DebitNotes->DebitNoteRows->Ledgers->AccountingGroups->find('children', ['for' => $partyParentGroup->id]);
 			$partyGroups[]=$partyParentGroup->id;
 			foreach($partyChildGroups as $partyChildGroup){
 				$partyGroups[]=$partyChildGroup->id;
 			}
 		}
 	
-		$partyLedgers = $this->CreditNotes->CreditNoteRows->Ledgers->find()
+		$partyLedgers = $this->DebitNotes->DebitNoteRows->Ledgers->find()
 		->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.city_id'=>$city_id]);
 		
 		//$ledgers = $this->Payments->PaymentRows->Ledgers->find()->where(['city_id'=>$city_id]);
@@ -302,52 +314,52 @@ class CreditNotesController extends AppController
 		}
 		
 		
-		$referenceDetails=$this->CreditNotes->CreditNoteRows->ReferenceDetails->find('list');
-        $this->set(compact('creditNote', 'companies','voucher_no','ledgerOptions','city_id','referenceDetails','ledgerFirstOptions'));
-        $this->set('_serialize', ['creditNote']);
+		$referenceDetails=$this->DebitNotes->DebitNoteRows->ReferenceDetails->find('list');
+        $this->set(compact('debitNote', 'companies','voucher_no','ledgerOptions','city_id','referenceDetails','ledgerFirstOptions'));
+        $this->set('_serialize', ['debitNote']);
     }
 
     /**
      * Edit method
      *
-     * @param string|null $id Credit Note id.
+     * @param string|null $id Debit Note id.
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
     public function edit($id = null)
     {
-        $creditNote = $this->CreditNotes->get($id, [
+        $debitNote = $this->DebitNotes->get($id, [
             'contain' => []
         ]);
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $creditNote = $this->CreditNotes->patchEntity($creditNote, $this->request->getData());
-            if ($this->CreditNotes->save($creditNote)) {
-                $this->Flash->success(__('The credit note has been saved.'));
+            $debitNote = $this->DebitNotes->patchEntity($debitNote, $this->request->getData());
+            if ($this->DebitNotes->save($debitNote)) {
+                $this->Flash->success(__('The debit note has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The credit note could not be saved. Please, try again.'));
+            $this->Flash->error(__('The debit note could not be saved. Please, try again.'));
         }
-        $locations = $this->CreditNotes->Locations->find('list', ['limit' => 200]);
-        $cities = $this->CreditNotes->Cities->find('list', ['limit' => 200]);
-        $this->set(compact('creditNote', 'locations', 'cities'));
+        $locations = $this->DebitNotes->Locations->find('list', ['limit' => 200]);
+        $cities = $this->DebitNotes->Cities->find('list', ['limit' => 200]);
+        $this->set(compact('debitNote', 'locations', 'cities'));
     }
 
     /**
      * Delete method
      *
-     * @param string|null $id Credit Note id.
+     * @param string|null $id Debit Note id.
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function delete($id = null)
     {
         $this->request->allowMethod(['post', 'delete']);
-        $creditNote = $this->CreditNotes->get($id);
-        if ($this->CreditNotes->delete($creditNote)) {
-            $this->Flash->success(__('The credit note has been deleted.'));
+        $debitNote = $this->DebitNotes->get($id);
+        if ($this->DebitNotes->delete($debitNote)) {
+            $this->Flash->success(__('The debit note has been deleted.'));
         } else {
-            $this->Flash->error(__('The credit note could not be deleted. Please, try again.'));
+            $this->Flash->error(__('The debit note could not be deleted. Please, try again.'));
         }
 
         return $this->redirect(['action' => 'index']);
