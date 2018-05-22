@@ -49,7 +49,7 @@ class StockTransferVouchersController extends AppController
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
-    public function add()
+    public function add($grn_id)
     {
         $user_id=$this->Auth->User('id');
         $city_id=$this->Auth->User('city_id');
@@ -64,12 +64,100 @@ class StockTransferVouchersController extends AppController
             }
             $this->Flash->error(__('The stock transfer voucher could not be saved. Please, try again.'));
         }
-        $grns = $this->StockTransferVouchers->Grns->find('list', ['limit' => 200]);
-        $cities = $this->StockTransferVouchers->Cities->find('list', ['limit' => 200]);
-        $locations = $this->StockTransferVouchers->Locations->find('list', ['limit' => 200]);
-        $this->set(compact('stockTransferVoucher', 'grns', 'cities', 'locations'));
-    }
+        $Voucher_no = $this->StockTransferVouchers->find()->select(['voucher_no'])->where(['city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
+        if($Voucher_no){
+            $voucher_no=$Voucher_no->voucher_no+1;
+        }else{
+            $voucher_no=1;
+        } 
+         $grns = $this->StockTransferVouchers->Grns->get($grn_id,
+            [
+                'contain'=>['GrnRows'=>['UnitVariations']]
 
+            ]);
+          pr($grns->toArray());
+        exit;
+        $items = $this->StockTransferVouchers->StockTransferVoucherRows->Items->find()->where(['status'=>'Approved'])->contain(['ItemVariationMasters']);
+        $itemOptions=[];
+       
+        foreach($items as $item){
+            $itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id];
+        }
+        $grns = $this->StockTransferVouchers->Grns->find('list');
+        $locations = $this->StockTransferVouchers->Locations->find('list')->where(['city_id'=>$city_id]);
+        $this->set(compact('stockTransferVoucher', 'grns', 'locations','voucher_no'));
+    }
+    public function ajaxItemQuantity($itemId=null)
+    {
+        $this->viewBuilder()->layout('');
+        $city_id=$this->Auth->User('city_id');
+        $items = $this->StockTransferVouchers->StockTransferVoucherRows->Items->find()
+                    ->where(['Items.status'=>'Approved', 'Items.id'=>$itemId])
+                    ->contain(['Units'])->first();
+                    $itemUnit=$items->unit->name;
+                    
+        
+        $query = $this->StockTransferVouchers->StockTransferVoucherRows->Items->ItemLedgers->find()->where(['ItemLedgers.city_id'=>$city_id]);
+        $totalInCase = $query->newExpr()
+            ->addCase(
+                $query->newExpr()->add(['status' => 'In']),
+                $query->newExpr()->add(['quantity']),
+                'integer'
+            );
+        $totalOutCase = $query->newExpr()
+            ->addCase(
+                $query->newExpr()->add(['status' => 'out']),
+                $query->newExpr()->add(['quantity']),
+                'integer'
+            );
+        $query->select([
+            'total_in' => $query->func()->sum($totalInCase),
+            'total_out' => $query->func()->sum($totalOutCase),'id','item_id'
+        ])
+        ->where(['ItemLedgers.item_id' => $itemId, 'ItemLedgers.city_id' => $city_id])
+        ->group('item_id')
+        ->autoFields(true)
+        ->contain(['Items']);
+        $itemLedgers = ($query);
+        
+        
+        
+        
+        if($itemLedgers->toArray())
+        {
+              foreach($itemLedgers as $itemLedger){
+                   $available_stock=$itemLedger->total_in;
+                   $stock_issue=$itemLedger->total_out;
+                 @$remaining=number_format($available_stock-$stock_issue, 2);
+                 $mainstock=str_replace(',','',$remaining);
+                 $stock='current stock is '. $remaining. ' ' .$itemUnit;
+                 if($remaining>0)
+                 {
+                 $stockType='false';
+                 }
+                 else{
+                 $stockType='true';
+                 }
+                 $h=array('text'=>$stock, 'type'=>$stockType, 'mainStock'=>$mainstock);
+                 echo  $f=json_encode($h);
+              }
+          }
+          else{
+         
+                 @$remaining=0;
+                 $stock='current stock is '. $remaining. ' ' .$itemUnit;
+                 if($remaining>0)
+                 {
+                 $stockType='false';
+                 }
+                 else{
+                 $stockType='true';
+                 }
+                 $h=array('text'=>$stock, 'type'=>$stockType);
+                 echo  $f=json_encode($h);
+          }
+          exit;
+    }   
     /**
      * Edit method
      *

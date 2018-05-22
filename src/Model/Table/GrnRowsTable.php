@@ -51,7 +51,11 @@ class GrnRowsTable extends Table
             'foreignKey' => 'item_variation_id',
             'joinType' => 'INNER'
         ]);
+<<<<<<< HEAD
 		$this->belongsTo('UnitVariations', [
+=======
+        $this->belongsTo('UnitVariations', [
+>>>>>>> c799d72c910749979de290e0329ad5e1abda5286
             'foreignKey' => 'unit_variation_id',
             'joinType' => 'INNER'
         ]);

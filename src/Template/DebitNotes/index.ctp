@@ -14,7 +14,7 @@
 		<div class="col-md-12">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><strong> Credit Note Voucher</strong></h3>
+					<h3 class="panel-title"><strong> Debit Note Voucher</strong></h3>
 					<div class="pull-right">
 						<div class="pull-left">
 								<?= $this->Form->create('Search',['type'=>'GET']) ?>
@@ -50,21 +50,21 @@
 							<tbody>
 								<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); ?>
 								
-								  <?php foreach ($creditNotes as $creditNote): 
+								  <?php foreach ($debitNotes as $debitNote): 
 								  
-											$transaction_date=date('d-M-Y', strtotime($creditNote->transaction_date));
+											$transaction_date=date('d-M-Y', strtotime($debitNote->transaction_date));
 											 
-											foreach($creditNote->credit_note_rows as $data){
+											foreach($debitNote->debit_note_rows as $data){
 												$amount=$data->credit;
 											}
 								  ?>
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
-									<td><?= h($creditNote->voucher_no) ?></td>
-									<td><?= h($creditNote->city->name) ?></td>
-									<td><?= h(@$creditNote->narration) ?></td>
+									<td><?= h($debitNote->voucher_no) ?></td>
+									<td><?= h($debitNote->city->name) ?></td>
+									<td><?= h(@$debitNote->narration) ?></td>
 									<td><?= h(@$amount) ?></td>
-									<td><?= h($creditNote->created_on) ?></td>
+									<td><?= h($debitNote->created_on) ?></td>
 								</tr>
 								<?php endforeach; ?>
 							</tbody>

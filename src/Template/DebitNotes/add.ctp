@@ -8,15 +8,15 @@
 }
 }
 </style>
-<?php $this->set('title', 'Credit Notes Voucher'); ?>
+<?php $this->set('title', 'Debit Notes Voucher'); ?>
 <!-- PAGE CONTENT WRAPPER -->
 <div class="page-content-wrap">
 	<div class="row">
 		<div class="col-md-12">
-		<?= $this->Form->create($creditNote,['id'=>'jvalidate','class'=>'form-horizontal','type'=>'file']) ?>  
+		<?= $this->Form->create($debitNote,['id'=>'jvalidate','class'=>'form-horizontal','type'=>'file']) ?>  
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><strong> Credit Notes Voucher</strong></h3>
+					<h3 class="panel-title"><strong> Debit Notes Voucher</strong></h3>
 				</div>
 			
 				<div class="panel-body">    
@@ -424,10 +424,10 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 					$(this).attr('row_no',i);
 					var cr_dr=$(this).find('td:nth-child(1) select.cr_dr option:selected').val();
 					var is_cash_bank=$(this).find('td:nth-child(2) option:selected').attr('bank_and_cash');
-					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'credit_note_rows['+i+'][cr_dr]',id:'credit_note_rows-'+i+'-cr_dr'}).selectpicker();
-					$(this).find('td:nth-child(2) select.ledger').attr({name:'credit_note_rows['+i+'][ledger_id]',id:'credit_note_rows-'+i+'-ledger_id'}).selectpicker();
-					$(this).find('td:nth-child(3) input.debitBox').attr({name:'credit_note_rows['+i+'][debit]',id:'credit_note_rows-'+i+'-debit'});
-					$(this).find('td:nth-child(4) input.creditBox').attr({name:'credit_note_rows['+i+'][credit]',id:'credit_note_rows-'+i+'-credit'});
+					$(this).find('td:nth-child(1) select.cr_dr').attr({name:'debit_note_rows['+i+'][cr_dr]',id:'debit_note_rows-'+i+'-cr_dr'}).selectpicker();
+					$(this).find('td:nth-child(2) select.ledger').attr({name:'debit_note_rows['+i+'][ledger_id]',id:'debit_note_rows-'+i+'-ledger_id'}).selectpicker();
+					$(this).find('td:nth-child(3) input.debitBox').attr({name:'debit_note_rows['+i+'][debit]',id:'debit_note_rows-'+i+'-debit'});
+					$(this).find('td:nth-child(4) input.creditBox').attr({name:'debit_note_rows['+i+'][credit]',id:'debit_note_rows-'+i+'-credit'});
 					
 					if(cr_dr=='Dr'){
 						$(this).find('td:nth-child(3) input.debitBox').rules('add', 'required');
@@ -497,9 +497,9 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
 					var type = SelectedTr.find('td:nth-child(1) select.paymentType option:selected').val(); 
 					//alert(type);
-					$(this).find('td:nth-child(1) select.paymentType').attr({name:'credit_note_rows['+row_no+'][mode_of_payment]',id:'credit_note_rows-'+row_no+'-mode_of_payment'}).selectpicker();
-					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'credit_note_rows['+row_no+'][cheque_no]',id:'credit_note_rows-'+row_no+'-cheque_no'});
-					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'credit_note_rows['+row_no+'][cheque_date]',id:'credit_note_rows-'+row_no+'-cheque_date'}).datepicker();
+					$(this).find('td:nth-child(1) select.paymentType').attr({name:'debit_note_rows['+row_no+'][mode_of_payment]',id:'debit_note_rows-'+row_no+'-mode_of_payment'}).selectpicker();
+					$(this).find('td:nth-child(2) input.cheque_no').attr({name:'debit_note_rows['+row_no+'][cheque_no]',id:'debit_note_rows-'+row_no+'-cheque_no'});
+					$(this).find('td:nth-child(3) input.cheque_date').attr({name:'debit_note_rows['+row_no+'][cheque_date]',id:'debit_note_rows-'+row_no+'-cheque_date'}).datepicker();
 				
 					if(type=='Cheque')
 					{ 
@@ -533,25 +533,25 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 				var row_no=SelectedTr.attr('row_no');
 				if(SelectedTr.find('td:nth-child(2) div.window table tbody tr').length>0){
 				SelectedTr.find('td:nth-child(2) div.window table tbody tr').each(function(){
-					$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][location_id]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-location_id'});
-					$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
+					$(this).find('td:nth-child(1) input.companyIdContainer').attr({name:'debit_note_rows['+row_no+'][reference_details]['+i+'][location_id]',id:'debit_note_rows-'+row_no+'-reference_details-'+i+'-location_id'});
+					$(this).find('td:nth-child(1) input.ledgerIdContainer').attr({name:'debit_note_rows['+row_no+'][reference_details]['+i+'][ledger_id]',id:'debit_note_rows-'+row_no+'-reference_details-'+i+'-ledger_id'});
 					
-					$(this).find('td:nth-child(1) select.refType').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][type]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-type'}).selectpicker();
+					$(this).find('td:nth-child(1) select.refType').attr({name:'debit_note_rows['+row_no+'][reference_details]['+i+'][type]',id:'debit_note_rows-'+row_no+'-reference_details-'+i+'-type'}).selectpicker();
 					var is_select=$(this).find('td:nth-child(2) select.refList').length;
 					var is_input=$(this).find('td:nth-child(2) input.ref_name').length;
 					if(is_select){
-						$(this).find('td:nth-child(2) select.refList').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
+						$(this).find('td:nth-child(2) select.refList').attr({name:'debit_note_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'debit_note_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
 						$(this).find('td:nth-child(2) select.refList').selectpicker();
 					}else if(is_input){
-						$(this).find('td:nth-child(2) input.ref_name').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
+						$(this).find('td:nth-child(2) input.ref_name').attr({name:'debit_note_rows['+row_no+'][reference_details]['+i+'][ref_name]',id:'debit_note_rows-'+row_no+'-reference_details-'+i+'-ref_name'}).rules('add', 'required');
 						 
 					}
 					$(this).find('td:nth-child(4) select.refDrCr').selectpicker();
 					var Dr_Cr=$(this).find('td:nth-child(4) select option:selected').val();
 					if(Dr_Cr=='Dr'){
-						$(this).find('td:nth-child(3) input').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][debit]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-debit'}).rules('add', 'required');
+						$(this).find('td:nth-child(3) input').attr({name:'debit_note_rows['+row_no+'][reference_details]['+i+'][debit]',id:'debit_note_rows-'+row_no+'-reference_details-'+i+'-debit'}).rules('add', 'required');
 					}else{
-						$(this).find('td:nth-child(3) input').attr({name:'credit_note_rows['+row_no+'][reference_details]['+i+'][credit]',id:'credit_note_rows-'+row_no+'-reference_details-'+i+'-credit'}).rules('add', 'required');
+						$(this).find('td:nth-child(3) input').attr({name:'debit_note_rows['+row_no+'][reference_details]['+i+'][credit]',id:'debit_note_rows-'+row_no+'-reference_details-'+i+'-credit'}).rules('add', 'required');
 					}
 					i++;
 				});
@@ -564,7 +564,7 @@ $option_mode['NEFT/RTGS']='NEFT/RTGS';
 
 				
 				SelectedTr.find('td:nth-child(2) div.window table.refTbl tfoot tr td:nth-child(2) input.total')
-				.attr({name:'credit_note_rows['+row_no+'][total]',id:'credit_note_rows-'+row_no+'-total'})
+				.attr({name:'debit_note_rows['+row_no+'][total]',id:'debit_note_rows-'+row_no+'-total'})
 						.rules('add', {
 							equalTo: '#'+eqlClass,
 							messages: {

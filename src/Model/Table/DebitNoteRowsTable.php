@@ -5,25 +5,24 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use Cake\Event\Event;
-use ArrayObject;
+
 /**
- * CreditNoteRows Model
+ * DebitNoteRows Model
  *
- * @property \App\Model\Table\CreditNotesTable|\Cake\ORM\Association\BelongsTo $CreditNotes
+ * @property \App\Model\Table\DebitNotesTable|\Cake\ORM\Association\BelongsTo $DebitNotes
  * @property \App\Model\Table\LedgersTable|\Cake\ORM\Association\BelongsTo $Ledgers
  * @property \App\Model\Table\AccountingEntriesTable|\Cake\ORM\Association\HasMany $AccountingEntries
- * @property \App\Model\Table\ItemLedgersTable|\Cake\ORM\Association\HasMany $ItemLedgers
  * @property \App\Model\Table\ReferenceDetailsTable|\Cake\ORM\Association\HasMany $ReferenceDetails
  *
- * @method \App\Model\Entity\CreditNoteRow get($primaryKey, $options = [])
- * @method \App\Model\Entity\CreditNoteRow newEntity($data = null, array $options = [])
- * @method \App\Model\Entity\CreditNoteRow[] newEntities(array $data, array $options = [])
- * @method \App\Model\Entity\CreditNoteRow|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
- * @method \App\Model\Entity\CreditNoteRow patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
- * @method \App\Model\Entity\CreditNoteRow[] patchEntities($entities, array $data, array $options = [])
- * @method \App\Model\Entity\CreditNoteRow findOrCreate($search, callable $callback = null, $options = [])
+ * @method \App\Model\Entity\DebitNoteRow get($primaryKey, $options = [])
+ * @method \App\Model\Entity\DebitNoteRow newEntity($data = null, array $options = [])
+ * @method \App\Model\Entity\DebitNoteRow[] newEntities(array $data, array $options = [])
+ * @method \App\Model\Entity\DebitNoteRow|bool save(\Cake\Datasource\EntityInterface $entity, $options = [])
+ * @method \App\Model\Entity\DebitNoteRow patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
+ * @method \App\Model\Entity\DebitNoteRow[] patchEntities($entities, array $data, array $options = [])
+ * @method \App\Model\Entity\DebitNoteRow findOrCreate($search, callable $callback = null, $options = [])
  */
-class CreditNoteRowsTable extends Table
+class DebitNoteRowsTable extends Table
 {
 
     /**
@@ -36,12 +35,12 @@ class CreditNoteRowsTable extends Table
     {
         parent::initialize($config);
 
-        $this->setTable('credit_note_rows');
+        $this->setTable('debit_note_rows');
         $this->setDisplayField('id');
         $this->setPrimaryKey('id');
 
-        $this->belongsTo('CreditNotes', [
-            'foreignKey' => 'credit_note_id',
+        $this->belongsTo('DebitNotes', [
+            'foreignKey' => 'debit_note_id',
             'joinType' => 'INNER'
         ]);
         $this->belongsTo('Ledgers', [
@@ -49,13 +48,10 @@ class CreditNoteRowsTable extends Table
             'joinType' => 'INNER'
         ]);
         $this->hasMany('AccountingEntries', [
-            'foreignKey' => 'credit_note_row_id'
-        ]);
-        $this->hasMany('ItemLedgers', [
-            'foreignKey' => 'credit_note_row_id'
+            'foreignKey' => 'debit_note_row_id'
         ]);
         $this->hasMany('ReferenceDetails', [
-            'foreignKey' => 'credit_note_row_id'
+            'foreignKey' => 'debit_note_row_id'
         ]);
     }
 
@@ -104,15 +100,17 @@ class CreditNoteRowsTable extends Table
         return $validator;
     }
 
-	public function beforeMarshal(Event $event, ArrayObject $data)
+	/* public function beforeMarshal(Event $event, ArrayObject $data)
     {
+		pr($data); exit;
 		$cheque_date_tst=@$data['cheque_date'];
+		
 		if(!empty($cheque_date_tst)){
 			@$data['cheque_date'] = trim(date('Y-m-d',strtotime(@$data['cheque_date'])));
 		}else{
 			@$data['cheque_date'];
 		}
-    }
+    } */
 	
     /**
      * Returns a rules checker object that will be used for validating
@@ -123,7 +121,7 @@ class CreditNoteRowsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['credit_note_id'], 'CreditNotes'));
+        $rules->add($rules->existsIn(['debit_note_id'], 'DebitNotes'));
         $rules->add($rules->existsIn(['ledger_id'], 'Ledgers'));
 
         return $rules;
