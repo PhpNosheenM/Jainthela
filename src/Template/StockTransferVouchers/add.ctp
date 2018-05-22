@@ -25,20 +25,13 @@ $this->set('title', 'Create Stock Transfer Voucher');
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label>Transaction Date <span class="required">*</span></label>
-                                                <?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y')]); ?>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label>Transfer From</label>
-                                                
-                                                <?php echo $this->Form->control('transfer_from_location_id',['options'=>$TransferFromLocations,'class'=>'form-control input-sm transfer_from','label'=>false,'value'=>$location_id]); ?>
+                                                <?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm datepicker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y')]); ?>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label>Transfer To</label>
-                                                <?php echo $this->Form->control('transfer_to_location_id',['options'=>$TransferToLocations,'class'=>'form-control input-sm transfer_to','label'=>false,'empty'=>'--select--']); ?>
+                                                  <?= $this->Form->select('location_id',$locations,['class'=>'form-control select transfer_to', 'label'=>false,'data-live-search'=>true,'required'=>true]) ?>
                                             </div>
                                         </div>
                                 </div>
@@ -112,48 +105,48 @@ $this->set('title', 'Create Stock Transfer Voucher');
         </tr>
     </tbody>
 </table>
-
+<?= $this->Html->script('plugins/bootstrap/bootstrap-datepicker.js',['block'=>'jsDatePicker']) ?>
+<?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?php
     $js="
     $(document).ready(function() {
     
-        $('.itemStock').die().live('change',function(){
-        var itemQ=$(this).closest('tr'); 
-        var itemId=$(this).val();
-        var url='".$this->Url->build(["controller" => "IntraLocationStockTransferVouchers", "action" => "ajaxItemQuantity"])."';
-        url=url+'/'+itemId
-        $.ajax({
-            url: url,
-            type: 'GET'
-            //dataType: 'text'
-        }).done(function(response) {
-            var fetch=$.parseJSON(response);
-            var text=fetch.text;
-            var type=fetch.type;
-            var mainStock=fetch.mainStock;
-            itemQ.find('.itemQty').html(text);
-            itemQ.find('.totStock').val(mainStock);
-            if(type=='true')
-            {
-                itemQ.find('.outStock').val(1);
-            }
-            else{
-                itemQ.find('.outStock').val(0);
-            }
-        }); 
+        $(document).on('change','.itemStock',function(){
+            var itemQ=$(this).closest('tr'); 
+            var itemId=$(this).val();
+            var url='".$this->Url->build(["controller" => "StockTransferVouchers", "action" => "ajaxItemQuantity"])."';
+            url=url+'/'+itemId
+            $.ajax({
+                url: url,
+                type: 'GET'
+                //dataType: 'text'
+            }).done(function(response) {
+                var fetch=$.parseJSON(response);
+                var text=fetch.text;
+                var type=fetch.type;
+                var mainStock=fetch.mainStock;
+                itemQ.find('.itemQty').html(text);
+                itemQ.find('.totStock').val(mainStock);
+                if(type=='true')
+                {
+                    itemQ.find('.outStock').val(1);
+                }
+                else{
+                    itemQ.find('.outStock').val(0);
+                }
+            }); 
         });
         
-        $('.delete-tr').die().live('click',function() 
+        $(document).on('click','.delete-tr',function() 
         {
             $(this).closest('tr').remove();
             rename_rows();
         });
 
-        $('.add_row').click(function(){
+        $(document).on('click','.add_row',function(){
             add_row();
             
         }) ;
-
 
         function add_row()
         {
@@ -164,7 +157,6 @@ $this->set('title', 'Create Stock Transfer Voucher');
         }
 
         add_row();
-        rename_rows();
 
         function rename_rows()
         {
@@ -181,9 +173,6 @@ $this->set('title', 'Create Stock Transfer Voucher');
         }
 
         
-    
-    
-        ComponentsPickers.init();
     });
 
     function checkValidation() 

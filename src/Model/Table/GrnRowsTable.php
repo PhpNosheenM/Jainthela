@@ -51,6 +51,10 @@ class GrnRowsTable extends Table
             'foreignKey' => 'item_variation_id',
             'joinType' => 'INNER'
         ]);
+        $this->belongsTo('UnitVariations', [
+            'foreignKey' => 'unit_variation_id',
+            'joinType' => 'INNER'
+        ]);
         $this->hasMany('GrnRows', [
             'foreignKey' => 'grn_row_id'
         ]);
