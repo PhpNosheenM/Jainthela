@@ -224,7 +224,7 @@ $this->set('title', 'Create Stock Transfer Voucher');
             
         });
          $(document).on('keyup','.quantity',function(){ 
-            var *quantity = parseFloat($(this).val());
+            var quantity = parseFloat($(this).val());
             var convert_qty = parseFloat($(this).closest('tr').find('.item_variation option:selected').attr('convert_qty'));
             var total_quantity_transfer = parseFloat($(this).closest('table').find('tfoot input.total_quantity_transfer').val());
             var variation_stock = round(convert_qty*quantity,2);
