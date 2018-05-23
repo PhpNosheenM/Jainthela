@@ -50,20 +50,15 @@
 							<tbody>
 								<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); ?>
 								
-								  <?php foreach ($debitNotes as $debitNote): 
-								  
-											$transaction_date=date('d-M-Y', strtotime($debitNote->transaction_date));
-											 
-											foreach($debitNote->debit_note_rows as $data){
-												$amount=$data->credit;
-											}
+								  <?php foreach ($debitNotes as $debitNote):
+										$transaction_date=date('d-M-Y', strtotime($debitNote->transaction_date));
 								  ?>
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
 									<td><?= h($debitNote->voucher_no) ?></td>
 									<td><?= h($debitNote->city->name) ?></td>
 									<td><?= h(@$debitNote->narration) ?></td>
-									<td><?= h(@$amount) ?></td>
+									<td><?= h(@$debitNote->total_credit_amount) ?></td>
 									<td><?= h($debitNote->created_on) ?></td>
 								</tr>
 								<?php endforeach; ?>
