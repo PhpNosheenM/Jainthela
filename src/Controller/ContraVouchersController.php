@@ -18,7 +18,7 @@ class ContraVouchersController extends AppController
 	public function beforeFilter(Event $event)
 	{
 		parent::beforeFilter($event);
-		 $this->Security->setConfig('unlockedActions', ['add','index']);
+		 $this->Security->setConfig('unlockedActions', ['add', 'index', 'view']);
 	}
     /**
      * Index method
@@ -60,13 +60,22 @@ class ContraVouchersController extends AppController
      * @return \Cake\Http\Response|void
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($id = null)
+    public function view($ids = null)
     {
+		if($ids)
+		{
+		  $id = $this->EncryptingDecrypting->decryptData($ids);
+		}
+		
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$this->viewBuilder()->layout('super_admin_layout');
         $contraVoucher = $this->ContraVouchers->get($id, [
-            'contain' => ['Locations', 'AccountingEntries']
+            'contain' => ['AccountingEntries', 'ContraVoucherRows'=>['ReferenceDetails','Ledgers']]
         ]);
-
-        $this->set('contraVoucher', $contraVoucher);
+		$this->loadmodel('Companies');
+		$companies=$this->Companies->find()->where(['Companies.city_id'=>$city_id])->first();
+		$this->set(compact('contraVoucher', 'companies'));
     }
 
     /**
@@ -74,6 +83,7 @@ class ContraVouchersController extends AppController
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
+	
     public function add()
     {
 		$city_id=$this->Auth->User('city_id'); 
@@ -83,7 +93,8 @@ class ContraVouchersController extends AppController
         $contraVoucher = $this->ContraVouchers->newEntity();
 		if ($this->request->is('post')) {
 			
-			//$this->request->data['transaction_date'] = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
+			$traans_date = date("Y-m-d",strtotime($this->request->getData()['transaction_date']));
+			 
 			$Voucher = $this->ContraVouchers->find()->select(['voucher_no'])->where(['city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
 			if($Voucher)
 			{
@@ -96,22 +107,22 @@ class ContraVouchersController extends AppController
 			//$contraVoucher->location_id = $location_id;
 			$contraVoucher->city_id = $city_id;
 			$contraVoucher->created_by = $user_id;
-			$contraVoucher->transaction_date = date('Y-m-d', strtotime($this->request->data['transaction_date']));
+			
 			
 			$contraVoucher = $this->ContraVouchers->patchEntity($contraVoucher, $this->request->getData(), [
 							'associated' => ['ContraVoucherRows','ContraVoucherRows.ReferenceDetails']
 						]);
+						$contraVoucher->transaction_date = $traans_date;
 						$vendor_id=$contraVoucher->vendor_id;
 					//pr($contraVoucher->contra_voucher_rows); exit;
 			//transaction date for contraVoucher code start here--
 			foreach($contraVoucher->contra_voucher_rows as $payment_row)
 			{
-				 
 				if(!empty($payment_row->reference_details))
 				{
 					foreach($payment_row->reference_details as $reference_detail)
 					{
-						$reference_detail->transaction_date = date('Y-m-d', strtotime($contraVoucher->transaction_date));
+						$reference_detail->transaction_date = $traans_date;
 						$reference_detail->city_id = $city_id;
 						//$reference_detail->vendor_id = $contraVoucher->vendor_id;
 					}
@@ -127,7 +138,7 @@ class ContraVouchersController extends AppController
 					$accountEntry->ledger_id                  = $payment_row->ledger_id;
 					$accountEntry->debit                      = @$payment_row->debit;
 					$accountEntry->credit                     = @$payment_row->credit;
-					$accountEntry->transaction_date           = date('Y-m-d', strtotime($contraVoucher->transaction_date));
+					$accountEntry->transaction_date           = $traans_date;
 					$accountEntry->city_id                    = $city_id;
 					$accountEntry->contra_voucher_id                 = $contraVoucher->id;
 					$accountEntry->contra_voucher_row_id             = $payment_row->id;

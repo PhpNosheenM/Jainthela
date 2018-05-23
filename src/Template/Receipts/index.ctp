@@ -44,7 +44,9 @@
 									<th><?= ('City') ?></th>
 									<th><?= ('Narration') ?></th>
 									<th><?= ('Amount') ?></th>
+									<th><?= ('Transaction Date') ?></th>
 									<th><?= ('Created On') ?></th>
+									<th><?= ('Action') ?></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -56,6 +58,7 @@
 											foreach($receipt->receipt_rows as $data){
 												$amount=$data->debit;
 											}
+											$receipt_id = $EncryptingDecrypting->encryptData($receipt->id);
 								  ?>
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
@@ -63,7 +66,9 @@
 									<td><?= h($receipt->city->name) ?></td>
 									<td><?= h(@$receipt->narration) ?></td>
 									<td><?= h(@$amount) ?></td>
+									<td><?= h(@$transaction_date) ?></td>
 									<td><?= h($receipt->created_on) ?></td>
+									<td><?= $this->Html->link(__('<span class="fa fa-search"></span> View'), ['action' => 'view',$receipt_id],['class'=>'btn btn-warning btn-xs','escape'=>false]) ?></td>
 								</tr>
 								<?php endforeach; ?>
 							</tbody>

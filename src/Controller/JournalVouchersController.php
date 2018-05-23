@@ -15,7 +15,7 @@ class JournalVouchersController extends AppController
 	public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->Security->setConfig('unlockedActions', ['add','index']);
+        $this->Security->setConfig('unlockedActions', ['add', 'index', 'view']);
 
     }
 
@@ -60,13 +60,22 @@ class JournalVouchersController extends AppController
      * @return \Cake\Http\Response|void
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($id = null)
+    public function view($ids = null)
     {
+		if($ids)
+		{
+		  $id = $this->EncryptingDecrypting->decryptData($ids);
+		}
+		
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$this->viewBuilder()->layout('super_admin_layout');
         $journalVoucher = $this->JournalVouchers->get($id, [
-            'contain' => ['Locations', 'Cities', 'AccountingEntries', 'JournalVoucherRows']
-        ]);
+            'contain' => ['AccountingEntries', 'JournalVoucherRows'=>['ReferenceDetails','Ledgers']]]);
 
-        $this->set('journalVoucher', $journalVoucher);
+		$this->loadmodel('Companies');
+		$companies=$this->Companies->find()->where(['Companies.city_id'=>$city_id])->first();
+		$this->set(compact('journalVoucher', 'companies'));
     }
 
     /**
@@ -120,7 +129,7 @@ class JournalVouchersController extends AppController
 				
 				if(!empty($journal_row->reference_details))
 				{
-					foreach($	->reference_details as $reference_detail1)
+					foreach($journal_row->reference_details as $reference_detail1)
 					{ 
 						$reference_detail = $this->JournalVouchers->ReferenceDetails->newEntity();
 						$reference_detail->transaction_date = date('Y-m-d',strtotime($tdate));

@@ -50,9 +50,9 @@ class JournalVoucherRowsTable extends Table
         $this->hasMany('AccountingEntries', [
             'foreignKey' => 'journal_voucher_row_id'
         ]);
-      /*   $this->hasMany('ReferenceDetails', [
+      $this->hasMany('ReferenceDetails', [
             'foreignKey' => 'journal_voucher_row_id'
-        ]); */
+        ]);  
     }
 
     /**
