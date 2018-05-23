@@ -44,7 +44,9 @@
 									<th><?= ('City') ?></th>
 									<th><?= ('Narration') ?></th>
 									<th><?= ('Amount') ?></th>
+									<th><?= ('Transaction Date') ?></th>
 									<th><?= ('Created On') ?></th>
+									<th><?= ('Action') ?></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -52,6 +54,8 @@
 								
 								  <?php foreach ($debitNotes as $debitNote):
 										$transaction_date=date('d-M-Y', strtotime($debitNote->transaction_date));
+										
+										$debitNote_id = $EncryptingDecrypting->encryptData($debitNote->id);
 								  ?>
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
@@ -59,7 +63,9 @@
 									<td><?= h($debitNote->city->name) ?></td>
 									<td><?= h(@$debitNote->narration) ?></td>
 									<td><?= h(@$debitNote->total_credit_amount) ?></td>
+									<td><?= h(@$transaction_date) ?></td>
 									<td><?= h($debitNote->created_on) ?></td>
+									<td><?= $this->Html->link(__('<span class="fa fa-search"></span> View'), ['action' => 'view',$debitNote_id],['class'=>'btn btn-warning btn-xs','escape'=>false]) ?></td>
 								</tr>
 								<?php endforeach; ?>
 							</tbody>
