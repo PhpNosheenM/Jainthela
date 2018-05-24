@@ -65,9 +65,9 @@ class StockTransferVoucherRowsTable extends Table
             ->allowEmpty('id', 'create');
 
         $validator
-            ->decimal('rate')
-            ->requirePresence('rate', 'create')
-            ->notEmpty('rate');
+            ->decimal('sales_rate')
+            ->requirePresence('sales_rate', 'create')
+            ->notEmpty('sales_rate');
 
         $validator
             ->decimal('quantity')
