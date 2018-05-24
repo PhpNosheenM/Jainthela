@@ -70,34 +70,38 @@ class StockTransferVouchersController extends AppController
         }else{
             $voucher_no=1;
         } 
+     
          $grns = $this->StockTransferVouchers->Grns->get($grn_id,
             [
-                'contain'=>['GrnRows'=>['UnitVariations']]
+                'contain'=>['GrnRows'=>function($q) use($city_id){
+                        return $q->select(['GrnRows.grn_id','total_quantity'=>$q->func()->sum('GrnRows.quantity-GrnRows.transfer_quantity')])
+                                ->contain(['Items'=>['ItemVariations'=>function($q) use($city_id){
+                                        return $q->where(['ItemVariations.city_id'=>$city_id,'ItemVariations.seller_id IS NULL'])->contain(['UnitVariations'=>'Units']);
+                                }],'UnitVariations'=>'Units'])
+                                ->having(['total_quantity >' => 0])
+                                ->group('GrnRows.id')
+                                ->autoFields(true);
+                }]
 
             ]);
-          pr($grns->toArray());
-        exit;
-        $items = $this->StockTransferVouchers->StockTransferVoucherRows->Items->find()->where(['status'=>'Approved'])->contain(['ItemVariationMasters']);
-        $itemOptions=[];
-       
-        foreach($items as $item){
-            $itemOptions[]=['text'=>$item->item_code.' '.$item->name, 'value'=>$item->id];
-        }
-        $grns = $this->StockTransferVouchers->Grns->find('list');
-        $locations = $this->StockTransferVouchers->Locations->find('list')->where(['city_id'=>$city_id]);
+      
+    
+        $locations = $this->StockTransferVouchers->Locations->find('list')->where(['city_id'=>$city_id,'status'=>'Active']);
         $this->set(compact('stockTransferVoucher', 'grns', 'locations','voucher_no'));
     }
-    public function ajaxItemQuantity($itemId=null)
+    public function ajaxItemQuantity($grn_row_id=null)
     {
         $this->viewBuilder()->layout('');
         $city_id=$this->Auth->User('city_id');
-        $items = $this->StockTransferVouchers->StockTransferVoucherRows->Items->find()
-                    ->where(['Items.status'=>'Approved', 'Items.id'=>$itemId])
+        /*$items = $this->StockTransferVouchers->StockTransferVoucherRows->Items->find()
+                    ->where(['Items.status'=>'Active', 'Items.id'=>$itemId])
                     ->contain(['Units'])->first();
-                    $itemUnit=$items->unit->name;
+                    $itemUnit=$items->unit->name;*/
                     
-        
-        $query = $this->StockTransferVouchers->StockTransferVoucherRows->Items->ItemLedgers->find()->where(['ItemLedgers.city_id'=>$city_id]);
+        $grns = $this->StockTransferVouchers->Grns->GrnRows->get($grn_row_id);
+        pr($grns);
+        exit;
+        $query = $this->StockTransferVouchers->StockTransferVoucherRows->Items->ItemLedgers->find()->where(['ItemLedgers.city_id'=>$city_id,'']);
         $totalInCase = $query->newExpr()
             ->addCase(
                 $query->newExpr()->add(['status' => 'In']),

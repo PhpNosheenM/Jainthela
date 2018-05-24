@@ -44,7 +44,9 @@
 									<th><?= ('City') ?></th>
 									<th><?= ('Narration') ?></th>
 									<th><?= ('Amount') ?></th>
+									<th><?= ('Transaction Date') ?></th>
 									<th><?= ('Created On') ?></th>
+									<th><?= ('Action') ?></th>
 								</tr>
 							</thead>
 							<tbody>
@@ -56,6 +58,7 @@
 											foreach($journalVoucher->journal_voucher_rows as $data){
 												$amount=$data->credit;
 											}
+											$journalVoucher_id = $EncryptingDecrypting->encryptData($journalVoucher->id);
 								  ?>
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
@@ -63,7 +66,9 @@
 									<td><?= h($journalVoucher->city->name) ?></td>
 									<td><?= h(@$journalVoucher->narration) ?></td>
 									<td><?= h(@$amount) ?></td>
+									<td><?= h(@$transaction_date) ?></td>
 									<td><?= h($journalVoucher->created_on) ?></td>
+									<td><?= $this->Html->link(__('<span class="fa fa-search"></span> View'), ['action' => 'view',$journalVoucher_id],['class'=>'btn btn-warning btn-xs','escape'=>false]) ?></td>
 								</tr>
 								<?php endforeach; ?>
 							</tbody>

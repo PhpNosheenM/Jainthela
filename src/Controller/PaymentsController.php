@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
-
+use Cake\Filesystem\Folder;
+use Cake\Filesystem\File;
 use App\Controller\AppController;
 use Cake\Event\Event;
 use Cake\View\View;
@@ -16,7 +17,7 @@ class PaymentsController extends AppController
 	public function beforeFilter(Event $event)
 	{
 		parent::beforeFilter($event);
-		 $this->Security->setConfig('unlockedActions', ['add','index']);
+		 $this->Security->setConfig('unlockedActions', ['add','index','view']);
 	}
     /**
      * Index method
@@ -59,13 +60,23 @@ class PaymentsController extends AppController
      * @return \Cake\Http\Response|void
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($id = null)
+    public function view($ids = null)
     {
+		
+		if($ids)
+		{
+		  $id = $this->EncryptingDecrypting->decryptData($ids);
+		}
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$this->viewBuilder()->layout('super_admin_layout');
         $payment = $this->Payments->get($id, [
-            'contain' => ['Locations', 'AccountingEntries', 'PaymentRows']
+            'contain' => ['AccountingEntries', 'PaymentRows'=>['ReferenceDetails','Ledgers']]
         ]);
-
-        $this->set('payment', $payment);
+		$this->loadmodel('Companies');
+		$companies=$this->Companies->find()->where(['Companies.city_id'=>$city_id])->first();
+        //$this->set('payment', $payment, 'companies');
+		$this->set(compact('payment', 'companies'));
     }
 
     /**
