@@ -35,6 +35,7 @@ class StockTransferVoucherRow extends Entity
         'grn_row_id' => true,
         'item_variation_id' => true,
         'unit_variation_id' => true,
+        'purchase_rate' => true,
         'sales_rate' => true,
         'quantity' => true,
         'stock_transfer_voucher' => true,

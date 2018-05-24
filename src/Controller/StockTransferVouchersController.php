@@ -72,15 +72,42 @@ class StockTransferVouchersController extends AppController
             $stockTransferVoucher->grn_id=$grn_id;
             $stockTransferVoucher->city_id=$city_id;
             $stockTransferVoucher->voucher_no=$voucher_no;
-            $stockTransferVoucher->transaction_date=date('Y-m-d',strtotime($this->request->getData(transaction_date)));
-            
+            $stockTransferVoucher->transaction_date=date('Y-m-d',strtotime($this->request->getData('transaction_date')));
+            $total_tranfer_quantity=0;
+            $total_quantity=0;
+          
             if ($this->StockTransferVouchers->save($stockTransferVoucher)) {
+                $total_tranfer_quantity=0;
+                $total_quantity=0;
+                foreach($this->request->getData('grn_rows') as $data)
+                {
+                    $grn_row = $this->StockTransferVouchers->Grns->GrnRows->get($data['grn_row_id']);
+                    $transfer_quantity =$grn_row->transfer_quantity;
+                    $total_quantity+=$grn_row->quantity;
+                    $total_tranfer_quantity+=$data['transfer_quantity']+$transfer_quantity;
+                    $query = $this->StockTransferVouchers->Grns->GrnRows->query();
+                    $query->update()
+                        ->set(['transfer_quantity' =>$data['transfer_quantity']+$transfer_quantity])
+                        ->where(['id' => $data['grn_row_id']])
+                        ->execute();
+    
+                }
+                if($total_quantity == $total_tranfer_quantity)
+                {
+                    $query = $this->StockTransferVouchers->Grns->query();
+                    $query->update()
+                        ->set(['stock_transfer_status' =>'Completed'])
+                        ->where(['id' => $grn_id])
+                        ->execute();
+                }
+
+                //$this->StockTransferVouchers->Grns->ItemLedgers();
+                
                 $this->Flash->success(__('The stock transfer voucher has been saved.'));
 
-                //return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'index']);
             }
-             pr($stockTransferVoucher);
-            exit;
+             
             $this->Flash->error(__('The stock transfer voucher could not be saved. Please, try again.'));
         }
       
