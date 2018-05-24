@@ -158,6 +158,7 @@ class OrdersController extends AppController
 						
 						$ItemLedger = $this->Orders->Grns->GrnRows->ItemLedgers->newEntity(); 
 						$ItemLedger->item_id=$data->item_id; 
+						$ItemLedger->unit_variation_id=$Item1->unit_variation_id;
 						$ItemLedger->item_variation_id=$data->item_variation_id;
 						$ItemLedger->seller_id=$key;
 						$ItemLedger->transaction_date=$order->transaction_date;  
@@ -309,6 +310,7 @@ class OrdersController extends AppController
 							$ItemLedger = $this->Orders->Grns->GrnRows->ItemLedgers->newEntity(); 
 							$ItemLedger->item_id=$order_detail->item_id; 
 							$ItemLedger->item_variation_id=$order_detail->item_variation_id;
+							$ItemLedger->unit_variation_id=$Item->unit_variation_id;
 							$ItemLedger->seller_id=$Item->seller_id;
 							$ItemLedger->transaction_date=$order->transaction_date;  
 							$ItemLedger->quantity=$order_detail->quantity;
@@ -361,6 +363,7 @@ class OrdersController extends AppController
 							$ItemLedger = $this->Orders->Grns->GrnRows->ItemLedgers->newEntity(); 
 							$ItemLedger->item_id=$order_detail->item_id; 
 							$ItemLedger->item_variation_id=$order_detail->item_variation_id;
+							$ItemLedger->unit_variation_id=$Item->unit_variation_id;
 							$ItemLedger->seller_id=$Item->seller_id;
 							$ItemLedger->transaction_date=$order->transaction_date;  
 							$ItemLedger->quantity=$order_detail->quantity;
@@ -466,6 +469,7 @@ class OrdersController extends AppController
 								$ItemLedger = $this->Orders->Grns->GrnRows->ItemLedgers->newEntity(); 
 								$ItemLedger->item_id=$order_detail->item_id; 
 								$ItemLedger->item_variation_id=$order_detail->item_variation_id;
+								$ItemLedger->unit_variation_id=$Item->unit_variation_id;
 								$ItemLedger->seller_id=$Item->seller_id;
 								$ItemLedger->transaction_date=$order->transaction_date;  
 								$ItemLedger->quantity=$order_detail->quantity;
@@ -518,6 +522,7 @@ class OrdersController extends AppController
 								$ItemLedger = $this->Orders->Grns->GrnRows->ItemLedgers->newEntity(); 
 								$ItemLedger->item_id=$order_detail->item_id; 
 								$ItemLedger->item_variation_id=$order_detail->item_variation_id;
+								$ItemLedger->unit_variation_id=$Item->unit_variation_id;
 								$ItemLedger->seller_id=$Item->seller_id;
 								$ItemLedger->transaction_date=$order->transaction_date;  
 								$ItemLedger->quantity=$order_detail->quantity;
@@ -610,6 +615,7 @@ class OrdersController extends AppController
 								$ItemLedger = $this->Orders->Grns->GrnRows->ItemLedgers->newEntity(); 
 								$ItemLedger->item_id=$order_detail->item_id; 
 								$ItemLedger->item_variation_id=$order_detail->item_variation_id;
+								$ItemLedger->unit_variation_id=$Item->unit_variation_id;
 								$ItemLedger->seller_id=$Item->seller_id;
 								$ItemLedger->transaction_date=$order->transaction_date;  
 								$ItemLedger->quantity=$order_detail->quantity;
@@ -662,6 +668,7 @@ class OrdersController extends AppController
 								$ItemLedger = $this->Orders->Grns->GrnRows->ItemLedgers->newEntity(); 
 								$ItemLedger->item_id=$order_detail->item_id; 
 								$ItemLedger->item_variation_id=$order_detail->item_variation_id;
+								$ItemLedger->unit_variation_id=$Item->unit_variation_id;
 								$ItemLedger->seller_id=$Item->seller_id;
 								$ItemLedger->transaction_date=$order->transaction_date;  
 								$ItemLedger->quantity=$order_detail->quantity;

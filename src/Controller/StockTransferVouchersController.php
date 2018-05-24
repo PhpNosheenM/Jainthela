@@ -2,7 +2,8 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\View\View;
 /**
  * StockTransferVouchers Controller
  *
@@ -12,7 +13,11 @@ use App\Controller\AppController;
  */
 class StockTransferVouchersController extends AppController
 {
-
+    public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Security->setConfig('unlockedActions', ['add','edit']);
+    }
     /**
      * Index method
      *
@@ -54,22 +59,31 @@ class StockTransferVouchersController extends AppController
         $user_id=$this->Auth->User('id');
         $city_id=$this->Auth->User('city_id');
         $this->viewBuilder()->layout('super_admin_layout');
-        $stockTransferVoucher = $this->StockTransferVouchers->newEntity();
-        if ($this->request->is('post')) {
-            $stockTransferVoucher = $this->StockTransferVouchers->patchEntity($stockTransferVoucher, $this->request->getData());
-            if ($this->StockTransferVouchers->save($stockTransferVoucher)) {
-                $this->Flash->success(__('The stock transfer voucher has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The stock transfer voucher could not be saved. Please, try again.'));
-        }
         $Voucher_no = $this->StockTransferVouchers->find()->select(['voucher_no'])->where(['city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
         if($Voucher_no){
             $voucher_no=$Voucher_no->voucher_no+1;
         }else{
             $voucher_no=1;
         } 
+        $stockTransferVoucher = $this->StockTransferVouchers->newEntity();
+        if ($this->request->is('post')) { 
+
+            $stockTransferVoucher = $this->StockTransferVouchers->patchEntity($stockTransferVoucher, $this->request->getData());
+            $stockTransferVoucher->grn_id=$grn_id;
+            $stockTransferVoucher->city_id=$city_id;
+            $stockTransferVoucher->voucher_no=$voucher_no;
+            $stockTransferVoucher->transaction_date=date('Y-m-d',strtotime($this->request->getData(transaction_date)));
+            
+            if ($this->StockTransferVouchers->save($stockTransferVoucher)) {
+                $this->Flash->success(__('The stock transfer voucher has been saved.'));
+
+                //return $this->redirect(['action' => 'index']);
+            }
+             pr($stockTransferVoucher);
+            exit;
+            $this->Flash->error(__('The stock transfer voucher could not be saved. Please, try again.'));
+        }
+      
      
          $grns = $this->StockTransferVouchers->Grns->get($grn_id,
             [
