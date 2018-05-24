@@ -64,14 +64,24 @@
 									<?= $this->Form->select('section_show',$show_options,['class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
-							<div class="form-group">
+							<!--div class="form-group">
 								<label class="col-md-3 control-label">Item Maintain By</label>
 								<div class="col-md-9 col-xs-12">
-									<?php $maintain_options['itemwise'] = 'Item Wise'; ?>
-									<?php $maintain_options['variationwise'] = 'Item Variation Wise'; ?>
-									<?= $this->Form->select('item_maintain_by',$maintain_options,['class'=>'form-control select','label'=>false]) ?>
+									<?php //$maintain_options['itemwise'] = 'Item Wise'; ?>
+									<?php //$maintain_options['variationwise'] = 'Item Variation Wise'; ?>
+									<?php //$this->Form->select('item_maintain_by',$maintain_options,['class'=>'form-control select','label'=>false]) ?>
+								</div>
+							</div-->
+							
+							<div class="form-group">    
+								<label class="col-md-3 control-label">Status</label>
+								<div class="col-md-9 col-xs-12">
+									<?php $options['Active'] = 'Active'; ?>
+									<?php $options['Deactive'] = 'Deactive'; ?>
+									<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
+							
 							<div class="form-group">                                        
 								<label class="col-md-3 control-label">Units</label>
 								<div class="col-md-9 col-xs-12">
@@ -124,14 +134,6 @@
 								<label class="col-md-3 control-label">Description</label>
 								<div class="col-md-9 col-xs-12"> 
 									<?= $this->Form->control('description',['class'=>'form-control','placeholder'=>'Description','label'=>false,'rows'=>'4']) ?>
-								</div>
-							</div>
-							<div class="form-group">    
-								<label class="col-md-3 control-label">Status</label>
-								<div class="col-md-9 col-xs-12">
-									<?php $options['Active'] = 'Active'; ?>
-									<?php $options['Deactive'] = 'Deactive'; ?>
-									<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
 						</div>

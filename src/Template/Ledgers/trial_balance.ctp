@@ -97,7 +97,7 @@
 										<?php
 										
 											echo abs(@$OpeningBalanceForPrint[$key]['balance']);
-											$openingBalanceCreditTotal +=abs($OpeningBalanceForPrint[$key]['balance']);
+											$openingBalanceCreditTotal +=abs(@$OpeningBalanceForPrint[$key]['balance']);
 										?>
 										</td>
 										<?php }?>
@@ -152,9 +152,10 @@
 										<th style="text-align:right";><?php echo @$cedit_diff; ?></th>
 										
 								<?php } else {  
-									 ?>
+									$cedit_diff1 = $openingBalanceCreditTotal-@$openingBalanceDebitTotal;
+									?>
 										
-										<th style="text-align:right";><?php echo @$cedit_diff; ?></th>
+										<th style="text-align:right";><?php echo @$cedit_diff1; ?></th>
 										<th  style="text-align:right";>
 										</th>
 								<?php } ?>
@@ -164,10 +165,10 @@
 							<th colspan="5" style="text-align:left";>Total</th>
 							
 							<th scope="col" style="text-align:right";>
-							<?php echo @$closingBalanceDebitTotal; ?>
+							<?php echo @$closingBalanceDebitTotal+@$openingValue; ?>
 							</th>
 							<th scope="col" style="text-align:right";>
-							<?php echo round(@$closingBalanceCreditTotal,2); ?>
+							<?php echo round(@$closingBalanceCreditTotal+@$cedit_diff,2); ?>
 							</th>
 						</tr>
 					</tfoot>

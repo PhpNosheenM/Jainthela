@@ -243,11 +243,18 @@ class PaymentsController extends AppController
      */
     public function edit($id = null)
     {
+		$city_id=$this->Auth->User('city_id');
+		$location_id=$this->Auth->User('location_id');
+		$user_id=$this->Auth->User('id');
+		$this->viewBuilder()->layout('super_admin_layout');
         $payment = $this->Payments->get($id, [
-            'contain' => []
+            'contain' => ['PaymentRows'=>['ReferenceDetails']]
         ]);
+		
         if ($this->request->is(['patch', 'post', 'put'])) {
+			
             $payment = $this->Payments->patchEntity($payment, $this->request->getData());
+			
             if ($this->Payments->save($payment)) {
                 $this->Flash->success(__('The payment has been saved.'));
 
@@ -255,8 +262,83 @@ class PaymentsController extends AppController
             }
             $this->Flash->error(__('The payment could not be saved. Please, try again.'));
         }
-        $locations = $this->Payments->Locations->find('list', ['limit' => 200]);
-        $this->set(compact('payment', 'locations'));
+        
+		 $voucher_no=$payment->voucher_no;
+		 
+		//bank group
+		$bankParentGroups = $this->Payments->PaymentRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.bank'=>'1']);
+		
+		$bankGroups=[];
+		
+		foreach($bankParentGroups as $bankParentGroup)
+		{
+			$accountingGroups = $this->Payments->PaymentRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $bankParentGroup->id])->toArray();
+			$bankGroups[]=$bankParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$bankGroups[]=$accountingGroup->id;
+			}
+		}
+		
+		//cash-in-hand group
+		$cashParentGroups = $this->Payments->PaymentRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.cash'=>'1']);
+						
+		$cashGroups=[];
+		
+		foreach($cashParentGroups as $cashParentGroup)
+		{
+			$cashChildGroups = $this->Payments->PaymentRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $cashParentGroup->id])->toArray();
+			$cashGroups[]=$cashParentGroup->id;
+			foreach($cashChildGroups as $cashChildGroup){
+				$cashGroups[]=$cashChildGroup->id;
+			}
+		}
+		
+		$partyParentGroups = $this->Payments->PaymentRows->Ledgers->AccountingGroups->find()
+							->where(['AccountingGroups.payment_ledger'=>1]);
+
+		$partyGroups=[];
+		
+		foreach($partyParentGroups as $partyParentGroup)
+		{
+			
+			$partyChildGroups = $this->Payments->PaymentRows->Ledgers->AccountingGroups->find('children', ['for' => $partyParentGroup->id]);
+			$partyGroups[]=$partyParentGroup->id;
+			foreach($partyChildGroups as $partyChildGroup){
+				$partyGroups[]=$partyChildGroup->id;
+			}
+		}
+	//pr($partyGroups->toArray()); exit;
+		$partyLedgers = $this->Payments->PaymentRows->Ledgers->find()
+		->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.city_id'=>$city_id]);
+		
+		//$ledgers = $this->Payments->PaymentRows->Ledgers->find()->where(['company_id'=>$company_id]);
+		foreach($partyLedgers as $ledger){
+			if(in_array($ledger->accounting_group_id,$bankGroups)){
+				if($ledger->ccavenue=="yes"){
+					$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'party','bank_and_cash' => 'no'];
+				}else{
+					$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank','bank_and_cash' => 'yes'];
+				}
+			}
+			else if($ledger->bill_to_bill_accounting == 'yes'){
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no','default_days'=>$ledger->default_credit_days];
+			}
+			else if(in_array($ledger->accounting_group_id,$cashGroups)){
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'no','bank_and_cash' => 'yes'];
+			}
+			else{
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no','bank_and_cash' => 'no' ];
+			}
+			
+		}
+		
+		//$referenceDetails=$this->Payments->PaymentRows->ReferenceDetails->find('list');
+		
+		$this->set(compact('payment', 'location_id','voucher_no','ledgerOptions', 'referenceDetails','city_id'));
     }
 
     /**

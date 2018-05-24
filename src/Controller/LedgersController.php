@@ -56,7 +56,7 @@ class LedgersController extends AppController
 						$AccountingEntry->credit = $ledger->opening_balance_value;
 					}
 					$AccountingEntry->transaction_date      = date("Y-m-d",strtotime($transaction_date));
-					$AccountingEntry->company_id            = $company_id;
+					$AccountingEntry->city_id            = $city_id;
 					$AccountingEntry->is_opening_balance    = 'yes';
 					$this->Ledgers->AccountingEntries->save($AccountingEntry);
 				}
@@ -219,8 +219,9 @@ class LedgersController extends AppController
 		
 		//pr($TransactionsDr); exit;
 		//pr($query->toArray()); exit;
-		//	$openingValue= $this->StockValuationWithDate($from_date);
-		$openingValue= 0;
+		$openingValue= $this->StockValuationWithDate($from_date);
+		//pr($openingValue); exit;
+		//$openingValue= 0;
 		$this->set(compact('companies','ledger','from_date','to_date','TrialBalances','totalDebit','status','url','ClosingBalanceForPrint','OpeningBalanceForPrint','TransactionsCr','TransactionsDr','openingValue'));
 		//pr	($AccountingGroups->toArray()); exit;
 		

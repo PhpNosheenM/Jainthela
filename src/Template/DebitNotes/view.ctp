@@ -3,7 +3,7 @@
 	.maindiv{
 		width:100% !important;
 		margin:auto;
-	}	
+	}
 	.hidden-print{
 		display:none;
 	}
@@ -27,8 +27,9 @@ $this->set('title', 'Payment Voucher');
 ?>
 <div  class="maindiv" style="border:solid 1px #c7c7c7;background-color: #FFF;padding: 10px;margin: auto;width:75%;font-size: 12px;">	
 	<table width="100%" class="divHeader">
-		<tbody><tr>
-				<td width="30%"> 
+		<tbody>
+			<tr>
+				<td width="30%">
 					<?php echo $this->Html->image('/img/jain.png', ['height' => '70px', 'width' => '70px']); ?>
 				</td>
 				<td align="center" width="40%" style="font-size: 12px;"><div align="center" style="font-size: 18px;font-weight: bold;color: #0685a8;"> DEBIT NOTE VOUCHER </div></td>

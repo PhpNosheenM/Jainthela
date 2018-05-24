@@ -113,7 +113,13 @@ class CustomersController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
 		$location_id=$this->Auth->User('location_id');
-		$this->viewBuilder()->layout('admin_portal');
+		$user_type=$this->Auth->User('user_type');
+		if($user_type=='Super Admin'){
+			$this->viewBuilder()->layout('super_admin_layout');
+		}else if($user_type=='Admin'){
+			$this->viewBuilder()->layout('admin_portal');
+		}
+		
         $customer = $this->Customers->newEntity();
         if ($this->request->is('post')) {
             $customer = $this->Customers->patchEntity($customer, $this->request->getData());
