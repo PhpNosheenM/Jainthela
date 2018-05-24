@@ -182,11 +182,11 @@
 										
 										
 										<td  valign="top">
-											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false,'value'=>$total_grn_row->quantity]) ?>
+											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false,'value'=>$total_grn_row->quantity,'readonly']) ?>
 											
 										</td>
 										<td valign="top">
-											<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false,'value'=>$total_grn_row->purchase_rate]) ?>
+											<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false,'value'=>$total_grn_row->purchase_rate,'readonly']) ?>
 										</td>
 										
 										<td valign="top">

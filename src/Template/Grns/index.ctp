@@ -54,14 +54,11 @@ $this->set('title', 'Challan');
                                 <td><?= h(@$grn->vendor_ledger->name) ?></td>
                                 <td><?= h($grn->transaction_date) ?></td>
                                 <td class="actions">
-                                    <?php  if($grn->status=="Pending"){ ?>
+                                    <?php  if($grn->status=="Pending" && $grn->created_for=="Jainthela"){ ?>
                                     <?= $this->Html->link(__('Stock Transfer'), ['controller'=>'StockTransferVouchers','action' => 'add', $grn->id]) ?>
                                     <?php } ?>
 									<?php  ?>
-									<div class="checkbox pull-left">
-										<label><?php echo $this->Form->input('Create Purchase Invoice['.$grn->id.']', ['label' => false,'type'=>'checkbox','class'=>'rename_check qty','value' => @$grn->id]);  ?></label>
-										
-									</div>
+									
 									<?php //echo $this->Form->input('to_be_send['.$grn->id.']', ['label' => false,'type'=>'checkbox','class'=>'rename_check qty','value' => @$grn->id,'hiddenField'=>false]);  ?>
                                     <?php  ?>
                                     
@@ -81,9 +78,7 @@ $this->set('title', 'Challan');
                         </ul>
                         <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
                     </div>
-					<div align="right" class="form-actions">
-						<button type="submit" class="btn btn-primary btns" >Pull & Create Purchase Order</button>
-					</div>
+					
             </div>
         </div>
     </div>
