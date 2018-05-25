@@ -176,7 +176,7 @@ class ItemsTable extends Table
             'joinType' => 'INNER'
         ]);
         
-		$this->belongsTo('SellerItems');
+		//$this->belongsTo('SellerItems');
 		$this->belongsTo('Orders');
 		$this->belongsTo('HomeScreens');
 

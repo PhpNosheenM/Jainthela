@@ -57,7 +57,8 @@ class PaymentRowsTable extends Table
             'foreignKey' => 'payment_row_id'
         ]);
         $this->hasMany('ReferenceDetails', [
-            'foreignKey' => 'payment_row_id'
+            'foreignKey' => 'payment_row_id',
+			'saveStretegy' => 'replace'
         ]);
     }
 
