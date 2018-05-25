@@ -1,9 +1,3 @@
-<?php
-/**
- * @Author: PHP Poets IT Solutions Pvt. Ltd.
- */
-$this->set('title', 'Payment Voucher');
-?>
 <style>
 .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
     border-color: transparent;
@@ -14,39 +8,37 @@ $this->set('title', 'Payment Voucher');
 }
 }
 </style>
-
-<div class="row">
-	<div class="col-md-12">
-		<div class="portlet light ">
-			<div class="portlet-title">
-				<div class="caption">
-					<i class="icon-bar-chart font-green-sharp hide"></i>
-					<span class="caption-subject font-green-sharp bold ">Update Payment Voucher</span>
+<?php $this->set('title', 'Payment Voucher'); ?>
+<!-- PAGE CONTENT WRAPPER -->
+<div class="page-content-wrap">
+	<div class="row">
+		<div class="col-md-12">
+		<?= $this->Form->create($payment,['id'=>'jvalidate','class'=>'form-horizontal','type'=>'file']) ?>  
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title"><strong> Payment Voucher</strong></h3>
 				</div>
-				<div class="actions">
-				</div>
-			</div>
-			<div class="portlet-body">
-				<?= $this->Form->create($payment,['id'=>'form_sample_2']) ?>
-				<div class="row">
-					<div class="col-md-3">
-						<div class="form-group">
-							<label>Voucher No :</label>&nbsp;&nbsp;
-							<?= h(str_pad($payment->voucher_no, 4, '0', STR_PAD_LEFT)) ?>
-						
-						<input type="hidden" name="voucher_no" value="<?php echo $payment->voucher_no;?>" >
-						<input type="hidden" name="company_id" value="<?php echo $payment->company_id;?>" >
+			
+				<div class="panel-body">    
+					<div class="row">
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="col-md-3 control-label">Voucher No : <?php  echo $voucher_no; ?> </label>
+								
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="form-group">
+								<label class="col-md-6 control-label">Transaction Date</label>
+								<div class="col-md-4">                                            
+									<?= $this->Form->control('transaction_date',['class'=>'form-control datepicker','placeholder'=>'Transaction Date','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>date('d-m-Y')]) ?>
+								</div>
+							</div>
 						</div>
 					</div>
-					<div class="col-md-3">
-						<div class="form-group">
-							<label>Transaction Date <span class="required">*</span></label>
-							<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm date-picker transaction_date','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y', strtotime($payment->transaction_date)),'required'=>'required']); ?>
-						</div>
-					</div>
-				</div>
-				<div class="row">
-						<div class="table-responsive">
+					<br/>
+					<div class="row">
+						<div class="">
 							<table id="MainTable" class="table table-condensed table-striped" width="100%">
 								<thead>
 									<tr>
@@ -59,27 +51,33 @@ $this->set('title', 'Payment Voucher');
 								</thead>
 								<tbody id='MainTbody' class="tab">
 								 <?php
-                          //  unset($option_ref);								 
-							$option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
-							$option_ref[]= ['value'=>'Against','text'=>'Against'];
-							$option_ref[]= ['value'=>'Advance','text'=>'Advance'];
-							$option_ref[]= ['value'=>'On Account','text'=>'On Account'];
-							$option_mode[]= ['value'=>'Cheque','text'=>'Cheque'];
-							$option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
+							  //  unset($option_ref);								 
+								$option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
+								$option_ref[]= ['value'=>'Against','text'=>'Against'];
+								$option_ref[]= ['value'=>'Advance','text'=>'Advance'];
+								$option_ref[]= ['value'=>'On Account','text'=>'On Account'];
+								$option_mode[]= ['value'=>'Cheque','text'=>'Cheque'];
+								$option_mode[]= ['value'=>'NEFT/RTGS','text'=>'NEFT/RTGS'];
 								 if(!empty($payment->payment_rows))
 								 {$i=0;		
 								         foreach($payment->payment_rows as $paymentRows)
-									     {?>
+									     { ?>
 									
 									<tr class="MainTr" row_no="<?php echo $i;?>">
 										<td width="10%">
 											<?php 
 											echo $this->Form->input('payment_rows.'.$i.'.id',['value'=>$paymentRows->id,'class'=>'hidden']);
-											?>
-											<?php $options['Dr'] = 'Dr'; ?>
-											<?php $options['Cr'] = 'Cr'; ?>
-											<?= $this->Form->select('payment_rows.'.$i.'.cr_dr',$options,['class'=>'form-control input-sm cr_dr select','label'=>false,'value'=>$paymentRows->cr_dr]) ?>
-											<?php unset($options); ?>
+											if($i==0)
+											{
+												$options['Dr'] = 'Dr'; ?>
+												<?= $this->Form->select('payment_rows.'.$i.'.cr_dr',$options,['class'=>'form-control input-sm cr_dr select','label'=>false,'value'=>$paymentRows->cr_dr]) ?>
+											<?php }
+											else{
+												 $options['Dr'] = 'Dr'; 
+												 $options['Cr'] = 'Cr'; ?>
+												<?= $this->Form->select('payment_rows.'.$i.'.cr_dr',$options,['class'=>'form-control input-sm cr_dr select','label'=>false,'value'=>$paymentRows->cr_dr]) ?>
+											<?php }
+										?>
 											  
 										</td>
 										<td width="65%">
@@ -231,14 +229,18 @@ $this->set('title', 'Payment Voucher');
 											</div>
 										</td>
 										<td width="10%">
-											 
+											 <?php if($paymentRows->debit > 0){ ?>
 											<?php echo $this->Form->input('payment_rows.'.$i.'.debit', ['label' => false,'class' => 'form-control input-sm debitBox rightAligntextClass numberOnly totalCalculation calculate_total','placeholder'=>'Debit','value'=>$paymentRows->debit, 'type'=>'text']); ?>
-											 
+											 <?php }else{ ?>
+											 <?php echo $this->Form->input('payment_rows.'.$i.'.debit', ['label' => false,'class' => 'form-control input-sm debitBox rightAligntextClass numberOnly totalCalculation calculate_total','placeholder'=>'Debit','value'=>'', 'type'=>'text','style'=>'display:none;']); ?>
+											 <?php } ?>
 										</td>
 										<td width="10%">
-											 
+											 <?php if($paymentRows->credit > 0){ ?>
 											<?php echo $this->Form->input('payment_rows.'.$i.'.credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass numberOnly totalCalculation calculate_total','placeholder'=>'Credit','value'=>$paymentRows->credit, 'type'=>'text']); ?>
-											 
+											  <?php }else{ ?>
+												<?php echo $this->Form->input('payment_rows.'.$i.'.credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass numberOnly totalCalculation calculate_total','placeholder'=>'Credit','value'=>'', 'type'=>'text','style'=>'display:none;']); ?>
+											  <?php } ?>
 										</td>
 										<td align="center"  width="10%">
 										<?php 
@@ -257,8 +259,8 @@ $this->set('title', 'Payment Voucher');
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
 											<input type="hidden" id="totalBankCash">
 										</td>
-										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" readonly name="totalMainDr" id="totalMainDr" value=""></td>
-										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" readonly name="totalMainCr" id="totalMainCr"></td>
+										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder " name="totalMainDr" id="totalMainDr" readonly></td>
+										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainCr" id="totalMainCr" readonly></td>
 										<td></td>
 									</tr>
 								</tfoot>
@@ -269,26 +271,40 @@ $this->set('title', 'Payment Voucher');
 						<div class="col-md-5">
 							<div class="form-group">
 								<label>Narration </label>
-								<?php echo $this->Form->control('narration',['class'=>'form-control input-sm ','label'=>false,'placeholder'=>'Narration','rows'=>'4']); ?>
+								<?php echo $this->Form->control('narration',['class'=>'form-control input-sm','label'=>false,'placeholder'=>'Narration','rows'=>'4']); ?>
 							</div>
 						</div>
 					</div>
-				<?= $this->Form->button(__('Submit'),['class'=>'btn btn-success submit'])  ?>
-				<?= $this->Form->end() ?>
+				</div>
+				<div class="panel-footer">
+					<center>
+						<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
+					</center>
+				</div>
 			</div>
+			<?= $this->Form->end() ?>
 		</div>
-	</div>
+	</div>                    	
 </div>
-
-
+<?php
+$option_ref['New Ref']= 'New Ref';
+$option_ref['Against']= 'Against';
+$option_ref['Advance']= 'Advance';
+$option_ref['On Account']= 'On Account';
+?>
+<?php
+$option_type['Cr']='Cr';
+$option_type['Dr']='Dr';
+?>
 <table id="sampleForRef" style="display:none;" width="100%">
 	<tbody>
 		<tr>
 			<td width="20%" valign="top"> 
 				<input type="hidden" class="ledgerIdContainer" />
-				<input type="hidden" class="companyIdContainer" />
+				<input type="hidden" class="locationIdContainer" />
+				<input type="hidden" class="cityIdContainer" />
 				<?php 
-				echo $this->Form->input('type', ['options'=>$option_ref,'label' => false,'class' => 'form-control input-sm refType ','required'=>'required']); ?>
+				echo $this->Form->select('type',$option_ref, ['label' => false,'class' => 'form-control input-sm refType','required'=>'required']); ?>
 			</td>
 			<td width="" valign="top">
 				<?php echo $this->Form->input('ref_name', ['type'=>'text','label' => false,'class' => 'form-control input-sm ref_name','placeholder'=>'Reference Name','required'=>'required']); ?>
@@ -299,8 +315,9 @@ $this->set('title', 'Payment Voucher');
 			</td>
 			<td width="10%" style="padding-left:0px;" valign="top">
 				<?php 
-				echo $this->Form->input('type_cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm  calculation refDrCr select','value'=>'Dr']); ?>
+				echo $this->Form->select('type_cr_dr',$option_type, ['label' => false,'class' => 'form-control input-sm  calculation refDrCr','value'=>'Dr']); ?>
 			</td>
+			 
 			<td width="5%" align="right" valign="top">
 				<a class="delete-tr-ref" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
 			</td>
@@ -309,41 +326,50 @@ $this->set('title', 'Payment Voucher');
 </table>
 
 
+<?php
+$option_mode['Cheque']= 'Cheque';
+$option_mode['NEFT/RTGS']='NEFT/RTGS';
+?>
 <table id="sampleForBank" style="display:none;" width="100%">
 	<tbody>
 		<tr>
 			<td width="30%" valign="top">
 				<?php 
-				echo $this->Form->input('mode_of_payment', ['options'=>$option_mode,'label' => false,'class' => 'form-control input-sm paymentType select','required'=>'required']); ?>
+				echo $this->Form->select('mode_of_payment', $option_mode,['label' => false,'class' => 'form-control input-sm paymentType','required'=>'required']); ?>
 			</td>
 			<td width="30%" valign="top">
-				<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no','placeholder'=>'Cheque No']); ?> 
+				<?php echo $this->Form->input('cheque_no', ['label' =>false,'class' => 'form-control input-sm cheque_no positiveValue','placeholder'=>'Cheque No']); ?> 
 			</td>
 			
 			<td width="30%" valign="top">
 				<?php echo $this->Form->input('cheque_date', ['label' =>false,'class' => 'form-control input-sm date-picker cheque_date ','data-date-format'=>'dd-mm-yyyy','placeholder'=>'Cheque Date']); ?>
 			</td>
+			
+			
 		</tr>
 	</tbody>
 </table>
-
 <table id="sampleMainTable" style="display:none;" width="100%">
 	<tbody class="sampleMainTbody">
 		<tr class="MainTr">
+			
 			<td width="10%" valign="top">
+			
 				<?php 
-				echo $this->Form->input('cr_dr', ['options'=>['Dr'=>'Dr','Cr'=>'Cr'],'label' => false,'class' => 'form-control input-sm cr_dr select','required'=>'required','value'=>'Dr']); ?>
+				$options['Cr'] = 'Cr'; 
+				$options['Dr'] = 'Dr';			
+				 
+				echo $this->Form->select('cr_dr', $options,['label' => false,'class' => 'form-control input-sm cr_dr','required'=>'required','value'=>'Cr']); ?>
 			</td>
 			<td width="65%" valign="top">
-			     <input type="hidden" class="BankValueDefine" name="BankDefination"/>
 				<?php echo $this->Form->select('ledger_id',$ledgerOptions, ['empty'=>'--Select--','label' => false,'class' => 'form-control input-sm ledger ','required'=>'required', 'data-live-search'=>true]); ?>
 				<div class="window" style="margin:auto;"></div>
 			</td>
 			<td width="10%" valign="top">
-				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Debit']); ?>
+				<?php echo $this->Form->input('debit', ['label' => false,'class' => 'form-control input-sm  debitBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Debit','style'=>'display:none;']); ?>
 			</td>
 			<td width="10%" valign="top">
-				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Credit','style'=>'display:none;']); ?>	
+				<?php echo $this->Form->input('credit', ['label' => false,'class' => 'form-control input-sm creditBox rightAligntextClass numberOnly calculate_total','placeholder'=>'Credit']); ?>	
 			</td>
 			<td align="center"  width="10%" valign="top">
 				<a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -359,20 +385,18 @@ $this->set('title', 'Payment Voucher');
 		</tr>
 	</tfoot>
 </table>
-<!-- BEGIN PAGE LEVEL STYLES -->
-	<!-- BEGIN COMPONENTS PICKERS -->
+
 <?= $this->Html->script('plugins/bootstrap/bootstrap-datepicker.js',['block'=>'jsDatePicker']) ?>
 	<?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 	<?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
-	<!-- END COMPONENTS DROPDOWNS -->
-<!-- END PAGE LEVEL SCRIPTS -->
 <?php
 	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name">';
-	//$dd='<input type="text" class="form-control input-sm rightAligntextClass dueDays " placeholder="Due Days">';
+	$dd='<input type="text" class="form-control input-sm rightAligntextClass dueDays " placeholder="Due Days">';
 	
-	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" readonly>';
-	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder"readonly >';
-	$js="var form1 = $('#jvalidate').validate({
+	$total_input='<input type="text" class="form-control input-sm rightAligntextClass total calculation noBorder" readonly >';
+	$total_type='<input type="text" class="form-control input-sm total_type calculation noBorder" readonly >';
+	
+	 $js="var form1 = $('#jvalidate').validate({
 		
 		ignore: [],
 		rules: {                                            
@@ -481,7 +505,7 @@ $this->set('title', 'Payment Voucher');
 					currentRefRow.find('td:nth-child(5)').html('');
 				}else{
 					currentRefRow.find('td:nth-child(2)').html('".$kk."');
-					//currentRefRow.find('td:nth-child(5)').html('".$dd."');
+					currentRefRow.find('td:nth-child(5)').html('".$dd."');
 					currentRefRow.find('td:nth-child(5) input.dueDays').val(due_days);
 				}
 				var SelectedTr=$(this).closest('tr.MainTr');
@@ -526,13 +550,14 @@ $this->set('title', 'Payment Voucher');
 				}
 				renameMainRows();
 			});
-		//addMainRow();
+		
 		function addMainRow(){
 			var tr=$('#sampleMainTable tbody.sampleMainTbody tr.MainTr').clone();
 			$('#MainTable tbody#MainTbody').append(tr);
 			renameMainRows();
 		}
 		
+		renameMainRows();
 		function renameMainRows(){
 				var i=0; var main_debit=0; var main_credit=0; var count_bank_cash=0;
 				$('#MainTable tbody#MainTbody tr.MainTr').each(function(){
@@ -552,10 +577,11 @@ $this->set('title', 'Payment Voucher');
 						if(!debit_amt){
 							debit_amt=0;
 						}
-						main_debit=round(main_debit+debit_amt, 2);
+						
+						main_debit=Math.round(main_debit+debit_amt,2);
 						
 						
-					}else{
+					}else{  
 						$(this).find('td:nth-child(3) input.debitBox').rules('remove', 'required');
 						$(this).find('td:nth-child(3) span.help-block-error').remove();
 						$(this).find('td:nth-child(4) input.creditBox').rules('add', 'required');
@@ -563,7 +589,7 @@ $this->set('title', 'Payment Voucher');
 						if(!credit_amt){
 							credit_amt=0;
 						}
-						main_credit=round(main_credit+credit_amt, 2);
+						main_credit=Math.round(main_credit+credit_amt, 2);
 						if(is_cash_bank=='yes'){
 						 count_bank_cash++;
 						}
@@ -693,7 +719,7 @@ $this->set('title', 'Payment Voucher');
 						});
 				}
 			}
-			  
+			
 			$(document).on('keyup','.calculate_total',function()
 			{ 
 				 renameMainRows();
@@ -719,15 +745,15 @@ $this->set('title', 'Payment Voucher');
 				var amt= parseFloat($(this).find('td:nth-child(3) input').val());
 				if(!amt){amt=0; }
 					if(Dr_Cr=='Dr'){
-						total_debit=round((total_debit+amt),2);
+						total_debit=Math.round((total_debit+amt),2);
 						
 					}
 					else if(Dr_Cr=='Cr'){
-						total_credit=round((total_credit+amt), 2);
+						total_credit=Math.round((total_credit+amt), 2);
 						//console.log(total_credit);
 					}
 					
-					remaining=round(total_debit-total_credit, 2);
+					remaining=Math.round(total_debit-total_credit, 2);
 					
 					if(remaining>0){
 						//console.log(remaining);
@@ -755,3 +781,4 @@ $this->set('title', 'Payment Voucher');
 		";  
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		
 ?>
+

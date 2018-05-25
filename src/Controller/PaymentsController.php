@@ -17,7 +17,7 @@ class PaymentsController extends AppController
 	public function beforeFilter(Event $event)
 	{
 		parent::beforeFilter($event);
-		 $this->Security->setConfig('unlockedActions', ['add','index','view']);
+		 $this->Security->setConfig('unlockedActions', ['add','index','view','edit']);
 	}
     /**
      * Index method
@@ -252,10 +252,59 @@ class PaymentsController extends AppController
         ]);
 		
         if ($this->request->is(['patch', 'post', 'put'])) {
+			$payment = $this->Payments->patchEntity($payment, $this->request->getData(), [
+							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
+						]);
+			$Voucher = $this->Payments->find()->select(['voucher_no'])->where(['city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
+			if($Voucher)
+			{
+				$payment->voucher_no = $Voucher->voucher_no+1;
+			}
+			else
+			{
+				$payment->voucher_no = 1;
+			}
+			//$payment->location_id = $location_id;
+			$payment->city_id = $city_id;
+			$payment->created_by = $user_id;
+			$payment->transaction_date = date('Y-m-d', strtotime($this->request->data['transaction_date']));
+
+			//transaction date for payment code start here--
+			foreach($payment->payment_rows as $payment_row)
+			{
+				if(!empty($payment_row->reference_details))
+				{
+					foreach($payment_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = date('Y-m-d', strtotime($payment->transaction_date));
+						$reference_detail->city_id = $city_id;
+					}
+				}
+			}
 			
-            $payment = $this->Payments->patchEntity($payment, $this->request->getData());
-			
-            if ($this->Payments->save($payment)) {
+			pr($payment); exit;
+            if ($this->Payments->save($payment))
+			/* if ($this->Payments->save($payment, [
+							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
+						])) */
+				{
+				
+				foreach($payment->payment_rows as $payment_row)
+				{
+					$accountEntry = $this->Payments->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $payment_row->ledger_id;
+					$accountEntry->debit                      = @$payment_row->debit;
+					$accountEntry->credit                     = @$payment_row->credit;
+					$accountEntry->transaction_date           = date('Y-m-d', strtotime($payment->transaction_date));
+					$accountEntry->city_id                    = $city_id;
+					$accountEntry->payment_id                 = $payment->id;
+					$accountEntry->payment_row_id             = $payment_row->id;
+					$accountEntry->entry_from                 = 'web';
+					$this->Payments->AccountingEntries->save($accountEntry);
+				}
+				$this->Flash->success(__('The payment has been saved.'));
+
+				return $this->redirect(['action' => 'index']);
                 $this->Flash->success(__('The payment has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
