@@ -128,7 +128,10 @@ class StockTransferVouchersController extends AppController
                                 'purchase_rate' =>$stock_transfer_voucher_row->purchase_rate,
                                 'sales_rate' =>$stock_transfer_voucher_row->sales_rate,
                                 'mrp' =>$stock_transfer_voucher_row->sales_rate,
-                                'update_on' =>data('Y-m-d')
+                                'update_on' =>data('Y-m-d'),
+                                'status' =>'Active',
+                                'out_of_stock' => 'No',
+                                'ready_to_sale' => 'Yes'
                             ])
                         ->where(['id' => $stock_transfer_voucher_row->item_variation_id])
                         ->execute();
