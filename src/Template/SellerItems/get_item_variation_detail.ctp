@@ -8,10 +8,10 @@
 			<th scope="col" class="actions"><?= __('Status') ?></th>
 		</tr>
 	</thead>
-	<tbody>  
+	<tbody>
 		<?php
-				$status[] =['value'=>'Deactive','text'=>'Deactive']; 
-				$status[] =['value'=>'Active','text'=>'Active']; 
+				$status[] =['value'=>'Deactive','text'=>'Deactive'];
+				$status[] =['value'=>'Active','text'=>'Active'];
 		?>
 		<?php
 		
