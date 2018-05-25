@@ -41,20 +41,21 @@ class ItemVariationMastersController extends AppController
 		$itemVariation = $this->ItemVariationMasters->newEntity();
 		if ($this->request->is('post'))
 		{
+			 
 			$item_id=$this->request->data('item_id');
 			$item_variation_master_ids=$this->request->data('item_variation_master_id');
 			$statuss=$this->request->data('status');
 			$unit_variation_ids=$this->request->data('unit_variation_id');
 			$maximum_quantity_purchases=$this->request->data('maximum_quantity_purchase');
 			$current_stocks=$this->request->data('current_stock');
-			$add_stocks=$this->request->data('add_stock');
+			//$add_stocks=$this->request->data('add_stock');
 			$mrps=$this->request->data('mrp');
 			$sales_rates=$this->request->data('sales_rate');
 			$commissionss=$this->request->data('commissions');
 			$purchase_rates=$this->request->data('purchase_rate');
 			$ready_to_sales=$this->request->data('ready_to_sale');
 			$t=0;
-	 
+	// pr($this->request->data('status')); exit;
 			 foreach($statuss as $status){
 				
 				$itemVariation1 = $this->ItemVariationMasters->ItemVariations->newEntity();
@@ -84,7 +85,7 @@ class ItemVariationMastersController extends AppController
 							$locationItem2->item_id=$item_id;
 							$locationItem2->maximum_quantity_purchase=$maximum_quantity_purchases[$t];
 							$locationItem2->current_stock=$current_stocks[$t];
-							$locationItem2->add_stock=$add_stocks[$t];
+							//$locationItem2->add_stock=$add_stocks[$t];
 							$locationItem2->mrp=$mrps[$t];
 							$locationItem2->sales_rate=$sales_rates[$t];
 							$locationItem2->commissions=$commissionss[$t];
