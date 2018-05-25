@@ -72,10 +72,12 @@ class StockTransferVouchersController extends AppController
             $stockTransferVoucher->grn_id=$grn_id;
             $stockTransferVoucher->city_id=$city_id;
             $stockTransferVoucher->voucher_no=$voucher_no;
-            $stockTransferVoucher->transaction_date=date('Y-m-d',strtotime($this->request->getData('transaction_date')));
+            $transaction_date=date('Y-m-d',strtotime($this->request->getData('transaction_date')));
+            $stockTransferVoucher->transaction_date=$transaction_date;
             $total_tranfer_quantity=0;
             $total_quantity=0;
-          
+            pr($this->request->getData());
+            exit;
             if ($this->StockTransferVouchers->save($stockTransferVoucher)) {
                 $total_tranfer_quantity=0;
                 $total_quantity=0;
@@ -85,11 +87,16 @@ class StockTransferVouchersController extends AppController
                     $transfer_quantity =$grn_row->transfer_quantity;
                     $total_quantity+=$grn_row->quantity;
                     $total_tranfer_quantity+=$data['transfer_quantity']+$transfer_quantity;
+
                     $query = $this->StockTransferVouchers->Grns->GrnRows->query();
                     $query->update()
                         ->set(['transfer_quantity' =>$data['transfer_quantity']+$transfer_quantity])
                         ->where(['id' => $data['grn_row_id']])
                         ->execute();
+
+                    $query = $this->StockTransferVouchers->Grns->ItemLedgers->query();
+                    $query->insert(['item_id','city_id','unit_variation_id','transaction_date','quantity','rate','amount','stock_transfer_voucher_id','grn_row_id','status'])
+                    ->values(['item_id' => $grn_row->item_id,'city_id' => $city_id,'unit_variation_id' => $grn_row->unit_variation_id,'transaction_date' => $transaction_date,'quantity' => $data['transfer_quantity'],'rate' => $grn_row->purchase_rate,'amount' => $amount,'stock_transfer_voucher_id' => $stockTransferVoucher->id,'grn_row_id' => $data['grn_row_id'],'status'=>'Out'])->execute();
     
                 }
                 if($total_quantity == $total_tranfer_quantity)
@@ -101,8 +108,7 @@ class StockTransferVouchersController extends AppController
                         ->execute();
                 }
 
-                //$this->StockTransferVouchers->Grns->ItemLedgers();
-                
+               
                 $this->Flash->success(__('The stock transfer voucher has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
