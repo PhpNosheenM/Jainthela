@@ -44,7 +44,6 @@ $this->set('title', 'Create Stock Transfer Voucher');
                                                     <td><label>Sr<label></td>
                                                     <td><label>Item<label></td>
                                                     <td><label>Transfer Qty<label></td>
-                                                    <td></td>
                                                 </tr>
                                             </thead>
                                             <tbody id='main_tbody' class="tab">
@@ -122,14 +121,13 @@ $this->set('title', 'Create Stock Transfer Voucher');
                                                             </tbody>
                                                             <tfoot>
                                                                 <tr>
-                                                                    <td colspan="4"> <?php echo $this->Form->input('total_quantity_transfer', ['label' => false,'class' => 'form-control input-sm rightAligntextClass numberOnly total_quantity_transfer','placeholder'=>'']); ?></td>
+                                                                    <td>Total Quantity</td>
+                                                                    <td> <?php echo $this->Form->input('total_quantity_transfer', ['label' => false,'class' => 'form-control input-sm rightAligntextClass numberOnly total_quantity_transfer','placeholder'=>'Total Quantity','readonly'=>true]); ?></td>
+                                                                    <td  colspan="2"></td>
                                                                 </tr>
                                                             </tfoot>
                                                         </table>
                                                         
-                                                    </td>
-                                                    <td align="center">
-                                                        <a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
                                                     </td>
                                                 </tr>
                                             <?php
@@ -212,6 +210,7 @@ $this->set('title', 'Create Stock Transfer Voucher');
 
               var purchase_rate =  parseFloat($(this).closest('td').find('select.item_variation option:selected').attr('purchase_rate'));
              $(this).closest('td').find('input.purchase_rate').val(purchase_rate);
+             $(this).closest('tr').find('td:eq(1) input').trigger('keyup');
         });
 
         function rename_rows()
@@ -239,7 +238,7 @@ $this->set('title', 'Create Stock Transfer Voucher');
                         i++;
                     });
                     $(this).find('td:eq(2)').find('table.item_variation >tfoot >tr').each(function(){
-                              $(this).find('td:eq(0) input.total_quantity_transfer').attr({name:'grn_rows['+j+'][transfer_quantity]', id:'grn_rows-'+j+'-transfer_quantity'}).prop('disabled',false);
+                              $(this).find('td:eq(1) input.total_quantity_transfer').attr({name:'grn_rows['+j+'][transfer_quantity]', id:'grn_rows-'+j+'-transfer_quantity'}).prop('disabled',false);
                         });
                     
                 j++;
