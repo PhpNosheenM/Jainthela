@@ -116,7 +116,10 @@
 										</td>
 										<td valign="top">
 											
-											<?= $this->Form->select('gst_percentage',$GstFigures,['class'=>'form-control gst_percentage','label'=>false,'readonly','value'=>$total_grn_row->item->gst_figure->id]) ?>
+											<?php echo $total_grn_row->item->gst_figure->tax_percentage; ?>
+											<input type="hidden" value="<?php echo $total_grn_row->item->gst_figure->id; ?>" class="gst_percentage" tax_percentage="<?php echo $total_grn_row->item->gst_figure->tax_percentage; ?>"  >
+											
+											
 											
 										</td>
 										<td valign="top">
@@ -193,8 +196,9 @@
 											<?= $this->Form->control('taxable_value',['class'=>'form-control taxable_value','label'=>false,'readonly']) ?>
 										</td>
 										<td valign="top">
+											<?php echo $total_grn_row->item_variation->item->gst_figure->tax_percentage; ?>
+											<input type="hidden" value="<?php echo $total_grn_row->item_variation->item->gst_figure->id; ?>" class="gst_percentage" tax_percentage="<?php echo $total_grn_row->item_variation->item->gst_figure->tax_percentage; ?>"  >
 											
-											<?= $this->Form->select('gst_percentage',$GstFigures,['class'=>'form-control gst_percentage','label'=>false,'readonly','value'=>$total_grn_row->item_variation->item->gst_figure->id]) ?>
 											
 										</td>
 										<td valign="top">
@@ -389,7 +393,8 @@
 					$(this).find('.itemQty').html(total_qty +' '+ unit);
 					var taxable_value=qty*rate;
 					$(this).find('.taxable_value').val(taxable_value);
-					var gst_percentage=parseFloat($(this).find('.gst_percentage option:selected').attr('tax_percentage'));
+					//var gst_percentage=parseFloat($(this).find('.gst_percentage option:selected').attr('tax_percentage'));
+					var gst_percentage=parseFloat($(this).find('.gst_percentage').attr('tax_percentage'));
 					if(!gst_percentage){ 
 						gst_rate=0;
 					}else{ 

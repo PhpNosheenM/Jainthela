@@ -57,7 +57,7 @@
 									<td><?= h($purchaseInvoice->total_amount) ?></td>
 									
 									<td class="actions">
-										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'edit', $purchaseInvoice->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+										<!--<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'edit', $purchaseInvoice->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>-->
 										
 									
 									</td>

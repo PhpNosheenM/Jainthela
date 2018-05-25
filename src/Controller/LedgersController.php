@@ -330,6 +330,7 @@ class LedgersController extends AppController
 		$reference_details->select(['total_debit' => $reference_details->func()->sum('ReferenceDetails.debit'),'total_credit' => $reference_details->func()->sum('ReferenceDetails.credit')])
 		->where(['ReferenceDetails.ledger_id IN '=> $ledgerAccountids,'ReferenceDetails.transaction_date <=' => $to_date])
 		->group(['ReferenceDetails.ref_name','ReferenceDetails.ledger_id'])->autoFields(true);	
+		//pr($reference_details->toArray()); exit;
 		$this->set(compact('companies','reference_details','run_time_date','url','status','to_date'));
 		//pr($reference_details->toArray()); exit;
 			
@@ -377,6 +378,7 @@ class LedgersController extends AppController
 		$reference_details->select(['total_debit' => $reference_details->func()->sum('ReferenceDetails.debit'),'total_credit' => $reference_details->func()->sum('ReferenceDetails.credit')])
 		->where(['ReferenceDetails.ledger_id IN '=> $ledgerAccountids,'ReferenceDetails.transaction_date <=' => $to_date])
 		->group(['ReferenceDetails.ref_name','ReferenceDetails.ledger_id'])->autoFields(true);	
+		//pr($reference_details->toArray()); exit;
 		$this->set(compact('companies','reference_details','run_time_date','url','status','to_date'));
 		//pr($reference_details->toArray()); exit;
 			
