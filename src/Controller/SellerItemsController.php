@@ -377,9 +377,9 @@ class SellerItemsController extends AppController
 		$user_id=$this->Auth->User('id');
 		$item_id = $this->request->query('item_id');
 		$item = $this->SellerItems->Items->find()->where(['Items.id'=>@$item_id])->contain(['SellerItems'=>function($q) use($user_id,$item_id){
-				return $q->where(['seller_id'=>$user_id,'SellerItems.item_id'=>@$item_id]);
+				return $q->where(['SellerItems.seller_id'=>$user_id,'SellerItems.item_id'=>@$item_id]);
 		},'ItemVariationMasters'=>['ItemVariations'=>function($q) use($user_id,$item_id){
-				return $q->where(['seller_id'=>$user_id,'ItemVariations.item_id'=>@$item_id]);
+				return $q->where(['ItemVariations.seller_id'=>$user_id,'ItemVariations.item_id'=>@$item_id]);
 		},'UnitVariations'=>['Units']]])->first();
 		
 		$this->set(compact('item'));
