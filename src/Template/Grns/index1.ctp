@@ -41,7 +41,7 @@ $this->set('title', 'Challan');
                                 <th scope="col" class="actions">Sr. No.</th>
                                 <th scope="col">Voucher No</th>
                                 <th scope="col">Reference No</th>
-                                <th scope="col">Vendor</th>
+                                <th scope="col">Vendor/Seller</th>
                                 <th scope="col">Transaction Date</th>
                                 <th scope="col" class="actions"><?= __('Actions') ?></th>
                             </tr>

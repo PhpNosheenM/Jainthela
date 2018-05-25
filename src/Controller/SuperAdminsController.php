@@ -60,10 +60,12 @@ class SuperAdminsController extends AppController
 			$user = $this->Auth->identify();
 			 
 			if ($user) 
-			{
-				$state = $this->SuperAdmins->Cities->get($user['city_id']);
-                $user['state_id']=$state->id;
-                $companies = $this->SuperAdmins->Companies->find('all')->where(['state_id'=>$state->id])->first();
+			{ //pr($user); exit;
+				$Cities = $this->SuperAdmins->Cities->get($user['city_id']);
+                $user['state_id']=$Cities->state_id;
+                $companies = $this->SuperAdmins->Companies->find('all')->where(['state_id'=>$Cities->state_id])->first();
+				//pr($state); 
+				//pr($companies); exit;
                 $user['company_id']=$companies->id;
 				$user['user_type']='Super Admin';
 				$user['financial_year_id']=1;
