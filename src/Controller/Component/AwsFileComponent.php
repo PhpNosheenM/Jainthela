@@ -107,7 +107,10 @@ class AwsFileComponent extends Component
 	{
 		$this->configuration();
 		$result = $this->s3Client->doesObjectExist($this->bucketName, $keyname);
-		return $result;
+		
+		pr($result);
+		
+		//return $result;
 	}
 }
 ?>

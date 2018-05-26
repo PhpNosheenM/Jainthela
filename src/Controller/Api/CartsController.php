@@ -595,29 +595,29 @@ class CartsController extends AppController
 	    $this->set('_serialize', ['success', 'message','order_no','remaining_wallet_amount','generate_order_no','grand_total','delivery_charge_amount','payableAmount','customer_addresses','all_dates','carts','comboData']);
 		}
 
-public function moveToBag()
-{
-		$id = $this->request->data('wish_list_item_id');
-		$customer_id=$this->request->data('customer_id');
-		$city_id=$this->request->data('city_id');
-		$item_variation_id=$this->request->data('item_variation_id');
-		$combo_offer_id = $this->request->data('combo_offer_id');
-		$isCombo = $this->request->data('isCombo');
+		public function moveToBag()
+		{
+				$id = $this->request->data('wish_list_item_id');
+				$customer_id=$this->request->data('customer_id');
+				$city_id=$this->request->data('city_id');
+				$item_variation_id=$this->request->data('item_variation_id');
+				$combo_offer_id = $this->request->data('combo_offer_id');
+				$isCombo = $this->request->data('isCombo');
 
-	 $exists = $this->Carts->WishLists->WishListItems->exists(['WishListItems.id'=>$id]);
-	 if($exists==1){
-			$WishListItems= $this->Carts->WishLists->WishListItems->get($id);
-			$this->Carts->WishLists->WishListItems->delete($WishListItems);
-			$success = true;
-			$message = 'removed from wish list';
-			$this->plusAddToCart();
-	 }else{
-		 $success = false;
-		 $message = 'No record found in wish list item';
-		 $this->set(compact('success','message','item_in_cart','current_item'));
- 		 $this->set('_serialize',['success','message','item_in_cart','current_item']);
-	 }
-}
+				$exists = $this->Carts->WishLists->WishListItems->exists(['WishListItems.id'=>$id]);
+				if($exists==1){
+					$WishListItems= $this->Carts->WishLists->WishListItems->get($id);
+					$this->Carts->WishLists->WishListItems->delete($WishListItems);
+					$success = true;
+					$message = 'removed from wish list';
+					$this->plusAddToCart();
+				 }else{
+					 $success = false;
+					 $message = 'No record found in wish list item';
+					 $this->set(compact('success','message','item_in_cart','current_item'));
+					 $this->set('_serialize',['success','message','item_in_cart','current_item']);
+				 }
+		}
 
 
 
