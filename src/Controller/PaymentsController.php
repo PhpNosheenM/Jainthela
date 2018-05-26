@@ -105,16 +105,19 @@ class PaymentsController extends AppController
 				$payment->voucher_no = 1;
 			}
 			//$payment->location_id = $location_id;
-			$payment->city_id = $city_id;
-			$payment->created_by = $user_id;
-			$payment->transaction_date = date('Y-m-d', strtotime($this->request->data['transaction_date']));
+			
 			
 			$payment = $this->Payments->patchEntity($payment, $this->request->getData(), [
-							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
+							'associated' => ['PaymentRows']
 						]);
+						
+			$payment->city_id = $city_id;
+			$payment->created_by = $user_id;
+			$traans_date= date('Y-m-d', strtotime($this->request->data['transaction_date']));			
+			$payment->transaction_date=$traans_date; 
 			
 			//transaction date for payment code start here--
-			foreach($payment->payment_rows as $payment_row)
+			/* foreach($payment->payment_rows as $payment_row)
 			{
 				if(!empty($payment_row->reference_details))
 				{
@@ -124,11 +127,38 @@ class PaymentsController extends AppController
 						$reference_detail->city_id = $city_id;
 					}
 				}
-			}
+			} */
 			//transaction date for payment code close here-- 
 			
 			if ($this->Payments->save($payment)) {
 				
+				foreach($payment->payment_rows as $payment_row)
+			{
+				if(!empty($payment_row->reference_details))
+				{
+					foreach($payment_row->reference_details as $reference_detail1)
+					{
+						$reference_detail = $this->Payments->ReferenceDetails->newEntity();
+						$reference_detail->transaction_date = $traans_date;
+						$reference_detail->payment_id =  $payment_row->payment_id;
+						$reference_detail->payment_row_id =  $payment_row->id;
+						$reference_detail->ref_name =  $reference_detail1['ref_name'];
+						$reference_detail->type =  $reference_detail1['type'];
+						$reference_detail->ledger_id =  $reference_detail1['ledger_id'];
+						$reference_detail->city_id =  $city_id;
+						$test_cr_dr=$payment_row->cr_dr;
+						if($test_cr_dr=='Cr'){
+							$reference_detail->credit =  $reference_detail1['credit'];
+						}
+						if($test_cr_dr=='Dr'){
+							$reference_detail->debit =  $reference_detail1['debit'];
+						}
+						
+						$this->Payments->ReferenceDetails->save($reference_detail);
+					}
+				}
+			} 
+			
 			foreach($payment->payment_rows as $payment_row)
 				{
 					$accountEntry = $this->Payments->AccountingEntries->newEntity();

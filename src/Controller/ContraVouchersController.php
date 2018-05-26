@@ -110,13 +110,13 @@ class ContraVouchersController extends AppController
 			
 			
 			$contraVoucher = $this->ContraVouchers->patchEntity($contraVoucher, $this->request->getData(), [
-							'associated' => ['ContraVoucherRows','ContraVoucherRows.ReferenceDetails']
+							'associated' => ['ContraVoucherRows']
 						]);
 						$contraVoucher->transaction_date = $traans_date;
 						$vendor_id=$contraVoucher->vendor_id;
 					//pr($contraVoucher->contra_voucher_rows); exit;
 			//transaction date for contraVoucher code start here--
-			foreach($contraVoucher->contra_voucher_rows as $payment_row)
+			/* foreach($contraVoucher->contra_voucher_rows as $payment_row)
 			{
 				if(!empty($payment_row->reference_details))
 				{
@@ -127,10 +127,38 @@ class ContraVouchersController extends AppController
 						//$reference_detail->vendor_id = $contraVoucher->vendor_id;
 					}
 				}
-			}
+			} */
 			//transaction date for contraVoucher code close here-- 
 			//pr($contraVoucher); exit;
-			if ($this->ContraVouchers->save($contraVoucher)) {
+			if ($data=$this->ContraVouchers->save($contraVoucher)) {
+				
+			foreach($contraVoucher->contra_voucher_rows as $contra_voucher_row)
+			{
+				if(!empty($contra_voucher_row->reference_details))
+				{
+					foreach($contra_voucher_row->reference_details as $reference_detail1)
+					{
+						$reference_detail = $this->ContraVouchers->ReferenceDetails->newEntity();
+						$reference_detail->transaction_date = $traans_date;
+						$reference_detail->contra_voucher_id =  $contra_voucher_row->contra_voucher_id;
+						$reference_detail->contra_voucher_row_id =  $contra_voucher_row->id;
+						$reference_detail->ref_name =  $reference_detail1['ref_name'];
+						$reference_detail->type =  $reference_detail1['type'];
+						$reference_detail->ledger_id =  $reference_detail1['ledger_id'];
+						$reference_detail->city_id =  $city_id;
+						$test_cr_dr=$contra_voucher_row->cr_dr;
+						if($test_cr_dr=='Cr'){
+							$reference_detail->credit =  $reference_detail1['credit'];
+						}
+						if($test_cr_dr=='Dr'){
+							$reference_detail->debit =  $reference_detail1['debit'];
+						}
+						
+						$this->ContraVouchers->ReferenceDetails->save($reference_detail);
+					}
+				}
+			}
+			
 				
 			foreach($contraVoucher->contra_voucher_rows as $payment_row)
 				{
@@ -176,6 +204,22 @@ class ContraVouchersController extends AppController
 			$bankGroups[]=$bankParentGroup->id;
 			foreach($accountingGroups as $accountingGroup){
 				$bankGroups[]=$accountingGroup->id;
+			}
+		}
+		
+		
+		$cashParentGroups = $this->ContraVouchers->ContraVoucherRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.city_id'=>$city_id, 'AccountingGroups.cash'=>'1']);
+						
+		$cashGroups=[];
+		
+		foreach($cashParentGroups as $cashParentGroup)
+		{
+			$cashChildGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $cashParentGroup->id])->toArray();
+			$cashGroups[]=$cashParentGroup->id;
+			foreach($cashChildGroups as $cashChildGroup){
+				$cashGroups[]=$cashChildGroup->id;
 			}
 		}
 		
