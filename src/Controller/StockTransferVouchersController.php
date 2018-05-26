@@ -56,6 +56,7 @@ class StockTransferVouchersController extends AppController
      */
     public function add($grn_id)
     {
+        $grn_id = $this->EncryptingDecrypting->decryptData($grn_id);
         $user_id=$this->Auth->User('id');
         $city_id=$this->Auth->User('city_id');
         $this->viewBuilder()->layout('super_admin_layout');

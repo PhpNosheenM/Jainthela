@@ -54,8 +54,10 @@ $this->set('title', 'Challan');
                                 <td><?= h(@$grn->vendor_ledger->name) ?></td>
                                 <td><?= h($grn->transaction_date) ?></td>
                                 <td class="actions">
-                                    <?php  if($grn->status=="Pending" && $grn->created_for=="Jainthela"){ ?>
-                                    <?= $this->Html->link(__('Stock Transfer'), ['controller'=>'StockTransferVouchers','action' => 'add', $grn->id]) ?>
+                                    <?php  if($grn->stock_transfer_status=="Pending" && $grn->created_for=="Jainthela"){
+                                        $grn_id = $EncryptingDecrypting->encryptData($grn->id);
+                                     ?>
+                                    <?= $this->Html->link(__('Stock Transfer'), ['controller'=>'StockTransferVouchers','action' => 'add', $grn_id]) ?>
                                     <?php } ?>
 									<?php  ?>
 									
