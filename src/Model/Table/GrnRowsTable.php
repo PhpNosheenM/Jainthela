@@ -113,10 +113,10 @@ class GrnRowsTable extends Table
             ->requirePresence('purchase_rate', 'create')
             ->notEmpty('purchase_rate');
 
-        $validator
+    /*    $validator
             ->decimal('sales_rate')
             ->requirePresence('sales_rate', 'create')
-            ->notEmpty('sales_rate');
+            ->notEmpty('sales_rate');*/
 
      /*   $validator
             ->scalar('gst_type')
