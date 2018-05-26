@@ -96,12 +96,12 @@ class JournalVoucherRowsTable extends Table
         $validator
             ->date('cheque_date')
             ->allowEmpty('cheque_date');
- */
+ 
         $validator
             ->decimal('total')
             ->requirePresence('total', 'create')
             ->notEmpty('total');
-
+*/
         return $validator;
     }
 

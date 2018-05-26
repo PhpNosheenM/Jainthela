@@ -470,7 +470,7 @@ class SellerItemsController extends AppController
             $cart_item_count = $this->SellerItems->Items->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])->count();
 
             $sellerItems = $this->SellerItems->find()
-            ->contain(['Items'=>['ItemsVariations'=>['ItemVariationMasters','UnitVariations'=>['Units']]]])
+            // ->contain(['Items'=>['ItemVariations'=>['ItemVariationMasters','UnitVariations'=>['Units']]]])
             ->where(['SellerItems.seller_id'=>$seller_id])->limit($limit)->page($page);
 
             $shopes = $this->SellerItems->Sellers->find()

@@ -60,7 +60,6 @@
                                 <td><label>Unit Variation<label></td>
                                 <td><label>Quantity<label></td>
                                 <td><label>Purchase Rate Per Unit<label></td>
-                                <td><label>Sale Rate Per Unit<label></td>
                                 <td><label>Action<label></td>
                             </tr>
                         </thead>
@@ -74,9 +73,6 @@
                                 </td>
                                 <td>
                                     <?php echo $this->Form->input('total_purchase_rate', ['label' => false,'class' => 'form-control input-sm rightAligntextClass','placeholder'=>'0.00','readonly']); ?>
-                                </td>
-                                <td>
-                                    <?php echo $this->Form->input('total_sales_rate', ['label' => false,'class' => 'form-control input-sm rightAligntextClass','placeholder'=>'0.00','readonly']); ?>
                                 </td>
                                 <td></td>
                             </tr>
@@ -103,13 +99,10 @@
                 <?php echo $this->Form->input('unit_variation_id', ['empty'=>'---Select---','options'=>$unitVariationOptions,'label' => false,'class' => 'form-control input-medium ','required'=>'required']); ?>
             </td>
             <td width="" >
-                <?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass total','placeholder'=>'Qty','required']); ?>
+                <?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass total','placeholder'=>'Qty','required'=>true]); ?>
             </td>
             <td width="">
                 <?php echo $this->Form->input('purchase_rate', ['label' => false,'class' => 'form-control input-sm total numberOnly rightAligntextClass','required'=>'required','placeholder'=>'Purchase Rate','required']); ?> 
-            </td>
-            <td width="">
-                <?php echo $this->Form->input('sale_rate', ['label' => false,'class' => 'form-control input-sm total numberOnly rightAligntextClass','required'=>'required','placeholder'=>'Sale Rate','required']); ?> 
             </td>
             <td align="center">
                 <a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
@@ -133,7 +126,6 @@
         function calculate()
         { 
             total_purchase=0;
-            total_sale=0;
             
             $('#main_table tbody#main_tbody tr.main_tr').each(function()
             { 
@@ -143,17 +135,11 @@
                 var purchase_rate=parseFloat($(this).find('td:nth-child(4) input').val());
                 if(!purchase_rate){ purchase_rate=0; }
                 var net_mount = quantity*purchase_rate;
-               $(this).find('td:nth-child(6) input').val(round(net_mount,2));
+               $(this).find('td:nth-child(5) input').val(round(net_mount,2));
 
                 total_purchase=total_purchase+round(net_mount,2);
-
-                var sale_rate=parseFloat($(this).find('td:nth-child(5) input').val());
-                if(!sale_rate){ sale_rate=0; }
-                var net_mount_sales = quantity*sale_rate;
-                total_sale=total_sale+round(net_mount_sales,2);
             });
             $('input[name=total_purchase_rate]').val(round(total_purchase,2));
-            $('input[name=total_sales_rate]').val(round(total_sale,2));
         }
          
         $(document).on('keyup','.total',function(){ 
@@ -183,8 +169,7 @@
                  $(this).find('td:nth-child(2) select').select().attr({name:'grn_rows['+i+'][unit_variation_id]', id:'grn_rows-'+i+'-unit_variation_id'});
                 $(this).find('td:nth-child(3) input').attr({name:'grn_rows['+i+'][quantity]', id:'grn_rows-'+i+'-quantity'});
                 $(this).find('td:nth-child(4) input').attr({name:'grn_rows['+i+'][purchase_rate]', id:'grn_rows-'+i+'-purchase_rate'});
-                $(this).find('td:nth-child(5) input').attr({name:'grn_rows['+i+'][sales_rate]', id:'grn_rows-'+i+'-sale_rate'});
-                 $(this).find('td:nth-child(6) input').attr({name:'grn_rows['+i+'][net_amount]', id:'grn_rows-'+i+'-net_amount'});
+                 $(this).find('td:nth-child(5) input').attr({name:'grn_rows['+i+'][net_amount]', id:'grn_rows-'+i+'-net_amount'});
                 i++;
             });
             calculate();

@@ -133,7 +133,7 @@ class JournalVouchersController extends AppController
 					{ 
 						$reference_detail = $this->JournalVouchers->ReferenceDetails->newEntity();
 						$reference_detail->transaction_date = date('Y-m-d',strtotime($tdate));
-						$reference_detail->journal_voucher_id =  $journalVoucher->id;
+						$reference_detail->journal_voucher_id =  $journal_row->id;
 						$reference_detail->journal_voucher_row_id =  $journal_row->id;
 						$reference_detail->ref_name =  $reference_detail1['ref_name'];
 						$reference_detail->type =  $reference_detail1['type'];
@@ -169,7 +169,7 @@ class JournalVouchersController extends AppController
 
 				return $this->redirect(['action' => 'index']);
 			}
-			pr($journalVoucher); exit;
+			//pr($journalVoucher); exit;
 			
 			$this->Flash->error(__('The journalVoucher could not be saved. Please, try again.'));
 		}

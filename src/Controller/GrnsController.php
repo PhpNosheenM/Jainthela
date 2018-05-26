@@ -51,7 +51,7 @@ class GrnsController extends AppController
         $this->set(compact('grns'));
     }
 	
-	    public function index1()
+	public function index1()
     {
         $this->viewBuilder()->layout('super_admin_layout');
         $company_id=$this->Auth->User('company_id');
@@ -176,7 +176,7 @@ class GrnsController extends AppController
                     $item_ledger->item_id = $grn_row->item_id;
                     $item_ledger->quantity = $grn_row->quantity;
                     $item_ledger->rate = $grn_row->purchase_rate;
-                    $item_ledger->sale_rate = $grn_row->sale_rate;
+                    //$item_ledger->sale_rate = $grn_row->sale_rate;
                    // $item_ledger->company_id  =$company_id;
                     $item_ledger->city_id =$city_id;
                     $item_ledger->status ='In';
@@ -191,12 +191,12 @@ class GrnsController extends AppController
 
             $this->Flash->error(__('The challan could not be saved. Please, try again.'));
         }
-        $items = $this->Grns->GrnRows->Items->find();
-        
+        $items = $this->Grns->GrnRows->Items->SellerItems->find()->where(['SellerItems.city_id'=>$city_id,'SellerItems.seller_id IS NULL','SellerItems.status'=>'Active'])->contain(['Items']);
+       
         $itemOptions=[];
         foreach($items as $item)
         {
-                $itemOptions[]=['text' =>$item->name, 'value' => $item->id];
+                $itemOptions[]=['text' =>$item->item->name, 'value' => $item->item->id];
         }
         $Voucher_no = $this->Grns->find()->select(['voucher_no'])->where(['super_admin_id'=>$user_id])->order(['voucher_no' => 'DESC'])->first();
         if($Voucher_no)
@@ -207,11 +207,11 @@ class GrnsController extends AppController
         { 
             $voucher_no=1;
         } 
-        //$locations = $this->Grns->Locations->find('list', ['limit' => 200]);
+        
          $partyParentGroups = $this->Grns->GrnRows->Ledgers->AccountingGroups->find('all')
                         ->where(['AccountingGroups.city_id'=>$city_id, 'AccountingGroups.vendor'=>'1']);
         $partyGroups=[];
-         //pr($partyParentGroups->toArray()); exit;
+         
         foreach($partyParentGroups as $partyParentGroup)
         {
             $accountingGroups = $this->Grns->GrnRows->Ledgers->AccountingGroups
@@ -220,14 +220,14 @@ class GrnsController extends AppController
             foreach($accountingGroups as $accountingGroup){
                 $partyGroups[]=$accountingGroup->id;
             }
-        }	//pr($partyGroups); exit;
+        }	
         if($partyGroups)
         {  
             $Partyledgers = $this->Grns->VendorLedgers->find()
                             ->where(['VendorLedgers.accounting_group_id IN' =>$partyGroups,'VendorLedgers.city_id'=>$city_id])
                             ->contain(['Vendors']);
         }
-       // pr($Partyledgers); exit;
+       
         $partyOptions=[];
         foreach($Partyledgers as $Partyledger){
             $partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id];
@@ -246,25 +246,7 @@ class GrnsController extends AppController
         $this->set(compact('grn','companies','voucher_no','itemOptions','partyOptions','unitVariationOptions'));
         $this->set('_serialize', ['grn']);
     }
-    /*public function add()
-    {
-        $grn = $this->Grns->newEntity();
-        if ($this->request->is('post')) {
-            $grn = $this->Grns->patchEntity($grn, $this->request->getData());
-            if ($this->Grns->save($grn)) {
-                $this->Flash->success(__('The grn has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The grn could not be saved. Please, try again.'));
-        }
-        $locations = $this->Grns->Locations->find('list', ['limit' => 200]);
-        $orders = $this->Grns->Orders->find('list', ['limit' => 200]);
-        $sellerLedgers = $this->Grns->SellerLedgers->find('list', ['limit' => 200]);
-        $purchaseLedgers = $this->Grns->PurchaseLedgers->find('list', ['limit' => 200]);
-        $this->set(compact('grn', 'locations', 'orders', 'sellerLedgers', 'purchaseLedgers'));
-    }*/
-
+   
     /**
      * Edit method
      *

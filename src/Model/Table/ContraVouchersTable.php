@@ -51,6 +51,9 @@ class ContraVouchersTable extends Table
 		$this->hasMany('ContraVoucherRows', [
             'foreignKey' => 'contra_voucher_id'
         ]);
+		 $this->hasMany('ReferenceDetails', [
+            'foreignKey' => 'contra_voucher_id'
+        ]);
     }
 
     /**
