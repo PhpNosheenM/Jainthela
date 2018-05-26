@@ -84,6 +84,7 @@ class SellerItemsController extends AppController
 		$this->viewBuilder()->layout('super_admin_layout');
         $sellerItem = $this->SellerItems->newEntity();
         if ($this->request->is('post')) {
+			//pr($this->request->getData()); exit;
 			$commissions=$this->request->getData('commissions');
 			$brand_id=$this->request->getData('brand_id');
 			$item_ids=$this->request->getData('item_ids'); 
@@ -141,7 +142,7 @@ class SellerItemsController extends AppController
 						'item_id' => $item_ids[$i],
 						'commission_percentage' => $commissions[$i],
 						'city_id' => $city_id,
-						'brand_id' => $brand_id[$i]
+						'brand_id' => @$brand_id[$i]
 					]);
 					$query->execute();
 					
