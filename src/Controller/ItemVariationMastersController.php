@@ -132,6 +132,8 @@ class ItemVariationMastersController extends AppController
 			$unit_variation_ids=$this->request->data('unit_variation_id');
 			$SellerItems=$this->ItemVariationMasters->SellerItems->find()->where(['item_id'=>$item_id,'city_id'=>$city_id,'seller_id IS NULL'])->count();
 			$item_data=$this->ItemVariationMasters->Items->get($item_id);
+			
+			
 			/*if($SellerItems > 0)
 			{
 				$query1 = $this->ItemVariationMasters->SellerItems->query();
@@ -140,8 +142,20 @@ class ItemVariationMastersController extends AppController
 					  ->where(['seller_id IS NULL','item_id'=>$item_id,'city_id' => $city_id])
 					  ->execute();
 			}*/
+			echo $item_id.'-'.$SellerItems; exit;
 			if(empty($SellerItems))
 			{
+				$SellerItems1 = $this->ItemVariationMasters->SellerItems->newEntity();
+				$SellerItems1->category_id=$item_data->category_id;
+				$SellerItems1->item_id=$item_id;
+				$SellerItems1->city_id=$city_id;
+				$SellerItems1->brand_id=$item_data->brand_id;
+				$SellerItems1->created_by=$user_id;
+				pr($SellerItems1); exit;
+				$dtta=$this->ItemVariationMasters->SellerItems->save($SellerItems1);
+				echo $seller_id=$dtta->id;
+				exit;
+				/* 
 				$query = $this->ItemVariationMasters->SellerItems->query();
 					$query->insert(['category_id', 'item_id','city_id','brand_id','created_by']);
 					$query->values([
@@ -151,7 +165,7 @@ class ItemVariationMastersController extends AppController
 						'brand_id' => $item_data->brand_id,
 						'created_by' => $user_id
 					]);
-					$query->execute();
+					$query->execute(); */
 			}
 			$t=0;
 			 foreach($statuss as $status){
