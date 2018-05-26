@@ -48,11 +48,13 @@ $js='
 			{
 				$(this).closest(".panel").find("input[type=checkbox]").prop("checked",true);
 				$(this).closest(".panel").find("input[type=text]").prop("disabled",false);
+				$(this).closest(".panel").find("input[type=hidden]").prop("disabled",false);
 			}
 			else
 			{
 				$(this).closest(".panel").find("input[type=checkbox]").prop("checked",false);
 				$(this).closest(".panel").find("input[type=text]").prop("disabled",true);
+				$(this).closest(".panel").find("input[type=hidden]").prop("disabled",true);
 			}
 		});
 		$(document).on("change",".single_item",function(){ 
