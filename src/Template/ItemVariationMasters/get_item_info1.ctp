@@ -23,7 +23,6 @@
 					<th width="15%"> Item Variations</th>
 					<th width="10%"> Maximum Quantity Purchase</th>
 					<th width="10%"> Current Stock</th>
-					<th width="10%"> Add Stock</th>
 					<th width="10%"> MRP</th>
 					<th width="10%"> Sales Rate</th>
 					<th width="10%"> Read To Sale</th>
@@ -52,9 +51,9 @@
 			 ?>
 				<tr>
 					<td style="width:5%" align="center">
-						<input type="hidden" class="entity_maximum<?php echo $item_variation_master->unit_variation->id; ?>" name="item_variation_master_id[]" value="<?php echo $item_variation_master->id; ?>" disabled />
-						<input type="hidden" class="entity_maximum<?php echo $item_variation_master->unit_variation->id; ?>" name="unit_variation_id[]" value="<?php echo $item_variation_master->unit_variation_id; ?>" disabled/>
-						<input type="hidden" class="stst entity_maximum<?php echo $item_variation_master->unit_variation->id; ?>" name="status[]" value="No" disabled />
+						<input type="hidden" class="entity_maximum<?php echo $item_variation_master->unit_variation->id; ?>" name="item_variation_master_id[]" value="<?php echo $item_variation_master->id; ?>"  />
+						<input type="hidden" class="entity_maximum<?php echo $item_variation_master->unit_variation->id; ?>" name="unit_variation_id[]" value="<?php echo $item_variation_master->unit_variation_id; ?>" />
+						<input type="hidden" class="stst entity_maximum<?php echo $item_variation_master->unit_variation->id; ?>" name="status[]" value="No"  />
 						<input name="test[]" type="checkbox"  value="<?php echo $item_variation_master->unit_variation->id; ?>" class="entity_variation single_item st2 entity_variation<?php echo $item_variation_master->unit_variation->id;?>" >
 					</td>
 					<td align="center">
@@ -64,16 +63,15 @@
 					</td>
 					
 					<td style="width:20%">
-		<?php 
+		<?php
 		echo $this->Form->control('maximum_quantity_purchase[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Maximum Quantity Purchase','class'=>'form-control entity_maximum entity_maximum'.$item_variation_master->unit_variation->id,'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->maximum_quantity_purchase,'required']);
 		?>
 		</td>
 		<td style="width:10%">
 		<?php echo $this->Form->control('current_stock[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Current Stock','class'=>'form-control cStock  entity_maximum entity_maximum'.$item_variation_master->unit_variation->id,'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->current_stock,'required','readonly']);?>
 		<input type="hidden" value="<?php echo @$item_variation_master->current_stock;?>" id="chstock">
-		</td><td style="width:10%">
-		<?php echo $this->Form->control('add_stock[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'Add Stock','class'=>'form-control addStock entity_maximum entity_maximum'.$item_variation_master->unit_variation->id,'style'=>'display:inline !important;float:none;',$disabled]); ?>
-		</td><td style="width:12%">
+		</td>
+		<td style="width:12%">
 		<?php echo $this->Form->control('mrp[]', ['templates' => ['inputContainer'=>'{{content}}'],'label' => false,'type'=>'text','placeholder'=>'MRP','class'=>'form-control mrp calc entity_maximum entity_maximum'.$item_variation_master->unit_variation->id,'style'=>'display:inline !important;float:none;',$disabled,'value'=>@$item_variation_master->mrp,'required']); ?>
 		</td><td style="width:13%">
 		<?php 

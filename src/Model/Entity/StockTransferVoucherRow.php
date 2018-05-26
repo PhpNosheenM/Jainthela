@@ -32,8 +32,11 @@ class StockTransferVoucherRow extends Entity
     protected $_accessible = [
         'stock_transfer_voucher_id' => true,
         'item_id' => true,
+        'grn_row_id' => true,
         'item_variation_id' => true,
-        'rate' => true,
+        'unit_variation_id' => true,
+        'purchase_rate' => true,
+        'sales_rate' => true,
         'quantity' => true,
         'stock_transfer_voucher' => true,
         'item' => true,

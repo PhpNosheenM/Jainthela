@@ -60,8 +60,9 @@
 						<tbody><?php $sno = 1;  $total_pending_amt=0;
 							if($to_date){
 								  foreach ($reference_details as $reference_detail): //pr($reference_detail);
-									$duebalance = $reference_detail->total_debit - $reference_detail->total_credit;
-									if($duebalance > 0)
+									//$duebalance = $reference_detail->total_debit - $reference_detail->total_credit;
+									$duebalance = $reference_detail->total_credit - $reference_detail->total_debit;
+									if($duebalance != 0)
 									{ ?>
 										<tr >
 											<td><?php echo $reference_detail->transaction_date; ?></td>
@@ -83,7 +84,11 @@
 											echo $diff->format("%a days");
 											}else { echo '0 days';}
 											?></td>
-											<td class="rightAligntextClass"><?php echo $this->Money->moneyFormatIndia($duebalance);  ?></td>
+											<?php if($duebalance > 0){ ?>
+												<td class="rightAligntextClass"><?php echo round($duebalance,2); echo " Cr.";  ?></td>
+											<?php } else {?>
+												<td class="rightAligntextClass"><?php echo round(abs($duebalance),2); echo " Dr.";  ?></td>
+											<?php }?>
 											<?php $total_pending_amt+=$duebalance; ?>
 										</tr>
 							<?php } endforeach;  } ?>
@@ -92,7 +97,12 @@
 							
 							<tr>
 								<td scope="col" colspan="4" style="text-align:right";><b>Closing Balance</b></td>
-								<td class="rightAligntextClass"><?php echo $this->Money->moneyFormatIndia($total_pending_amt);  ?></td>
+								<?php if($total_pending_amt > 0){ ?>
+									<td class="rightAligntextClass"><?php echo round($total_pending_amt,2); echo " Cr.";  ?></td>
+								<?php } else {?>
+									<td class="rightAligntextClass"><?php echo round(abs($total_pending_amt),2); echo " Dr.";  ?></td>
+								<?php }?>
+								
 								
 							</tr>
 						</tfoot>

@@ -96,9 +96,9 @@ class VendorsController extends AppController
 			$vendor->registration_date=date('Y-m-d', strtotime($registration_date));
 			$bill_to_bill_accounting=$vendor->bill_to_bill_accounting;
 			$data=$this->Vendors->Cities->get($city_id);
-			 $reference_details=$this->request->getData()['reference_details'];
-			// pr($this->request->getData()); exit;
-            if ($this->Vendors->save($vendor)) {
+			@$reference_details=$this->request->getData()['reference_details'];
+			// pr($reference_details); exit;
+            if ($data=$this->Vendors->save($vendor)) {
 				
 				$accounting_group = $this->Vendors->Ledgers->AccountingGroups->find()->where(['AccountingGroups.vendor'=>1,'AccountingGroups.city_id'=>$city_id])->first();
 				$ledger = $this->Vendors->Ledgers->newEntity();
@@ -127,28 +127,31 @@ class VendorsController extends AppController
 					//$AccountingEntry->location_id       = $location_id;
 					$AccountingEntry->city_id       = $city_id;
 					$AccountingEntry->is_opening_balance = 'yes';
-					if($vendor->opening_balance_value){
-					$this->Vendors->Ledgers->AccountingEntries->save($AccountingEntry);
+					
+					if($vendor->opening_balance_value>0){
+						if($vendor->opening_balance_value){
+						$this->Vendors->Ledgers->AccountingEntries->save($AccountingEntry);
 
-					//Refrence Entry//
-					if($reference_details){
-					foreach($reference_details as $reference_detail){
-							$ReferenceDetail = $this->Vendors->ReferenceDetails->newEntity();
-							$ReferenceDetail->ref_name        = $reference_detail['ref_name'];
-							$ReferenceDetail->vendor_id        = $vendor->id;
-							$ReferenceDetail->city_id        = $city_id;
-							$ReferenceDetail->opening_balance        = "Yes";
-							$ReferenceDetail->ledger_id        = $ledger->id;
-							if($reference_detail['debit'] > 0)
-							{
-								$ReferenceDetail->debit        = $reference_detail['debit'];
-							}
-							else
-							{
-								$ReferenceDetail->credit       = $reference_detail['credit'];
-							}
-							$ReferenceDetail->transaction_date = date("Y-m-d",strtotime($data->books_beginning_from));
-							$ReferenceDetail = $this->Vendors->ReferenceDetails->save($ReferenceDetail);
+						//Refrence Entry//
+						if($reference_details){
+						foreach($reference_details as $reference_detail){
+								$ReferenceDetail = $this->Vendors->ReferenceDetails->newEntity();
+								$ReferenceDetail->ref_name        = $reference_detail['ref_name'];
+								$ReferenceDetail->vendor_id        = $vendor->id;
+								$ReferenceDetail->city_id        = $city_id;
+								$ReferenceDetail->opening_balance        = "Yes";
+								$ReferenceDetail->ledger_id        = $ledger->id;
+								if($reference_detail['debit'] > 0)
+								{
+									$ReferenceDetail->debit        = $reference_detail['debit'];
+								}
+								else
+								{
+									$ReferenceDetail->credit       = $reference_detail['credit'];
+								}
+								$ReferenceDetail->transaction_date = date("Y-m-d",strtotime($data->books_beginning_from));
+								$ReferenceDetail = $this->Vendors->ReferenceDetails->save($ReferenceDetail);
+								}
 							}
 						}
 					}

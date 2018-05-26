@@ -50,9 +50,9 @@ class JournalVoucherRowsTable extends Table
         $this->hasMany('AccountingEntries', [
             'foreignKey' => 'journal_voucher_row_id'
         ]);
-      /*   $this->hasMany('ReferenceDetails', [
+      $this->hasMany('ReferenceDetails', [
             'foreignKey' => 'journal_voucher_row_id'
-        ]); */
+        ]);  
     }
 
     /**
@@ -96,12 +96,12 @@ class JournalVoucherRowsTable extends Table
         $validator
             ->date('cheque_date')
             ->allowEmpty('cheque_date');
- */
+ 
         $validator
             ->decimal('total')
             ->requirePresence('total', 'create')
             ->notEmpty('total');
-
+*/
         return $validator;
     }
 

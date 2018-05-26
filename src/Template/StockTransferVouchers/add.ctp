@@ -44,7 +44,6 @@ $this->set('title', 'Create Stock Transfer Voucher');
                                                     <td><label>Sr<label></td>
                                                     <td><label>Item<label></td>
                                                     <td><label>Transfer Qty<label></td>
-                                                    <td></td>
                                                 </tr>
                                             </thead>
                                             <tbody id='main_tbody' class="tab">
@@ -56,35 +55,79 @@ $this->set('title', 'Create Stock Transfer Voucher');
                                                 
                                                 <tr class="main_tr" class="tab">
                                                     <td width="7%" align="center"><?= $i+1 ?></td>
-                                                    <td width="20%">
-                                                        <input type="hidden" name="" class="outStock" value="0">
-                                                        <input type="hidden" name="" class="totStock " value="0">
+                                                    <td width="25%">
                                                         <?php 
-                                                        echo $this->Form->select('item_id',[$grn_row->id=>$grn_row->item->name.' '.$grn_row->unit_variation->quantity_variation.' '.$grn_row->unit_variation->unit->shortname], ['label' => false,'class' => 'form-control itemStock','required'=>'required']); ?>
+                                                        echo $this->Form->select('grn_rows_id',[$grn_row->id=>$grn_row->item->name.' '.$grn_row->unit_variation->quantity_variation.' '.$grn_row->unit_variation->unit->shortname], ['label' => false,'class' => 'form-control grn_rows_id','required'=>'required']); ?>
                                                         <span class="itemQty" style="color:red ;font-size:10px;">current stock is <?php echo $convert_qty= $grn_row->total_quantity * $grn_row->unit_variation->convert_unit_qty ; ?> <?= ' '.$grn_row->unit_variation->unit->shortname ?> </span>
+                                                         <?php echo $this->Form->input('item_quantity', ['label' => false,'class' => 'form-control  rightAligntextClass numberOnly item_quantity hide','placeholder'=>'Quantity','value'=>$convert_qty]); ?>
                                                         </td>
                                                     
-                                                    <td width="25%" >
-                                                        <table>
+                                                    <td width="70%" >
+                                                        <table class="item_variation">
                                                             <?php
-                                                            foreach($grn_row->item->item_variations as $item_variation){ ?>
+                                                             $itemOptions=[];
+                                                             unset($itemOptions);
+                                                            foreach($grn_row->item->item_variations as $item_variation){ 
+                                                                    $purchase_rate=($item_variation->unit_variation->convert_unit_qty/$grn_row->unit_variation->convert_unit_qty)*$grn_row->purchase_rate;
+                                                                    $itemOptions[]=['value'=>$item_variation->id,'text'=>$item_variation->unit_variation->quantity_variation.' '.$item_variation->unit_variation->unit->shortname,'convert_qty'=>$item_variation->unit_variation->convert_unit_qty,'purchase_rate'=>$purchase_rate];
+                                                            }
+
+                                                                ?>
+                                                            <thead style="display: none;">
+                                                                 <tr>
+                                                                <td>
+                                                                <?php 
+                                                                     echo $this->Form->select('item_variation_id',$itemOptions, ['label' => false,'class' => 'form-control item_variation','required'=>true,'disabled'=>true]); ?>
+                                                               <?php 
+                                                        echo $this->Form->select('grn_row_id',[$grn_row->id=>$grn_row->item->name.' '.$grn_row->unit_variation->quantity_variation.' '.$grn_row->unit_variation->unit->shortname], ['label' => false,'class' => 'form-control grn_row_id hide','required'=>'required','disabled'=>true]); ?>
+                                                                <?php echo $this->Form->input('item_id', ['label' => false,'class' => 'form-control  rightAligntextClass numberOnly item_id hide','type'=>'text','placeholder'=>'Item Id','value'=>$grn_row->item_id,'disabled'=>true]); ?>
+                                                                <?php echo $this->Form->input('unit_variation_id', ['label' => false,'class' => 'form-control  rightAligntextClass numberOnly unit_variation_id hide','placeholder'=>'unit_variation_id','type'=>'text','value'=>$grn_row->unit_variation_id,'disabled'=>true]); ?>
+                                                                <?php echo $this->Form->input('purchase_rate', ['label' => false,'class' => 'form-control  rightAligntextClass numberOnly purchase_rate hide','placeholder'=>'purchase_rate','type'=>'text','disabled'=>true]); ?>
+                                                                </td>
+                                                                <td>
+                                                                    <?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm rightAligntextClass numberOnly quantity','placeholder'=>'Quantity','required'=>true,'disabled'=>true]); ?>
+                                                                </td>
+                                                                <td>
+                                                                    <?php echo $this->Form->input('sales_rate', ['label' => false,'class' => 'form-control input-sm rightAligntextClass numberOnly sales_rate','placeholder'=>'Sales Rate','required'=>true,'disabled'=>true]); ?>
+                                                                </td>
+                                                                 <td>    
+                                                                    <button type="button" class="add_row btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
+                                                                     <a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
+                                                                </td>
+                                                                
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
                                                             <tr>
                                                                 <td>
                                                                      <?php 
-                                                                     echo $this->Form->select('item_id',[$item_variation->id=>$item_variation->unit_variation->quantity_variation.' '.$item_variation->unit_variation->unit->shortname], ['label' => false,'class' => 'form-control itemStock','required'=>'required']); ?>
+                                                                    echo $this->Form->select('item_id',$itemOptions, ['label' => false,'class' => 'form-control item_variation','required'=>'required']); ?>
+                                                                      <?php 
+                                                                    echo $this->Form->select('grn_row_id',[$grn_row->id=>$grn_row->item->name.' '.$grn_row->unit_variation->quantity_variation.' '.$grn_row->unit_variation->unit->shortname], ['label' => false,'class' => 'form-control grn_row_id hide','required'=>'required']); ?>
+                                                                      <?php echo $this->Form->input('item_id', ['label' => false,'class' => 'form-control  rightAligntextClass numberOnly item_id hide','type'=>'text','placeholder'=>'Item Id','value'=>$grn_row->item_id]); ?>
+                                                                <?php echo $this->Form->input('unit_variation_id', ['label' => false,'class' => 'form-control  rightAligntextClass numberOnly unit_variation_id hide','placeholder'=>'unit_variation_id','type'=>'text','value'=>$grn_row->unit_variation_id]); ?>
+                                                                 <?php echo $this->Form->input('purchase_rate', ['label' => false,'class' => 'form-control  rightAligntextClass numberOnly purchase_rate hide','placeholder'=>'purchase_rate','type'=>'text','disabled'=>true]); ?>
                                                                 </td>
                                                                 <td>
-                                                                    <?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm rightAligntextClass numberOnly quantity','placeholder'=>'Quantity','max'=>$convert_qty]); ?>
+                                                                    <?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm rightAligntextClass numberOnly quantity','placeholder'=>'Quantity','required'=>true]); ?>
+                                                                </td>
+                                                                 <td>
+                                                                    <?php echo $this->Form->input('sales_rate', ['label' => false,'class' => 'form-control input-sm rightAligntextClass numberOnly sales_rate','placeholder'=>'Sales Rate','required'=>true]); ?>
+                                                                </td>
+                                                                 <td>    
+                                                                    <button type="button" class="add_row btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
                                                                 </td>
                                                             </tr>
-                                                            <?php
-                                                            }
-                                                            ?>
+                                                            </tbody>
+                                                            <tfoot>
+                                                                <tr>
+                                                                    <td>Total Quantity</td>
+                                                                    <td> <?php echo $this->Form->input('total_quantity_transfer', ['label' => false,'class' => 'form-control input-sm rightAligntextClass numberOnly total_quantity_transfer','placeholder'=>'Total Quantity','readonly'=>true]); ?></td>
+                                                                    <td  colspan="2"></td>
+                                                                </tr>
+                                                            </tfoot>
                                                         </table>
                                                         
-                                                    </td>
-                                                    <td align="center">
-                                                        <a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
                                                     </td>
                                                 </tr>
                                             <?php
@@ -94,10 +137,7 @@ $this->set('title', 'Create Stock Transfer Voucher');
                                             </tbody>
                                             <tfoot>
                                                 <tr>
-                                                    <td>    
-                                                        <button type="button" class="add_row btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
-                                                    </td>
-                                                    <td colspan="3" >
+                                                    <td colspan="4" >
                                                         <div class="form-group">
                                                         <label>Narration </label>
                                                         <?php echo $this->Form->control('narration',['class'=>'form-control input-sm ','label'=>false,'placeholder'=>'Narration','rows'=>'2']); ?>
@@ -123,47 +163,12 @@ $this->set('title', 'Create Stock Transfer Voucher');
     </div>
 </div>
 
-
-<table id="sample_table" style="display:none;" width="100%">
-    <tbody>
-        <tr class="main_tr" class="tab">
-            <td width="7%" align="center"></td>
-            <td width="50%">
-                <input type="hidden" name="" class="outStock" value="0">
-                <input type="hidden" name="" class="totStock " value="0">
-                <?php echo $this->Form->select('item_id',$itemOptions, ['label' => false,'class' => 'form-control itemStock','required'=>'required','empty'=>'--select--']); ?>
-                <span class="itemQty" style="color:red ;font-size:10px;"></span>
-                </td>
-            
-            <td width="25%" >
-                <?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm rightAligntextClass numberOnly quantity','placeholder'=>'Quantity','required']); ?>
-            </td>
-            <td align="center">
-                <a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
-            </td>
-        </tr>
-    </tbody>
-</table>
 <?= $this->Html->script('plugins/bootstrap/bootstrap-datepicker.js',['block'=>'jsDatePicker']) ?>
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?php
     $js="
     $(document).ready(function() {
-    
-        $(document).on('change','.itemStock',function(){ alert();
-            var itemQ=$(this).closest('tr'); 
-            var itemId=$(this).val();
-            var url='".$this->Url->build(["controller" => "StockTransferVouchers", "action" => "ajaxItemQuantity"])."';
-            url=url+'/'+itemId
-            $.ajax({
-                url: url,
-                type: 'GET'
-                //dataType: 'text'
-            }).done(function(response) { alert(response);
-               
-            }); 
-        });
-        
+        rename_rows();
         $(document).on('click','.delete-tr',function() 
         {
             $(this).closest('tr').remove();
@@ -171,30 +176,73 @@ $this->set('title', 'Create Stock Transfer Voucher');
         });
 
         $(document).on('click','.add_row',function(){
-            add_row();
-            
-        }) ;
-
-        function add_row()
-        {
-            var tr=$('#sample_table tbody tr.main_tr').clone();
-            $('#main_table tbody#main_tbody').append(tr);
+            var tr = $(this).closest('table.item_variation').find('thead >tr').clone();
+          
+            $(this).closest('tbody').append(tr);
 
             rename_rows();
-        }
+            
+        });
+         $(document).on('keyup','.quantity',function(){ 
+            var variation_stock=0;
+            var item_quantity =parseFloat($(this).closest('table').closest('tr.main_tr').find('td:eq(1) input.item_quantity').val());
+             $(this).closest('tbody').find('tr').each(function(){ 
+                var convert_qty = parseFloat($(this).find('td:eq(0) select option:selected').attr('convert_qty'));
+                var quantity = parseFloat($(this).find('td:eq(1) input').val());
+                variation_stock += round(convert_qty*quantity,2);
+            });
+            if(variation_stock > item_quantity)
+            {
+                alert('Error: Stock is going in minus. Please Check?');
+                $(this).val(
+                    function(index, value){
+                        return value.substr(0, value.length - 1);
+                });
+            }
+            else
+            {
+                $(this).closest('table').find('tfoot input.total_quantity_transfer').val(variation_stock)
+            }
+           
+        });
 
-        //add_row();
+        $(document).on('change','select.item_variation',function(){ 
+
+              var purchase_rate =  parseFloat($(this).closest('td').find('select.item_variation option:selected').attr('purchase_rate'));
+             $(this).closest('td').find('input.purchase_rate').val(purchase_rate);
+             $(this).closest('tr').find('td:eq(1) input').trigger('keyup');
+        });
 
         function rename_rows()
         {
             var i=0;
+            var j=0;
             $('#main_table tbody#main_tbody tr.main_tr').each(function(){ 
-                $(this).find('td:nth-child(1)').html(i+1);
-                $(this).find('td:nth-child(2) select').select().attr({name:'stock_transfer_voucher_rows['+i+'][item_id]',id:'stock_transfer_voucher_rows-'+i+'-item_id'});   
+                $(this).find('td:eq(0)').html(j+1);
+               $(this).find('td:eq(1) select.grn_rows_id').attr({name:'grn_rows['+j+'][grn_row_id]',id:'grn_rows-'+j+'-grn_row_id'});
+               $(this).find('td:eq(1) input.item_quantity').attr({name:'grn_rows['+j+'][quantity]',id:'grn_rows-'+j+'-quantity'});
 
-                $(this).find('td:nth-child(3) input').attr({name:'intra_location_stock_transfer_voucher_rows['+i+'][quantity]', id:'intra_location_stock_transfer_voucher_rows-'+i+'-quantity'});
+                $(this).find('td:eq(2)').find('table.item_variation >tbody >tr').each(function(){
+                        $(this).find('td:eq(0) select.item_variation').attr({name:'stock_transfer_voucher_rows['+i+'][item_variation_id]', id:'stock_transfer_voucher_rows-'+i+'-item_variation_id'}).prop('disabled',false);
+                         $(this).find('td:eq(0) select.grn_row_id').attr({name:'stock_transfer_voucher_rows['+i+'][grn_row_id]', id:'stock_transfer_voucher_rows-'+i+'-grn_row_id'}).prop('disabled',false);
+                         $(this).find('td:eq(0) input.item_id').attr({name:'stock_transfer_voucher_rows['+i+'][item_id]', id:'stock_transfer_voucher_rows-'+i+'-item_id'}).prop('disabled',false);
+                          $(this).find('td:eq(0) input.unit_variation_id').attr({name:'stock_transfer_voucher_rows['+i+'][unit_variation_id]', id:'stock_transfer_voucher_rows-'+i+'-unit_variation_id'}).prop('disabled',false);
+                           $(this).find('td:eq(0) input.purchase_rate').attr({name:'stock_transfer_voucher_rows['+i+'][purchase_rate]', id:'stock_transfer_voucher_rows-'+i+'-purchase_rate'}).prop('disabled',false);
+                            
+                            var purchase_rate = parseFloat($(this).find('td:eq(0) select.item_variation option:selected').attr('purchase_rate'));
+                             $(this).find('td:eq(0) input.purchase_rate').val(purchase_rate);
+
+                        $(this).find('td:eq(1) input').attr({name:'stock_transfer_voucher_rows['+i+'][quantity]', id:'stock_transfer_voucher_rows-'+i+'-quantity'}).prop('disabled',false);
+                        $(this).find('td:eq(1) input').trigger('keyup');
+                        $(this).find('td:eq(2) input').attr({name:'stock_transfer_voucher_rows['+i+'][sales_rate]', id:'stock_transfer_voucher_rows-'+i+'-sales_rate'}).prop('disabled',false);
+                        i++;
+                    });
+                    $(this).find('td:eq(2)').find('table.item_variation >tfoot >tr').each(function(){
+                              $(this).find('td:eq(1) input.total_quantity_transfer').attr({name:'grn_rows['+j+'][transfer_quantity]', id:'grn_rows-'+j+'-transfer_quantity'}).prop('disabled',false);
+                        });
+                    
+                j++;
                 
-                i++;
             });
         }
 
@@ -203,37 +251,6 @@ $this->set('title', 'Create Stock Transfer Voucher');
 
     function checkValidation() 
     {  
-        var transfer_from  = $('.transfer_from').val();
-            var transfer_to = $('.transfer_to').val();
-            if(transfer_from == transfer_to)
-            {
-                alert('Both the transfer location are same. Change the Location and try again...');
-                return false;
-            } 
-        var StockDB=[]; var StockInput = {};
-        $('#main_table tbody#main_tbody tr.main_tr').each(function()
-        {
-            var stock=$(this).find('td:nth-child(2) input.totStock').val();
-            var item_id=$(this).find('td:nth-child(2) select.itemStock option:selected').val();
-            var quantity=parseFloat($(this).find('td:nth-child(3) input.quantity').val());
-            var existingQty=parseFloat(StockInput[item_id]);
-            if(!existingQty){ existingQty=0; }
-            StockInput[item_id] = quantity+existingQty;
-            StockDB[item_id] = stock;
-        });
-        
-        var c=1;
-        $('#main_table tbody#main_tbody tr.main_tr').each(function()
-        {
-            var item_id=$(this).find('td:nth-child(2) select.itemStock option:selected').val();
-            if(StockInput[item_id]>StockDB[item_id]){
-                c=0;
-            }
-        });
-        if(c==0){
-            alert('Error: Stock is going in minus. Please Check');
-            return false;
-        }
         if(confirm('Are you sure you want to submit!'))
         {
             $('.submit').attr('disabled','disabled');

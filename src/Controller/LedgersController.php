@@ -56,7 +56,7 @@ class LedgersController extends AppController
 						$AccountingEntry->credit = $ledger->opening_balance_value;
 					}
 					$AccountingEntry->transaction_date      = date("Y-m-d",strtotime($transaction_date));
-					$AccountingEntry->company_id            = $company_id;
+					$AccountingEntry->city_id            = $city_id;
 					$AccountingEntry->is_opening_balance    = 'yes';
 					$this->Ledgers->AccountingEntries->save($AccountingEntry);
 				}
@@ -219,8 +219,9 @@ class LedgersController extends AppController
 		
 		//pr($TransactionsDr); exit;
 		//pr($query->toArray()); exit;
-		//	$openingValue= $this->StockValuationWithDate($from_date);
-		$openingValue= 0;
+		$openingValue= $this->StockValuationWithDate($from_date);
+		//pr($openingValue); exit;
+		//$openingValue= 0;
 		$this->set(compact('companies','ledger','from_date','to_date','TrialBalances','totalDebit','status','url','ClosingBalanceForPrint','OpeningBalanceForPrint','TransactionsCr','TransactionsDr','openingValue'));
 		//pr	($AccountingGroups->toArray()); exit;
 		
@@ -329,6 +330,7 @@ class LedgersController extends AppController
 		$reference_details->select(['total_debit' => $reference_details->func()->sum('ReferenceDetails.debit'),'total_credit' => $reference_details->func()->sum('ReferenceDetails.credit')])
 		->where(['ReferenceDetails.ledger_id IN '=> $ledgerAccountids,'ReferenceDetails.transaction_date <=' => $to_date])
 		->group(['ReferenceDetails.ref_name','ReferenceDetails.ledger_id'])->autoFields(true);	
+		//pr($reference_details->toArray()); exit;
 		$this->set(compact('companies','reference_details','run_time_date','url','status','to_date'));
 		//pr($reference_details->toArray()); exit;
 			
@@ -376,6 +378,7 @@ class LedgersController extends AppController
 		$reference_details->select(['total_debit' => $reference_details->func()->sum('ReferenceDetails.debit'),'total_credit' => $reference_details->func()->sum('ReferenceDetails.credit')])
 		->where(['ReferenceDetails.ledger_id IN '=> $ledgerAccountids,'ReferenceDetails.transaction_date <=' => $to_date])
 		->group(['ReferenceDetails.ref_name','ReferenceDetails.ledger_id'])->autoFields(true);	
+		//pr($reference_details->toArray()); exit;
 		$this->set(compact('companies','reference_details','run_time_date','url','status','to_date'));
 		//pr($reference_details->toArray()); exit;
 			
