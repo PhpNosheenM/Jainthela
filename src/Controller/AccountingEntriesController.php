@@ -361,7 +361,7 @@ class AccountingEntriesController extends AppController
 			
 			
 			//pr($AccountingLedgers->toArray()); exit;	
-			$Ledgers=$this->AccountingEntries->Ledgers->find('List');
+			$Ledgers=$this->AccountingEntries->Ledgers->find('List')->where(['city_id'=>$city_id]);
 			
 			$this->set(compact('from_date','to_date', 'groupForPrint', 'closingValue', 'openingValue','Ledgers','AccountingLedgers','ledger_id','opening_balance','opening_balance_type'));
 	}
@@ -476,7 +476,7 @@ class AccountingEntriesController extends AppController
 		
 		
 		
-		$GstFigures=$this->AccountingEntries->Ledgers->GstFigures->find();
+		$GstFigures=$this->AccountingEntries->Ledgers->GstFigures->find()->where(['city_id'=>$city_id]);
 		$this->set(compact('GstFigures','outputgst','outputIgst','inputgst','inputIgst','from_date','to_date'));
 	}
 }
