@@ -125,25 +125,31 @@
 </html>
 
 <script>
+	function round(value, exp) { 
+	  if (typeof exp === 'undefined' || +exp === 0)
+		return Math.round(value);
 
-		
-		function round(value, exp) { 
-		  if (typeof exp === 'undefined' || +exp === 0)
-			return Math.round(value);
+	  value = +value;
+	  exp = +exp;
 
-		  value = +value;
-		  exp = +exp;
+	  if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0))
+		return 0;
 
-		  if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0))
-			return 0;
+	  // Shift
+	  value = value.toString().split('e');
+	  value = Math.round(+(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp)));
 
-		  // Shift
-		  value = value.toString().split('e');
-		  value = Math.round(+(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp)));
-
-		  // Shift back
-		  value = value.toString().split('e');
-		  return +(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp));
-		}
+	  // Shift back
+	  value = value.toString().split('e');
+	  return +(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp));
+	}
+    $(document).on('keyup',"input.numberOnly",function(e){
+        var value=$(this).val();
+        if(value != '')
+        {
+            var number_only= value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');
+            $(this).val(number_only);
+        }
+    });
 
 </script>
