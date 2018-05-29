@@ -163,6 +163,10 @@ class ItemVariationMastersController extends AppController
 				$dtta=$this->ItemVariationMasters->SellerItems->save($SellerItems1);
 				$seller_item_id=$dtta->id;
 			}
+			else{
+				$SellerItems=$this->ItemVariationMasters->SellerItems->find()->where(['item_id'=>$item_id,'city_id'=>$city_id,'seller_id IS NULL'])->first();
+				$seller_item_id=$SellerItems->id;
+			}
 			$t=0;
 			 foreach($statuss as $status){
 				
@@ -226,7 +230,7 @@ class ItemVariationMastersController extends AppController
 	public function getItemInfo()
 	{
 		$city_id=$this->Auth->User('city_id');
-		$item_id = 2;
+		$item_id = $this->request->query('item_id');
 		$item = $this->ItemVariationMasters->Items->find()->where(['Items.id'=>@$item_id,'status'=>'Active'])->contain(['ItemVariationMasters'=>['ItemVariations','UnitVariations'=>['Units']]])->first();
 		
 		$this->set(compact('item','check_master'));

@@ -176,7 +176,7 @@
 		}
 		 
 		$(document).on("click",".delete_row",function(){
-			//alert();
+			alert();
 			var t=$(this).closest("tr").remove();
 			renameRows();
 		});
