@@ -68,7 +68,8 @@
 									<td><?= h(@$amount) ?></td>
 									<td><?= h(@$transaction_date) ?></td>
 									<td><?= h($receipt->created_on) ?></td>
-									<td><?= $this->Html->link(__('<span class="fa fa-search"></span> View'), ['action' => 'view',$receipt_id],['class'=>'btn btn-warning btn-xs','escape'=>false]) ?></td>
+									<td><?= $this->Html->link(__('<span class="fa fa-edit"></span> Edit'), ['action' => 'edit',$receipt_id],['class'=>'btn btn-danger btn-xs','escape'=>false]) ?>
+									<?= $this->Html->link(__('<span class="fa fa-search"></span> View'), ['action' => 'view',$receipt_id],['class'=>'btn btn-warning btn-xs','escape'=>false]) ?></td>
 								</tr>
 								<?php endforeach; ?>
 							</tbody>

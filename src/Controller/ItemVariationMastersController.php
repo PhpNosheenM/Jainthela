@@ -142,7 +142,7 @@ class ItemVariationMastersController extends AppController
 			}*/
 			if(empty($SellerItems))
 			{ 
-				$query = $this->ItemVariationMasters->SellerItems->query();
+				/* $query = $this->ItemVariationMasters->SellerItems->query();
 					$query->insert(['category_id', 'item_id','city_id','brand_id','created_by']);
 					$query->values([
 						'category_id' => $item_data->category_id,
@@ -151,8 +151,17 @@ class ItemVariationMastersController extends AppController
 						'brand_id' => $item_data->brand_id,
 						'created_by' => $user_id
 					]);
-					$query->execute();
+					$query->execute(); */
 					
+				$SellerItems1 = $this->ItemVariationMasters->SellerItems->newEntity();
+				$SellerItems1->category_id=$item_data->category_id;
+				$SellerItems1->item_id=$item_id;
+				$SellerItems1->city_id=$city_id;
+				$SellerItems1->brand_id=$item_data->brand_id;
+				$SellerItems1->created_by=$user_id;
+				 
+				$dtta=$this->ItemVariationMasters->SellerItems->save($SellerItems1);
+				$seller_item_id=$dtta->id;
 			}
 			$t=0;
 			 foreach($statuss as $status){

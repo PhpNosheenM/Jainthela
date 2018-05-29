@@ -18,7 +18,7 @@ class ContraVouchersController extends AppController
 	public function beforeFilter(Event $event)
 	{
 		parent::beforeFilter($event);
-		 $this->Security->setConfig('unlockedActions', ['add', 'index', 'view']);
+		 $this->Security->setConfig('unlockedActions', ['add', 'index', 'view', 'edit']);
 	}
     /**
      * Index method
@@ -270,22 +270,185 @@ class ContraVouchersController extends AppController
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
-    public function edit($id = null)
+    public function edit($ids = null)
     {
+		if($ids)
+		{
+		  $id = $this->EncryptingDecrypting->decryptData($ids);
+		}
+		
+		$city_id=$this->Auth->User('city_id');
+		$location_id=$this->Auth->User('location_id');
+		$user_id=$this->Auth->User('id');
+		$this->viewBuilder()->layout('super_admin_layout');
         $contraVoucher = $this->ContraVouchers->get($id, [
-            'contain' => []
+             'contain' => ['ContraVoucherRows'=>['ReferenceDetails']]
         ]);
+		
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $contraVoucher = $this->ContraVouchers->patchEntity($contraVoucher, $this->request->getData());
-            if ($this->ContraVouchers->save($contraVoucher)) {
-                $this->Flash->success(__('The contra voucher has been saved.'));
+              
+			$contraVoucher = $this->ContraVouchers->patchEntity($contraVoucher, $this->request->getData(), [
+							'associated' => ['ContraVoucherRows']
+						]);
+			
+			//$contraVoucher->location_id = $location_id;
+			$contraVoucher->city_id = $city_id;
+			$contraVoucher->created_by = $user_id;
+			$traans_date= date('Y-m-d', strtotime($this->request->data['transaction_date']));
+			$contraVoucher->transaction_date =$traans_date;
+			
+			//transaction date for contraVoucher code start here--
+			/* foreach($contraVoucher->contra_voucher_rows as $contra_voucher_row)
+			{
+				if(!empty($contra_voucher_row->reference_details))
+				{
+					foreach($contra_voucher_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = date('Y-m-d', strtotime($contraVoucher->transaction_date));
+						$reference_detail->city_id = $city_id;
+					}
+				}
+			}
+			 */
+			 
+            if ($this->ContraVouchers->save($contraVoucher))
+			/* if ($this->ContraVouchers->save($contraVoucher, [
+							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
+						])) */
+				{
+			$this->ContraVouchers->ReferenceDetails->deleteAll(['ReferenceDetails.contra_voucher_id'=>$id]);
+			
+			$this->ContraVouchers->AccountingEntries->deleteAll(['AccountingEntries.contra_voucher_id'=>$id]);
+			
+			foreach($contraVoucher->contra_voucher_rows as $contra_voucher_row)
+			{
+				if(!empty($contra_voucher_row->reference_details))
+				{
+					foreach($contra_voucher_row->reference_details as $reference_detail1)
+					{
+						$reference_detail = $this->ContraVouchers->ReferenceDetails->newEntity();
+						$reference_detail->transaction_date = $traans_date;
+						$reference_detail->location_id = 0;
+						$reference_detail->contra_voucher_id =  $contra_voucher_row->contra_voucher_id;
+						$reference_detail->contra_voucher_row_id =  $contra_voucher_row->id;
+						$reference_detail->ref_name =  $reference_detail1['ref_name'];
+						$reference_detail->type =  $reference_detail1['type'];
+						$reference_detail->ledger_id =  $reference_detail1['ledger_id'];
+						$reference_detail->city_id =  $city_id;
+						$test_cr_dr=$contra_voucher_row->cr_dr;
+						if($test_cr_dr=='Cr'){
+							$reference_detail->credit =  $reference_detail1['credit'];
+						}
+						if($test_cr_dr=='Dr'){
+							$reference_detail->debit =  $reference_detail1['debit'];
+						}
+						
+						$this->ContraVouchers->ReferenceDetails->save($reference_detail);
+					}
+				}
+			}
+			
+				
+				foreach($contraVoucher->contra_voucher_rows as $contra_voucher_row)
+				{
+					$accountEntry = $this->ContraVouchers->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $contra_voucher_row->ledger_id;
+					$accountEntry->debit                      = @$contra_voucher_row->debit;
+					$accountEntry->credit                     = @$contra_voucher_row->credit;
+					$accountEntry->transaction_date           = date('Y-m-d', strtotime($contraVoucher->transaction_date));
+					$accountEntry->city_id                    = $city_id;
+					$accountEntry->contra_voucher_id          = $contraVoucher->id;
+					$accountEntry->contra_voucher_row_id      = $contra_voucher_row->id;
+					$accountEntry->entry_from                 = 'web';
+					$this->ContraVouchers->AccountingEntries->save($accountEntry);
+				}
+				$this->Flash->success(__('The contraVoucher has been saved.'));
+
+				return $this->redirect(['action' => 'index']);
+                $this->Flash->success(__('The contraVoucher has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The contra voucher could not be saved. Please, try again.'));
-        }
-        $locations = $this->ContraVouchers->Locations->find('list', ['limit' => 200]);
-        $this->set(compact('contraVoucher', 'locations'));
+            $this->Flash->error(__('The contraVoucher could not be saved. Please, try again.'));
+
+
+			}
+		
+		$voucher_no=$contraVoucher->voucher_no;
+		// pr($contraVoucher); exit;
+		//bank group
+		$bankParentGroups = $this->ContraVouchers->ContraVoucherRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.bank'=>'1']);
+		
+		$bankGroups=[];
+		
+		foreach($bankParentGroups as $bankParentGroup)
+		{
+			$accountingGroups = $this->ContraVouchers->ContraVoucherRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $bankParentGroup->id])->toArray();
+			$bankGroups[]=$bankParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$bankGroups[]=$accountingGroup->id;
+			}
+		}
+		
+		//cash-in-hand group
+		$cashParentGroups = $this->ContraVouchers->ContraVoucherRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.cash'=>'1']);
+						
+		$cashGroups=[];
+		
+		foreach($cashParentGroups as $cashParentGroup)
+		{
+			$cashChildGroups = $this->ContraVouchers->ContraVoucherRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $cashParentGroup->id])->toArray();
+			$cashGroups[]=$cashParentGroup->id;
+			foreach($cashChildGroups as $cashChildGroup){
+				$cashGroups[]=$cashChildGroup->id;
+			}
+		}
+		
+		$partyParentGroups = $this->ContraVouchers->ContraVoucherRows->Ledgers->AccountingGroups->find()
+							->where(['AccountingGroups.contra_voucher_ledger'=>1]);
+
+		$partyGroups=[];
+		
+		foreach($partyParentGroups as $partyParentGroup)
+		{
+			
+			$partyChildGroups = $this->ContraVouchers->ContraVoucherRows->Ledgers->AccountingGroups->find('children', ['for' => $partyParentGroup->id]);
+			$partyGroups[]=$partyParentGroup->id;
+			foreach($partyChildGroups as $partyChildGroup){
+				$partyGroups[]=$partyChildGroup->id;
+			}
+		}
+	//pr($partyGroups->toArray()); exit;
+		$partyLedgers = $this->ContraVouchers->ContraVoucherRows->Ledgers->find()
+		->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.city_id'=>$city_id]);
+		
+		//$ledgers = $this->ContraVouchers->ContraVoucherRows->Ledgers->find()->where(['company_id'=>$company_id]);
+		foreach($partyLedgers as $ledger){
+			if(in_array($ledger->accounting_group_id,$bankGroups)){
+				if($ledger->ccavenue=="yes"){
+					$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'party','bank_and_cash' => 'no'];
+				}else{
+					$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank','bank_and_cash' => 'yes'];
+				}
+			}
+			else if($ledger->bill_to_bill_accounting == 'yes'){
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no','default_days'=>$ledger->default_credit_days];
+			}
+			else if(in_array($ledger->accounting_group_id,$cashGroups)){
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'no','bank_and_cash' => 'yes'];
+			}
+			else{
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no','bank_and_cash' => 'no' ];
+			}
+			
+		}
+		
+		$this->set(compact('contraVoucher', 'location_id','voucher_no','ledgerOptions', 'referenceDetails','city_id'));
+		
     }
 
     /**

@@ -68,7 +68,9 @@
 									<td><?= h(@$amount) ?></td>
 									<td><?= h(@$transaction_date) ?></td>
 									<td><?= h($journalVoucher->created_on) ?></td>
-									<td><?= $this->Html->link(__('<span class="fa fa-search"></span> View'), ['action' => 'view',$journalVoucher_id],['class'=>'btn btn-warning btn-xs','escape'=>false]) ?></td>
+									<td>
+										<?= $this->Html->link(__('<span class="fa fa-edit"></span> Edit'), ['action' => 'edit',$journalVoucher_id],['class'=>'btn btn-danger btn-xs','escape'=>false]) ?>
+										<?= $this->Html->link(__('<span class="fa fa-search"></span> View'), ['action' => 'view',$journalVoucher_id],['class'=>'btn btn-warning btn-xs','escape'=>false]) ?></td>
 								</tr>
 								<?php endforeach; ?>
 							</tbody>

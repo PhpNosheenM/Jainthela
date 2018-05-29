@@ -17,7 +17,7 @@ class ReceiptsController extends AppController
 	 public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->Security->setConfig('unlockedActions', ['add', 'index', 'view']);
+        $this->Security->setConfig('unlockedActions', ['add', 'index', 'view', 'edit']);
 
     }
     /**
@@ -222,7 +222,7 @@ class ReceiptsController extends AppController
 		$partyLedgers = $this->Receipts->ReceiptRows->Ledgers->find()
 		->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.city_id'=>$city_id]);
 		
-		//$ledgers = $this->Payments->PaymentRows->Ledgers->find()->where(['company_id'=>$company_id]);
+		//$ledgers = $this->Receipts->PaymentRows->Ledgers->find()->where(['company_id'=>$company_id]);
 		foreach($partyLedgers as $ledger){
 			if(in_array($ledger->accounting_group_id,$bankGroups)){
 				if($ledger->ccavenue=="yes"){
@@ -254,23 +254,186 @@ class ReceiptsController extends AppController
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
-    public function edit($id = null)
+    public function edit($ids = null)
     {
+		if($ids)
+		{
+		  $id = $this->EncryptingDecrypting->decryptData($ids);
+		}
+		
+		$city_id=$this->Auth->User('city_id');
+		$location_id=$this->Auth->User('location_id');
+		$user_id=$this->Auth->User('id');
+		$this->viewBuilder()->layout('super_admin_layout');
         $receipt = $this->Receipts->get($id, [
-            'contain' => []
+            'contain' => ['ReceiptRows'=>['ReferenceDetails']]
         ]);
+		
         if ($this->request->is(['patch', 'post', 'put'])) {
-            $receipt = $this->Receipts->patchEntity($receipt, $this->request->getData());
-            if ($this->Receipts->save($receipt)) {
+			 
+			$receipt = $this->Receipts->patchEntity($receipt, $this->request->getData(), [
+							'associated' => ['ReceiptRows']
+						]);
+			 
+			//$receipt->location_id = $location_id;
+			$receipt->city_id = $city_id;
+			$receipt->created_by = $user_id;
+			$traans_date= date('Y-m-d', strtotime($this->request->data['transaction_date']));
+			$receipt->transaction_date =$traans_date;
+			
+			//transaction date for receipt code start here--
+			/* foreach($receipt->receipt_rows as $receipt_row)
+			{
+				if(!empty($receipt_row->reference_details))
+				{
+					foreach($receipt_row->reference_details as $reference_detail)
+					{
+						$reference_detail->transaction_date = date('Y-m-d', strtotime($receipt->transaction_date));
+						$reference_detail->city_id = $city_id;
+					}
+				}
+			}
+			 */
+			 
+            if ($this->Receipts->save($receipt))
+			/* if ($this->Receipts->save($receipt, [
+							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
+						])) */
+				{
+			$this->Receipts->ReferenceDetails->deleteAll(['ReferenceDetails.receipt_id'=>$id]);
+			
+			$this->Receipts->AccountingEntries->deleteAll(['AccountingEntries.receipt_id'=>$id]);
+			
+			foreach($receipt->receipt_rows as $receipt_row)
+			{
+				if(!empty($receipt_row->reference_details))
+				{
+					foreach($receipt_row->reference_details as $reference_detail1)
+					{
+						$reference_detail = $this->Receipts->ReferenceDetails->newEntity();
+						$reference_detail->transaction_date = $traans_date;
+						$reference_detail->location_id = 0;
+						$reference_detail->receipt_id =  $receipt_row->receipt_id;
+						$reference_detail->receipt_row_id =  $receipt_row->id;
+						$reference_detail->ref_name =  $reference_detail1['ref_name'];
+						$reference_detail->type =  $reference_detail1['type'];
+						$reference_detail->ledger_id =  $reference_detail1['ledger_id'];
+						$reference_detail->city_id =  $city_id;
+						$test_cr_dr=$receipt_row->cr_dr;
+						if($test_cr_dr=='Cr'){
+							$reference_detail->credit =  $reference_detail1['credit'];
+						}
+						if($test_cr_dr=='Dr'){
+							$reference_detail->debit =  $reference_detail1['debit'];
+						}
+						
+						$this->Receipts->ReferenceDetails->save($reference_detail);
+					}
+				}
+			}
+			
+				
+				foreach($receipt->receipt_rows as $receipt_row)
+				{
+					$accountEntry = $this->Receipts->AccountingEntries->newEntity();
+					$accountEntry->ledger_id                  = $receipt_row->ledger_id;
+					$accountEntry->debit                      = @$receipt_row->debit;
+					$accountEntry->credit                     = @$receipt_row->credit;
+					$accountEntry->transaction_date           = date('Y-m-d', strtotime($receipt->transaction_date));
+					$accountEntry->city_id                    = $city_id;
+					$accountEntry->receipt_id                 = $receipt->id;
+					$accountEntry->receipt_row_id             = $receipt_row->id;
+					$accountEntry->entry_from                 = 'web';
+					$this->Receipts->AccountingEntries->save($accountEntry);
+				}
+				$this->Flash->success(__('The receipt has been saved.'));
+
+				return $this->redirect(['action' => 'index']);
                 $this->Flash->success(__('The receipt has been saved.'));
 
                 return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('The receipt could not be saved. Please, try again.'));
         }
-        $locations = $this->Receipts->Locations->find('list', ['limit' => 200]);
-        $salesInvoices = $this->Receipts->SalesInvoices->find('list', ['limit' => 200]);
-        $this->set(compact('receipt', 'locations', 'salesInvoices'));
+		
+		
+		$voucher_no=$receipt->voucher_no;
+		// pr($receipt); exit;
+		//bank group
+		$bankParentGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.bank'=>'1']);
+		
+		$bankGroups=[];
+		
+		foreach($bankParentGroups as $bankParentGroup)
+		{
+			$accountingGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $bankParentGroup->id])->toArray();
+			$bankGroups[]=$bankParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$bankGroups[]=$accountingGroup->id;
+			}
+		}
+		
+		//cash-in-hand group
+		$cashParentGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find()
+						->where(['AccountingGroups.cash'=>'1']);
+						
+		$cashGroups=[];
+		
+		foreach($cashParentGroups as $cashParentGroup)
+		{
+			$cashChildGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups
+			->find('children', ['for' => $cashParentGroup->id])->toArray();
+			$cashGroups[]=$cashParentGroup->id;
+			foreach($cashChildGroups as $cashChildGroup){
+				$cashGroups[]=$cashChildGroup->id;
+			}
+		}
+		
+		$partyParentGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find()
+							->where(['AccountingGroups.receipt_ledger'=>1]);
+
+		$partyGroups=[];
+		
+		foreach($partyParentGroups as $partyParentGroup)
+		{
+			
+			$partyChildGroups = $this->Receipts->ReceiptRows->Ledgers->AccountingGroups->find('children', ['for' => $partyParentGroup->id]);
+			$partyGroups[]=$partyParentGroup->id;
+			foreach($partyChildGroups as $partyChildGroup){
+				$partyGroups[]=$partyChildGroup->id;
+			}
+		}
+	//pr($partyGroups->toArray()); exit;
+		$partyLedgers = $this->Receipts->ReceiptRows->Ledgers->find()
+		->where(['Ledgers.accounting_group_id IN' =>$partyGroups,'Ledgers.city_id'=>$city_id]);
+		
+		//$ledgers = $this->Receipts->ReceiptRows->Ledgers->find()->where(['company_id'=>$company_id]);
+		foreach($partyLedgers as $ledger){
+			if(in_array($ledger->accounting_group_id,$bankGroups)){
+				if($ledger->ccavenue=="yes"){
+					$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'party','bank_and_cash' => 'no'];
+				}else{
+					$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'bank','bank_and_cash' => 'yes'];
+				}
+			}
+			else if($ledger->bill_to_bill_accounting == 'yes'){
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'party','bank_and_cash' => 'no','default_days'=>$ledger->default_credit_days];
+			}
+			else if(in_array($ledger->accounting_group_id,$cashGroups)){
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id ,'open_window' => 'no','bank_and_cash' => 'yes'];
+			}
+			else{
+				$ledgerOptions[]=['text' =>$ledger->name, 'value' => $ledger->id,'open_window' => 'no','bank_and_cash' => 'no' ];
+			}
+			
+		}
+		
+		//$referenceDetails=$this->Receipts->ReceiptRows->ReferenceDetails->find('list');
+		
+		$this->set(compact('receipt', 'location_id','voucher_no','ledgerOptions', 'referenceDetails','city_id'));
+		 
     }
 
     /**

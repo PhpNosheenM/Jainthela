@@ -56,7 +56,8 @@ class PaymentsTable extends Table
 			'saveStrategy'=>'replace'
         ]);
 		$this->hasMany('ReferenceDetails', [
-            'foreignKey' => 'payment_id'
+            'foreignKey' => 'payment_id',
+			'saveStrategy'=>'replace'
         ]);
     }
 
