@@ -7,7 +7,7 @@
     font-size: 13px;
 }
 </style>
-<?php $this->set('title', 'Credit Note Voucher'); ?>
+<?php $this->set('title', 'Debit Note Voucher'); ?>
 <div class="page-content-wrap">
 
 	<div class="row">
@@ -65,7 +65,10 @@
 									<td><?= h(@$debitNote->total_credit_amount) ?></td>
 									<td><?= h(@$transaction_date) ?></td>
 									<td><?= h($debitNote->created_on) ?></td>
-									<td><?= $this->Html->link(__('<span class="fa fa-search"></span> View'), ['action' => 'view',$debitNote_id],['class'=>'btn btn-warning btn-xs','escape'=>false]) ?></td>
+									<td>
+										<?= $this->Html->link(__('<span class="fa fa-edit"></span> Edit'), ['action' => 'edit',$debitNote_id],['class'=>'btn btn-danger btn-xs','escape'=>false]) ?>
+										<?= $this->Html->link(__('<span class="fa fa-search"></span> View'), ['action' => 'view',$debitNote_id],['class'=>'btn btn-warning btn-xs','escape'=>false]) ?>
+									</td>
 								</tr>
 								<?php endforeach; ?>
 							</tbody>

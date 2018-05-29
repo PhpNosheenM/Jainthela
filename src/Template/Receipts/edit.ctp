@@ -1,11 +1,10 @@
 <style>
 .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
     border-color: transparent;
-    padding: 8px 8px !important; 
+    padding: 8px 8px !important;
     background: #F0F4F9;
     color: #656C78;
     font-size: 13px;
-}
 }
 </style>
 <?php $this->set('title', 'Receipt Voucher'); ?>
@@ -16,7 +15,7 @@
 		<?= $this->Form->create($receipt,['id'=>'jvalidate','class'=>'form-horizontal','type'=>'file']) ?>  
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><strong> Payment Voucher</strong></h3>
+					<h3 class="panel-title"><strong> Receipt Voucher</strong></h3>
 				</div>
 			
 				<div class="panel-body">    
@@ -51,7 +50,7 @@
 								</thead>
 								<tbody id='MainTbody' class="tab">
 								 <?php
-							  //  unset($option_ref);								 
+							  //  unset($option_ref);
 								$option_ref[]= ['value'=>'New Ref','text'=>'New Ref'];
 								$option_ref[]= ['value'=>'Against','text'=>'Against'];
 								$option_ref[]= ['value'=>'Advance','text'=>'Advance'];
@@ -257,7 +256,7 @@
 									<tr style="border-top:double;">
 										<td colspan="2" valign="top" >	
 											<button type="button" class="AddMainRow btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
-											<input type="text" value="1" id="totalBankCash">
+											<input type="hidden" id="totalBankCash">
 										</td>
 										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder " name="totalMainDr" id="totalMainDr" readonly></td>
 										<td valign="top"><input type="text" class="form-control input-sm rightAligntextClass noBorder" name="totalMainCr" id="totalMainCr" readonly></td>
