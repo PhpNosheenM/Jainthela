@@ -255,11 +255,12 @@ class OrdersController extends AppController
         			$voucher_no=1;
         		}
             $this->loadModel('Carts');
-            $carts_data=$this->Carts->find()->where(['customer_id'=>$customer_id])->contain(['ItemVariations']);
+            $carts_data=$this->Carts->find()->where(['customer_id'=>$customer_id])->contain(['ItemVariations'=>['Items']]);
             $i=0;
               foreach($carts_data as $carts_data_fetch)
               {
                  $amount=$carts_data_fetch->cart_count * $carts_data_fetch->item_variation->sales_rate;
+                 $this->request->data['order_details'][$i]['item_id']=$carts_data_fetch->item_variation->item->id;
                  $this->request->data['order_details'][$i]['item_variation_id']=$carts_data_fetch->item_variation_id;
                 $this->request->data['order_details'][$i]['combo_offer_id']=$carts_data_fetch->combo_offer_id;
                 $this->request->data['order_details'][$i]['quantity']=$carts_data_fetch->quantity;
@@ -267,14 +268,62 @@ class OrdersController extends AppController
                 $this->request->data['order_details'][$i]['amount']=$amount;
                 $i++;
               }
-            $sales_ledgers = $this->Orders->Ledgers->find()->select(['id'])->where(['sales_account'=>1])->first()->toArray();
+			
+			 //$sales_ledgers = $this->Orders->Ledgers->find()->select(['id'])->where(['sales_account'=>1])->first()->toArray();
             $cash_bank = $this->Orders->Ledgers->find()->select(['id'])->where(['cash'=>1])->first()->toArray();
             $order = $this->Orders->patchEntity($order, $this->request->getData());
-            $order->voucher_no = $voucher_no;
+			$order->voucher_no = $voucher_no;
             $order->order_date = date('Y-m-d');
             $order->location_id = $location_id;
-            $order->sales_ledger_id = $sales_ledgers['id'];
+            //$order->sales_ledger_id = $sales_ledgers['id'];
             $order->order_status = 'placed';
+			$accountLedgers = $this->Orders->AccountingGroups->find()->where(['AccountingGroups.sale_invoice_sales_account'=>1,'AccountingGroups.city_id'=>$order->city_id])->first();
+			$salesLedger = $this->Orders->Ledgers->find()->where(['Ledgers.accounting_group_id' =>$accountLedgers->id,'city_id'=>$order->city_id])->first();
+			$order->sales_ledger_id=$salesLedger->id;
+			if($order->order_type=="Online"){
+				$LedgerData = $this->Orders->Ledgers->find()->where(['Ledgers.ccavenue' =>'yes','Ledgers.city_id'=>$order->city_id])->first();
+				$order->party_ledger_id=$LedgerData->id;
+			}else if($order->order_type="COD"){
+				$LedgerData = $this->Orders->Ledgers->find()->where(['Ledgers.cash' =>'1','Ledgers.city_id'=>$order->city_id])->first();
+				$order->party_ledger_id=$LedgerData->id;
+			}  
+			//pr($order); exit;
+			if($order->order_type=="Online"){
+				// Cash Account Entry 
+					$AccountingEntrie = $this->Orders->AccountingEntries->newEntity(); 
+					$AccountingEntrie->ledger_id=$order->party_ledger_id;
+					$AccountingEntrie->debit=$order->grand_total;
+					$AccountingEntrie->credit=0;
+					$AccountingEntrie->transaction_date=$order->order_date;
+					$AccountingEntrie->city_id=$order->city_id;
+					$AccountingEntrie->entry_from="App";
+					$AccountingEntrie->order_id=$order->id;  
+					//$this->Orders->AccountingEntries->save($AccountingEntrie);
+					
+					// Sales Account Entry 
+					$AccountingEntrie = $this->Orders->AccountingEntries->newEntity(); 
+					$AccountingEntrie->ledger_id=$order->sales_ledger_id;
+					$AccountingEntrie->credit=$order->total_amount;
+					$AccountingEntrie->debit=0;
+					$AccountingEntrie->transaction_date=$order->order_date;
+					$AccountingEntrie->city_id=$order->city_id;
+					$AccountingEntrie->entry_from="Web";
+					$AccountingEntrie->order_id=$order->id; 
+					//$this->Orders->AccountingEntries->save($AccountingEntrie);
+					
+					foreach($order->order_details as $order_detail){ 
+						$ItemData = $this->Orders->Items->find()->where(['Items.id'=>$order_detail->item_id])->contain(['GstFigures'])->first();
+						$gstper=$ItemData->gst_figure->tax_percentage;
+						pr($order_detail->amount*$gstper/100);exit;
+						
+						$gstLedgerCGST = $this->Orders->Ledgers->find()
+								->where(['Ledgers.gst_figure_id' =>$ItemData->gst_figure_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'CGST','city_id'=>$order->city_id])->first();
+					pr($ItemData); exit;
+					}
+				echo"rfrf";	exit;
+			}
+			exit;
+			//pr($order); exit;
             if ($orders = $this->Orders->save($order)) {
 
 

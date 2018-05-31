@@ -51,7 +51,7 @@
 									<th><?= ('SNo.') ?></th>
 									<th><?= ('Invoice No') ?></th>
 									<th><?= ('Transaction Date') ?></th>
-									<th><?= ('Purchase Amount') ?></th>
+									<th><?= ('Taxable Amount') ?></th>
 									<th><?= ('GST') ?></th>
 									<th><?= ('Total') ?></th>
 								</tr>
@@ -63,9 +63,9 @@
 									<td><?= $this->Number->format(++$i) ?></td>
 									<td><?php echo $this->Html->link($order->invoice_no,['controller'=>'Orders','action' => 'view', $order->id],['target'=>'_blank']); ?></td>
 									<td><?= h(date("d-m-Y",strtotime($order->transaction_date))) ?></td>
-									<td><?php echo $this->Money->moneyFormatIndia($order->total_amount,2); ?></td>
+									<td><?php echo $this->Money->moneyFormatIndia($order->total_taxable_value,2); ?></td>
 									<td><?php echo $this->Money->moneyFormatIndia($order->total_gst,2); ?></td>
-									<td><?php echo $this->Money->moneyFormatIndia($order->grand_total,2); ?></td>
+									<td><?php echo $this->Money->moneyFormatIndia($order->total_amount,2); ?></td>
 									<?php
 										$total_sales_amount+=$order->total_taxable_value;
 										$total_gst_amount+=$order->total_gst;

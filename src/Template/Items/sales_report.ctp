@@ -59,7 +59,7 @@
 									<th><?= ('Order No') ?></th>
 									<th><?= ('Transaction Date') ?></th>
 									<th><?= ('Location') ?></th>
-									<th><?= ('Sales Amount') ?></th>
+									<th><?= ('Taxable Amount') ?></th>
 									<th><?= ('GST') ?></th>
 									<th><?= ('Total') ?></th>
 								</tr>
