@@ -400,6 +400,9 @@ class CitiesController extends AppController
 				$round_off_id = $this->Cities->AccountingGroups->find()->where(['name'=>'Indirect Expenses','city_id'=>$city->id])->first();
 				$cash_id = $this->Cities->AccountingGroups->find()->where(['name'=>'Cash-in-hand','city_id'=>$city->id])->first();
 				$bank_acc_id = $this->Cities->AccountingGroups->find()->where(['name'=>'Bank Accounts','city_id'=>$city->id])->first();
+				$cur_assets_id = $this->Cities->AccountingGroups->find()->where(['name'=>'Current Assets','city_id'=>$city->id])->first();
+				$dis_allowed = $this->Cities->AccountingGroups->find()->where(['name'=>'Indirect Expenses','city_id'=>$city->id])->first();
+				$dis_rec = $this->Cities->AccountingGroups->find()->where(['name'=>'Indirect Incomes','city_id'=>$city->id])->first();
 				//pr($gstFigureId); exit;
 
 				$gstLedgerEntrys=[
@@ -435,7 +438,11 @@ class CitiesController extends AppController
 					['name'=>'28% IGST (output)', 'accounting_group_id'=>$gstOutput->id,'city_id'=>$city->id,'bill_to_bill_accounting'=>'no','gst_figure_id'=>$gstFigureId[4],'tax_percentage'=>0,'input_output'=>'output','gst_type'=>'IGST','round_off'=>0,'cash'=>0,'flag'=>1,'ccavenue'=>'no'],
 					['name'=>'Round off', 'accounting_group_id'=>$round_off_id->id,'city_id'=>$city->id,'bill_to_bill_accounting'=>'no','gst_figure_id'=>null,'tax_percentage'=>0,'input_output'=>null,'gst_type'=>null,'round_off'=>1,'cash'=>0,'flag'=>1,'ccavenue'=>'no'],
 					['name'=>'Cash', 'accounting_group_id'=>$cash_id->id,'city_id'=>$city->id,'bill_to_bill_accounting'=>'no','gst_figure_id'=>null,'tax_percentage'=>0,'input_output'=>null,'gst_type'=>null,'round_off'=>0,'cash'=>1,'flag'=>1,'ccavenue'=>'no'],
-					['name'=>'ccavenue', 'accounting_group_id'=>$bank_acc_id->id,'city_id'=>$city->id,'bill_to_bill_accounting'=>'yes','gst_figure_id'=>null,'tax_percentage'=>0,'input_output'=>null,'gst_type'=>null,'round_off'=>0,'cash'=>0,'flag'=>1,'ccavenue'=>'yes']
+					['name'=>'ccavenue', 'accounting_group_id'=>$bank_acc_id->id,'city_id'=>$city->id,'bill_to_bill_accounting'=>'yes','gst_figure_id'=>null,'tax_percentage'=>0,'input_output'=>null,'gst_type'=>null,'round_off'=>0,'cash'=>0,'flag'=>1,'ccavenue'=>'yes'],
+					['name'=>'Tds Account', 'accounting_group_id'=>$cur_assets_id->id,'city_id'=>$city->id,'bill_to_bill_accounting'=>'no','gst_figure_id'=>null,'tax_percentage'=>0,'input_output'=>null,'gst_type'=>null,'round_off'=>0,'cash'=>0,'flag'=>1,'ccavenue'=>'no','tds_account'=>'yes'],
+					['name'=>'CCavenue Charges', 'accounting_group_id'=>$round_off_id->id,'city_id'=>$city->id,'bill_to_bill_accounting'=>'no','gst_figure_id'=>null,'tax_percentage'=>0,'input_output'=>null,'gst_type'=>null,'round_off'=>0,'cash'=>0,'flag'=>1,'ccavenue'=>'no','tds_account'=>'no','ccavenue_charges'=>'yes'],
+					['name'=>'Discount Allowed', 'accounting_group_id'=>$dis_allowed->id,'city_id'=>$city->id,'bill_to_bill_accounting'=>'no','gst_figure_id'=>null,'tax_percentage'=>0,'input_output'=>null,'gst_type'=>null,'round_off'=>0,'cash'=>0,'flag'=>1,'ccavenue'=>'no','tds_account'=>'no','discount'=>'Allowed'],
+					['name'=>'Discount Received', 'accounting_group_id'=>$dis_rec->id,'city_id'=>$city->id,'bill_to_bill_accounting'=>'no','gst_figure_id'=>null,'tax_percentage'=>0,'input_output'=>null,'gst_type'=>null,'round_off'=>0,'cash'=>0,'flag'=>1,'ccavenue'=>'no','tds_account'=>'no','discount'=>'Received']
 				];
 
 
