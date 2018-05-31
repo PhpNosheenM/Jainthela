@@ -27,12 +27,20 @@ class SalesOrdersController extends AppController
      */
     public function index()
     {
+		$this->viewBuilder()->layout('admin_portal');
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$location_id=$this->Auth->User('location_id');
+		
         $this->paginate = [
-            'contain' => ['Locations', 'Cities', 'SalesLedgers', 'PartyLedgers', 'Customers', 'Drivers', 'CustomerAddresses', 'PromotionDetails', 'DeliveryCharges', 'DeliveryTimes', 'CancelReasons']
+            'contain' => ['SalesOrderRows'=>['ItemVariations'], 'Customers', 'Cities'],
+			'limit' => 20
         ];
+		
         $salesOrders = $this->paginate($this->SalesOrders);
-
-        $this->set(compact('salesOrders'));
+		
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('salesOrders','paginate_limit'));
     }
 
     /**
