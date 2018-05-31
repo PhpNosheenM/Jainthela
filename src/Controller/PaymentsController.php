@@ -271,8 +271,12 @@ class PaymentsController extends AppController
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
-    public function edit($id = null)
+    public function edit($ids = null)
     {
+		if($ids)
+		{
+		  $id = $this->EncryptingDecrypting->decryptData($ids);
+		}
 		$city_id=$this->Auth->User('city_id');
 		$location_id=$this->Auth->User('location_id');
 		$user_id=$this->Auth->User('id');
@@ -283,24 +287,17 @@ class PaymentsController extends AppController
 		
         if ($this->request->is(['patch', 'post', 'put'])) {
 			$payment = $this->Payments->patchEntity($payment, $this->request->getData(), [
-							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
+							'associated' => ['PaymentRows']
 						]);
-			$Voucher = $this->Payments->find()->select(['voucher_no'])->where(['city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
-			if($Voucher)
-			{
-				$payment->voucher_no = $Voucher->voucher_no+1;
-			}
-			else
-			{
-				$payment->voucher_no = 1;
-			}
+			 
 			//$payment->location_id = $location_id;
 			$payment->city_id = $city_id;
 			$payment->created_by = $user_id;
-			$payment->transaction_date = date('Y-m-d', strtotime($this->request->data['transaction_date']));
-
+			$traans_date= date('Y-m-d', strtotime($this->request->data['transaction_date']));
+			$payment->transaction_date =$traans_date;
+			
 			//transaction date for payment code start here--
-			foreach($payment->payment_rows as $payment_row)
+			/* foreach($payment->payment_rows as $payment_row)
 			{
 				if(!empty($payment_row->reference_details))
 				{
@@ -311,13 +308,45 @@ class PaymentsController extends AppController
 					}
 				}
 			}
-			
-			pr($payment); exit;
+			 */
+			 
             if ($this->Payments->save($payment))
 			/* if ($this->Payments->save($payment, [
 							'associated' => ['PaymentRows','PaymentRows.ReferenceDetails']
 						])) */
 				{
+			$this->Payments->ReferenceDetails->deleteAll(['ReferenceDetails.payment_id'=>$id]);
+			
+			$this->Payments->AccountingEntries->deleteAll(['AccountingEntries.payment_id'=>$id]);
+			
+			foreach($payment->payment_rows as $payment_row)
+			{
+				if(!empty($payment_row->reference_details))
+				{
+					foreach($payment_row->reference_details as $reference_detail1)
+					{
+						$reference_detail = $this->Payments->ReferenceDetails->newEntity();
+						$reference_detail->transaction_date = $traans_date;
+						$reference_detail->location_id = 0;
+						$reference_detail->payment_id =  $payment_row->payment_id;
+						$reference_detail->payment_row_id =  $payment_row->id;
+						$reference_detail->ref_name =  $reference_detail1['ref_name'];
+						$reference_detail->type =  $reference_detail1['type'];
+						$reference_detail->ledger_id =  $reference_detail1['ledger_id'];
+						$reference_detail->city_id =  $city_id;
+						$test_cr_dr=$payment_row->cr_dr;
+						if($test_cr_dr=='Cr'){
+							$reference_detail->credit =  $reference_detail1['credit'];
+						}
+						if($test_cr_dr=='Dr'){
+							$reference_detail->debit =  $reference_detail1['debit'];
+						}
+						
+						$this->Payments->ReferenceDetails->save($reference_detail);
+					}
+				}
+			}
+			
 				
 				foreach($payment->payment_rows as $payment_row)
 				{

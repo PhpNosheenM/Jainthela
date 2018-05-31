@@ -29,7 +29,7 @@ class BannersController extends AppController
     {
 		$city_id=$this->Auth->User('city_id');
 		$user_id=$this->Auth->User('id');
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
         $this->paginate = [
             'limit' => 20
         ];

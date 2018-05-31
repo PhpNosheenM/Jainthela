@@ -188,7 +188,8 @@ class GrnsController extends AppController
                 $this->Flash->success(__('The challan has been saved.'));
                 return $this->redirect(['action' => 'add']);
             }
-
+            pr($grn);
+            exit;
             $this->Flash->error(__('The challan could not be saved. Please, try again.'));
         }
         $items = $this->Grns->GrnRows->Items->SellerItems->find()->where(['SellerItems.city_id'=>$city_id,'SellerItems.seller_id IS NULL','SellerItems.status'=>'Active'])->contain(['Items']);

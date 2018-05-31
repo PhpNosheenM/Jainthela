@@ -160,7 +160,7 @@ class StockTransferVouchersController extends AppController
                 }]
 
             ]);
-      
+        
     
         $locations = $this->StockTransferVouchers->Locations->find('list')->where(['city_id'=>$city_id,'status'=>'Active']);
         $this->set(compact('stockTransferVoucher', 'grns', 'locations','voucher_no'));
