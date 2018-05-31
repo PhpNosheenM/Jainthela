@@ -140,7 +140,7 @@ class ComboOffersController extends AppController
                 }
                 else
                 {
-                    return $this->redirect(['action' => 'add']);
+                    return $this->redirect(['action' => 'index']);
                 }
             }
 			
@@ -162,7 +162,7 @@ class ComboOffersController extends AppController
         {
             $dir->delete(); 
         }
-         return $this->redirect(['action' => 'add']);
+         return $this->redirect(['action' => 'index']);
         exit;
     }
     public function deleteFileEdit($dir)
