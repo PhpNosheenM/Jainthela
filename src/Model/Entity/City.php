@@ -71,6 +71,11 @@ class City extends Entity
         'promotions' => true,
         'roles' => true,
         'sellers' => true,
+        'tds_account' => true,
+        'ccavenue_charges' => true,
+        'discount' => true,
+        'transport' => true,
+        'ccavenue' => true,
         'supplier_areas' => true
     ];
 }
