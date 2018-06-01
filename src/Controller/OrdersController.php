@@ -28,7 +28,7 @@ class OrdersController extends AppController
     }
     public function index()
     {
-		$this->viewBuilder()->layout('super_admin_layout');
+		$this->viewBuilder()->layout('admin_portal');
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
 		$location_id=$this->Auth->User('location_id');
@@ -55,7 +55,7 @@ class OrdersController extends AppController
      */
     public function sellerOrderList($id = null)
     {
-		$this->viewBuilder()->layout('super_admin_layout');
+		$this->viewBuilder()->layout('admin_portal');
 		$seller_id=$this->Auth->User('id');
 		$user_role=$this->Auth->User('user_role');
 		$location_id=$this->Auth->User('location_id');
@@ -79,7 +79,7 @@ class OrdersController extends AppController
 	
 	public function orderDeliver($id = null)
     { 
-		$this->viewBuilder()->layout('super_admin_layout');
+		$this->viewBuilder()->layout('admin_portal');
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
 		//$location_id=$this->Auth->User('location_id'); pr($city_id); exit;
@@ -218,13 +218,13 @@ class OrdersController extends AppController
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
-    public function add()
+    public function add($ids=null)
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		//$location_id=$this->Auth->User('location_id'); 
 		$state_id=$this->Auth->User('state_id'); 
-		$this->viewBuilder()->layout('super_admin_layout');
+		$this->viewBuilder()->layout('admin_portal');
         $order = $this->Orders->newEntity();
 		$CityData = $this->Orders->Cities->get($city_id);
 		$StateData = $this->Orders->Cities->States->get($CityData->state_id);
@@ -237,7 +237,20 @@ class OrdersController extends AppController
 		//pr($order_no); exit;
 		//pr($voucher_no); exit;
 		
+		$this->loadmodel('SalesOrders');
+		$sales_orders=$this->SalesOrders->find()->where(['SalesOrders.id'=>$ids])->contain(['SalesOrderRows'])->first();
+		
         if ($this->request->is('post')) {
+			
+			if(!empty($ids)){
+			$query1 = $this->Orders->SalesOrders->query();
+							$query1->update()
+							->set(['status'=>'Yes'])
+							->where(['id'=>$ids])
+							->execute();
+			}
+			
+			
             $order = $this->Orders->patchEntity($order, $this->request->getData());
 			$Voucher_no = $this->Orders->find()->select(['voucher_no'])->where(['Orders.city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first(); 
 			if($Voucher_no){$voucher_no=$Voucher_no->voucher_no+1;}
@@ -248,10 +261,10 @@ class OrdersController extends AppController
 			$order->order_status="Pending";
 			$order->transaction_date=date('Y-m-d',strtotime($order->transaction_date));
 			$Custledgers = $this->Orders->SellerLedgers->get($order->party_ledger_id,['contain'=>['Customers'=>['Cities']]]);
-			 if ($this->Orders->save($order)) { 
+			 if ($this->Orders->save($order)) {
 			
 					if($order->order_type=="Credit"){
-							
+					
 						//	Party/Customer Ledger Entry
 						$AccountingEntrie = $this->Orders->AccountingEntries->newEntity(); 
 						$AccountingEntrie->ledger_id=$order->party_ledger_id;
@@ -783,7 +796,7 @@ class OrdersController extends AppController
 		
 		//pr($items); exit;
 		
-        $this->set(compact('order', 'locations', 'customers', 'drivers', 'customerAddresses', 'promotionDetails', 'deliveryCharges', 'deliveryTimes', 'cancelReasons','order_no','partyOptions','Accountledgers','items'));
+        $this->set(compact('ids', 'sales_orders', 'order', 'locations', 'customers', 'drivers', 'customerAddresses', 'promotionDetails', 'deliveryCharges', 'deliveryTimes', 'cancelReasons','order_no','partyOptions','Accountledgers','items'));
     }
 
     /**
@@ -798,7 +811,7 @@ class OrdersController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
-		$this->viewBuilder()->layout('super_admin_layout');
+		$this->viewBuilder()->layout('admin_portal');
 		$location_id = $this->request->query('location_id');
 		$from_date = $this->request->query('from_date');
 		$to_date   = $this->request->query('to_date');

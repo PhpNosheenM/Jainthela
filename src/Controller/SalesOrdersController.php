@@ -33,12 +33,12 @@ class SalesOrdersController extends AppController
 		$location_id=$this->Auth->User('location_id');
 		
         $this->paginate = [
-            'contain' => ['SalesOrderRows'=>['ItemVariations'], 'Customers', 'Cities'],
+            'contain' => ['SalesOrderRows'=>['ItemVariations'], 'Customers',  'Cities'],
 			'limit' => 20
         ];
-		
-        $salesOrders = $this->paginate($this->SalesOrders);
-		
+		$sales=$this->SalesOrders->find()->where(['SalesOrders.city_id'=>$city_id])->order(['SalesOrders.id'=>'DESC']);
+        $salesOrders = $this->paginate($sales);
+		 
 		$paginate_limit=$this->paginate['limit'];
         $this->set(compact('salesOrders','paginate_limit'));
     }
@@ -154,6 +154,38 @@ class SalesOrdersController extends AppController
 			$account_ids = explode(",",trim($account_ids,','));
 			$Accountledgers = $this->SalesOrders->Ledgers->find('list')->where(['Ledgers.accounting_group_id IN' =>$account_ids]);
         }
+		
+		
+		
+		
+		
+		
+		
+		
+		$partyParentGroups = $this->SalesOrders->AccountingGroups->find()
+						->where(['AccountingGroups.
+						sale_invoice_party'=>'1','AccountingGroups.city_id'=>$city_id]); 
+		$partyGroups=[];
+		foreach($partyParentGroups as $partyParentGroup)
+		{
+			$accountingGroups = $this->SalesOrders->AccountingGroups
+			->find('children', ['for' => $partyParentGroup->id])->toArray(); 
+			$partyGroups[]=$partyParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$partyGroups[]=$accountingGroup->id;
+			}
+		}  
+		if($partyGroups)
+		{  
+			$Partyledgers = $this->SalesOrders->SellerLedgers->find()
+							->where(['SellerLedgers.accounting_group_id IN' =>$partyGroups])
+							->contain(['Customers'=>['Cities']]);
+        } 
+		$partyOptions=[];
+		foreach($Partyledgers as $Partyledger){  	
+			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id,'city_id'=>$Partyledger->customer->city->id,'state_id'=>$Partyledger->customer->city->state_id,'bill_to_bill_accounting'=>$Partyledger->bill_to_bill_accounting,'customer_id'=>$Partyledger->customer_id];
+		}
+		
 		
 		//pr($items); exit;
 		

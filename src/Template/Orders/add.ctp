@@ -8,37 +8,48 @@
 				<div class="panel-heading">
 					<h3 class="panel-title"><strong> Order </strong></h3>
 				</div>
-			
+			<?php //pr($sales_orders->customer_id); ?>
 				<div class="panel-body">    
 					<div class="row">
 						<div class="col-md-3">
 							<div class="form-group">
 								<label class=" control-label">Order No</label>
-								<div class="">                                            
+								<div class="">
 									
 									<?= $this->Form->control('order_no',['class'=>'form-control','placeholder'=>'','label'=>false,'value'=>$order_no,'readonly']) ?>
 								</div>
 							</div>
 							<div class="form-group">
 								<label class=" control-label">Customer</label>
-								<div class="">                                            
-									<?= $this->Form->select('party_ledger_id',$partyOptions,['empty'=>'---Select--','class'=>'form-control select','label'=>false]) ?>
+								<div class="">  
+									 
+										<?= $this->Form->select('party_ledger_id',$partyOptions,['empty'=>'---Select--','class'=>'form-control select','label'=>false,'value'=>@$sales_orders->sales_ledger_id]) ?>
+										
+									<?php if(!empty($ids)){
+									$transaction_date=date('d-m-Y', strtotime($sales_orders->transaction_date));
+									$narration=$sales_orders->narration;
+									$sales_ledger_id=$sales_orders->sales_ledger_id;
+									  } ?>
 								</div>
 							</div>
 						
-							
+						
 						</div>
 						<div class="col-md-3">
 							<div class="form-group">
 								<label class=" control-label">Transaction Date </label>
-								<div class="">                                            
+								<div class="">       
+									<?php if(empty($ids)){ ?>		
 									<?= $this->Form->control('transaction_date',['class'=>'form-control datepicker','placeholder'=>'Transaction Date','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>date("d-m-Y")]) ?>
+									<?php }else{ ?>
+										<?= $this->Form->control('transaction_date',['class'=>'form-control datepicker','placeholder'=>'Transaction Date','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>$transaction_date]) ?>
+									<?php } ?>
 								</div>
 							</div>
 							<div class="form-group">
 								<label class=" control-label">Sales Account</label>
-								<div class="">                                            
-									<?= $this->Form->select('sales_ledger_id',$Accountledgers,['class'=>'form-control select','label'=>false]) ?>
+								<div class="">		
+									<?= $this->Form->select('sales_ledger_id',$Accountledgers,['class'=>'form-control select','label'=>false, 'value'=>@$sales_ledger_id]) ?>
 								</div>
 							</div>
 							
@@ -47,7 +58,7 @@
 						<div class="form-group">
 								<label class=" control-label">Narration</label>
 								<div class=""> 
-									<?= $this->Form->control('narration',['class'=>'form-control','placeholder'=>'Narration','label'=>false,'rows'=>'6']) ?>
+									<?= $this->Form->control('narration',['class'=>'form-control','placeholder'=>'Narration','label'=>false,'rows'=>'6','value'=>@$narration]) ?>
 								</div>
 							</div>
 						</div>
@@ -77,18 +88,60 @@
 									</tr>
 								</thead>
 								<tbody class="MainTbody">  
-									
+								<?php if(!empty($ids)){ 
+								//pr($sales_orders->sales_order_rows);
+										foreach($sales_orders->sales_order_rows as $sales_order_row){
+											@$g++;
+								?>
+									<tr class="MainTr">
+			<td  valign="top"><?php echo $g; ?></td>
+			<td  valign="top" class="itemList"> 
+				<?= $this->Form->select('item_variation_id',$items,['empty'=>'--select--','style'=>'','class'=>'form-control item','label'=>false,'readonly', 'value'=>$sales_order_row->item_variation_id]) ?>
+				<?= $this->Form->control('item_id',['type'=>'hidden','class'=>'form-control item_id','label'=>false,'readonly', 'value'=>$sales_order_row->item_id]) ?>
+			</td>
+			
+			<td  valign="top">
+				<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false, 'value'=>$sales_order_row->quantity]) ?>
+				<span class="itemQty" style="font-size:10px;"></span>
+			</td>
+			<td valign="top">
+				<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false, 'value'=>$sales_order_row->rate]) ?>
+			</td>
+			
+			<td valign="top">
+				<?= $this->Form->control('taxable_value',['class'=>'form-control taxable_value','label'=>false,'readonly', 'value'=>$sales_order_row->amount]) ?>
+			</td>
+			<td valign="top">
+				<?= $this->Form->control('gst_percentage',['class'=>'form-control gst_percentage','label'=>false,'readonly', 'value'=>$sales_order_row->gst_percentage]) ?>
+				<?= $this->Form->control('gst_figure_id',['type'=>'hidden','class'=>'form-control gst_figure_id','label'=>false,'readonly', 'value'=>$sales_order_row->gst_figure_id]) ?>
+				<span class="gstAmt" style=" text-align:left;font-size:13px;"></span>
+			</td>
+			<td valign="top">
+				<?= $this->Form->control('gst_value',['class'=>'form-control gst_value','label'=>false,'readonly', 'value'=>$sales_order_row->gst_value]) ?>
+			</td>
+			
+			<td valign="top">
+				<?= $this->Form->control('net_amount',['class'=>'form-control net_amount','label'=>false,'readonly','value'=>$sales_order_row->net_amount]) ?>
+			</td>
+			
+			<td valign="top"  >
+				<a class="btn btn-primary  btn-condensed btn-sm add_row" role="button" ><i class="fa fa-plus"></i></a>
+				<a class="btn btn-danger  btn-condensed btn-sm delete_row " role="button" ><i class="fa fa-times"></i></a>
+			</td>
+		</tr>
+								
+								<?php } } ?>	
 								</tbody>
 								<tfoot>
 									
 									<tr>
 										<td colspan="7" style="text-align:right;">Total Taxable</td>
-										<td colspan="2" style="text-align:right;"><?= $this->Form->control('total_amount',['class'=>'form-control total_taxable_value','label'=>false,'readonly']) ?></td>
+										<td colspan="2" style="text-align:right;"><?= $this->Form->control('total_amount',['class'=>'form-control total_taxable_value','label'=>false,'readonly','value'=>@$sales_orders->total_amount]) ?></td>
 									</tr>
 									
 									<tr>
 										<td colspan="7" style="text-align:right;">GST Amount</td>
-										<td colspan="2" style="text-align:right;"><?= $this->Form->control('total_gst',['class'=>'form-control gst_amt','label'=>false,'readonly']) ?></td>
+										<td colspan="2" style="text-align:right;"><?= $this->Form->control('total_gst',['class'=>'form-control gst_amt','label'=>false,'readonly','value'=>@$sales_orders->total_gst]) ?></td>
 									</tr>
 									<tr>
 										<td colspan="2" style="text-align:right;">
@@ -105,7 +158,7 @@
 											</div>
 										</td>
 										<td colspan="5" style="text-align:right;">Total Amount</td>
-										<td colspan="2" style="text-align:right;"><?= $this->Form->control('grand_total',['class'=>'form-control total_amt','label'=>false,'readonly']) ?></td>
+										<td colspan="2" style="text-align:right;"><?= $this->Form->control('grand_total',['class'=>'form-control total_amt','label'=>false,'readonly','value'=>@$sales_orders->grand_total]) ?></td>
 									</tr>
 								</tfoot>
 							</table>
@@ -173,6 +226,7 @@
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 <?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
 <?php
+if(empty($ids)){
    $js="var jvalidate = $('#jvalidate').validate({
 		ignore: [],
 		rules: {                                            
@@ -201,7 +255,9 @@
 			});
 			
 		});
-		addMainRow();
+		 
+			addMainRow(); 
+		 
 		$(document).on('click','.add_row',function(){
 			addMainRow();
 			renameRows();
@@ -316,5 +372,152 @@
 	
 		
 		";  
+}else{
+	$js="var jvalidate = $('#jvalidate').validate({
+		ignore: [],
+		rules: {                                            
+				party_ledger_id: {
+						required: true,
+				},
+				sales_ledger_id: {
+						required: true,
+				},
+				
+			}                                        
+		});
+		
+		$(document).on('change','.seller_ledger_id',function(){
+			var seller_id=$('option:selected', this).attr('seller_id');
+			var url='".$this->Url->build(["controller" => "PurchaseInvoices", "action" => "SelectItemSellerWise"])."';
+			url=url+'/'+seller_id
+			$.ajax({
+				url: url,
+				type: 'GET'
+			}).done(function(response) {
+				//$('#sampleTable tbody tr.MainTr').remove();
+				var t=$('.MainTbody tr').remove();
+				$('.itemList').html(response);
+				addMainRow();
+			});
+			
+		});
+		 
+			renameRows(); 
+		 
+		$(document).on('click','.add_row',function(){
+			addMainRow();
+			renameRows();
+		});
+		
+		function addMainRow(){
+			var tr=$('#sampleTable tbody').html();
+			$('.main_table tbody').append(tr);
+			renameRows();
+		}
+		
+		$(document).on('click','.delete_row',function(){
+			var t=$(this).closest('tr').remove();
+			renameRows();
+			calculation();
+		});
+		
+		$(document).on('keyup','.rate',function(){
+			calculation();
+		});
+		$(document).on('keyup','.quantity',function(){
+			calculation();
+		});
+		
+		$(document).on('change','.gst_percentage',function(){
+			calculation();
+		});
+		
+		
+		$(document).on('change','.item',function(){ 
+			var gst_value=$(this).find('option:selected', this).attr('gst_value'); 
+			var sale_rate=$(this).find('option:selected', this).attr('sale_rate'); 
+			var gst_figure_id=$(this).find('option:selected', this).attr('gst_figure_id');  
+			var item_id=$(this).find('option:selected', this).attr('item_id');  
+			var current_stock=$(this).find('option:selected', this).attr('current_stock');  
+			$(this).closest('tr').find('.item_id').val(item_id);
+			$(this).closest('tr').find('.gst_percentage').val(gst_value);
+			$(this).closest('tr').find('.gst_figure_id').val(gst_figure_id);
+			$(this).closest('tr').find('.rate').val(sale_rate);
+			$(this).closest('tr').find('.quantity').attr('max',current_stock);
+			calculation();
+		});
+		
+		$(document).on('change','.gst_type',function(){
+			calculation();
+		});
+		
+		function renameRows(){ 
+			var i=0; 
+			$('.main_table tbody tr').each(function(){
+				$(this).attr('row_no',i);
+				$(this).find('td:nth-child(1)').html(++i); i--;
+				$(this).find('input.item_id ').attr({name:'order_details['+i+'][item_id]',id:'order_details['+i+'][item_id]'})
+				$(this).find('select.item ').attr({name:'order_details['+i+'][item_variation_id]',id:'order_details['+i+'][item_variation_id]'}).rules('add', 'required');
+				$(this).find('.quantity ').attr({name:'order_details['+i+'][quantity]',id:'order_details['+i+'][quantity]'}).rules('add', 'required');
+				$(this).find('.rate ').attr({name:'order_details['+i+'][rate]',id:'order_details['+i+'][rate]'}).rules('add', 'required');
+				$(this).find('.taxable_value ').attr({name:'order_details['+i+'][amount]',id:'order_details['+i+'][amount]'});
+				$(this).find('.gst_percentage ').attr({name:'order_details['+i+'][gst_percentage]',id:'order_details['+i+'][gst_percentage]'});
+				$(this).find('.gst_figure_id ').attr({name:'order_details['+i+'][gst_figure_id]',id:'order_details['+i+'][gst_figure_id]'});
+				$(this).find('.gst_value ').attr({name:'order_details['+i+'][gst_value]',id:'order_details['+i+'][gst_value]'});
+				$(this).find('.net_amount ').attr({name:'order_details['+i+'][net_amount]',id:'order_details['+i+'][net_amount]'});
+				i++;
+			});
+		}
+		function calculation(){
+			var total_amount=0;
+			var total_gst=0;
+			var total_taxable_value=0;
+			
+			
+			$('.main_table tbody tr').each(function(){
+					var qty=$(this).find('.quantity').val();
+					var rate=$(this).find('.rate').val();
+					var quantity_factor=$(this).find('option:selected', this).attr('quantity_factor');
+					var commission=$(this).find('option:selected', this).attr('commission');
+					var unit=$(this).find('option:selected', this).attr('unit');
+					var item_id=$(this).find('option:selected', this).attr('item_id');
+					$(this).find('.item_id').val(item_id);
+					var total_qty=quantity_factor*qty;
+					$(this).find('.itemQty').html(total_qty +' '+ unit);
+					var taxable_value=qty*rate;
+					$(this).find('.taxable_value').val(taxable_value);
+					var gst_percentage=parseFloat($(this).find('.gst_percentage').val()); 
+					
+					if(!gst_percentage){
+						gst_rate=0;
+					}else{ 
+						gst_rate=round(round(taxable_value*gst_percentage)/100,2);
+					}
+					total_gst=total_gst+gst_rate;
+					$(this).find('.gst_value').val(gst_rate);
+					var net_amount=gst_rate+taxable_value;
+					var net_amount1=round(net_amount,2);
+					$(this).find('.net_amount').val(net_amount1);
+					total_taxable_value=total_taxable_value+taxable_value;
+					//total_gst=total_gst+gst_rate;
+					total_amount=total_amount+net_amount1;
+					var per_item_purchase_rate=net_amount1/qty;
+					$(this).find('.purchase_rate').val(per_item_purchase_rate);
+					var commission_rate=(per_item_purchase_rate*commission)/100;
+					var per_item_sales_rate=round(per_item_purchase_rate+commission_rate,2);
+					$(this).find('.sales_rate').val(per_item_sales_rate);
+					$(this).find('.mrp').val(per_item_sales_rate);
+			
+				$('.total_taxable_value').val(round(total_taxable_value,2));
+				$('.gst_amt').val(round(total_gst,2));
+				$('.total_amt').val(round(total_amount,2));
+				
+			});
+		}
+		
+	
+		
+		";  
+}
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		
 ?>
