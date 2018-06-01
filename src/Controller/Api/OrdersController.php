@@ -244,17 +244,9 @@ class OrdersController extends AppController
                 $location_id = $value->location_id;
               }
             }
-            $order = $this->Orders->newEntity();
-        		$LocationData = $this->Orders->Locations->get($location_id);
-        		$Voucher_no = $this->Orders->find()->select(['voucher_no'])->where(['Orders.location_id'=>$location_id])->order(['voucher_no' => 'DESC'])->first();
-        		if($Voucher_no){
-        			$voucher_no=$Voucher_no->voucher_no+1;
-        		}
-        		else
-        		{
-        			$voucher_no=1;
-        		}
-            $this->loadModel('Carts');
+		
+			$order = $this->Orders->newEntity();
+        	$this->loadModel('Carts');
             $carts_data=$this->Carts->find()->where(['customer_id'=>$customer_id])->contain(['ItemVariations'=>['Items']]);
             $i=0;
               foreach($carts_data as $carts_data_fetch)
@@ -271,12 +263,33 @@ class OrdersController extends AppController
 			
 			 //$sales_ledgers = $this->Orders->Ledgers->find()->select(['id'])->where(['sales_account'=>1])->first()->toArray();
             $cash_bank = $this->Orders->Ledgers->find()->select(['id'])->where(['cash'=>1])->first()->toArray();
-            $order = $this->Orders->patchEntity($order, $this->request->getData());
+			//$total_amount=
+			//pr($this->request->data['grand_total']); exit;
+			$this->request->data['total_amount']=$this->request->data['grand_total'];
+			$this->request->data['grand_total']=$this->request->data['payableAmount'];
+            $order = $this->Orders->patchEntity($order, $this->request->getData()); 
+			 
+			$CityData = $this->Orders->Cities->get($order->city_id); 
+				$StateData = $this->Orders->Cities->States->get($CityData->state_id);
+        		$Voucher_no = $this->Orders->find()->select(['voucher_no'])->where(['Orders.city_id'=>$order->city_id])->order(['voucher_no' => 'DESC'])->first();
+        		if($Voucher_no){
+        			$voucher_no=$Voucher_no->voucher_no+1;
+        		}
+        		else
+        		{
+        			$voucher_no=1;
+        		}
+			$order_no=$CityData->alise_name.'/'.$voucher_no;
+			$order_no=$StateData->alias_name.'/'.$order_no;
+			
+			
+			$order->order_no = $order_no;
 			$order->voucher_no = $voucher_no;
             $order->order_date = date('Y-m-d');
             $order->location_id = $location_id;
             //$order->sales_ledger_id = $sales_ledgers['id'];
             $order->order_status = 'placed';
+
 			$accountLedgers = $this->Orders->AccountingGroups->find()->where(['AccountingGroups.sale_invoice_sales_account'=>1,'AccountingGroups.city_id'=>$order->city_id])->first();
 			$salesLedger = $this->Orders->Ledgers->find()->where(['Ledgers.accounting_group_id' =>$accountLedgers->id,'city_id'=>$order->city_id])->first();
 			$order->sales_ledger_id=$salesLedger->id;
@@ -287,64 +300,129 @@ class OrdersController extends AppController
 				$LedgerData = $this->Orders->Ledgers->find()->where(['Ledgers.cash' =>'1','Ledgers.city_id'=>$order->city_id])->first();
 				$order->party_ledger_id=$LedgerData->id;
 			}  
-			//pr($order); exit;
-			if($order->order_type=="Online"){
-				// Cash Account Entry 
-					$AccountingEntrie = $this->Orders->AccountingEntries->newEntity(); 
-					$AccountingEntrie->ledger_id=$order->party_ledger_id;
-					$AccountingEntrie->debit=$order->grand_total;
-					$AccountingEntrie->credit=0;
-					$AccountingEntrie->transaction_date=$order->order_date;
-					$AccountingEntrie->city_id=$order->city_id;
-					$AccountingEntrie->entry_from="App";
-					$AccountingEntrie->order_id=$order->id;  
-					//$this->Orders->AccountingEntries->save($AccountingEntrie);
-					
-					// Sales Account Entry 
-					$AccountingEntrie = $this->Orders->AccountingEntries->newEntity(); 
-					$AccountingEntrie->ledger_id=$order->sales_ledger_id;
-					$AccountingEntrie->credit=$order->total_amount;
-					$AccountingEntrie->debit=0;
-					$AccountingEntrie->transaction_date=$order->order_date;
-					$AccountingEntrie->city_id=$order->city_id;
-					$AccountingEntrie->entry_from="Web";
-					$AccountingEntrie->order_id=$order->id; 
-					//$this->Orders->AccountingEntries->save($AccountingEntrie);
-					
-					foreach($order->order_details as $order_detail){ 
-						$ItemData = $this->Orders->Items->find()->where(['Items.id'=>$order_detail->item_id])->contain(['GstFigures'])->first();
-						$gstper=$ItemData->gst_figure->tax_percentage;
-						pr($order_detail->amount*$gstper/100);exit;
-						
-						$gstLedgerCGST = $this->Orders->Ledgers->find()
-								->where(['Ledgers.gst_figure_id' =>$ItemData->gst_figure_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'CGST','city_id'=>$order->city_id])->first();
-					pr($ItemData); exit;
-					}
-				echo"rfrf";	exit;
+			foreach($order->order_details as $order_detail){ 
+				$ItemData = $this->Orders->Items->find()->where(['Items.id'=>$order_detail->item_id])->contain(['GstFigures'])->first();
+							$gstper=$ItemData->gst_figure->tax_percentage;
+							$gst_value=$order_detail->amount*$gstper/100;
+							$gstAmtdata=$gst_value/2;
+							$gstAmtInsert=round($gstAmtdata,2);
+							pr($gstAmtInsert);
 			}
 			exit;
-			//pr($order); exit;
-            if ($orders = $this->Orders->save($order)) {
-
-
-            /*  foreach ($orders->order_details as $order_detail) {
-                  $rate = $order_detail->rate;
-                  $gstDatas = $this->Orders->OrderDetails->ItemVariations->find()
-                  ->contain(['Items'])->where(['ItemVariations.id'=>$order_detail->item_variation_id]);
-                  if(!empty($gstDatas))
-                  {
-                    foreach ($gstDatas as $gstData) {
-                      $gst_id = $gstData->item->gst_figure_id;
-                    }
-                  }
-
-                  $gstfigures = $this->Orders->GstFigures->find()->select(['id'])->where(['GstFigures.id'=>$gst_id]);
-                  $gstledgers = $this->Orders->Ledgers->find()->select(['id'])->where(['Ledgers.gst_figure_id'=>$gstfigures['id']]);
-
-                  $AccountingEntries = $this->Orders->AccountingEntries->newEntity();
-              } */
-
-
+			if ($orders = $this->Orders->save($order)) {
+				if($order->order_type=="Online"){
+					// Cash Account Entry 
+						$AccountingEntrie = $this->Orders->AccountingEntries->newEntity(); 
+						$AccountingEntrie->ledger_id=$order->party_ledger_id;
+						$AccountingEntrie->debit=$order->grand_total;
+						$AccountingEntrie->credit=0;
+						$AccountingEntrie->transaction_date=$order->order_date;
+						$AccountingEntrie->city_id=$order->city_id;
+						$AccountingEntrie->entry_from="App";
+						$AccountingEntrie->order_id=$order->id;  
+						$this->Orders->AccountingEntries->save($AccountingEntrie);
+						
+						// Sales Account Entry 
+						$AccountingEntrie = $this->Orders->AccountingEntries->newEntity(); 
+						$AccountingEntrie->ledger_id=$order->sales_ledger_id;
+						$AccountingEntrie->credit=$order->total_amount;
+						$AccountingEntrie->debit=0;
+						$AccountingEntrie->transaction_date=$order->order_date;
+						$AccountingEntrie->city_id=$order->city_id;
+						$AccountingEntrie->entry_from="App";
+						$AccountingEntrie->order_id=$order->id; 
+						$this->Orders->AccountingEntries->save($AccountingEntrie);
+						
+						if($order->delivery_charge_amount > 0){
+								$TransportLedger = $this->Orders->Ledgers->find()->where(['Ledgers.transport' =>'Receive','Ledgers.city_id'=>$order->city_id])->first();
+									$AccountingEntrie1 = $this->Orders->AccountingEntries->newEntity();
+									$AccountingEntrie1->ledger_id=$TransportLedger->id;
+									$AccountingEntrie1->credit=$order->delivery_charge_amount;
+									$AccountingEntrie1->debit=0;
+									$AccountingEntrie1->transaction_date=$order->order_date;
+									$AccountingEntrie1->city_id=$order->city_id;
+									$AccountingEntrie1->entry_from="App";
+									$AccountingEntrie1->order_id=$order->id; pr($TransportLedger);
+									$this->Orders->AccountingEntries->save($AccountingEntrie1);
+									
+							}
+						
+						foreach($order->order_details as $order_detail){ 
+							$ItemData = $this->Orders->Items->find()->where(['Items.id'=>$order_detail->item_id])->contain(['GstFigures'])->first();
+							$gstper=$ItemData->gst_figure->tax_percentage;
+							$gst_value=$order_detail->amount*$gstper/100;
+							$gstAmtdata=$gst_value/2;
+							$gstAmtInsert=round($gstAmtdata,2);
+							
+							$gstLedgerCGST = $this->Orders->Ledgers->find()->where(['Ledgers.gst_figure_id' =>$ItemData->gst_figure_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'CGST','city_id'=>$order->city_id])->first();
+									
+							//Accounting Entries for CGST//
+							$gstLedgerCGST = $this->Orders->Ledgers->find()
+							->where(['Ledgers.gst_figure_id' =>$ItemData->gst_figure_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'CGST','city_id'=>$order->city_id])->first();
+							$AccountingEntrieCGST = $this->Orders->AccountingEntries->newEntity();
+							$AccountingEntrieCGST->ledger_id=$gstLedgerCGST->id;
+							$AccountingEntrieCGST->credit=$gstAmtInsert;
+							$AccountingEntrieCGST->debit=0;
+							$AccountingEntrieCGST->transaction_date=$order->order_date;
+							$AccountingEntrieCGST->city_id=$order->city_id;
+							$AccountingEntrieCGST->entry_from="App";
+							$AccountingEntrieCGST->order_id=$order->id;
+							if($gstAmtInsert > 0){
+								$this->Orders->AccountingEntries->save($AccountingEntrieCGST);
+							}
+							
+							//Accounting Entries for SGST//
+							 $gstLedgerSGST = $this->Orders->Ledgers->find()
+							->where(['Ledgers.gst_figure_id' =>$ItemData->gst_figure_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'SGST','city_id'=>$order->city_id])->first();
+							$AccountingEntrieSGST = $this->Orders->AccountingEntries->newEntity();
+							$AccountingEntrieSGST->ledger_id=$gstLedgerSGST->id;
+							$AccountingEntrieSGST->credit=$gstAmtInsert;
+							$AccountingEntrieSGST->debit=0;
+							$AccountingEntrieSGST->transaction_date=$order->order_date;
+							$AccountingEntrieSGST->city_id=$order->city_id;
+							$AccountingEntrieSGST->entry_from="App";
+							$AccountingEntrieSGST->order_id=$order->id;  
+							if($gstAmtInsert > 0){
+								$this->Orders->AccountingEntries->save($AccountingEntrieSGST);
+							}
+							
+							$ItemVariationData = $this->Orders->OrderDetails->ItemVariations->get($order_detail->item_variation_id);
+							$current_stock=$ItemVariationData->current_stock-$order_detail->quantity;pr($ItemVariationData->current_stock);
+							//pr($current_stock); exit; 
+							$out_of_stock="No";
+							$ready_to_sale="Yes";
+							if($current_stock <= 0){
+								$ready_to_sale="No";
+								$out_of_stock="Yes";
+							}
+							//pr($current_stock); exit;
+							$query = $this->Orders->OrderDetails->ItemVariations->query();
+							$query->update()
+							->set(['current_stock'=>$current_stock,'out_of_stock'=>$out_of_stock,'ready_to_sale'=>$ready_to_sale])
+							->where(['id'=>$order_detail->item_variation_id])
+							->execute(); 
+				
+						}
+					
+				}else if($order->order_type=="COD"){
+						foreach($order->order_details as $order_detail){
+							$ItemVariationData = $this->Orders->OrderDetails->ItemVariations->get($order_detail->item_variation_id);
+							$current_stock=$ItemVariationData->current_stock-$order_detail->quantity;pr($ItemVariationData->current_stock);
+							//pr($order_detail->item_variation_id);
+							$out_of_stock="No";
+							$ready_to_sale="Yes";
+							if($current_stock <= 0){
+								$ready_to_sale="No";
+								$out_of_stock="Yes";
+							}
+							//pr($current_stock); exit;
+							$query = $this->Orders->OrderDetails->ItemVariations->query();
+							$query->update()
+							->set(['current_stock'=>$current_stock,'out_of_stock'=>$out_of_stock,'ready_to_sale'=>$ready_to_sale])
+							->where(['id'=>$order_detail->item_variation_id])
+							->execute(); 
+						}
+				}
 
                 $message='Order placed successfully';
           			$success=true;

@@ -17,11 +17,8 @@ class ReceiptsController extends AppController
 	 public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-<<<<<<< HEAD
         $this->Security->setConfig('unlockedActions', ['add', 'index', 'view', 'ccavenueAdd']);
-=======
-        $this->Security->setConfig('unlockedActions', ['add', 'index', 'view', 'edit']);
->>>>>>> c3deaadc6a745e7e85036c8d78ac28f853e12c0e
+
 
     }
     /**

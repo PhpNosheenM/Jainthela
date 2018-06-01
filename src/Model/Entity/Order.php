@@ -93,6 +93,7 @@ class Order extends Entity
         'delivery_time' => true,
         'cancel_reason' => true,
         'order_details' => true,
-        'wallets' => true
+        'wallets' => true,
+        'delivery_charge_amount' => true
     ];
 }
