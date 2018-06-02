@@ -139,6 +139,12 @@ echo $this->Html->link('Close',array(),['escape'=>false,'class'=>'btn  red hidde
 					<td align="center"><b><?= h(@$sales_orders->total_amount) ?></b></td>
 				</tr>
 				
+				 
+				<tr style="background-color:#fff; border-top:1px solid #000">
+					<td colspan="5">&nbsp;</td>
+					<td align="right"><b>GST</b></td>
+					<td align="center"><b><?= h($sales_orders->total_gst) ?></b></td>
+				</tr>
 				
 				<tr style="background-color:#fff;">
 					<td colspan="5">&nbsp;</td>
@@ -160,12 +166,7 @@ echo $this->Html->link('Close',array(),['escape'=>false,'class'=>'btn  red hidde
 					<td align="center"><b><?= h(@$sales_orders->grand_total) ?></b></td>
 				</tr>
 			
-				 
-				<tr style="background-color:#fff; border-top:1px solid #000">
-					<td colspan="5">&nbsp;</td>
-					<td align="right"><b>GST</b></td>
-					<td align="center"><b><?= h($sales_orders->total_gst) ?></b></td>
-				</tr>
+				
 				 
 				
 				

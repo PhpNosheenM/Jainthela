@@ -264,7 +264,7 @@ class AppNotificationsController extends AppController
                 }
 				exit;
             }
-			 
+			 pr($appNotification); exit;
             $this->Flash->error(__('The AppNotifications could not be saved. Please, try again.'));
         }
 		

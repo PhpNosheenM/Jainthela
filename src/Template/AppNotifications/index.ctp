@@ -131,12 +131,12 @@
 										}
 									?>
 							</div>
-							<!--div class="form-group">
+							<div class="form-group">
 								<label>Status</label>
-								<?php //$options['Active'] = 'Active'; ?>
-								<?php //$options['Deactive'] = 'Deactive'; ?>
-								<?php //$this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
-					        </div-->
+								<?php $options['1'] = 'Active'; ?>
+								<?php $options['0'] = 'Deactive'; ?>
+								<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
+					        </div>
 						</div>
 						
 					</div>
