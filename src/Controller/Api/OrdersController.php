@@ -333,9 +333,9 @@ class OrdersController extends AppController
 			$p=$order->grand_total;
 			$q=round($order->grand_total);
 			$Round_off_amt=round(($p-$q),2);
-				
+			$order->grand_total=round($order->grand_total);	
 			$order->round_off=$Round_off_amt;
-			pr($order); exit;
+			//pr($order); exit;
 		
 			if ($orders = $this->Orders->save($order)) {
 				if($order->order_type=="Online"){
@@ -474,11 +474,11 @@ class OrdersController extends AppController
 							->where(['id'=>$order_detail->item_variation_id])
 							->execute(); 
 							
-							/* $query = $this->Orders->OrderDetails->query();
+							 $query = $this->Orders->OrderDetails->query();
 								$query->update()
 								->set(['gst_figure_id'=>$ItemData->gst_figure_id,'gst_percentage'=>$ItemData->gst_figure->tax_percentage,'gst_value'=>$gst_value,'net_amount'=>$order_detail->amount+@$gst_value])
 								->where(['id'=>$order_detail->id])
-								->execute(); */
+								->execute();
 						}
 					
 				}else if($order->order_type=="COD"){
