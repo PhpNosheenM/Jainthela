@@ -272,9 +272,8 @@ class ReceiptsController extends AppController
 			$receipt->city_id = $city_id;
 			$receipt->created_by = $user_id;
 			$receipt->voucher_no = $voucher_no;
-			//pr($receipt); exit;
+			pr($receipt); exit;
 		    //transaction date for receipt code start here--
-			
             if ($data=$this->Receipts->save($receipt)) {
 			
 			foreach($receipt->receipt_rows as $receipt_row)

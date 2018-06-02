@@ -236,17 +236,29 @@ class CartsController extends AppController
 			$city_id=$this->request->data('city_id');
 			$combo_offer_id = $this->request->data('combo_offer_id');
 			$isCombo = $this->request->data('isCombo');
+			
+			$isPromoCode = $this->request->data('isPromoCode');
+			$promo_category_id = $this->request->data('promo_category_id');
+			$promo_item_id = $this->request->data('promo_item_id');
+			$discount_in_percentage = $this->request->data('discount_in_percentage');
+			$discount_in_amount = $this->request->data('discount_in_amount');
+			$promo_detail_id = $this->request->data('promo_detail_id');
+			$promo_free_shipping = $this->request->data('promo_free_shipping');
+			
+			
 			$comboData = [];
 			$carts=[];
 			$remaining_wallet_amount = 0.00;
 			$grand_total = 0.00;
 			$payableAmount = 0.00;
 			$Combototal = 0.00;
+			$promo_discount = 0;	
+			$promo_amount = 0;	
 			$delivery_charge_amount = '0.00';
 			$tag=$this->request->data('tag');
 			if(!empty($city_id) && !empty($customer_id))
 			{
-					$exists = $this->Carts->Customers->exists(['id'=>$customer_id]);
+				$exists = $this->Carts->Customers->exists(['id'=>$customer_id]);
 				if($exists == 1)
 				{
 						if($tag=='add')
@@ -275,7 +287,522 @@ class CartsController extends AppController
 									$this->removeCartCommon($customer_id,$city_id,$item_variation_id);
 								}
 							}
+							else if($tag=='remove')
+							{
+								if($isCombo == 'true')
+								{
+									$this->removefetchCart($customer_id,$city_id,$combo_offer_id);
+								}else{
+									$this->removefetchCart($customer_id,$city_id,$item_variation_id);
+								}
+							}
 
+							$item_in_cart = $this->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])->count();
+							$address_availablity = $this->Carts->Customers->CustomerAddresses->find()
+							->where(['CustomerAddresses.customer_id'=>$customer_id]);
+							if(empty($address_availablity->toArray()))
+							{
+							  $address_available=false;
+							}
+							else
+							{
+							  $address_available=true;
+							}
+
+							$categories = $this->Carts->find()
+							->where(['customer_id' => $customer_id])
+							->contain(['ItemVariations'=>['ItemVariationMasters','Items'=>['Categories']]]);
+
+							$comboData = $this->Carts->find()
+							->where(['customer_id' => $customer_id])
+							->contain(['ComboOffers'=>['ComboOfferDetails']])
+							->group('Carts.combo_offer_id')->autoFields(true)->toArray();
+
+							if(empty($comboData)) { $comboData = []; }
+							else {  $Combototal = number_format(0.00, 2);
+									foreach($comboData as $combo)
+									{
+										$Combototal = number_format($Combototal + $combo->amount, 2);
+									}
+								}
+							if(!empty($categories->toArray()))
+							{
+									$category_arr = [];
+
+									foreach ($categories as $cat_date) {
+									    $cat_name = $cat_date->item_variation->item->category->name;
+									    $cat_id = $cat_date->item_variation->item->category->id;
+									    $category_arr[$cat_id] = $cat_name;
+									}
+
+									$carts_data=$this->Carts->find()
+									->where(['customer_id' => $customer_id])
+									->contain(['ItemVariations'=>['ItemVariationMasters','Items' =>['GstFigures'] ,'UnitVariations'=>['Units']]])
+									->group('Carts.item_variation_id')->autoFields(true)->toArray();
+									
+									foreach ($category_arr as $cat_key => $cat_value) {
+									  foreach ($carts_data as $cart) {
+									      $cart_category_id = $cart->item_variation->item->category_id;
+									      if($cat_key == $cart_category_id)
+									      {
+									        $category[$cat_key][] = $cart;
+									      }
+									  }
+									}
+
+									foreach ($category as $key => $value) {
+									    $carts[] = ['category_name'=>$category_arr[$key],'category'=>$value];
+									}
+
+									if(empty($carts_data))
+									{ $carts=[]; }
+							}
+
+									$Customers = $this->Carts->Customers->get($customer_id, [
+									  'contain' => ['Wallets'=>function($query){
+									    return $query->select([
+									      'total_add_amount' => $query->func()->sum('add_amount'),
+									      'total_used_amount' => $query->func()->sum('used_amount'),'customer_id',
+									    ]);
+									  }]
+									]);
+
+									if(empty($Customers->wallets))
+									{
+									  $remaining_wallet_amount= number_format(0, 2);
+									}
+									else{
+									  foreach($Customers->wallets as $Customer_data_wallet){
+									    $wallet_total_add_amount = $Customer_data_wallet->total_add_amount;
+									    $wallet_total_used_amount = $Customer_data_wallet->total_used_amount;
+									    $remaining_wallet_amount= number_format(round($wallet_total_add_amount-$wallet_total_used_amount), 2);
+									  }
+									}
+
+									
+									//pr($carts_data);exit;
+									
+									
+
+									// Calculation
+
+								
+									
+								if($isPromoCode == 'true')
+								{
+									$payableAmount = number_format(0, 2);
+									$grand_total1=0;
+									$promo_amount = 0;
+									if(!empty($carts_data))
+									{
+									$total_GST = 0;
+										foreach($carts_data as $cart_data)
+										{
+											if(!empty($promo_item_id) && $promo_item_id > 0)
+											{
+												$item_id = $cart_data->item_variation->item->id;
+												if($item_id == $promo_item_id)
+												{
+													$promo_amount +=$cart_data->amount;	
+												}												
+											}
+											else if(!empty($promo_category_id) && $promo_category_id > 0)
+											{
+												$cate_id = $cart_data->item_variation->item->category_id;
+												if($cate_id == $promo_category_id)
+												{
+													$promo_amount +=$cart_data->amount;	
+												}												
+											}
+											$grand_total1+=$cart_data->amount;
+											$grand_total_gst = $cart_data->amount;
+											//pr($grand_total_gst);
+											// GST Calculation
+											
+											$gst_percentage = 0;
+											$gst_percentage = $cart_data->item_variation->item->gst_figure->tax_percentage;
+											  
+											$total_GST += $grand_total_gst * $gst_percentage / 100; 
+										}
+										
+										if(!empty($promo_item_id) && $promo_item_id > 0)
+										{
+											if($discount_in_percentage > 0)
+											{
+												$promo_discount = $promo_amount * $discount_in_percentage / 100; 
+											}
+											else if($discount_in_amount > 0)
+											{
+												if($promo_amount > $discount_in_amount)
+												{
+													$promo_discount = $promo_amount - $discount_in_amount; 	
+												}
+											}
+										}
+										else if(!empty($promo_category_id) && $promo_category_id>0)
+										{
+											if($discount_in_percentage > 0)
+											{
+												$promo_discount = $promo_amount * $discount_in_percentage / 100; 
+											}
+											else if($discount_in_amount > 0)
+											{
+												if($promo_amount > $discount_in_amount)
+												{
+													$promo_discount = $promo_amount - $discount_in_amount; 	
+												}
+											}
+										}
+										//pr($total_GST); 
+										$total_GST = number_format($total_GST,2);
+										$grand_total_before_promoCode = number_format($grand_total1, 2);
+										$grand_total1 = $grand_total1 - $promo_discount;
+										$promo_discount=number_format($promo_discount, 2);	
+								
+									}
+									
+									if(!empty($comboData))
+									{
+										foreach($comboData as $combo)
+										{
+											$grand_total1+=$combo->amount;
+										}
+									}
+
+
+									$grand_total=number_format($grand_total1, 2);
+									$payableAmount = $payableAmount + $grand_total1 + $total_GST;
+
+									if($promo_free_shipping == 'Yes')
+									{
+										$delivery_charge_amount = "free";
+									}else
+									{
+										$delivery_charges=$this->Carts->DeliveryCharges->find()->where(['city_id'=>$city_id,'status'=>'Active']);
+
+										if(!empty($delivery_charges->toArray()))
+										{
+												foreach ($delivery_charges as $delivery_charge) {
+														if($delivery_charge->amount >= $grand_total)
+														{
+															 $delivery_charge_amount = "$delivery_charge->charge";
+															 $payableAmount = $payableAmount + $delivery_charge->charge;
+														}else
+														{
+															$delivery_charge_amount = "free";
+														}
+												}
+										}										
+									}
+									
+									$payableAmount = number_format($payableAmount,2);
+								
+								}else{
+										$total_GST = 0;
+										$payableAmount = number_format(0, 2);
+										$grand_total1=0;
+										if(!empty($carts_data))
+										{
+											foreach($carts_data as $cart_data)
+											{
+											  $grand_total1+=$cart_data->amount;
+											  $grand_total_gst =$cart_data->amount;
+											  
+												// GST Calculation
+												
+												$gst_percentage = 0;
+												$gst_percentage = $cart_data->item_variation->item->gst_figure->tax_percentage;
+												  
+												$total_GST += $grand_total_gst * $gst_percentage / 100; 
+												//$total_GST = number_format($total_GST, 2);
+											}
+											
+											
+											
+										}
+
+										if(!empty($comboData))
+										{
+											foreach($comboData as $combo)
+											{
+												$grand_total1+=$combo->amount;
+											}
+										}
+
+
+										$grand_total=number_format($grand_total1, 2);
+										$payableAmount = $payableAmount + $grand_total1 + $total_GST;
+
+										$delivery_charges=$this->Carts->DeliveryCharges->find()->where(['city_id'=>$city_id,'status'=>'Active']);
+
+										if(!empty($delivery_charges->toArray()))
+										{
+												foreach ($delivery_charges as $delivery_charge) {
+														if($delivery_charge->amount >= $grand_total)
+														{
+															 $delivery_charge_amount = "$delivery_charge->charge";
+															 $payableAmount = $payableAmount + $delivery_charge->charge;
+														}else
+														{
+															$delivery_charge_amount = "free";
+														}
+												}
+										}
+										$payableAmount = number_format($payableAmount,2);
+								}		
+							//pr($grand_total);exit;
+
+							if(empty($carts_data) && empty($comboData))
+							{
+							  $success = false;
+							  $message ='Empty Cart';
+							  $this->set(compact('success', 'message'));
+							  $this->set('_serialize', ['success', 'message']);
+							}
+							else
+							{
+							  $success = true;
+							  $message = 'Cart Data found';
+							  $this->set(compact('success', 'message','address_available','promo_discount','grand_total_before_promoCode','total_GST','grand_total','delivery_charge_amount','payableAmount','remaining_wallet_amount','carts','item_in_cart','comboData','Combototal'));
+							  $this->set('_serialize', ['success', 'message','promo_discount','grand_total_before_promoCode','total_GST','remaining_wallet_amount','grand_total','delivery_charge_amount', 'payableAmount','item_in_cart','address_available','carts','comboData','Combototal']);
+							}
+
+				}
+				else
+				{
+						$success = false;
+						$message ='Invalid Customer id';
+						$this->set(compact('success', 'message'));
+						$this->set('_serialize', ['success', 'message']);
+				}
+			}else
+			{
+				$success = false;
+				$message ='Empty City or Customer_id';
+				$this->set(compact('success', 'message'));
+				$this->set('_serialize', ['success', 'message']);
+			}
+
+		}
+
+		public function reviewOrder()
+		{
+			$customer_id = $this->request->query('customer_id');
+			$city_id = $this->request->query('city_id');
+			$categories = $this->Carts->find()
+			->where(['customer_id' => $customer_id])
+			->contain(['ItemVariations'=>['ItemVariationMasters','Items'=>['Categories']]]);
+
+			$comboData = $this->Carts->find()
+			->where(['customer_id' => $customer_id])
+			->contain(['ComboOffers'=>['ComboOfferDetails']])
+			->group('Carts.combo_offer_id')->autoFields(true)->toArray();
+
+			if(empty($comboData)) { $comboData = []; }
+			
+			if(!empty($categories->toArray()))
+			{
+					$comboData = $this->Carts->find()
+						->where(['customer_id' => $customer_id])
+						->contain(['ComboOffers'=>['ComboOfferDetails']])
+						->group('Carts.combo_offer_id')->autoFields(true)->toArray();
+
+					if(empty($comboData)) { $comboData = []; }
+
+					$category_arr = [];
+
+					foreach ($categories as $cat_date) {
+							$cat_name = $cat_date->item_variation->item->category->name;
+							$cat_id = $cat_date->item_variation->item->category->id;
+							$category_arr[$cat_id] = $cat_name;
+					}
+
+					$carts_data=$this->Carts->find()
+					->where(['customer_id' => $customer_id])
+					->contain(['ItemVariations'=>['ItemVariationMasters','Items','UnitVariations'=>['Units']]])
+					->group('Carts.item_variation_id')->autoFields(true)->toArray();
+
+					foreach ($category_arr as $cat_key => $cat_value) {
+						foreach ($carts_data as $cart) {
+								$cart_category_id = $cart->item_variation->item->category_id;
+								if($cat_key == $cart_category_id)
+								{
+									$category[$cat_key][] = $cart;
+								}
+						}
+					}
+					//pr($category);exit;
+					foreach ($category as $key => $value) {
+							$carts[] = ['category_name'=>$category_arr[$key],'category'=>$value];
+					}
+
+					if(empty($carts_data))
+					{ $carts=[]; }
+
+					$payableAmount = number_format(0, 2);
+					$grand_total1=0;
+					foreach($carts_data as $cart_data)
+					{
+						$grand_total1+=$cart_data->amount;
+					}
+
+					$grand_total=number_format(round($grand_total1), 2);
+					$payableAmount = $payableAmount + $grand_total1;
+
+					$delivery_charges=$this->Carts->DeliveryCharges->find()->where(['city_id'=>$city_id]);
+					if(!empty($delivery_charges->toArray()))
+					{
+							foreach ($delivery_charges as $delivery_charge) {
+									if($delivery_charge->amount >= $grand_total)
+									{
+										 $delivery_charge_amount = "$delivery_charge->charge";
+										 $payableAmount = $payableAmount + $delivery_charge->charge;
+									}else
+									{
+										$delivery_charge_amount = "free";
+									}
+							}
+					}
+					$payableAmount = number_format($payableAmount,2);
+
+
+			}
+
+			$delivery_dates = $this->Carts->DeliveryDates->find()->where(['city_id'=>$city_id]);
+			$sameDay = 0;
+			if(!empty($delivery_dates->toArray()))
+			{
+					foreach ($delivery_dates as $delivery_date) {
+						if($delivery_date->same_day == 'Active')
+						{
+								$sameDay = $delivery_date->next_day;
+						}else{
+								$sameDay = $delivery_date->next_day;
+						}
+					}
+			}
+			$current_date = date('Y-m-d');
+			date_default_timezone_set("Asia/Calcutta");
+			$current_time =  strtotime(date('h:i a'));
+			 $first_time = strtotime('10:00 am');
+			 $last_time = strtotime('01:00 pm');
+			 $first_time1 = strtotime('04:00 pm');
+			 $last_time1 = strtotime('07:00 pm');
+			if(($current_time >= $first_time) && ($current_time < $last_time) )
+			{
+				$where = ['DeliveryTimes.id !=' =>1];
+			}
+			else if(($current_time >= $last_time) && ($current_time < $first_time1) )
+			{
+				$where = ['DeliveryTimes.id' =>3];
+			}
+			else if(($current_time >= $first_time1) && ($current_time <= $last_time1) )
+			{
+				$where = ['DeliveryTimes.id !=' =>3];
+			}
+			else{
+				$where ='';
+			}
+			//pr($where);exit;
+			$delivery_time=$this->Carts->DeliveryTimes->find()
+			->select(['delivery_time' => $this->Carts->DeliveryTimes->find()->func()->concat(['time_from' => 'identifier','-','time_to' => 'identifier' ])])
+			->where($where)
+			->autoFields(true);
+
+			for($i=0;$i<=$sameDay;$i++)
+			{
+				$all_dates[$i] = ['date' =>date('d-m-Y', strtotime("+".$i." days")),'delivery_time'=>$delivery_time->toArray()];
+			}
+
+			//$generate_order_no=uniqid();
+			$customer_addresses=$this->Carts->Customers->CustomerAddresses->find()
+			->contain(['Cities'])
+			->where(['CustomerAddresses.customer_id' => $customer_id, 'CustomerAddresses.default_address'=>'1'])->first();
+
+			$Customers = $this->Carts->Customers->get($customer_id, [
+				'contain' => ['Wallets'=>function($query){
+					return $query->select([
+						'total_add_amount' => $query->func()->sum('add_amount'),
+						'total_used_amount' => $query->func()->sum('used_amount'),'customer_id',
+					]);
+				}]
+			]);
+			if(empty($Customers->wallets))
+			{
+				$remaining_wallet_amount= number_format(0, 2);
+			}
+			else{
+				foreach($Customers->wallets as $Customer_data_wallet){
+					$wallet_total_add_amount = $Customer_data_wallet->total_add_amount;
+					$wallet_total_used_amount = $Customer_data_wallet->total_used_amount;
+					$remaining_wallet_amount= number_format(round($wallet_total_add_amount-$wallet_total_used_amount), 2);
+				}
+			}
+			$order_no = uniqid();
+			$success = true;
+			$message ='Data found';
+
+	    $this->set(compact('success', 'message','order_no','promo_detail_id','remaining_wallet_amount','grand_total','delivery_charge_amount','payableAmount','customer_addresses','all_dates','carts','comboData'));
+	    $this->set('_serialize', ['success', 'message','order_no','promo_detail_id','remaining_wallet_amount','grand_total','delivery_charge_amount','payableAmount','customer_addresses','all_dates','carts','comboData']);
+		}
+
+		public function moveToBag()
+		{
+				$id = $this->request->data('wish_list_item_id');
+				$customer_id=$this->request->data('customer_id');
+				$city_id=$this->request->data('city_id');
+				$item_variation_id=$this->request->data('item_variation_id');
+				$combo_offer_id = $this->request->data('combo_offer_id');
+				$isCombo = $this->request->data('isCombo');
+
+				$exists = $this->Carts->WishLists->WishListItems->exists(['WishListItems.id'=>$id]);
+				if($exists==1){
+					$WishListItems= $this->Carts->WishLists->WishListItems->get($id);
+					$this->Carts->WishLists->WishListItems->delete($WishListItems);
+					$success = true;
+					$message = 'removed from wish list';
+					$this->plusAddToCart();
+				 }else{
+					 $success = false;
+					 $message = 'No record found in wish list item';
+					 $this->set(compact('success','message','item_in_cart','current_item'));
+					 $this->set('_serialize',['success','message','item_in_cart','current_item']);
+				 }
+		}
+
+
+		public function removefetchCart()
+		{
+			$item_variation_id=$this->request->data('item_variation_id');
+			$customer_id=$this->request->data('customer_id');
+			$city_id=$this->request->data('city_id');
+			$combo_offer_id = $this->request->data('combo_offer_id');
+			$isCombo = $this->request->data('isCombo');
+			
+			$comboData = [];
+			$carts=[];
+			$remaining_wallet_amount = 0.00;
+			$grand_total = 0.00;
+			$payableAmount = 0.00;
+			$Combototal = 0.00;
+			$delivery_charge_amount = '0.00';
+			$tag='cart';
+			if(!empty($city_id) && !empty($customer_id))
+			{
+					$exists = $this->Carts->Customers->exists(['id'=>$customer_id]);
+				if($exists == 1)
+				{
+					if($isCombo == 'true')
+					{
+					  $item_in_cart_deletes = $this->Carts->find()->where(['Carts.customer_id'=>$customer_id,'city_id'=>$city_id,'combo_offer_id'=>$combo_offer_id])->toArray();
+						$this->Carts->delete($item_in_cart_deletes[0]);	
+						
+					}else{
+					     $item_in_cart_deletes = $this->Carts->find()->where(['Carts.customer_id'=>$customer_id,'city_id'=>$city_id,'item_variation_id'=>$item_variation_id])->toArray();
+						$this->Carts->delete($item_in_cart_deletes[0]);	
+					}
+					  	
+				
 							$item_in_cart = $this->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])->count();
 							$address_availablity = $this->Carts->Customers->CustomerAddresses->find()
 							->where(['CustomerAddresses.customer_id'=>$customer_id]);
@@ -432,193 +959,9 @@ class CartsController extends AppController
 				$this->set('_serialize', ['success', 'message']);
 			}
 
-		}
+		}		
+		
+		
+		
 
-		public function reviewOrder()
-		{
-			$customer_id = $this->request->query('customer_id');
-			$city_id = $this->request->query('city_id');
-			$categories = $this->Carts->find()
-			->where(['customer_id' => $customer_id])
-			->contain(['ItemVariations'=>['ItemVariationMasters','Items'=>['Categories']]]);
-
-			$comboData = $this->Carts->find()
-			->where(['customer_id' => $customer_id])
-			->contain(['ComboOffers'=>['ComboOfferDetails']])
-			->group('Carts.combo_offer_id')->autoFields(true)->toArray();
-
-			if(empty($comboData)) { $comboData = []; }
-			
-			if(!empty($categories->toArray()))
-			{
-					$comboData = $this->Carts->find()
-						->where(['customer_id' => $customer_id])
-						->contain(['ComboOffers'=>['ComboOfferDetails']])
-						->group('Carts.combo_offer_id')->autoFields(true)->toArray();
-
-					if(empty($comboData)) { $comboData = []; }
-
-					$category_arr = [];
-
-					foreach ($categories as $cat_date) {
-							$cat_name = $cat_date->item_variation->item->category->name;
-							$cat_id = $cat_date->item_variation->item->category->id;
-							$category_arr[$cat_id] = $cat_name;
-					}
-
-					$carts_data=$this->Carts->find()
-					->where(['customer_id' => $customer_id])
-					->contain(['ItemVariations'=>['ItemVariationMasters','Items','UnitVariations'=>['Units']]])
-					->group('Carts.item_variation_id')->autoFields(true)->toArray();
-
-					foreach ($category_arr as $cat_key => $cat_value) {
-						foreach ($carts_data as $cart) {
-								$cart_category_id = $cart->item_variation->item->category_id;
-								if($cat_key == $cart_category_id)
-								{
-									$category[$cat_key][] = $cart;
-								}
-						}
-					}
-//pr($category);exit;
-					foreach ($category as $key => $value) {
-							$carts[] = ['category_name'=>$category_arr[$key],'category'=>$value];
-					}
-
-					if(empty($carts_data))
-					{ $carts=[]; }
-
-					$payableAmount = number_format(0, 2);
-					$grand_total1=0;
-					foreach($carts_data as $cart_data)
-					{
-						$grand_total1+=$cart_data->amount;
-					}
-
-					$grand_total=number_format(round($grand_total1), 2);
-					$payableAmount = $payableAmount + $grand_total1;
-
-					$delivery_charges=$this->Carts->DeliveryCharges->find()->where(['city_id'=>$city_id]);
-					if(!empty($delivery_charges->toArray()))
-					{
-							foreach ($delivery_charges as $delivery_charge) {
-									if($delivery_charge->amount >= $grand_total)
-									{
-										 $delivery_charge_amount = "$delivery_charge->charge";
-										 $payableAmount = $payableAmount + $delivery_charge->charge;
-									}else
-									{
-										$delivery_charge_amount = "free";
-									}
-							}
-					}
-					$payableAmount = number_format($payableAmount,2);
-
-
-			}
-
-			$delivery_dates = $this->Carts->DeliveryDates->find()->where(['city_id'=>$city_id]);
-			$sameDay = 0;
-			if(!empty($delivery_dates->toArray()))
-			{
-					foreach ($delivery_dates as $delivery_date) {
-						if($delivery_date->same_day == 'Active')
-						{
-								$sameDay = $delivery_date->next_day;
-						}else{
-								$sameDay = $delivery_date->next_day;
-						}
-					}
-			}
-			$current_date = date('Y-m-d');
-			date_default_timezone_set("Asia/Calcutta");
-			$current_time =  strtotime(date('h:i a'));
-			 $first_time = strtotime('10:00 am');
-			 $last_time = strtotime('01:00 pm');
-			 $first_time1 = strtotime('04:00 pm');
-			 $last_time1 = strtotime('07:00 pm');
-			if(($current_time >= $first_time) && ($current_time < $last_time) )
-			{
-				$where = ['DeliveryTimes.id !=' =>1];
-			}
-			else if(($current_time >= $last_time) && ($current_time < $first_time1) )
-			{
-				$where = ['DeliveryTimes.id' =>3];
-			}
-			else if(($current_time >= $first_time1) && ($current_time <= $last_time1) )
-			{
-				$where = ['DeliveryTimes.id !=' =>3];
-			}
-			else{
-				$where ='';
-			}
-			//pr($where);exit;
-			$delivery_time=$this->Carts->DeliveryTimes->find()
-			->select(['delivery_time' => $this->Carts->DeliveryTimes->find()->func()->concat(['time_from' => 'identifier','-','time_to' => 'identifier' ])])
-			->where($where)
-			->autoFields(true);
-
-			for($i=0;$i<=$sameDay;$i++)
-			{
-				$all_dates[$i] = ['date' =>date('d-m-Y', strtotime("+".$i." days")),'delivery_time'=>$delivery_time->toArray()];
-			}
-
-			$generate_order_no=uniqid();
-			$customer_addresses=$this->Carts->Customers->CustomerAddresses->find()
-			->contain(['Cities'])
-			->where(['CustomerAddresses.customer_id' => $customer_id, 'CustomerAddresses.default_address'=>'1'])->first();
-
-			$Customers = $this->Carts->Customers->get($customer_id, [
-				'contain' => ['Wallets'=>function($query){
-					return $query->select([
-						'total_add_amount' => $query->func()->sum('add_amount'),
-						'total_used_amount' => $query->func()->sum('used_amount'),'customer_id',
-					]);
-				}]
-			]);
-			if(empty($Customers->wallets))
-			{
-				$remaining_wallet_amount= number_format(0, 2);
-			}
-			else{
-				foreach($Customers->wallets as $Customer_data_wallet){
-					$wallet_total_add_amount = $Customer_data_wallet->total_add_amount;
-					$wallet_total_used_amount = $Customer_data_wallet->total_used_amount;
-					$remaining_wallet_amount= number_format(round($wallet_total_add_amount-$wallet_total_used_amount), 2);
-				}
-			}
-			$order_no = uniqid();
-			$success = true;
-			$message ='Data found';
-
-	    $this->set(compact('success', 'message','order_no','remaining_wallet_amount','generate_order_no','grand_total','delivery_charge_amount','payableAmount','customer_addresses','all_dates','carts','comboData'));
-	    $this->set('_serialize', ['success', 'message','order_no','remaining_wallet_amount','generate_order_no','grand_total','delivery_charge_amount','payableAmount','customer_addresses','all_dates','carts','comboData']);
-		}
-
-		public function moveToBag()
-		{
-				$id = $this->request->data('wish_list_item_id');
-				$customer_id=$this->request->data('customer_id');
-				$city_id=$this->request->data('city_id');
-				$item_variation_id=$this->request->data('item_variation_id');
-				$combo_offer_id = $this->request->data('combo_offer_id');
-				$isCombo = $this->request->data('isCombo');
-
-				$exists = $this->Carts->WishLists->WishListItems->exists(['WishListItems.id'=>$id]);
-				if($exists==1){
-					$WishListItems= $this->Carts->WishLists->WishListItems->get($id);
-					$this->Carts->WishLists->WishListItems->delete($WishListItems);
-					$success = true;
-					$message = 'removed from wish list';
-					$this->plusAddToCart();
-				 }else{
-					 $success = false;
-					 $message = 'No record found in wish list item';
-					 $this->set(compact('success','message','item_in_cart','current_item'));
-					 $this->set('_serialize',['success','message','item_in_cart','current_item']);
-				 }
-		}
-
-
-
-}
+} ?>

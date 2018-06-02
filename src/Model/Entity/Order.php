@@ -94,6 +94,7 @@ class Order extends Entity
         'cancel_reason' => true,
         'order_details' => true,
         'wallets' => true,
+        'discount_amount' => true,
         'delivery_charge_amount' => true
     ];
 }

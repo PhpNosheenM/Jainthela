@@ -60,6 +60,18 @@ class CartsTable extends Table
             'foreignKey' => 'unit_id',
             'joinType' => 'INNER'
         ]);
+		
+		$this->belongsTo('ComboOffersData', [
+            'className' => 'ComboOffers',
+            'foreignKey' => 'combo_offer_id',
+            'joinType' => 'LEFT'
+        ]);
+		
+		$this->belongsTo('ItemVariationsData', [
+            'className' => 'ItemVariations',
+            'foreignKey' => 'item_variation_id',
+            'joinType' => 'LEFT'
+        ]);
 
         $this->belongsTo('DeliveryCharges');
         $this->belongsTo('DeliveryDates');
