@@ -56,6 +56,7 @@ class Order extends Entity
      */
     protected $_accessible = [
         'city_id' => true,
+        'round_off' => true,
         'location_id' => true,
         'customer_id' => true,
         'party_ledger_id' => true,

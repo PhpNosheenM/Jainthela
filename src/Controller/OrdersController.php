@@ -23,7 +23,7 @@ class OrdersController extends AppController
 	   public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->Security->setConfig('unlockedActions', ['add']);
+        $this->Security->setConfig('unlockedActions', ['add', 'index', 'view']);
 
     }
     public function index()
@@ -204,13 +204,92 @@ class OrdersController extends AppController
 		//echo "addSalesInvoice";
 		exit;
 	}
-	public function view($id = null)
+	public function view($ids = null)
     {
-        $order = $this->Orders->get($id, [
-            'contain' => ['Locations', 'Customers', 'Drivers', 'CustomerAddresses', 'PromotionDetails', 'DeliveryCharges', 'DeliveryTimes', 'CancelReasons', 'OrderDetails', 'Wallets']
-        ]);
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		//$location_id=$this->Auth->User('location_id'); 
+		$state_id=$this->Auth->User('state_id'); 
+		$this->viewBuilder()->layout('admin_portal');
+        $order = $this->Orders->newEntity();
+		$CityData = $this->Orders->Cities->get($city_id);
+		$StateData = $this->Orders->Cities->States->get($CityData->state_id);
+	
+		$Voucher_no = $this->Orders->find()->select(['voucher_no'])->where(['Orders.city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
+		if($Voucher_no){$voucher_no=$Voucher_no->voucher_no+1;}
+		else{$voucher_no=1;}
+		$order_no=$CityData->alise_name.'/'.$voucher_no;
+		$order_no=$StateData->alias_name.'/'.$order_no;
+		//pr($order_no); exit;
+		//pr($voucher_no); exit;
+		
+		$this->loadmodel('SalesOrders');
+		$sales_orders=$this->Orders->find()->where(['Orders.id'=>$ids])->contain(['DeliveryTimes','OrderDetails'=>['ItemVariations'=>['ItemVariationMasters','Items','UnitVariations'=>['Units']]], 'Customers'=>['CustomerAddresses']])->first();
+		
+		
+		$partyParentGroups = $this->Orders->AccountingGroups->find()
+						->where(['AccountingGroups.
+						sale_invoice_party'=>'1','AccountingGroups.city_id'=>$city_id]); 
+		$partyGroups=[];
+		foreach($partyParentGroups as $partyParentGroup)
+		{
+			$accountingGroups = $this->Orders->AccountingGroups
+			->find('children', ['for' => $partyParentGroup->id])->toArray(); 
+			$partyGroups[]=$partyParentGroup->id;
+			foreach($accountingGroups as $accountingGroup){
+				$partyGroups[]=$accountingGroup->id;
+			}
+		}  
+		if($partyGroups)
+		{  
+			$Partyledgers = $this->Orders->SellerLedgers->find()
+							->where(['SellerLedgers.accounting_group_id IN' =>$partyGroups])
+							->contain(['Customers'=>['Cities']]);
+        } 
+		$partyOptions=[];
+		foreach($Partyledgers as $Partyledger){  	
+			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id,'city_id'=>$Partyledger->customer->city->id,'state_id'=>$Partyledger->customer->city->state_id,'bill_to_bill_accounting'=>$Partyledger->bill_to_bill_accounting,'customer_id'=>$Partyledger->customer_id];
+		}
+		
+		$accountLedgers = $this->Orders->AccountingGroups->find()->where(['AccountingGroups.sale_invoice_sales_account'=>1,'AccountingGroups.city_id'=>$city_id])->first();
 
-        $this->set('order', $order);
+		$accountingGroups2 = $this->Orders->AccountingGroups
+		->find('children', ['for' => $accountLedgers->id])
+		->find('List')->toArray();
+		$accountingGroups2[$accountLedgers->id]=$accountLedgers->name;
+		ksort($accountingGroups2);
+		if($accountingGroups2)
+		{   
+			$account_ids="";
+			foreach($accountingGroups2 as $key=>$accountingGroup)
+			{
+				$account_ids .=$key.',';
+			}
+			$account_ids = explode(",",trim($account_ids,','));
+			$Accountledgers = $this->Orders->Ledgers->find('list')->where(['Ledgers.accounting_group_id IN' =>$account_ids]);
+        }
+		
+		/* $itemList=$this->Orders->Items->find()->contain(['ItemVariations'=> function ($q) {
+								return $q
+								->where(['ItemVariations.seller_id is NULL','ItemVariations.status'=>'Active','current_stock >'=>'0'])->contain(['UnitVariations'=>['Units']]);
+								}]); */
+		$itemList=$this->Orders->Items->find()->contain(['ItemVariations'=> function ($q) {
+								return $q
+								->where(['ItemVariations.status'=>'Active','current_stock >'=>'0'])->contain(['UnitVariations'=>['Units']]);
+								}]);
+		//pr($itemList->toArray()); exit;
+		$items=array();
+		foreach($itemList as $data1){ 
+			foreach($data1->item_variations as $data){  
+				$gstData=$this->Orders->GstFigures->get($data1->gst_figure_id);
+				$merge=$data1->name.'('.@$data->unit_variation->quantity_variation.'.'.@$data->unit_variation->unit->shortname.')';
+				$items[]=['text' => $merge,'value' => $data->id,'item_id'=>$data1->id,'quantity_factor'=>@$data->unit_variation->convert_unit_qty,'unit'=>@$data->unit_variation->unit->unit_name,'gst_figure_id'=>$data1->gst_figure_id,'gst_value'=>$gstData->tax_percentage,'commission'=>@$data->commission,'sale_rate'=>$data->sales_rate,'current_stock'=>$data->current_stock];
+			}
+		}
+		
+		//pr($sales_orders); exit;
+		
+        $this->set(compact('ids', 'sales_orders', 'order', 'locations', 'customers', 'drivers', 'customerAddresses', 'promotionDetails', 'deliveryCharges', 'deliveryTimes', 'cancelReasons','order_no','partyOptions','Accountledgers','items'));
     }
 
     /**

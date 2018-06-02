@@ -55,7 +55,9 @@
 								  <?php foreach ($orders as $order): //pr($order); exit; ?>
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
-									<td><?= h($order->order_no) ?></td>
+									<td>
+										<?php echo $this->Html->link($order->order_no,['controller'=>'Orders','action' => 'view', $order->id, 'print'],['target'=>'_blank']); ?>
+									</td>
 									<td><?= h($order->party_ledger->name) ?></td>
 									<td><?= h($order->location->name) ?></td>
 									<td><?= h($order->grand_total) ?></td>

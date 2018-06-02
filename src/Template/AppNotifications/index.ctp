@@ -33,12 +33,10 @@
 										$options1['combo_description'] = 'Combo Description';
 										$options1['category_wise'] = 'Product listing Category Wise';
 										$options1['item_wise'] = 'Product listing Item Wise';
-										$options1['category_wise_combo'] = 'Combo listing Category Wise';
-										$options1['item_wise_combo'] = 'Combo listing Item Wise';
+										$options1['combo'] = 'Combo listing';
 										$options1['refer'] = 'Refer And Earn';
 										$options1['wallet'] = 'Wallet Plans';
 										$options1['bulk_booking'] = 'Bulk Booking';
-										$options1['order'] = 'Order Detail';
 										$options1['cart'] = 'Cart Listing';
 										$options1['store'] = 'Store listing';
 										$options1['store_item_wise'] = 'Store Item listing';
@@ -50,8 +48,11 @@
 									<span class="help-block"></span>
 					        </div>
 									<div class="form-group">
+										<div class="col-md-4">
+                                            <label class="check"><input type="radio" id="def"  value="3"  class="iradio" name="screen_type" checked="checked" /> Default</label>
+                                        </div>
                                         <div class="col-md-4">
-                                            <label class="check"><input type="radio" id="cat" value="1" class="iradio" name="screen_type" checked="checked" /> Category</label>
+                                            <label class="check"><input type="radio" id="cat" value="1" class="iradio" name="screen_type" /> Category</label>
                                         </div>
                                         <div class="col-md-4">
                                             <label class="check"><input type="radio" id="itm"  value="2"  class="iradio" name="screen_type"/> Item</label>
@@ -67,7 +68,7 @@
 									<br>
 									<br>
 									<br>
-									<div class="form-group" id="cat_id" >
+									<div class="form-group" id="cat_id" style="display:none !important;">
 										<label>Category</label>
 										<?= $this->Form->select('category_id',$categories,['id'=>'category_id','empty'=>'Select Categories','class'=>'form-control select','label'=>false]) ?>
 										<?php
@@ -130,12 +131,12 @@
 										}
 									?>
 							</div>
-							<div class="form-group">
+							<!--div class="form-group">
 								<label>Status</label>
-								<?php $options['Active'] = 'Active'; ?>
-								<?php $options['Deactive'] = 'Deactive'; ?>
-								<?= $this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
-					        </div>
+								<?php //$options['Active'] = 'Active'; ?>
+								<?php //$options['Deactive'] = 'Deactive'; ?>
+								<?php //$this->Form->select('status',$options,['class'=>'form-control select','label'=>false]) ?>
+					        </div-->
 						</div>
 						
 					</div>
@@ -179,29 +180,24 @@
 								<thead>
 									<tr>
 										<th><?= ('SN.') ?></th>
-										<th><?= ('Name') ?></th>
-										<th><?= ('Link Name') ?></th>
-										<th><?= ('Status') ?></th>
-										<th scope="col" class="actions"><?= __('Actions') ?></th>
+										<th><?= ('Date') ?></th>
+										<th><?= ('Image') ?></th>
+										<th><?= ('Message') ?></th>
+										<th><?= ('Type') ?></th>
+										<th><?= ('Total Send') ?></th>
 									</tr>
 								</thead>
-								<tbody>                                            
+								<tbody>
 								<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); ?>
 								
-								  <?php foreach ($appNotifications as $banner): ?>
+								  <?php foreach ($appNotifications as $data): ?>
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
-									<td><?= h($banner->name) ?></td>
-									<td><?= h($banner->link_name) ?></td>
-									<td><?= h($banner->status) ?></td>
-									
+									<td><?= h($data->created_on) ?></td>
+									<td><img src="<?php echo $data->image_app; ?>" ></td>
+									<td><?= h($data->message) ?></td>
+									<td><?= h($data->screen_type) ?></td>
 									<td class="actions">
-										<?php
-											$banner_id = $EncryptingDecrypting->encryptData($banner->id);
-										?>
-										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'index',$banner_id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
-										<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $banner_id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?'),'escape'=>false]) ?>
-									
 									</td>
 								</tr>
 								<?php endforeach; ?>
@@ -209,7 +205,7 @@
 							</table>
 				        </div>
 			    </div>
-			</div>		
+			</div>
 		</div>
 	</div>
 </div>
@@ -296,6 +292,17 @@
  				$("#category_id").selectpicker("val",dummy_category_id);
 				$("#item_id").selectpicker("val",dummy_item_id); 
 				$("#variation_id").selectpicker("val","");
+			}
+			else if(radio_value==3){
+				$("#cat_id").hide();
+				$("#itm_id").hide(); 
+				$("#combo_id").hide();
+				$("#var_id").hide();
+				
+				$("#category_id").selectpicker("val","");
+				$("#item_id").selectpicker("val","");
+				$("#variation_id").selectpicker("val","");
+				$("#combo_offer_id").selectpicker("val","");
 			}
 		});
 		';  

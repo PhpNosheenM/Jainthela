@@ -36,7 +36,7 @@ class AppNotificationsController extends AppController
 		$appNotification = $this->AppNotifications->newEntity();
 		
         $this->paginate = [
-            'contain' => ['Cities', 'Locations', 'Items', 'ItemVariations', 'ComboOffers', 'WishLists', 'Categories'],
+            'contain' => ['Cities'],
 			'limit' => 20
         ];
 		
@@ -92,7 +92,7 @@ class AppNotificationsController extends AppController
 				}
 				$appNotification->app_link=$dummy_link;
             if ($banner_data=$this->AppNotifications->save($appNotification)) {
-			 
+			
 				if(empty($web_image_error))
 				{
 					/* For Web Image */
@@ -124,6 +124,133 @@ class AppNotificationsController extends AppController
 					$dir  = WWW_ROOT .  'img'.DS.'temp'.DS.$banner_image_name;
                     $dir = $this->EncryptingDecrypting->encryptData($dir);
 				}
+					$customers_data=$this->AppNotifications->Customers->find()->where(['Customers.city_id'=>$city_id]);
+					
+					$created_link=$banner_data->app_link;
+					$message=$banner_data->message;
+					
+					$API_ACCESS_KEY='AAAAXmNqxY4:APA91bG0X6RHVhwJKXUQGNSSCas44hruFdR6_CFd6WHPwx9abUr-WsrfEzsFInJawElgrp24QzaE4ksfmXu6kmIL6JG3yP487fierMys5byv-I1agRtMPIoSqdgCZf8R0iqsnds-u4CU';
+					
+					foreach($customers_data as $custmr_data){
+						
+						$device_token=$custmr_data->token;
+						$device_token1=rtrim($device_token);
+						
+						
+						
+						
+						 if(!empty($device_token)){
+							 
+							 //$API_ACCESS_KEY='AIzaSyBMQtE5umATnqJkV4edMYQ_fR8263Zm21E';
+
+		$registrationIds =  $device_token;
+		$msg = array
+		(
+		'body' 	=> $message,
+		'title'	=> 'Jainthela Notification',
+		'icon'	=> 'myicon',/*Default Icon*/
+		'sound' => 'mySound',/*Default sound*/
+		'unread_count' => 0,
+		'message' => $message,
+		'type'=>"Announcement"
+		);
+		$data = array
+		(
+
+		"unread_count" => 0
+		);
+		$fields = array('to'=> $registrationIds,
+		'notification'=> $msg,
+		'data' => $msg
+		);
+		$headers = array(
+		'Authorization: key='.$API_ACCESS_KEY,
+		'Content-Type: application/json'
+		);
+
+		$ch = curl_init();
+		curl_setopt( $ch,CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send' );
+		curl_setopt( $ch,CURLOPT_POST, true );
+		curl_setopt( $ch,CURLOPT_HTTPHEADER, $headers );
+		curl_setopt( $ch,CURLOPT_RETURNTRANSFER, true );
+		curl_setopt( $ch,CURLOPT_SSL_VERIFYPEER, false );
+		curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $fields ) );
+		$result = curl_exec($ch );
+		curl_close( $ch );
+		pr($result); 
+		//die();
+		//return $result;
+							 
+							 
+							 
+							 
+							 
+							 
+							 
+							 
+							 
+							 
+							 
+							 /* 
+							 
+							 
+							 
+							 
+							 
+					 
+					$msg = array
+							(
+							'message'     =>$message,
+							'image'     =>'',
+							'link'    => $created_link,
+							'notification_id'    => '',
+							);
+						
+						$url = 'https://fcm.googleapis.com/fcm/send';
+						$fields = array
+						(
+							'registration_ids'     => array($device_token),
+							'data'            => @$msg,
+						);
+						$headers = array
+						(
+							'Authorization: key=' .$API_ACCESS_KEY,
+							'Content-Type: application/json'
+						);
+
+						  json_encode($fields);
+						  $ch = curl_init();
+						curl_setopt($ch, CURLOPT_URL, $url);
+						curl_setopt($ch, CURLOPT_POST, true);
+						curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+						curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+						curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+						curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+						curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+						$result = curl_exec($ch);
+						pr($result);
+						echo "<br>";
+						if ($result === FALSE) {
+							//die('FCM Send Error: ' . curl_error($ch));
+						}
+						curl_close($ch);
+						$l[]=$result;
+						//return $l;  
+						 */
+						
+						$query = $this->AppNotifications->AppNotificationCustomers->query();
+						$query->insert(['app_notification_id', 'customer_id', 'sent'])
+								->values([
+								'app_notification_id' => $banner_data->id,
+								'customer_id' => $custmr_data->id,
+								'sent' => 1
+								])
+								->execute();
+						 }
+					
+					}
+					
+				exit;
                 $this->Flash->success(__('The AppNotifications has been saved.'));
 
                 if(empty($web_image_error))
@@ -132,14 +259,16 @@ class AppNotificationsController extends AppController
                 }
                 else
                 {
+					exit;
                     return $this->redirect(['action' => 'index']);
                 }
+				exit;
             }
-			pr($appNotification); exit;
+			 
             $this->Flash->error(__('The AppNotifications could not be saved. Please, try again.'));
         }
 		
-        $appNotifications = $this->AppNotifications->find();
+        $appNotifications = $this->AppNotifications->find()->where(['AppNotifications.city_id'=>$city_id]);
 		
 		
 		$categories=$this->AppNotifications->Categories->find('list')->where(['Categories.status'=>'Active','Categories.city_id'=>$city_id]);
@@ -160,6 +289,7 @@ class AppNotificationsController extends AppController
 		
 		$appNotifications = $this->paginate($appNotifications);
 		$paginate_limit=$this->paginate['limit'];
+		//pr($appNotifications->toArray());
 		$this->set(compact('appNotifications','appNotification','paginate_limit','categories','Items','Sellers','ComboOffers','ItemVariationMasters','variation_options'));
 		 
     }
