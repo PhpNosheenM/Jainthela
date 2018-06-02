@@ -32,7 +32,7 @@
 <?php $this->set('title', 'accounting Groups'); ?>
 <div class="page-content-wrap">
         <div class="page-title">                    
-            <h2><span class="fa fa-arrow-circle-o-left"></span>Ledger</h2>
+            <h2><span class="fa fa-arrow-circle-o-left"></span> Ledger</h2>
         </div> 
     <div class="row">
                 <div class="col-md-12">
@@ -88,72 +88,67 @@
 															<tr>
 												<td>1</td>
 												<td>Customer</td>
-												<td><input type="checkbox" nm="customer" updt_id="<?php echo $accountingGroup->id; ?>" name="customer" <?php if($accountingGroup->name=='NULL'){ echo "checked"; } ?> class="check_all_item"  ></td>
+												<td><input type="checkbox" nm="customer" updt_id="<?php echo $accountingGroup->id; ?>" name="customer" <?php if($accountingGroup->name=='1'){ echo "checked"; } ?> class="check_all_item"  ></td>
                                             </tr> 
 											<tr>
 												<td>2</td>
 												<td>Vendor</td>
-												<td><input type="checkbox" <?php if($accountingGroup->vendor=='NULL'){ echo "checked"; } ?> nm="vendor" updt_id="<?php echo $accountingGroup->id; ?>" name="vendor" class="check_all_item"  ></td>
+												<td><input type="checkbox" <?php if($accountingGroup->vendor=='1'){ echo "checked"; } ?> nm="vendor" updt_id="<?php echo $accountingGroup->id; ?>" name="vendor" class="check_all_item"  ></td>
                                             </tr> 
 											<tr>
 												<td>3</td>
 												<td>seller</td>
-												<td><input type="checkbox" <?php if($accountingGroup->seller=='NULL'){ echo "checked"; } ?> nm="seller" updt_id="<?php echo $accountingGroup->id; ?>" name="seller" class="check_all_item"  ></td>
+												<td><input type="checkbox" <?php if($accountingGroup->seller=='1'){ echo "checked"; } ?> nm="seller" updt_id="<?php echo $accountingGroup->id; ?>" name="seller" class="check_all_item"  ></td>
                                             </tr> 
 											<tr>
 												<td>4</td>
 												<td>Payment Ledger</td>
-												<td><input type="checkbox" <?php if($accountingGroup->payment_ledger=='NULL'){ echo "checked"; } ?> nm="payment_ledger" updt_id="<?php echo $accountingGroup->id; ?>"  name="payment_ledger" class="check_all_item"  ></td>
+												<td><input type="checkbox" <?php if($accountingGroup->payment_ledger=='1'){ echo "checked"; } ?> nm="payment_ledger" updt_id="<?php echo $accountingGroup->id; ?>"  name="payment_ledger" class="check_all_item"  ></td>
                                             </tr>
 											<tr>
 												<td>5</td>
 												<td>Credit Note Party</td>
-												<td><input type="checkbox" <?php if($accountingGroup->credit_note_party=='NULL'){ echo "checked"; } ?> nm="credit_note_party" updt_id="<?php echo $accountingGroup->id; ?>"  name="credit_note_party" class="check_all_item"  ></td>
+												<td><input type="checkbox" <?php if($accountingGroup->credit_note_party=='1'){ echo "checked"; } ?> nm="credit_note_party" updt_id="<?php echo $accountingGroup->id; ?>"  name="credit_note_party" class="check_all_item"  ></td>
                                             </tr>
 											<tr>
 												<td>6</td>
 												<td>Receipt Ledger</td>
-												<td><input type="checkbox" <?php if($accountingGroup->receipt_ledger=='NULL'){ echo "checked"; } ?> nm="receipt_ledger" updt_id="<?php echo $accountingGroup->id; ?>"  name="receipt_ledger" class="check_all_item"  ></td>
+												<td><input type="checkbox" <?php if($accountingGroup->receipt_ledger=='1'){ echo "checked"; } ?> nm="receipt_ledger" updt_id="<?php echo $accountingGroup->id; ?>"  name="receipt_ledger" class="check_all_item"  ></td>
                                             </tr>
 											<tr>
 												<td>7</td>
 												<td>Contra Voucher Ledger</td>
-												<td><input type="checkbox" <?php if($accountingGroup->contra_voucher_ledger=='NULL'){ echo "checked"; } ?> nm="contra_voucher_ledger" updt_id="<?php echo $accountingGroup->id; ?>"  name="contra_voucher_ledger" class="check_all_item"  ></td>
+												<td><input type="checkbox" <?php if($accountingGroup->contra_voucher_ledger=='1'){ echo "checked"; } ?> nm="contra_voucher_ledger" updt_id="<?php echo $accountingGroup->id; ?>"  name="contra_voucher_ledger" class="check_all_item"  ></td>
                                             </tr>
 											<tr>
 												<td>8</td>
 												<td>Journal Voucher Ledger</td>
-												<td><input type="checkbox" <?php if($accountingGroup->journal_voucher_ledger=='NULL'){ echo "checked"; } ?> nm="journal_voucher_ledger" updt_id="<?php echo $accountingGroup->id; ?>"  name="journal_voucher_ledger" class="check_all_item"  ></td>
+												<td><input type="checkbox" <?php if($accountingGroup->journal_voucher_ledger=='1'){ echo "checked"; } ?> nm="journal_voucher_ledger" updt_id="<?php echo $accountingGroup->id; ?>"  name="journal_voucher_ledger" class="check_all_item"  ></td>
                                             </tr>
 											<tr>
 												<td>9</td>
 												<td>Debit Note All Row</td>
-												<td><input type="checkbox" <?php if($accountingGroup->debit_note_all_row=='NULL'){ echo "checked"; } ?> nm="debit_note_all_row" updt_id="<?php echo $accountingGroup->id; ?>"  name="debit_note_all_row" class="check_all_item"  ></td>
+												<td><input type="checkbox" <?php if($accountingGroup->debit_note_all_row=='1'){ echo "checked"; } ?> nm="debit_note_all_row" updt_id="<?php echo $accountingGroup->id; ?>"  name="debit_note_all_row" class="check_all_item"  ></td>
                                             </tr>
 											<tr>
 												<td>10</td>
-												<td>Payment Ledger</td>
-												<td><input type="checkbox" <?php if($accountingGroup->payment_ledger=='NULL'){ echo "checked"; } ?> nm="payment_ledger" updt_id="<?php echo $accountingGroup->id; ?>"  name="payment_ledger" class="check_all_item"  ></td>
+												<td>Sale Invoice Sales Account</td>
+												<td><input type="checkbox" <?php if($accountingGroup->sale_invoice_sales_account=='1'){ echo "checked"; } ?> nm="sale_invoice_sales_account" updt_id="<?php echo $accountingGroup->id; ?>"  name="sale_invoice_sales_account" class="check_all_item"  ></td>
                                             </tr>
 											<tr>
 												<td>11</td>
-												<td>Sale Invoice Sales Account</td>
-												<td><input type="checkbox" <?php if($accountingGroup->sale_invoice_sales_account=='NULL'){ echo "checked"; } ?> nm="sale_invoice_sales_account" updt_id="<?php echo $accountingGroup->id; ?>"  name="sale_invoice_sales_account" class="check_all_item"  ></td>
+												<td>Sale Invoice Party</td>
+												<td><input type="checkbox" <?php if($accountingGroup->sale_invoice_party=='1'){ echo "checked"; } ?> nm="sale_invoice_party" updt_id="<?php echo $accountingGroup->id; ?>"  name="sale_invoice_party" class="check_all_item"  ></td>
                                             </tr>
 											<tr>
 												<td>12</td>
-												<td>Sale Invoice Party</td>
-												<td><input type="checkbox" <?php if($accountingGroup->sale_invoice_party=='NULL'){ echo "checked"; } ?> nm="sale_invoice_party" updt_id="<?php echo $accountingGroup->id; ?>"  name="sale_invoice_party" class="check_all_item"  ></td>
+												<td>Purchase Invoice Purchase Account</td>
+												<td><input type="checkbox" <?php if($accountingGroup->purchase_invoice_purchase_account=='1'){ echo "checked"; } ?> nm="purchase_invoice_purchase_account" updt_id="<?php echo $accountingGroup->id; ?>"  name="purchase_invoice_purchase_account" class="check_all_item"  ></td>
                                             </tr>
 											<tr>
 												<td>13</td>
-												<td>Purchase Invoice Purchase Account</td>
-												<td><input type="checkbox" <?php if($accountingGroup->purchase_invoice_purchase_account=='NULL'){ echo "checked"; } ?> nm="purchase_invoice_purchase_account" updt_id="<?php echo $accountingGroup->id; ?>"  name="purchase_invoice_purchase_account" class="check_all_item"  ></td>
-                                            </tr>
-											<tr>
-												<td>14</td>
 												<td>Purchase Invoice Party</td>
-												<td><input type="checkbox" <?php if($accountingGroup->purchase_invoice_party=='NULL'){ echo "checked"; } ?> nm="purchase_invoice_party" updt_id="<?php echo $accountingGroup->id; ?>"  name="purchase_invoice_party" class="check_all_item"  ></td>
+												<td><input type="checkbox" <?php if($accountingGroup->purchase_invoice_party=='1'){ echo "checked"; } ?> nm="purchase_invoice_party" updt_id="<?php echo $accountingGroup->id; ?>"  name="purchase_invoice_party" class="check_all_item"  ></td>
                                             </tr>
 														   </table>
 														</div>
@@ -199,10 +194,10 @@ $(document).on("click",".check_all_item",function(){
 			{
 				var updt_id=$(this).attr("updt_id");
 				var nm=$(this).attr("nm");
-				
+			 
 			var url =   "'.$this->Url->build(["controller"=>"AccountingGroups","action"=>"getItemInfo"]).'";
 			url =   url+"?updt_id="+updt_id+"&nm="+nm;
-			alert(url);
+			//alert(url);
             $.ajax({
 					url: url,
 			}).done(function(response){
@@ -210,6 +205,20 @@ $(document).on("click",".check_all_item",function(){
 				$(".addResult").html(response);
 			});
 			
+			}else{
+				var updt_id=$(this).attr("updt_id");
+				var nm=$(this).attr("nm");
+				 
+			var url =   "'.$this->Url->build(["controller"=>"AccountingGroups","action"=>"getItemInfos"]).'";
+			url =   url+"?updt_id="+updt_id+"&nm="+nm;
+			//alert(url);
+            $.ajax({
+					url: url,
+			}).done(function(response){
+				 
+				$(".addResult").html(response);
+			});
+				
 			}
 			});			
         ';  

@@ -55,10 +55,10 @@ class SalesOrdersTable extends Table
             'foreignKey' => 'city_id',
             'joinType' => 'INNER'
         ]);
-       /*  $this->belongsTo('SalesLedgers', [
+       $this->belongsTo('SalesLedgers', [
             'foreignKey' => 'sales_ledger_id',
             'joinType' => 'INNER'
-        ]); */
+        ]);
         $this->belongsTo('PartyLedgers', [
             'foreignKey' => 'party_ledger_id',
             'joinType' => 'INNER'
@@ -95,11 +95,16 @@ class SalesOrdersTable extends Table
             'foreignKey' => 'sales_order_id'
         ]);
 		
+		 $this->belongsTo('SellerLedgers', [
+            'className' => 'Ledgers',
+            'foreignKey' => 'sales_ledger_id',
+            'joinType' => 'LEFT'
+        ]);
+		
 		 $this->belongsTo('Items');
 		 $this->belongsTo('GstFigures');
 		 $this->belongsTo('AccountingGroups');
 		 $this->belongsTo('Ledgers');
-		// $this->belongsTo('SellerLedgers');
     }
 
     /**
@@ -227,7 +232,7 @@ class SalesOrdersTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['location_id'], 'Locations'));
+       // $rules->add($rules->existsIn(['location_id'], 'Locations'));
         $rules->add($rules->existsIn(['city_id'], 'Cities'));
         //$rules->add($rules->existsIn(['sales_ledger_id'], 'SalesLedgers'));
         //$rules->add($rules->existsIn(['party_ledger_id'], 'PartyLedgers'));
