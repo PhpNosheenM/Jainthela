@@ -63,13 +63,17 @@ class ComboOffersController extends AppController
      * @return \Cake\Http\Response|void
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($id = null)
+    public function view($ids = null)
     {
-        $comboOffer = $this->ComboOffers->get($id, [
-            'contain' => ['Cities', 'Admins', 'Carts', 'ComboOfferDetails', 'OrderDetails']
-        ]);
-
-        $this->set('comboOffer', $comboOffer);
+		if($ids)
+		{
+		   $id = $this->EncryptingDecrypting->decryptData($ids);
+		}
+		
+		$user_id=$this->Auth->User('id');
+		$this->viewBuilder()->layout('admin_portal');
+        $comboOffers = $this->ComboOffers->find()->contain(['ComboOfferDetails'=>['ItemVariations'=>['ItemVariationMasters','Items','UnitVariations'=>['Units']]]])->where(['ComboOffers.id'=>$id])->first();
+        $this->set('comboOffers', $comboOffers);
     }
 
     /**

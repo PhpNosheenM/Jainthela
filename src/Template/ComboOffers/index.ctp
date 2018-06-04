@@ -73,6 +73,7 @@
 										<?php
 											$comboOffer_id = $EncryptingDecrypting->encryptData($comboOffer->id);
 										?>
+										<?= $this->Html->link(__('<span class="fa fa-eye"></span>'), ['action' => 'view', $comboOffer_id],['class'=>'btn btn-success  btn-condensed btn-sm','escape'=>false]) ?>
 										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'edits', $comboOffer_id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
 										<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $comboOffer_id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?'),'escape'=>false]) ?>
 									

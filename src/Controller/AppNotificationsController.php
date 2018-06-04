@@ -177,7 +177,7 @@ pr($result);
         }
         curl_close($ch);
         echo $result;
-    	exit;				 
+    	 				 
 							 
 							 
 
