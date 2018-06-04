@@ -77,14 +77,14 @@
 							<div class="form-group">
 								<label class="col-md-3 control-label">Discount (%)</label>
 								<div class="col-md-9">                                            
-									<?= $this->Form->control('discount_per',['class'=>'form-control','placeholder'=>'Discount(%)','label'=>false]) ?>
+									<?= $this->Form->control('discount_per',['max'=>100,'class'=>'discount_per form-control','placeholder'=>'Discount(%)','label'=>false]) ?>
 								</div>
 							</div>
 							
 							<div class="form-group">
 								<label class="col-md-3 control-label">Sales Rate </label>
 								<div class="col-md-9">                                            
-									<?= $this->Form->control('sales_rate',['class'=>'form-control','placeholder'=>'Sales Rate','label'=>false]) ?>
+									<?= $this->Form->control('sales_rate',['class'=>'sales_rate form-control','placeholder'=>'Sales Rate','label'=>false,'readonly']) ?>
 								</div>
 							</div>
 						</div>
@@ -138,21 +138,31 @@
 									<tr>
 										<th><?= ('Item.') ?></th>
 										<th><?= ('Quantity') ?></th>
-										
+										<th><?= ('Sales Rate') ?></th>
+										<th><?= ('Combo Rate') ?></th>
+										<th><?= ('Combo Amount') ?></th>
 										<th  class="actions"><?= __('Actions') ?></th>
 									</tr>
 								</thead>
 								<tbody class="MainTbody">  
 									<tr class="MainTr">
 			
-										<td width="" valign="top">
+										<td width="30%" valign="top">
 											<?= $this->Form->select('item_variation_id',$itemVariation_option,['class'=>'form-control itemVariations','label'=>false, 'data-live-search'=>true]) ?>
 										</td>
-										<td width="30%" valign="top">
+										<td width="10%" valign="top">
 											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false, 'value'=>1]) ?>
-											<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false,'type'=>'hidden']) ?>
+											 
 										</td>
-										
+										<td>
+											<?php echo $this->Form->input('extra', ['label' => false,'class' => 'extra form-control input-sm number amnt','placeholder'=>'extra']); ?>
+										</td>
+										<td>
+											<?php echo $this->Form->input('rate', ['label' => false,'class' => 'rate form-control input-sm','placeholder'=>'rate' ,'readonly'=>'readonly']); ?>
+										</td>
+										<td>
+											<?php echo $this->Form->input('amount', ['label' => false,'class' => 'amount form-control input-sm number','placeholder'=>'amount','readonly'=>'readonly']); ?>
+										</td>
 										
 										<td valign="top"  >
 											<a class="btn btn-primary  btn-condensed btn-sm add_row" href="#" role="button" ><i class="fa fa-plus"></i></a>
@@ -179,12 +189,20 @@
 	<tbody class="sampleMainTbody">
 		<tr class="MainTr">
 			
-			<td width="" valign="top">
-				<?= $this->Form->select('item_variation_id',$itemVariation_option,['class'=>'form-control itemVariations','label'=>false, 'data-live-search'=>true]) ?>
-			</td>
 			<td width="30%" valign="top">
+				<?= $this->Form->select('item_variation_id',$itemVariation_option,['class'=>'form-control itemVariations','label'=>false, 'data-live-search'=>true]) ?>
+			</td> 
+			<td width="10%" valign="top">
 				<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false, 'value'=>1]) ?>
-				<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false,'type'=>'hidden']) ?>
+			</td>
+			<td>
+				<?php echo $this->Form->input('extra', ['label' => false,'class' => 'extra form-control input-sm number amnt','placeholder'=>'extra']); ?>
+			</td>
+			<td>
+				<?php echo $this->Form->input('rate', ['label' => false,'class' => 'rate form-control input-sm','placeholder'=>'rate' ,'readonly'=>'readonly']); ?>
+			</td>
+			<td>
+				<?php echo $this->Form->input('amount', ['label' => false,'class' =>  'amount form-control input-sm number','placeholder'=>'amount','readonly'=>'readonly']); ?>
 			</td>
 			
 			<td valign="top"  >
@@ -224,6 +242,13 @@
 			addMainRow();
 			//renameRows();
 		});
+		$(document).on("keyup",".print_rate",function(){
+			calc1();
+		});
+		$(document).on("keyup",".discount_per",function(){
+			
+			calc1();
+		});
 		
 		//addMainRow();
 		renameRows();
@@ -244,34 +269,73 @@
 			renameRows();
 		});
 		
-		$(document).on("change",".itemVariations",function(){
+		$(document).on("keyup",".quantity",function(){
 			
 			renameRows();
 		});
+		
+		
+		function calc1(){
+			 
+			var print_rate=parseFloat($(".print_rate").val());
+			if(!print_rate){ print_rate=0; }
+			var discount_per=parseFloat($(".discount_per").val());
+			if(!discount_per){ discount_per=0; }
+			var final_sales_rate=Math.round((print_rate*discount_per/100));
+			$(".sales_rate").val(print_rate-final_sales_rate);
+		}
+		$(document).on("change",".itemVariations",function(){
+			var rate=$("option:selected", this).attr("rate");
+			$(this).closest("tr").find(".amnt").val(rate);
+			renameRows();
+		});
 		function renameRows(){
-				var i=0; 
+				var i=0;
 				$(".main_table tbody tr").each(function(){
 						$(this).attr("row_no",i);
 						$(this).find("td:nth-child(1) select.itemVariations").selectpicker();
 						$(this).find("td:nth-child(1) select.itemVariations").attr({name:"combo_offer_details["+i+"][item_variation_id]",id:"combo_offer_details-"+i+"-item_variation_id"}).rules("add", "required");
 						$(this).find("td:nth-child(2) input.quantity").attr({name:"combo_offer_details["+i+"][quantity]",id:"combo_offer_details-"+i+"-quantity"}).rules("add", "required");
-						
-						
+						$(this).find("td:nth-child(3) input.extra").attr({name:"combo_offer_details["+i+"][extra]",id:"combo_offer_details-"+i+"-extra"}).rules("add", "required");
+						$(this).find("td:nth-child(4) input.rate").attr({name:"combo_offer_details["+i+"][rate]",id:"combo_offer_details-"+i+"-rate"}).rules("add", "required");
+						$(this).find("td:nth-child(5) input.amount").attr({name:"combo_offer_details["+i+"][amount]",id:"combo_offer_details-"+i+"-amount"}).rules("add", "required");
+						 
 						i++;
 			});
 			calculation();
 		}
 		function calculation(){
-			var i=0; var print_rate=0;
+			var i=0; var grand_total=0;
 			$(".main_table tbody tr").each(function(){
+				var print_rate=0;
+				var print_rate1=0;
 				var quantity=$(this).find("td:nth-child(2) input.quantity").val();
 				var rate=parseFloat($(this).find("option:selected", this).attr("rate"));
 				var amount=quantity*rate;
 				
-				print_rate=print_rate+amount;
-				$(".print_rate").val(print_rate);
+				print_rate1=print_rate+amount;
+				grand_total=grand_total+print_rate1;
+				if(!grand_total){ grand_total=0; }
 				i++;
-			});		
+			});
+			 
+			var selling_rate=parseFloat($(".sales_rate").val());
+			if(!selling_rate){ selling_rate=0; }
+			
+			$(".main_table tbody tr").each(function(){
+			var amount_value=parseFloat($(this).find("td:nth-child(3) input").val());
+			if(!amount_value){ amount_value=0; }
+			var quantity1 = parseFloat($(this).find("td:nth-child(2) input").val());
+			if(!quantity1){ quantity1=0; }
+			var actual_amount=Math.round((selling_rate*amount_value)/grand_total);
+			if(!actual_amount){ actual_amount=0; }
+			var actual_rate=Math.round(actual_amount/quantity1);
+			if(!actual_rate){ actual_rate=0; }
+			$(this).find("td:nth-child(5) input").val(actual_amount);
+			$(this).find("td:nth-child(4) input").val(actual_rate);
+		});
+		
+		
 		}
 		$(document).on("click", ".fileinput-remove-button", function(){
 			$(this).closest("div.file-input").find("input[type=file]").attr("required",true);
