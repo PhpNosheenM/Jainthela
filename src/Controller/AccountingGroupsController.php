@@ -15,7 +15,7 @@ class AccountingGroupsController extends AppController
 	public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->Security->setConfig('unlockedActions', ['add' , 'index' , 'list' ,'accountList', 'accountView', 'getItemInfo']);
+        $this->Security->setConfig('unlockedActions', ['add' , 'index' , 'list' ,'accountList', 'accountView', 'getItemInfo', 'getItemInfos']);
 
     }
 	
@@ -31,6 +31,18 @@ class AccountingGroupsController extends AppController
 			->execute();
 	}
 
+	public function getItemInfos()
+	{
+		$nm = $this->request->query('nm');
+		$updt_id = $this->request->query('updt_id');
+		
+		$query1 = $this->AccountingGroups->query();
+		$query1->update()
+			->set([$nm =>'NULL'])
+			->where(['AccountingGroups.id' => $updt_id])
+			->execute();
+	}
+	
     /**
      * Index method
      *

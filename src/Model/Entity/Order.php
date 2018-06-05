@@ -56,6 +56,7 @@ class Order extends Entity
      */
     protected $_accessible = [
         'city_id' => true,
+        'round_off' => true,
         'location_id' => true,
         'customer_id' => true,
         'party_ledger_id' => true,
@@ -93,6 +94,8 @@ class Order extends Entity
         'delivery_time' => true,
         'cancel_reason' => true,
         'order_details' => true,
-        'wallets' => true
+        'wallets' => true,
+        'discount_amount' => true,
+        'delivery_charge_amount' => true
     ];
 }

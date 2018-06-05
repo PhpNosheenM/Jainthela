@@ -9,7 +9,7 @@
 					<h3 class="panel-title"><strong> Order </strong></h3>
 				</div>
 			
-				<div class="panel-body">    
+				<div class="panel-body">
 					<div class="row">
 						<div class="col-md-3">
 							<div class="form-group">
@@ -21,8 +21,10 @@
 							</div>
 							<div class="form-group">
 								<label class=" control-label">Customer</label>
-								<div class="">                                            
-									<?= $this->Form->select('customer_id',$customers,['empty'=>'---Select--','class'=>'form-control select','label'=>false]) ?>
+								<div class="">     
+									<?= $this->Form->select('sales_ledger_id',$partyOptions,['empty'=>'---Select--','class'=>'form-control select prty_ledgr','label'=>false,'value'=>@$sales_orders->customer_id]) ?>	
+									<input type="hidden" name="customer_id" id="cstmr_id">
+									<?php //$this->Form->select('customer_id',$customers,['empty'=>'---Select--','class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
 						
@@ -36,9 +38,9 @@
 								</div>
 							</div>
 							<div class="form-group">
-								<label class=" control-label">Sales Account</label>
+								<label class=" control-label"></label>
 								<div class="">                                            
-									<?= $this->Form->select('sales_ledger_id',$Accountledgers,['class'=>'form-control select','label'=>false]) ?>
+									<?php //$this->Form->select('sales_ledger_id',$Accountledgers,['class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
 							
@@ -217,6 +219,10 @@
 			var t=$(this).closest('tr').remove();
 			renameRows();
 			calculation();
+		});
+		$(document).on('change','.prty_ledgr',function(){
+			 var customer_id=parseFloat($('option:selected', this).attr('customer_id'));
+			 $('#cstmr_id').val(customer_id);
 		});
 		
 		$(document).on('keyup','.rate',function(){

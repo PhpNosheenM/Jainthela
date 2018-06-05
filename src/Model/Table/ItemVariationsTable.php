@@ -43,6 +43,12 @@ class ItemVariationsTable extends Table
             'joinType' => 'INNER'
         ]);
 		
+		$this->belongsTo('ItemsDatas', [
+            'className' => 'Items',
+            'foreignKey' => 'item_id',
+            'joinType' => 'LEFT'
+        ]);
+		
         $this->belongsTo('UnitVariations', [
             'foreignKey' => 'unit_variation_id',
             'joinType' => 'INNER'
