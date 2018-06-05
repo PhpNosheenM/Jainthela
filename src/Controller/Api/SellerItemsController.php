@@ -37,7 +37,7 @@ class SellerItemsController extends AppController
     $limit=10;
     $sellerItem = [];
     $filters = [];
-    if(!empty($city_id) && !empty($category_id) && (!empty($page)))
+    if(!empty($city_id) && (!empty($page)))
     {
       // CheckAvabiltyOfCity function is avaliable in app controller for checking city_id in cities table
       $isValidCity = $this->CheckAvabiltyOfCity($city_id);
@@ -47,7 +47,7 @@ class SellerItemsController extends AppController
         if(!empty($brand_id))
         {
           $brand_id = explode(',',$brand_id);
-          $brandWhere = ['brand_id IN'=>$brand_id];
+          $brandWhere = ['SellerItems.brand_id IN'=>$brand_id];
         }
         else { $brandWhere = ''; }
 
@@ -59,9 +59,8 @@ class SellerItemsController extends AppController
         }else { $categoryWhere =''; $sellerItems_category = ''; }
 
         $sellerItem = $this->SellerItems->find();
-         $sellerItem->contain(['Sellers','Items' => function($q) use($city_id,$categoryWhere,$brandWhere,$limit,$page) {
+         $sellerItem->contain(['Sellers','Items' => function($q) use($city_id,$categoryWhere,$limit,$page) {
 			return $q->where($categoryWhere)
-			->where($brandWhere) 
 			->limit($limit)
 			->page($page);
 		},'ItemVariations' => ['UnitVariations'=>['Units'],'ItemVariationMasters']])
@@ -70,6 +69,7 @@ class SellerItemsController extends AppController
 		->having(['sellerItemCount' > 0])	
 		->where(['SellerItems.city_id' => $city_id,'SellerItems.status'=>'Active'])
 		->where($sellerWhere)
+		->where($brandWhere) 
 		->where($sellerItems_category)
 		->group(['SellerItems.id'])
 		->autoFields(true);
@@ -156,7 +156,7 @@ class SellerItemsController extends AppController
         }
       }else {
         $success = false;
-        $message = 'Empty city or category id or page';
+        $message = 'Empty city or page';
       }
       $this->set(['success' => $success,'message'=>$message,'filters'=>$filters,'sellerItem' => $sellerItem,'cart_item_count'=>$cart_item_count,'_serialize' => ['success','message','cart_item_count','filters','sellerItem']]);
     }  
