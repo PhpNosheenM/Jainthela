@@ -18,9 +18,55 @@ class AppNotificationsController extends AppController
 	public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->Security->setConfig('unlockedActions', ['index']);
+        $this->Security->setConfig('unlockedActions', ['index','test']);
 
     }
+	
+	 public function test()
+	 {
+		 $device_token='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjQsImV4cCI6MTUyODcyMjU2MH0.WWSaEid7dpeaYjCE_KiRkPkHxymT8QvJKaqYkgm85e0';
+		 if(!empty($device_token)){
+		$msg = array
+		(
+			'message'     =>'100% CashBack Offer on Order above 300 Rs. Order Now',
+			'image'     =>'',
+			'link'    => '/jainthela://home',
+			'notification_id'    => '1',
+		);
+		$url = 'https://fcm.googleapis.com/fcm/send';
+		$fields = array
+		(
+			'registration_ids'     => array($device_token),
+			'data'            => @$msg,
+		);				 
+		 		 
+ 
+        //$url = 'https://fcm.googleapis.com/fcm/send';
+  
+        $kkkki="AAAAXmNqxY4:APA91bG0X6RHVhwJKXUQGNSSCas44hruFdR6_CFd6WHPwx9abUr-WsrfEzsFInJawElgrp24QzaE4ksfmXu6kmIL6JG3yP487fierMys5byv-I1agRtMPIoSqdgCZf8R0iqsnds-u4CU";         
+        $headers = array(
+            'Authorization: key=' . $kkkki,
+            'Content-Type: application/json'
+        );
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, 0);   
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+        $result = curl_exec($ch);
+		pr($result); 		
+        if ($result === FALSE) {
+            die('Curl failed: ' . curl_error($ch));
+        }
+        curl_close($ch);
+        echo $result;
+    	 			
+		 }			
+		 
+	 }
     /**
      * Index method
      *
