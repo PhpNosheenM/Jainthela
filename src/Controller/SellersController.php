@@ -95,6 +95,33 @@ class SellersController extends AppController
         $this->set('seller', $seller);
     }
 
+	 public function changePassword()
+	{
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$this->viewBuilder()->layout('seller_layout');
+		$seller = $this->Sellers->get($user_id);
+		 
+			if ($this->request->is(['post','put'])) {		
+				$seller = $this->Sellers->patchEntity($seller, [
+						'old_password'  => $this->request->data['old_password'],
+						'password'      => $this->request->data['password'],
+						'confirm_password' => $this->request->data['confirm_password']
+					],
+					['validate' => 'password']);
+			 
+				if ($this->Sellers->save($seller)) {
+					
+					 $this->Flash->success(__('The seller Password has been saved.'));
+					 return $this->redirect(['action' => 'index']);
+				}
+				$this->Flash->error(__('The Password could not be change. Please, try again.'));
+				 
+			}
+		
+		$this->set(compact('seller', 'cities', 'roles','Sellers','paginate_limit'));
+	}
+	
     /**
      * Add method
      *

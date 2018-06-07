@@ -27,7 +27,7 @@ class SuperAdminsController extends AppController
         // Allow users to register and logout.
         // You should not add the "login" action to allow list. Doing so would
         // cause problems with normal functioning of AuthComponent.
-        $this->Auth->allow(['logout', 'login', 'add','index']);
+        $this->Auth->allow(['logout', 'login', 'add','index', 'changePassword']);
     }
 	public function blackhole($type)
 	{
@@ -44,6 +44,36 @@ class SuperAdminsController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
+    public function changePassword()
+	{
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$this->viewBuilder()->layout('super_admin_layout');
+		$superAdmin = $this->SuperAdmins->get($user_id);
+		 
+			if ($this->request->is(['post','put'])) {		
+				$superAdmin = $this->SuperAdmins->patchEntity($superAdmin, [
+						'old_password'  => $this->request->data['old_password'],
+						'password'      => $this->request->data['password'],
+						'confirm_password' => $this->request->data['confirm_password']
+					],
+					['validate' => 'password']);
+			 
+				if ($this->SuperAdmins->save($superAdmin)) {
+					
+					 $this->Flash->success(__('The superAdmin Password has been saved.'));
+					 return $this->redirect(['action' => 'index']);
+				}
+				$this->Flash->error(__('The Password could not be change. Please, try again.'));
+				 
+			}
+		
+		$this->set(compact('superAdmin', 'cities', 'roles','superAdmins','paginate_limit'));
+	}
+
+	
+	
+
     public function index()
     {
         $this->viewBuilder()->layout('super_admin_layout');
