@@ -6,7 +6,7 @@
 		<?= $this->Form->create('',['class'=>'form-horizontal','id'=>'loginform']) ?>  
 		 <div class="form-group">
 		  <label class="sr-only" for="inputName">Email</label>
-		  <?php echo $this->Form->control('email',['class'=>'form-control','placeholder'=>'Email','label'=>false,'required'=>'required','style'=>'color: #474a4d;']); ?>
+		  <?php echo $this->Form->control('email',['class'=>'form-control','placeholder'=>'Email','label'=>false,'required'=>'required']); ?>
 		</div>
 		<?= $this->Form->button(__('Submit'),['class'=>'btn btn-login btn-block']) ?>
 		<?= $this->Form->end() ?>

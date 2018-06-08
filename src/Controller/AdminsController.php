@@ -48,7 +48,8 @@ class AdminsController extends AppController
 				
                 $passkey = uniqid();
                 //$url = $this->Url->build(['controller' => 'Admins', 'action' => 'reset_password'], true) . '/' . $passkey;
-				$url =$this->Html->link(['controller'=>'Admins','action' => 'reset_password/'.$passkey],['target'=>'_blank']);
+				//$url =$this->Html->link(['controller'=>'Admins','action' => 'reset_password/'.$passkey],['target'=>'_blank']);
+				 $url = Router::Url(['controller' => 'Admins', 'action' => 'reset_password'], true) . '/' . $passkey;
                 $timeout = time() + DAY;
                  if ($this->Admins->updateAll(['passkey' => $passkey, 'timeout' => $timeout], ['id' => $user->id])){
 					

@@ -43,7 +43,8 @@ class AppNotificationsController extends AppController
  
         //$url = 'https://fcm.googleapis.com/fcm/send';
   
-        $kkkki="AAAAXmNqxY4:APA91bG0X6RHVhwJKXUQGNSSCas44hruFdR6_CFd6WHPwx9abUr-WsrfEzsFInJawElgrp24QzaE4ksfmXu6kmIL6JG3yP487fierMys5byv-I1agRtMPIoSqdgCZf8R0iqsnds-u4CU";         
+        $kkkki="AAAAXmNqxY4:APA91bG0X6RHVhwJKXUQGNSSCas44hruFdR6_CFd6WHPwx9abUr-WsrfEzsFInJawElgrp24QzaE4ksfmXu6kmIL6JG3yP487fierMys5byv-I1agRtMPIoSqdgCZf8R0iqsnds-u4CU";
+		
         $headers = array(
             'Authorization: key=' . $kkkki,
             'Content-Type: application/json'
