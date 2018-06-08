@@ -1,11 +1,12 @@
 <?php
 namespace App\Model\Table;
-
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-
+use Cake\Auth\DefaultPasswordHasher;
+use Cake\Utility\Text;
+use Cake\Event\Event;
 /**
  * Sellers Model
  *
@@ -103,6 +104,25 @@ class SellersTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
+	public function validationPassword(Validator $validator )
+    {
+		$validator
+            ->add('old_password','custom',[
+                'rule'=>  function($value, $context){
+                    $user = $this->get($context['data']['id']);
+                    if ($user) {
+                        if ((new DefaultPasswordHasher)->check($value, $user->password)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+                'message'=>'The old password does not match the current password!',
+            ])
+            ->notEmpty('old_password');
+			return $validator;
+	}
+	
     public function validationDefault(Validator $validator)
     {
         $validator

@@ -1,7 +1,8 @@
 <?php
 namespace App\Controller;
-
 use App\Controller\AppController;
+use Cake\Routing\Router;
+use Cake\Mailer\Email;
 use Cake\Event\Event;
 use Cake\View\View;
 /**
@@ -26,17 +27,152 @@ class AdminsController extends AppController
         // Allow users to register and logout.
         // You should not add the "login" action to allow list. Doing so would
         // cause problems with normal functioning of AuthComponent.
-        $this->Auth->allow(['logout', 'login', 'add']);
+        $this->Auth->allow(['logout', 'login', 'add', 'changePassword', 'forgotPassword', 'resetPassword']);
     }
 	public function blackhole($type)
 	{
 		// Handle errors.
 	}
+	
+	public function forgotPassword()
+    {
+		$this->viewBuilder()->layout('admin_login');
+        if ($this->request->is('post')) {
+			
+            $query = $this->Admins->findByEmail($this->request->data['email']);
+            $user = $query->first();
+			
+            if (is_null($user)) {
+                $this->Flash->error('Email address does not exist. Please try again');
+            } else {
+				
+                $passkey = uniqid();
+                //$url = $this->Url->build(['controller' => 'Admins', 'action' => 'reset_password'], true) . '/' . $passkey;
+				//$url =$this->Html->link(['controller'=>'Admins','action' => 'reset_password/'.$passkey],['target'=>'_blank']);
+				 $url = Router::Url(['controller' => 'Admins', 'action' => 'reset_password'], true) . '/' . $passkey;
+                $timeout = time() + DAY;
+                 if ($this->Admins->updateAll(['passkey' => $passkey, 'timeout' => $timeout], ['id' => $user->id])){
+					
+                    $this->sendResetEmail($url, $user);
+					
+                    $this->redirect(['action' => 'login']);
+                } else {
+                    $this->Flash->error('Error saving reset passkey/timeout');
+                }
+            }
+        }
+    }
+	
+	 public function resetPassword($passkey = null) {
+		$this->viewBuilder()->layout('admin_login');
+        if ($passkey) {
+            $query = $this->Admins->find('all')->where(['passkey' => $passkey, 'timeout >' => time()]);
+            $user = $query->first();
+			
+			
+            if ($user) {
+                if (!empty($this->request->data)) {
+                    // Clear passkey and timeout
+                    $this->request->data['passkey'] = null;
+                    $this->request->data['timeout'] = null;
+                    $user = $this->Admins->patchEntity($user, $this->request->data);
+                    if ($this->Admins->save($user)) {
+                        $this->Flash->success(__('Your password has been updated.'));
+                        $this->Auth->setUser($user);
+						return $this->redirect(['controller'=>'Admins','action' => 'index']);
+						
+                    } else {
+                        $this->Flash->error(__('The password could not be updated right now. Please, try again.'));
+                    }
+                }
+            } else {
+                $this->Flash->error('Invalid or expired passkey. Please check your email or try again');
+                $this->redirect(['action' => 'forgot_password']);
+            }
+            unset($user->password);
+            $this->set(compact('user'));
+        } else {
+            $this->redirect('/');
+        }
+    }
+	
+	private function sendResetEmail($url, $user) {
+		
+		/*
+			$email = new Email();
+			$email->profile('default')
+			->template('resetpw')
+			->emailFormat('html');
+
+			$email->from(['hello@entryhires.com' => 'Entry Hires'])
+			->to($user->email, $user->full_name)
+			->subject('Entry Hires - Reset your password')
+			->viewVars(['url' => $url, 'email' => $user->email]);
+		*/
+		//-- Send Grid By Dsu Menaria
+		$email = new Email();
+		$email->transport('SendGrid');
+		$sub="Password reset instructions for EntryHires account";
+		$from_name="JAINTHELA";
+ 		$email_to=$user->email;
+		if(!empty($email_to)){
+		try {
+			$email->from(['hello@entryhires.com' => $from_name])
+				->to($email_to, $user->name)
+				->subject($sub)
+				->profile('default')
+				->template('resetpw')
+				->emailFormat('html')
+				->viewVars(['url' => $url, 'email' => $user->email,'user_name'=>$user->username]);
+ 			} catch (Exception $e) {
+				
+				echo 'Exception : ',  $e->getMessage(), "\n";
+
+			} 
+		}
+		//-- End Of Send Grid
+		if ($email->send()) {
+		  
+            $this->Flash->success(__('Check your email for your reset password link'));
+        } else {
+            $this->Flash->error(__('Error sending email: ') . $email->smtpError);
+        }  
+    }
+	
+	public function changePassword()
+	{
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$this->viewBuilder()->layout('admin_portal');
+		$Admin = $this->Admins->get($user_id);
+		 
+			if ($this->request->is(['post','put'])) {
+				$Admin = $this->Admins->patchEntity($Admin, [
+						'old_password'  => $this->request->data['old_password'],
+						'password'      => $this->request->data['password'],
+						'confirm_password' => $this->request->data['confirm_password']
+					],
+					['validate' => 'password']);
+			 
+				if ($this->Admins->save($Admin)) {
+					
+					 $this->Flash->success(__('The Admin Password has been saved.'));
+					 return $this->redirect(['action' => 'index']);
+				}
+				$this->Flash->error(__('The Password could not be change. Please, try again.'));
+				 
+			}
+		
+		$this->set(compact('Admin', 'cities', 'roles','Admins','paginate_limit'));
+	}
+	
+	
 	public function logout()
 	{
 		//$this->Flash->success('You are now logged out.');
 		return $this->redirect($this->Auth->logout());
 	}
+	
 	public function login()
     {
 		$this->viewBuilder()->layout('admin_login');
@@ -80,6 +216,7 @@ class AdminsController extends AppController
 		
 		$this->set(compact(''));
 	}
+	
     public function user_view()
     {
 		//$this->request->unlockedFields(['password']);
@@ -214,4 +351,5 @@ class AdminsController extends AppController
 
         return $this->redirect(['action' => 'index']);
     }
+
 }
