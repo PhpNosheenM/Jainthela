@@ -331,12 +331,35 @@
 			if(!actual_amount){ actual_amount=0; }
 			var actual_rate=Math.round(actual_amount/quantity1);
 			if(!actual_rate){ actual_rate=0; }
-			$(this).find("td:nth-child(5) input").val(actual_amount);
-			$(this).find("td:nth-child(4) input").val(actual_rate);
+			var garad_amount=quantity1*actual_amount;
+			if(!garad_amount){ garad_amount=0; }
+			$(this).find("td:nth-child(5) input").val(garad_amount);
+			$(this).find("td:nth-child(4) input").val(actual_amount);
 		});
 		
 		
 		}
+		
+		$(".quant").die().live("keyup",function(){
+		var quant = parseFloat($(this).val());
+		if(!quant){ quant=0; }
+		var minimum_quantity_factor = parseFloat($(this).attr("minimum_quantity_factor"));
+		if(!minimum_quantity_factor){ minimum_quantity_factor=0; }
+		var unit_name = $(this).attr("unit_name");
+		if(!unit_name){ unit_name=0; }
+		var price =  parseFloat($(this).attr("price"));
+		if(!price){ price=0; }
+		var g_total = quant*minimum_quantity_factor;
+		var rate = Math.round(quant*price);
+		$(this).closest("tr").find(".amnt").val(rate);
+		$(this).closest("tr").find(".msg_shw2").html(g_total+" "+unit_name);
+		$(this).closest("tr").find(".act_quant").val(g_total);
+		var g_total =  parseFloat($(".grnd_ttl").val());
+		if(!g_total){ g_total=0; }
+		var final_val = g_total+rate;
+		//$(".grnd_ttl").val(final_val);
+	});  
+	
 		$(document).on("click", ".fileinput-remove-button", function(){
 			$(this).closest("div.file-input").find("input[type=file]").attr("required",true);
 		});

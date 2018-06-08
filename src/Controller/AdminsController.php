@@ -63,9 +63,39 @@ class AdminsController extends AppController
         }
     }
 	
-	public function resetPassword( ) {
-		
-	}
+	 public function resetPassword($passkey = null) {
+		$this->viewBuilder()->layout('admin_login');
+        if ($passkey) {
+            $query = $this->Admins->find('all')->where(['passkey' => $passkey, 'timeout >' => time()]);
+            $user = $query->first();
+			
+			
+            if ($user) {
+                if (!empty($this->request->data)) {
+                    // Clear passkey and timeout
+                    $this->request->data['passkey'] = null;
+                    $this->request->data['timeout'] = null;
+                    $user = $this->Admins->patchEntity($user, $this->request->data);
+                    if ($this->Admins->save($user)) {
+                        $this->Flash->success(__('Your password has been updated.'));
+                        $this->Auth->setUser($user);
+						return $this->redirect(['controller'=>'Admins','action' => 'index']);
+						
+                    } else {
+                        $this->Flash->error(__('The password could not be updated right now. Please, try again.'));
+                    }
+                }
+            } else {
+                $this->Flash->error('Invalid or expired passkey. Please check your email or try again');
+                $this->redirect(['action' => 'forgot_password']);
+            }
+            unset($user->password);
+            $this->set(compact('user'));
+        } else {
+            $this->redirect('/');
+        }
+    }
+	
 	private function sendResetEmail($url, $user) {
 		
 		/*
@@ -85,7 +115,7 @@ class AdminsController extends AppController
 		$sub="Password reset instructions for EntryHires account";
 		$from_name="JAINTHELA";
  		$email_to=$user->email;
-		if(!empty($email_to)){		
+		if(!empty($email_to)){
 		try {
 			$email->from(['hello@entryhires.com' => $from_name])
 				->to($email_to, $user->name)
