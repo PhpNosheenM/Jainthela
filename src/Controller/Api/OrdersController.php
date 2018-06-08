@@ -489,7 +489,7 @@ class OrdersController extends AppController
 							$gst_value=$order_detail->amount*$gstper/100;
 							
 							$ItemVariationData = $this->Orders->OrderDetails->ItemVariations->get($order_detail->item_variation_id);
-							$current_stock=$ItemVariationData->current_stock-$order_detail->quantity;pr($ItemVariationData->current_stock);
+							$current_stock=$ItemVariationData->current_stock-$order_detail->quantity;
 							//pr($order_detail->item_variation_id);
 							$out_of_stock="No";
 							$ready_to_sale="Yes";
@@ -511,6 +511,8 @@ class OrdersController extends AppController
 								->execute();
 							
 						}
+				}else if($order->order_type=="Wallet"){
+				
 				}
 
                 $message='Order placed successfully';
