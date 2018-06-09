@@ -43,7 +43,7 @@ class AppNotificationsController extends AppController
  
         //$url = 'https://fcm.googleapis.com/fcm/send';
   
-        $kkkki="AAAAXmNqxY4:APA91bG0X6RHVhwJKXUQGNSSCas44hruFdR6_CFd6WHPwx9abUr-WsrfEzsFInJawElgrp24QzaE4ksfmXu6kmIL6JG3yP487fierMys5byv-I1agRtMPIoSqdgCZf8R0iqsnds-u4CU";
+        $kkkki="cfroufH_wtc:APA91bFjkWZ0WG_xvcLrtkAG3hheQK0tUipIPufdCYT85UkzhRyL_vEn8nOK--0zTj1w1b6OTcvnv81PhxFe4jgEpyAAwlHZ8MQvJBznCQLIAi4RD30vphR8uiZFWrzZ3SVVnYPjRSla";
 		
         $headers = array(
             'Authorization: key=' . $kkkki,
@@ -181,6 +181,7 @@ class AppNotificationsController extends AppController
 					foreach($customers_data as $custmr_data){
 						
 						$device_token=$custmr_data->token;
+						$device_token="cfroufH_wtc:APA91bFjkWZ0WG_xvcLrtkAG3hheQK0tUipIPufdCYT85UkzhRyL_vEn8nOK--0zTj1w1b6OTcvnv81PhxFe4jgEpyAAwlHZ8MQvJBznCQLIAi4RD30vphR8uiZFWrzZ3SVVnYPjRSla";
 						$device_token1=rtrim($device_token);
 						
 						
@@ -190,7 +191,7 @@ class AppNotificationsController extends AppController
 		$msg = array
 		(
 			'message'     =>$message,
-			'image'     =>'',
+			'image'     =>$keyname,
 			'link'    => $created_link,
 			'notification_id'    => '',
 		);
@@ -204,7 +205,8 @@ class AppNotificationsController extends AppController
  
         //$url = 'https://fcm.googleapis.com/fcm/send';
   
-        $kkkki="AAAAXmNqxY4:APA91bG0X6RHVhwJKXUQGNSSCas44hruFdR6_CFd6WHPwx9abUr-WsrfEzsFInJawElgrp24QzaE4ksfmXu6kmIL6JG3yP487fierMys5byv-I1agRtMPIoSqdgCZf8R0iqsnds-u4CU";         
+        //$kkkki="AAAAXmNqxY4:APA91bG0X6RHVhwJKXUQGNSSCas44hruFdR6_CFd6WHPwx9abUr-WsrfEzsFInJawElgrp24QzaE4ksfmXu6kmIL6JG3yP487fierMys5byv-I1agRtMPIoSqdgCZf8R0iqsnds-u4CU";
+		$kkkki="AIzaSyDQcVP0eF_55UrqTxYOAmdeeEzt2lQ6PAg";         
         $headers = array(
             'Authorization: key=' . $kkkki,
             'Content-Type: application/json'
@@ -218,103 +220,14 @@ class AppNotificationsController extends AppController
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
         $result = curl_exec($ch);
-pr($result); 		
+		echo $keyname;
+pr($result->success); 		
         if ($result === FALSE) {
             die('Curl failed: ' . curl_error($ch));
         }
         curl_close($ch);
         echo $result;
-    	 				 
-							 
-							 
-
-	/*	$registrationIds =  $device_token;
-		$msg = array
-		(
-		'body' 	=> $message,
-		'title'	=> 'Jainthela Notification',
-		'icon'	=> 'myicon',/*Default Icon* 
-		'sound' => 'mySound',/*Default sound* 
-		'unread_count' => 0,
-		'message' => $message,
-		'type'=>"Announcement"
-		);
-		$data = array
-		(
-
-		"unread_count" => 0
-		);
-		$fields = array('to'=> $registrationIds,
-		'notification'=> $msg,
-		'data' => $msg
-		);
-		$headers = array(
-		'Authorization: key='.$API_ACCESS_KEY,
-		'Content-Type: application/json'
-		);
-
-		$ch = curl_init();
-		curl_setopt( $ch,CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send' );
-		curl_setopt( $ch,CURLOPT_POST, true );
-		curl_setopt( $ch,CURLOPT_HTTPHEADER, $headers );
-		curl_setopt( $ch,CURLOPT_RETURNTRANSFER, true );
-		curl_setopt( $ch,CURLOPT_SSL_VERIFYPEER, false );
-		curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $fields ) );
-		$result = curl_exec($ch );
-		curl_close( $ch );
-	pr($headers); 
-	pr($result);exit; 	
-		//die();
-		//return $result;
-							  
-							 
-							 /* 
-							 
-							 
-							 
-							 
-							 
-					 
-					$msg = array
-							(
-							'message'     =>$message,
-							'image'     =>'',
-							'link'    => $created_link,
-							'notification_id'    => '',
-							);
-						
-						$url = 'https://fcm.googleapis.com/fcm/send';
-						$fields = array
-						(
-							'registration_ids'     => array($device_token),
-							'data'            => @$msg,
-						);
-						$headers = array
-						(
-							'Authorization: key=' .$API_ACCESS_KEY,
-							'Content-Type: application/json'
-						);
-
-						  json_encode($fields);
-						  $ch = curl_init();
-						curl_setopt($ch, CURLOPT_URL, $url);
-						curl_setopt($ch, CURLOPT_POST, true);
-						curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-						curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-						curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-						curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-						curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
-						$result = curl_exec($ch);
-						pr($result);
-						echo "<br>";
-						if ($result === FALSE) {
-							//die('FCM Send Error: ' . curl_error($ch));
-						}
-						curl_close($ch);
-						$l[]=$result;
-						//return $l;  
-						 */
-						
+    	 		 
 						$query = $this->AppNotifications->AppNotificationCustomers->query();
 						$query->insert(['app_notification_id', 'customer_id', 'sent'])
 								->values([

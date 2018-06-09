@@ -1,6 +1,8 @@
 <?php
 namespace App\Controller;
 use App\Controller\AppController;
+use Cake\Routing\Router;
+use Cake\Mailer\Email;
 use Cake\Event\Event;
 use Cake\View\View;
 /**
@@ -16,7 +18,7 @@ class SellersController extends AppController
 	 public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->Security->setConfig('unlockedActions', ['add','edit','index']);
+        $this->Security->setConfig('unlockedActions', ['add','edit','index', 'forgotPassword', 'resetPassword']);
 
     }
 	
@@ -25,6 +27,114 @@ class SellersController extends AppController
 		parent::initialize();
 		 $this->Auth->allow(['logout', 'login']);		
 	}
+	
+	public function forgotPassword()
+    {
+		$this->viewBuilder()->layout('admin_login');
+        if ($this->request->is('post')) {
+			
+            $query = $this->Sellers->findByFirmEmail($this->request->data['firm_email']);
+            $user = $query->first();
+			
+            if (is_null($user)) {
+                $this->Flash->error('Email address does not exist. Please try again');
+            } else {
+			
+                $passkey = uniqid();
+                //$url = $this->Url->build(['controller' => 'Sellers', 'action' => 'reset_password'], true) . '/' . $passkey;
+				//$url =$this->Html->link(['controller'=>'Sellers','action' => 'reset_password/'.$passkey],['target'=>'_blank']);
+				 $url = Router::Url(['controller' => 'Sellers', 'action' => 'reset_password'], true) . '/' . $passkey;
+                $timeout = time() + DAY;
+                 if ($this->Sellers->updateAll(['passkey' => $passkey, 'timeout' => $timeout], ['id' => $user->id])){
+					
+                    $this->sendResetEmail($url, $user);
+					
+                    $this->redirect(['action' => 'login']);
+                } else {
+                    $this->Flash->error('Error saving reset passkey/timeout');
+                }
+            }
+        }
+    }
+	
+	 public function resetPassword($passkey = null) {
+		$this->viewBuilder()->layout('admin_login');
+        if ($passkey) {
+            $query = $this->Sellers->find('all')->where(['passkey' => $passkey, 'timeout >' => time()]);
+            $user = $query->first();
+			
+			
+            if ($user) {
+                if (!empty($this->request->data)) {
+                    // Clear passkey and timeout
+                    $this->request->data['passkey'] = null;
+                    $this->request->data['timeout'] = null;
+                    $user = $this->Sellers->patchEntity($user, $this->request->data);
+                    if ($this->Sellers->save($user)) {
+                        $this->Flash->success(__('Your password has been updated.'));
+                        $this->Auth->setUser($user);
+						return $this->redirect(['controller'=>'Sellers','action' => 'index']);
+						
+                    } else {
+                        $this->Flash->error(__('The password could not be updated right now. Please, try again.'));
+                    }
+                }
+            } else {
+                $this->Flash->error('Invalid or expired passkey. Please check your email or try again');
+                $this->redirect(['action' => 'forgot_password']);
+            }
+            unset($user->password);
+            $this->set(compact('user'));
+        } else {
+            $this->redirect('/');
+        }
+    }
+	
+	
+	private function sendResetEmail($url, $user) {
+		
+		/*
+			$email = new Email();
+			$email->profile('default')
+			->template('resetpw')
+			->emailFormat('html');
+
+			$email->from(['hello@entryhires.com' => 'Entry Hires'])
+			->to($user->email, $user->full_name)
+			->subject('Entry Hires - Reset your password')
+			->viewVars(['url' => $url, 'email' => $user->email]);
+		*/
+		//-- Send Grid By Dsu Menaria
+		$email = new Email();
+		$email->transport('SendGrid');
+		$sub="Password reset instructions for jainthela Sellers account";
+		$from_name="JAINTHELA";
+ 		$email_to=$user->firm_email;
+		if(!empty($email_to)){
+		try {
+			$email->from(['hello@entryhires.com' => $from_name])
+				->to($email_to, $user->name)
+				->subject($sub)
+				->profile('default')
+				->template('resetpw')
+				->emailFormat('html')
+				->viewVars(['url' => $url, 'email' => $user->firm_email,'user_name'=>$user->username]);
+ 			} catch (Exception $e) {
+				
+				echo 'Exception : ',  $e->getMessage(), "\n";
+
+			} 
+		}
+		//-- End Of Send Grid
+		if ($email->send()) {
+		  
+            $this->Flash->success(__('Check your email for your reset password link'));
+        } else {
+            $this->Flash->error(__('Error sending email: ') . $email->smtpError);
+        }  
+    }
+	
+	
 	public function login()
     {
 		$this->viewBuilder()->layout('seller_login');
