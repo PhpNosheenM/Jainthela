@@ -86,7 +86,12 @@ class ComboOffersController extends AppController
 
 		$city_id=$this->Auth->User('city_id'); 
 		$user_id=$this->Auth->User('id');
+		$user_type =$this->Auth->User('user_type');
+		if($user_type=="Super Admin"){
+		$this->viewBuilder()->layout('super_admin_layout');	
+		}else{
 		$this->viewBuilder()->layout('admin_portal');
+		}
 
         $comboOffer = $this->ComboOffers->newEntity();
         if ($this->request->is('post')) {
