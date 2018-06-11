@@ -220,22 +220,24 @@ class AppNotificationsController extends AppController
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
         $result = curl_exec($ch);
-		echo $keyname;
-pr($result->success); 		
+		$final_result=json_decode($result);
+		$sms_flag=$final_result->success; 		
         if ($result === FALSE) {
             die('Curl failed: ' . curl_error($ch));
         }
         curl_close($ch);
-        echo $result;
+        $result;
     	 		 
+				if($sms_flag>0){
 						$query = $this->AppNotifications->AppNotificationCustomers->query();
 						$query->insert(['app_notification_id', 'customer_id', 'sent'])
 								->values([
 								'app_notification_id' => $banner_data->id,
 								'customer_id' => $custmr_data->id,
-								'sent' => 1
+								'sent' => $sms_flag
 								])
 								->execute();
+				 }	
 						 }
 					
 					}

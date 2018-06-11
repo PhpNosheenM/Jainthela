@@ -16,25 +16,25 @@
 				<div class="panel-heading">
 					<h3 class="panel-title"><strong> Sales Orders</strong></h3>
 					<div class="pull-right">
-					<div class="pull-left">
-						<?= $this->Form->create('Search',['type'=>'GET']) ?>
-								<?= $this->Html->link(__('<span class="fa fa-plus"></span> Add Sales Orders'), ['action' => 'add'],['style'=>'margin-top:-30px !important;','class'=>'btn btn-success','escape'=>false]) ?>
-							<div class="form-group" style="display:inline-table">
-									<div class="input-group">
-									
-										<div class="input-group-addon">
-											<span class="fa fa-search"></span>
-										</div>
+						<div class="pull-left">
+							<?= $this->Form->create('Search',['type'=>'GET']) ?>
+									<?= $this->Html->link(__('<span class="fa fa-plus"></span> Add Sales Orders'), ['action' => 'add'],['style'=>'margin-top:-30px !important;','class'=>'btn btn-success','escape'=>false]) ?>
+								<div class="form-group" style="display:inline-table">
+										<div class="input-group">
 										
-										<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
-										<div class="input-group-btn">
-												<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
+											<div class="input-group-addon">
+												<span class="fa fa-search"></span>
+											</div>
+											
+											<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
+											<div class="input-group-btn">
+													<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
+											</div>
 										</div>
-									</div>
 								</div>
-						<?= $this->Form->end() ?>
-					</div> 
-				</div> 	
+							<?= $this->Form->end() ?>
+						</div> 
+					</div> 	
 				</div>
 				
 				<div class="panel-body">    
@@ -49,6 +49,7 @@
 									<th><?= ('Grand Total') ?></th>
 									<th><?= ('Status') ?></th>
 									<th><?= ('Manage Order') ?></th>
+									<th><?= ('Delete') ?></th>
 								</tr>
 							</thead>
 							<tbody>                                            
@@ -56,8 +57,10 @@
 								
 								  <?php foreach ($salesOrders as $order): //pr($order); exit;]
 											$trans_date=date('d-M-Y', strtotime($order->transaction_date));
-											$status=$order->status;
-								  ?>
+											$status=$order->order_status;
+								   
+											$sales_order_id = $EncryptingDecrypting->encryptData($order->id);
+										?>
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
 									<td><?= h($order->sales_order_no) ?></td>
@@ -66,10 +69,14 @@
 									<td><?= h($order->grand_total) ?></td>
 									<td><?= h($trans_date) ?></td>
 									<?php if($status=='Yes'){ ?>
-									<td><?= h($order->status) ?></td>
+									<td><?= h($order->order_status) ?></td>
+									<td>Used</td>
 									<?php }else{ ?>
 									<td>
 										<?= $this->Html->link(__('<span class="fa fa-pencil"> Create Order </span>'), ['controller'=>'Orders', 'action' => 'add', $order->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+									</td>
+									<td>
+									<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $sales_order_id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?'),'escape'=>false]) ?>
 									</td>
 									<?php } ?>
 								</tr>
