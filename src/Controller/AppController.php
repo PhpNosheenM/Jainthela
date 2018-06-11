@@ -171,7 +171,7 @@ class AppController extends Controller
 		/*   Get Menu    */
 	}
 	public function stockReportApp($city_id = null,$from_date = null,$transaction_date = null)
-    {
+    {  
 		$this->loadModel('Items');
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('super_admin_layout');
@@ -179,43 +179,75 @@ class AppController extends Controller
 		//$location_id=$this->request->query('location_id');
 		//$transaction_date=date("Y-m-d");
 		
-		 
+		//pr($city_id); exit; exit;
 		$showItems=[];
 		
 		if($city_id){
 			 $Items = $this->Items->find()->toArray();
-			// pr($Items); exit;
-				foreach($Items as  $Item){
-					if($Item->item_maintain_by=="itemwise"){
-						$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$Item->id,'city_id'=>$city_id])->toArray();
-						if($ItemLedgers){
-							$UnitRateSerialItem = $this->itemWiseReport1($Item->id,$transaction_date,$city_id);
-							$showItems[$Item->id]=['item_name'=>$Item->name,'stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem['unit_rate']];
-						}
-						
-					}else{
-						$ItemsVariations=$this->Items->ItemsVariations->find()->contain(['UnitVariations'=>['Units']])->where(['item_id'=>$Item->id])->toArray();
-						foreach($ItemsVariations as $ItemsVariation){
-							$merge=$Item->name.'('.@$ItemsVariation->unit_variation->convert_unit_qty.'.'.@$ItemsVariation->unit_variation->unit->print_unit.')';
-							$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$Item->id,'city_id'=>$city_id])->toArray();
-							if($ItemLedgers){
-							$UnitRateSerialItem = $this->itemVariationWiseReport1($ItemsVariation->id,$transaction_date,$city_id);
+		//$ItemsVariations=$this->Items->ItemsVariationsData->find()->toArray();//pr($ItemsVariations); exit;
+				foreach($Items as  $Item){ 
+					$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['ItemLedgers.item_id'=>$Item->id,'ItemLedgers.city_id'=>$city_id,'ItemLedgers.seller_id IS NULL','ItemLedgers.transaction_date <='=>$transaction_date])->contain(['UnitVariations'=>['Units']])->first();
+						if($ItemLedgers){  
+							$UnitRateSerialItem = $this->itemWiseReport2($Item->id,$transaction_date,$city_id);
+							$showItems[$Item->id]=['stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem['unit_rate']]; 
 							
-							$showItems[$Item->id]=['item_name'=>$merge,'stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem['unit_rate']];
-							}
 						}
-					}
 				}
 			
 		}
 		//pr($showItems); exit;
 		$closingValue=0;
-		foreach($showItems as $showItem){
-			$closingValue+=$showItem['stock']*$showItem['unit_rate'];
+		foreach($showItems as $showItem){ 
+			$closingValue+=$showItem['stock'][1]*$showItem['unit_rate'][1];
 			
 		}
 		return $closingValue;
 		
+	}
+	
+		public function itemWiseReport2($item_id,$transaction_date,$city_id){
+	
+		$this->viewBuilder()->layout('super_admin_layout');
+		//$city_id=$this->Auth->User('city_id');
+		$location_id=$this->Auth->User('location_id');
+	
+		$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$item_id,'seller_id IS NULL','location_id'=>0,'transaction_date <='=>$transaction_date])->order(['ItemLedgers.transaction_date'=>'ASC'])->toArray(); 
+		
+			foreach($ItemLedgers as $ItemLedger){
+					
+					if($ItemLedger->status=="In"){
+						for($inc=0;$inc<$ItemLedger->quantity;$inc++){
+						$stock[$ItemLedger->unit_variation_id][]=$ItemLedger->rate;
+						}
+					}
+				}
+	
+				foreach($ItemLedgers as $ItemLedger){
+					if($ItemLedger->status=='Out'){
+						if(sizeof(@$stock[$ItemLedger->unit_variation_id])>0){
+							$stock[$ItemLedger->unit_variation_id] = array_slice($stock[$ItemLedger->unit_variation_id], $ItemLedger->quantity); 
+						}
+					}
+				}
+		
+				$closingValue=0;
+				
+				$item_var_val=[];
+				$item_stock=[];
+				foreach($stock  as $key=>$stockRow){ 
+					$rate=0;
+					foreach($stockRow as $data){  
+						$remaining=count($stock[$key]); 
+						$rate+=$data;
+					}
+					//pr($remaining);
+					$item_var_val[$key]=$rate/$remaining;
+					$item_stock[$key]=$remaining;
+					
+				}
+		$Data=['stock'=>$item_stock,'unit_rate'=>$item_var_val]; //pr($Data); exit;
+		return $Data;
+		exit;
 	}
 
 	public function itemVariationWiseReport1($item_variation_id=null,$transaction_date,$city_id){ 

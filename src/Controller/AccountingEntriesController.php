@@ -187,7 +187,7 @@ class AccountingEntriesController extends AppController
 		$query=$this->AccountingEntries->find();
 		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
 				->group('AccountingEntries.ledger_id')
-				->where(['AccountingEntries.location_id'=>$location_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date])
+				->where(['AccountingEntries.city_id'=>$city_id,'AccountingEntries.transaction_date >='=>$from_date, 'AccountingEntries.transaction_date <='=>$to_date])
 				->contain(['Ledgers'=>function($q){
 					return $q->select(['Ledgers.accounting_group_id','Ledgers.id']);
 				}]);
@@ -209,9 +209,9 @@ class AccountingEntriesController extends AppController
 				@$groupForPrint[$primaryGroup]['nature']=$Group['nature'];
 			}
 		}
-		//pr($groupForPrint); exit;
+		//pr($city_id); exit;
 		$GrossProfit= $this->GrossProfit($from_date,$to_date,$city_id,$location_id);
-		$closingValue= $this->stockReportApp($city_id,$from_date,$to_date);
+		$closingValue= $this->stockReportApp($city_id,$from_date,$to_date); 
 		$differenceInOpeningBalance= $this->differenceInOpeningBalance($city_id,$location_id);
 		$this->set(compact('from_date','to_date', 'groupForPrint', 'closingValue', 'openingValue','GrossProfit','differenceInOpeningBalance'));
 		

@@ -27,7 +27,12 @@ class SalesOrdersController extends AppController
      */
     public function index()
     {
+		$user_type =$this->Auth->User('user_type');
+		if($user_type=="Super Admin"){
+		$this->viewBuilder()->layout('super_admin_layout');	
+		}else if($user_type=="Admin"){
 		$this->viewBuilder()->layout('admin_portal');
+		}
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
 		$location_id=$this->Auth->User('location_id');
@@ -70,7 +75,13 @@ class SalesOrdersController extends AppController
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id');
 		$state_id=$this->Auth->User('state_id'); 
+		$user_type =$this->Auth->User('user_type');
+		if($user_type=="Super Admin"){
+		$this->viewBuilder()->layout('super_admin_layout');	
+		$location_id=1;
+		}else if($user_type=="Admin"){
 		$this->viewBuilder()->layout('admin_portal');
+		}
         $salesOrder = $this->SalesOrders->newEntity();
 		$CityData = $this->SalesOrders->Cities->get($city_id);
 		$StateData = $this->SalesOrders->Cities->States->get($CityData->state_id);
