@@ -176,7 +176,7 @@ class JournalVouchersController extends AppController
 		/* 
         if ($this->request->is('post')) {
             $journalVoucher = $this->JournalVouchers->patchEntity($journalVoucher, $this->request->getData());
-            if ($this->JournalVouchers->save($journalVoucher)) {
+            if ($anc=$this->JournalVouchers->save($journalVoucher)) {
                 $this->Flash->success(__('The journal voucher has been saved.'));
 
                 return $this->redirect(['action' => 'index']);

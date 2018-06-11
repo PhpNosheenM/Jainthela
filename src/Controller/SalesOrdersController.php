@@ -41,7 +41,7 @@ class SalesOrdersController extends AppController
             'contain' => ['SalesOrderRows'=>['ItemVariations'], 'Customers',  'Cities'],
 			'limit' => 20
         ];
-		$sales=$this->SalesOrders->find()->where(['SalesOrders.city_id'=>$city_id])->order(['SalesOrders.id'=>'DESC']);
+		$sales=$this->SalesOrders->find()->where(['SalesOrders.city_id'=>$city_id,'SalesOrders.status'=>'Active'])->order(['SalesOrders.id'=>'DESC']);
         $salesOrders = $this->paginate($sales);
 		 
 		$paginate_limit=$this->paginate['limit'];
@@ -98,10 +98,11 @@ class SalesOrdersController extends AppController
             $salesOrder = $this->SalesOrders->patchEntity($salesOrder, $this->request->getData());
 			$Voucher_no = $this->SalesOrders->find()->select(['voucher_no'])->where(['SalesOrders.city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first(); 
 			if($Voucher_no){$voucher_no=$Voucher_no->voucher_no+1;}
-			else{$voucher_no=1;} 
+			else{$voucher_no=1;}
 			$salesOrder->city_id=$city_id;
 			$salesOrder->location_id=$location_id;
 			$salesOrder->sales_order_from="Web";
+			$salesOrder->narration=$this->request->getData('narration');
 			$salesOrder->voucher_no=$voucher_no;
 			$salesOrder->sales_order_status="Pending";
 			$salesOrder->transaction_date=date('Y-m-d',strtotime($salesOrder->transaction_date));
@@ -246,11 +247,13 @@ class SalesOrdersController extends AppController
      * @return \Cake\Http\Response|null Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
+    public function delete($dir)
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['patch', 'post', 'put']);
+		$id = $this->EncryptingDecrypting->decryptData($dir);
         $salesOrder = $this->SalesOrders->get($id);
-        if ($this->SalesOrders->delete($salesOrder)) {
+		$salesOrder->status='Deactive';
+        if ($this->SalesOrders->save($salesOrder)) {
             $this->Flash->success(__('The sales order has been deleted.'));
         } else {
             $this->Flash->error(__('The sales order could not be deleted. Please, try again.'));

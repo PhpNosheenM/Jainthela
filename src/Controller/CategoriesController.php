@@ -170,7 +170,8 @@ class CategoriesController extends AppController
         $this->request->allowMethod(['post', 'delete']);
 		$id = $this->EncryptingDecrypting->decryptData($dir);
         $category = $this->Categories->get($id);
-        if ($this->Categories->delete($category)) {
+		$category->status='Deactive';
+        if ($this->Categories->save($category)) {
             $this->Flash->success(__('The category has been deleted.'));
         } else {
             $this->Flash->error(__('The category could not be deleted. Please, try again.'));
