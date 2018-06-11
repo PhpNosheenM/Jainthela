@@ -301,7 +301,7 @@ class OrdersController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
-		//$location_id=$this->Auth->User('location_id'); 
+		$location_id=$this->Auth->User('location_id'); 
 		$state_id=$this->Auth->User('state_id'); 
 		$this->viewBuilder()->layout('admin_portal');
         $order = $this->Orders->newEntity();
@@ -336,6 +336,7 @@ class OrdersController extends AppController
 			else{$voucher_no=1;} 
 			$order->city_id=$city_id;
 			$order->order_from="Web";
+			$order->location_id=$location_id;
 			$order->voucher_no=$voucher_no;
 			$order->order_status="Pending";
 			$order->transaction_date=date('Y-m-d',strtotime($order->transaction_date));

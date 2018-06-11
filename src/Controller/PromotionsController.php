@@ -139,11 +139,11 @@ class PromotionsController extends AppController
      */
     public function delete($dir)
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['patch', 'post', 'put']);
 		$id = $this->EncryptingDecrypting->decryptData($dir);
-        $promotion = $this->Promotions->get($id,[
-            'contain' => ['PromotionDetails']]);
-        if ($this->Promotions->delete($promotion)) {
+        $promotion = $this->Promotions->get($id);
+		$promotion->status='Deactive';
+        if ($this->Promotions->save($promotion)) {
             $this->Flash->success(__('The promotion has been deleted.'));
         } else {
             $this->Flash->error(__('The promotion could not be deleted. Please, try again.'));

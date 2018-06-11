@@ -136,10 +136,11 @@ class TermConditionsController extends AppController
      */
     public function delete($dir)
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['patch', 'post', 'put']);
 		$id = $this->EncryptingDecrypting->decryptData($dir);
         $termCondition = $this->TermConditions->get($id);
-        if ($this->TermConditions->delete($termCondition)) {
+		$termCondition->status='Deactive';
+        if ($this->TermConditions->save($termCondition)) {
             $this->Flash->success(__('The term condition has been deleted.'));
         } else {
             $this->Flash->error(__('The term condition could not be deleted. Please, try again.'));

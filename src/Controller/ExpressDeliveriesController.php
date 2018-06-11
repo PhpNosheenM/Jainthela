@@ -182,10 +182,11 @@ class ExpressDeliveriesController extends AppController
      */
     public function delete($dir)
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['patch', 'post', 'put']);
 		$id = $this->EncryptingDecrypting->decryptData($dir);
         $expressDelivery = $this->ExpressDeliveries->get($id);
-        if ($this->ExpressDeliveries->delete($expressDelivery)) {
+		$expressDelivery->status='Deactive';
+        if ($this->ExpressDeliveries->save($expressDelivery)) {
             $this->Flash->success(__('The express delivery has been deleted.'));
         } else {
             $this->Flash->error(__('The express delivery could not be deleted. Please, try again.'));

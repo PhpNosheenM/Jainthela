@@ -222,10 +222,11 @@ class BannersController extends AppController
      */
     public function delete($dir)
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['patch', 'post', 'put']);
 		$id = $this->EncryptingDecrypting->decryptData($dir);
         $banner = $this->Banners->get($id);
-        if ($this->Banners->delete($banner)) {
+		$banner->status='Deactive';
+        if ($this->Banners->save($banner)) {
             $this->Flash->success(__('The banner has been deleted.'));
         } else {
             $this->Flash->error(__('The banner could not be deleted. Please, try again.'));

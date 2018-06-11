@@ -72,7 +72,7 @@ class StatesController extends AppController
 		$this->set(compact('states','state','paginate_limit'));
     }
 
-    
+
 
     /**
      * Delete method
@@ -83,10 +83,11 @@ class StatesController extends AppController
      */
     public function delete($dir)
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['patch', 'post', 'put']);
 		$id = $this->EncryptingDecrypting->decryptData($dir);
         $state = $this->States->get($id);
-        if ($this->States->delete($state)) {
+		$state->status='Deactive';
+        if ($this->States->save($state)) {
             $this->Flash->success(__('The state has been deleted.'));
         } else {
             $this->Flash->error(__('The state could not be deleted. Please, try again.'));

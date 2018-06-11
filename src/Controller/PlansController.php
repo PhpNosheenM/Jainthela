@@ -1,8 +1,8 @@
 <?php
 namespace App\Controller;
-
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\View\View;
 /**
  * Plans Controller
  *
@@ -12,6 +12,11 @@ use App\Controller\AppController;
  */
 class PlansController extends AppController
 {
+	public function beforeFilter(Event $event)
+	{
+		parent::beforeFilter($event);
+		$this->Security->setConfig('unlockedActions', ['index']);
+	}
 
     /**
      * Index method
@@ -148,10 +153,11 @@ class PlansController extends AppController
      */
     public function delete($dir)
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['patch', 'post', 'put']);
 		$id = $this->EncryptingDecrypting->decryptData($dir);
         $plan = $this->Plans->get($id);
-        if ($this->Plans->delete($plan)) {
+		$plan->status='Deactive';
+        if ($this->Plans->save($plan)) {
             $this->Flash->success(__('The plan has been deleted.'));
         } else {
             $this->Flash->error(__('The plan could not be deleted. Please, try again.'));

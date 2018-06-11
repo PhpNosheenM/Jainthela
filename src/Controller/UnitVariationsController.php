@@ -160,10 +160,11 @@ class UnitVariationsController extends AppController
      */
     public function delete($dir)
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['patch', 'post', 'put']);
 		$id = $this->EncryptingDecrypting->decryptData($dir);
         $unitVariation = $this->UnitVariations->get($id);
-        if ($this->UnitVariations->delete($unitVariation)) {
+		$unitVariation->status='Deactive';
+        if ($this->UnitVariations->save($unitVariation)) {
             $this->Flash->success(__('The unit variation has been deleted.'));
         } else {
             $this->Flash->error(__('The unit variation could not be deleted. Please, try again.'));

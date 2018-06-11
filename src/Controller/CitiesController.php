@@ -505,10 +505,11 @@ class CitiesController extends AppController
      */
     public function delete($dir)
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['patch', 'post', 'put']);
 		$id = $this->EncryptingDecrypting->decryptData($dir);
         $city = $this->Cities->get($id);
-        if ($this->Cities->delete($city)) {
+		$city->status='Deactive';
+        if ($this->Cities->save($city)) {
             $this->Flash->success(__('The city has been deleted.'));
         } else {
             $this->Flash->error(__('The city could not be deleted. Please, try again.'));

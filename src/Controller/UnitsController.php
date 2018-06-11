@@ -88,11 +88,12 @@ class UnitsController extends AppController
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function delete($dir)
-    { 
-        $this->request->allowMethod(['post', 'delete']);
+    {
+        $this->request->allowMethod(['patch', 'post', 'put']);
 		$id = $this->EncryptingDecrypting->decryptData($dir);
         $unit = $this->Units->get($id);
-        if ($this->Units->delete($unit)) {
+		$unit->status='Deactive';
+        if ($this->Units->save($unit)) {
             $this->Flash->success(__('The unit has been deleted.'));
 			 
         } else {

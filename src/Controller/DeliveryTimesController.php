@@ -1,8 +1,8 @@
 <?php
 namespace App\Controller;
-
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\View\View;
 /**
  * DeliveryTimes Controller
  *
@@ -12,6 +12,11 @@ use App\Controller\AppController;
  */
 class DeliveryTimesController extends AppController
 {
+	public function beforeFilter(Event $event)
+	{
+		parent::beforeFilter($event);
+		$this->Security->setConfig('unlockedActions', ['index']);
+	}
 
     /**
      * Index method
@@ -140,10 +145,11 @@ class DeliveryTimesController extends AppController
      */
     public function delete($dir)
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['patch', 'post', 'put']);
 		$id = $this->EncryptingDecrypting->decryptData($dir);
         $deliveryTime = $this->DeliveryTimes->get($id);
-        if ($this->DeliveryTimes->delete($deliveryTime)) {
+		$deliveryTime->status='Deactive';
+        if ($this->DeliveryTimes->save($deliveryTime)) {
             $this->Flash->success(__('The delivery time has been deleted.'));
         } else {
             $this->Flash->error(__('The delivery time could not be deleted. Please, try again.'));
