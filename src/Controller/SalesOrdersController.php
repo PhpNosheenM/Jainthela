@@ -27,13 +27,18 @@ class SalesOrdersController extends AppController
      */
     public function index()
     {
+		$user_type =$this->Auth->User('user_type');
+		if($user_type=="Super Admin"){
+		$this->viewBuilder()->layout('super_admin_layout');	
+		}else if($user_type=="Admin"){
 		$this->viewBuilder()->layout('admin_portal');
+		}
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
 		$location_id=$this->Auth->User('location_id');
 		
         $this->paginate = [
-            'contain' => ['SalesOrderRows'=>['ItemVariations'], 'Customers',  'Cities'],
+            'contain' => ['SalesOrderRows'=>['ItemVariations'], 'Customers',  'Cities', 'DeliveryTimes'],
 			'limit' => 20
         ];
 		$sales=$this->SalesOrders->find()->where(['SalesOrders.city_id'=>$city_id,'SalesOrders.status'=>'Active'])->order(['SalesOrders.id'=>'DESC']);
@@ -70,7 +75,13 @@ class SalesOrdersController extends AppController
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id');
 		$state_id=$this->Auth->User('state_id'); 
+		$user_type =$this->Auth->User('user_type');
+		if($user_type=="Super Admin"){
+		$this->viewBuilder()->layout('super_admin_layout');	
+		$location_id=1;
+		}else if($user_type=="Admin"){
 		$this->viewBuilder()->layout('admin_portal');
+		}
         $salesOrder = $this->SalesOrders->newEntity();
 		$CityData = $this->SalesOrders->Cities->get($city_id);
 		$StateData = $this->SalesOrders->Cities->States->get($CityData->state_id);
@@ -88,6 +99,7 @@ class SalesOrdersController extends AppController
 			$Voucher_no = $this->SalesOrders->find()->select(['voucher_no'])->where(['SalesOrders.city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first(); 
 			if($Voucher_no){$voucher_no=$Voucher_no->voucher_no+1;}
 			else{$voucher_no=1;}
+			$salesOrder->delivery_date=date('Y-m-d', strtotime($this->request->getData('delivery_date')));
 			$salesOrder->city_id=$city_id;
 			$salesOrder->location_id=$location_id;
 			$salesOrder->sales_order_from="Web";
@@ -102,7 +114,7 @@ class SalesOrdersController extends AppController
 
                 return $this->redirect(['action' => 'index']);
             }
-			pr($salesOrder); exit;
+		 
             $this->Flash->error(__('The sales salesOrder could not be saved. Please, try again.'));
         }
 		
@@ -183,12 +195,34 @@ class SalesOrdersController extends AppController
 							->contain(['Customers'=>['Cities']]);
         } 
 		$partyOptions=[];
-		foreach($Partyledgers as $Partyledger){  	
-			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id,'city_id'=>$Partyledger->customer->city->id,'state_id'=>$Partyledger->customer->city->state_id,'bill_to_bill_accounting'=>$Partyledger->bill_to_bill_accounting,'customer_id'=>$Partyledger->customer_id];
+		foreach($Partyledgers as $Partyledger){  
+
+			
+			$customer_address=$this->SalesOrders->CustomerAddresses->find()->where(['CustomerAddresses.customer_id'=>$Partyledger->customer_id,'CustomerAddresses.default_address'=>1,'CustomerAddresses.is_deleted'=>0])->first();
+			$customer_address_count=$this->SalesOrders->CustomerAddresses->find()->where(['CustomerAddresses.customer_id'=>$Partyledger->customer_id,'CustomerAddresses.default_address'=>1,'CustomerAddresses.is_deleted'=>0])->count();
+			if(!empty($customer_address_count)){
+				@$customer_address_id=@$customer_address->id;
+			}else{
+				@$customer_address_id=0;
+			}
+			
+			
+			$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id,'city_id'=>$Partyledger->customer->city->id,'state_id'=>$Partyledger->customer->city->state_id,'bill_to_bill_accounting'=>$Partyledger->bill_to_bill_accounting,'customer_id'=>$Partyledger->customer_id,'customer_address_id'=>$customer_address_id];
 		}
 		
 		
-		//pr($items); exit;
+		$deliveryTmes = $this->SalesOrders->DeliveryTimes->find()->where(['DeliveryTimes.city_id'=>$city_id, 'DeliveryTimes.status'=>'Active']);
+		
+		foreach($deliveryTmes as $deliveryTmes_data){
+		
+			$time_from=$deliveryTmes_data->time_from;
+			$time_to=$deliveryTmes_data->time_to;
+			$show_time=$time_from.' - '.$time_to;
+			$deliveryTimes[]=['text' => $show_time,'value' => $deliveryTmes_data->id];
+		}
+		
+		$this->loadmodel('DeliveryCharges');
+		$deliveryCharges=$this->DeliveryCharges->find()->where(['DeliveryCharges.city_id'=>$city_id, 'DeliveryCharges.status'=>'Active'])->first();
 		
         $this->set(compact('salesOrder', 'locations', 'customers', 'drivers', 'customerAddresses', 'promotionDetails', 'deliveryCharges', 'deliveryTimes', 'cancelReasons','order_no','partyOptions','Accountledgers','items'));
 		

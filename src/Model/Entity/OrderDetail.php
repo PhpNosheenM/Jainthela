@@ -36,6 +36,7 @@ class OrderDetail extends Entity
         'item_variation_id' => true,
         'combo_offer_id' => true,
         'quantity' => true,
+        'actual_quantity' => true,
         'rate' => true,
         'amount' => true,
         'gst_percentage' => true,

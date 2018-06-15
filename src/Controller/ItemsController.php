@@ -17,7 +17,7 @@ class ItemsController extends AppController
 	public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->Security->setConfig('unlockedActions', ['add','edit']);
+        $this->Security->setConfig('unlockedActions', ['add','edit','stockReport','wastageReport']);
 
     }
 
@@ -238,6 +238,32 @@ class ItemsController extends AppController
 		return $this->redirect(['action' => 'index']);
     	exit;
     }
+	public function wastageReport($id = null)
+    {
+		$city_id=$this->Auth->User('city_id');
+		$user_id=$this->Auth->User('id');
+		$this->viewBuilder()->layout('super_admin_layout');
+		$city_id=$this->request->query('city_id');
+		$location_id=$this->request->query('location_id');
+
+		$from_date =  date("Y-m-d",strtotime($this->request->query('from_date')));
+		$to_date   =  date("Y-m-d",strtotime($this->request->query('to_date')));
+		
+		
+		if($from_date=="1970-01-01")
+		{
+			$from_date=date("d-m-Y");
+		}
+		if($to_date=="1970-01-01")
+		{
+			$to_date=date("d-m-Y");;
+		}
+		$ItemsVariations=$this->Items->ItemsVariationsData->find()->where(['seller_id IS NULL','current_stock > '=>0])->toArray();
+		$Locations = $this->Items->Locations->find('list');
+		$Cities = $this->Items->Cities->find('list');
+		$this->set(compact('ItemsVariations','Locations','Cities','from_date','to_date','city_id','location_id'));
+	}
+		
 	public function stockReport($id = null)
     {
 		$city_id=$this->Auth->User('city_id');
@@ -279,8 +305,8 @@ class ItemsController extends AppController
 						$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['ItemLedgers.item_variation_id'=>$ItemsVariation->id,'ItemLedgers.city_id'=>$LocationData->city_id,'ItemLedgers.location_id'=>$location_id,'ItemLedgers.seller_id IS NULL'])->where($where1)->contain(['Items','UnitVariations'=>['Units']])->first();
 						
 						$merge=@$ItemLedgers->item->name.'('.@$ItemLedgers->unit_variation->quantity_variation.'.'.@$ItemLedgers->unit_variation->unit->shortname.')';
-						//pr($ItemLedgers); exit;
-						if($ItemLedgers){
+						
+						if($ItemLedgers){ //pr($merge); exit;
 						$UnitRateSerialItem = $this->itemVariationWiseReport($ItemsVariation->id,$transaction_date,$LocationData->city_id,$where1);
 						
 						$showItems[$ItemLedgers->item->id][]=['item_name'=>$ItemLedgers->item->name,'item_variation_name'=>$merge,'stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem['unit_rate']];

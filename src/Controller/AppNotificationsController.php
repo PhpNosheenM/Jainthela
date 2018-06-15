@@ -88,6 +88,8 @@ class AppNotificationsController extends AppController
         ];
 		
 		if ($this->request->is(['post','put'])) {
+			 
+			
 			$image_web=$this->request->data['image_web'];
 			 
 			$web_image_error=$image_web['error'];
@@ -173,63 +175,73 @@ class AppNotificationsController extends AppController
 				}
 					$customers_data=$this->AppNotifications->Customers->find()->where(['Customers.city_id'=>$city_id]);
 					
-					$created_link=$banner_data->app_link;
+					$final_link=$banner_data->app_link;
+					if(!empty($final_link)){
+						$created_link=$final_link;
+					}else{
+						$created_link='img/icon.png';
+					}
+					
 					$message=$banner_data->message;
 					
 					$API_ACCESS_KEY='AAAAXmNqxY4:APA91bG0X6RHVhwJKXUQGNSSCas44hruFdR6_CFd6WHPwx9abUr-WsrfEzsFInJawElgrp24QzaE4ksfmXu6kmIL6JG3yP487fierMys5byv-I1agRtMPIoSqdgCZf8R0iqsnds-u4CU';
 					
 					foreach($customers_data as $custmr_data){
 						
-						$device_token=$custmr_data->token;
-						$device_token="cfroufH_wtc:APA91bFjkWZ0WG_xvcLrtkAG3hheQK0tUipIPufdCYT85UkzhRyL_vEn8nOK--0zTj1w1b6OTcvnv81PhxFe4jgEpyAAwlHZ8MQvJBznCQLIAi4RD30vphR8uiZFWrzZ3SVVnYPjRSla";
+						$device_token=$custmr_data->fcm_token;
+						//$device_token="cfroufH_wtc:APA91bFjkWZ0WG_xvcLrtkAG3hheQK0tUipIPufdCYT85UkzhRyL_vEn8nOK--0zTj1w1b6OTcvnv81PhxFe4jgEpyAAwlHZ8MQvJBznCQLIAi4RD30vphR8uiZFWrzZ3SVVnYPjRSla";
 						$device_token1=rtrim($device_token);
 						
 						
 						
 						
 		if(!empty($device_token)){
-		$msg = array
-		(
-			'message'     =>$message,
-			'image'     =>$keyname,
-			'link'    => $created_link,
-			'notification_id'    => '',
-		);
-		$url = 'https://fcm.googleapis.com/fcm/send';
-		$fields = array
-		(
-			'registration_ids'     => array($device_token),
-			'data'            => @$msg,
-		);				 
-		 		 
- 
-        //$url = 'https://fcm.googleapis.com/fcm/send';
-  
-        //$kkkki="AAAAXmNqxY4:APA91bG0X6RHVhwJKXUQGNSSCas44hruFdR6_CFd6WHPwx9abUr-WsrfEzsFInJawElgrp24QzaE4ksfmXu6kmIL6JG3yP487fierMys5byv-I1agRtMPIoSqdgCZf8R0iqsnds-u4CU";
-		$kkkki="AIzaSyDQcVP0eF_55UrqTxYOAmdeeEzt2lQ6PAg";         
-        $headers = array(
-            'Authorization: key=' . $kkkki,
-            'Content-Type: application/json'
-        );
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt ($ch, CURLOPT_SSL_VERIFYHOST, 0);   
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
-        $result = curl_exec($ch);
-		$final_result=json_decode($result);
-		$sms_flag=$final_result->success; 		
-        if ($result === FALSE) {
-            die('Curl failed: ' . curl_error($ch));
-        }
-        curl_close($ch);
-        $result;
+			
+			
+			define('SERVER_API_KEY','AIzaSyDQcVP0eF_55UrqTxYOAmdeeEzt2lQ6PAg');
+	$tokens = array($device_token);
+
+	$header = [
+		'Content-Type:application/json',
+		'Authorization: Key='.SERVER_API_KEY
+	];
+
+	$msg = [
+		'title'=> 'Jainthela-HELLO ',
+		'body' => 'HELLO WORLD'.$message,
+		'message' => 'HELLO WORLD'.$message,
+		'icon' => 'img/icon.png',
+		'url' => $created_link
+	];
+	
+	$payload = array(
+		'registration_ids' => $tokens,
+		'data' => $msg
+	);
+	
+	$curl = curl_init();
+	curl_setopt_array($curl, array(
+	  CURLOPT_URL => "https://fcm.googleapis.com/fcm/send",
+	  CURLOPT_RETURNTRANSFER => true,
+	  CURLOPT_CUSTOMREQUEST => "POST",
+	  CURLOPT_POSTFIELDS => json_encode($payload),
+	  CURLOPT_HTTPHEADER => $header
+	));
+	$response = curl_exec($curl);
+	$err = curl_error($curl);
+	curl_close($curl);
+	pr($payload);
+	$final_result=json_decode($response);
+	$sms_flag=$final_result->success; 	
+	if ($err) {
+	  echo "cURL Error #:" . $err;
+	} else {
+	  echo $response;
+	}			
+			  
     	 		 
 				if($sms_flag>0){
-						$query = $this->AppNotifications->AppNotificationCustomers->query();
+					 	$query = $this->AppNotifications->AppNotificationCustomers->query();
 						$query->insert(['app_notification_id', 'customer_id', 'sent'])
 								->values([
 								'app_notification_id' => $banner_data->id,
@@ -242,7 +254,7 @@ class AppNotificationsController extends AppController
 					
 					}
 					
-				exit;
+				exit; 
                 $this->Flash->success(__('The AppNotifications has been saved.'));
 
                 if(empty($web_image_error))

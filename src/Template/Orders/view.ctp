@@ -36,7 +36,9 @@ else
 echo $this->Html->link('Close',array(),['escape'=>false,'class'=>'btn  red hidden-print fa fa-remove pull-right','onclick'=>'javascript:window.close();']);
 
 ?>
-<div align="center" style="color:#F98630; font-size: 16px;font-weight: bold;">INVOICE</div>
+		<div align="center" style="color:#F98630; font-size: 16px;font-weight: bold;">
+			INVOICE - <?= $sales_orders->order_no ?>
+		</div>
 	<div style="border:solid 2px #F98630; margin-bottom:0px;"></div>
 		<table width="100%">	
 			
@@ -48,7 +50,7 @@ echo $this->Html->link('Close',array(),['escape'=>false,'class'=>'btn  red hidde
 						</b>
 					</td>
 				</tr>
-				<?php  
+				<?php
 				foreach($sales_orders->customer->customer_addresses as $address_data){
 					@$default_address=$address_data->default_address;
 					 
@@ -95,6 +97,7 @@ echo $this->Html->link('Close',array(),['escape'=>false,'class'=>'btn  red hidde
 					$item_name=$order_detail->item_variation->item->name;
 					$alise_name=$order_detail->item_variation->item->alias_name;
 					$unit_name=$order_detail->item_variation->unit_variation->unit->shortname;
+					$quantity_variation=$order_detail->item_variation->unit_variation->quantity_variation;
 					
 					$sales_rate=$order_detail->rate;
 					$show_quantity=$quantity.' '.$unit_name;
@@ -107,14 +110,17 @@ echo $this->Html->link('Close',array(),['escape'=>false,'class'=>'btn  red hidde
 					$amount=$order_detail->amount;
 					@$total_rate+=$amount;
 					if(!empty($alise_name)){
-						$show_item=$item_name.' ('.$alise_name.') '.$unit_name;
+						$show_item=$item_name.' ('.$alise_name.') '.$quantity_variation.'-'.$unit_name;
 					}else{
-						$show_item=$item_name.' ('.$alise_name.') '.$unit_name;
+						$show_item=$item_name.' ('.$alise_name.') '.$quantity_variation.'-'.$unit_name;
 					} ?>
 				<tr style="background-color:#fff;">
 					<td align="right"><?= $i ?></td>
 					<td align="center">
-						<?php echo $this->Html->image('/img/item_images/'.$image, ['height' => '40px', 'width'=>'40px', 'class'=>'img-rounded img-responsive']); ?>
+						<?php 
+						$result=$awsFileLoad->getObjectFile($image);
+				    			echo '<img src="data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'" alt="" height="30px" width="40px" class="catimage"/>';
+						//echo $this->Html->image('/img/item_images/'.$image, ['height' => '40px', 'width'=>'40px', 'class'=>'img-rounded img-responsive']); ?>
 					</td>
 					<td style="text-align:left;"><?= h($show_item) ?></td>
 					<td style="text-align:center;"><?= h($show_quantity) ?></td>
@@ -125,7 +131,7 @@ echo $this->Html->link('Close',array(),['escape'=>false,'class'=>'btn  red hidde
 				<?php } ?>
 				<?php
 				$amount_from_promo_code=$sales_orders->amount_from_promo_code;
-				$delivery_charge=$sales_orders->delivery_charge;
+				$delivery_charge=$sales_orders->delivery_charge_amount;
 				$amount_from_jain_cash=$sales_orders->amount_from_jain_cash;
 				$online_amount=$sales_orders->online_amount;
 				$amount_from_wallet=$sales_orders->amount_from_wallet;
@@ -146,11 +152,13 @@ echo $this->Html->link('Close',array(),['escape'=>false,'class'=>'btn  red hidde
 					<td align="center"><b><?= h($sales_orders->total_gst) ?></b></td>
 				</tr>
 				
+				<?php if(!empty($delivery_charge)){ ?>
 				<tr style="background-color:#fff;">
 					<td colspan="5">&nbsp;</td>
 					<td align="right"><b>Delivery Charge</b></td>
 					<td align="center"><b><?= h($delivery_charge) ?></b></td>
 				</tr>
+				<?php } ?>
 				
 				<?php if(!empty($discount_per)){ ?>
 				<tr style="background-color:#fff; border-top:1px solid #000">
@@ -212,6 +220,10 @@ echo $this->Html->link('Close',array(),['escape'=>false,'class'=>'btn  red hidde
 				</tr>
 			</tbody>
 			<tfoot>
+				<tr>
+					<td colspan="2"><b>Deliver Date:-</b></td>
+					<td colspan="2"><b><?php echo date('d-M-Y', strtotime($sales_orders->delivery_date)) ?></b></td>
+				</tr>
 				<tr>
 					<td colspan="2"><b>Deliver Between:-</b></td>
 					<td colspan="2"><b><?php echo $sales_orders->delivery_time->time_from ;?> - <?php echo $sales_orders->delivery_time->time_to ;?></b></td>

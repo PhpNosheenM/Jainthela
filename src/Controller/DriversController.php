@@ -14,6 +14,12 @@ use Cake\View\View;
 class DriversController extends AppController
 {
 
+	public function beforeFilter(Event $event)
+	{
+		parent::beforeFilter($event);
+		$this->Security->setConfig('unlockedActions', ['index']);
+	}
+	
     /**
      * Index method
      *
@@ -144,10 +150,11 @@ class DriversController extends AppController
      */
     public function delete($dir)
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['patch', 'post', 'put']);
 		$id = $this->EncryptingDecrypting->decryptData($dir);
         $driver = $this->Drivers->get($id);
-        if ($this->Drivers->delete($driver)) {
+		$driver->status='Deactive';
+        if ($this->Drivers->save($driver)) {
             $this->Flash->success(__('The driver has been deleted.'));
         } else {
             $this->Flash->error(__('The driver could not be deleted. Please, try again.'));

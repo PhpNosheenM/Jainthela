@@ -335,6 +335,7 @@ class OrdersController extends AppController
 			$Round_off_amt=round(($p-$q),2);
 			$order->grand_total=round($order->grand_total);	
 			$order->round_off=$Round_off_amt;
+			$order->order_from=="App"
 			//pr($order); exit;
 		
 			if ($orders = $this->Orders->save($order)) {
