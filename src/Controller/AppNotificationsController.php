@@ -75,8 +75,10 @@ class AppNotificationsController extends AppController
      */
     public function index()
     {
+		//$server_path=$this->request->here();
+		$server_path='http://13.126.159.20/';
 		$user_id=$this->Auth->User('id');
-        $city_id=$this->Auth->User('city_id'); 
+        $city_id=$this->Auth->User('city_id');
         $location_id=$this->Auth->User('location_id'); 
         $state_id=$this->Auth->User('state_id'); 
         $this->viewBuilder()->layout('super_admin_layout');
@@ -172,33 +174,38 @@ class AppNotificationsController extends AppController
 
 					$dir  = WWW_ROOT .  'img'.DS.'temp'.DS.$banner_image_name;
                     $dir = $this->EncryptingDecrypting->encryptData($dir);
+				}else{
+					$keyname='img/jain.png';
 				}
+				
+					$image_result=$this->AwsFile->getObjectFile($keyname);
+					$img_url='data:'.$image_result['ContentType'].';base64,'.base64_encode($image_result['Body']);
 					$customers_data=$this->AppNotifications->Customers->find()->where(['Customers.city_id'=>$city_id]);
 					
 					$final_link=$banner_data->app_link;
 					if(!empty($final_link)){
 						$created_link=$final_link;
 					}else{
-						$created_link='img/icon.png';
+						$created_link='/jainthela://home';
 					}
 					
 					$message=$banner_data->message;
 					
 					$API_ACCESS_KEY='AAAAXmNqxY4:APA91bG0X6RHVhwJKXUQGNSSCas44hruFdR6_CFd6WHPwx9abUr-WsrfEzsFInJawElgrp24QzaE4ksfmXu6kmIL6JG3yP487fierMys5byv-I1agRtMPIoSqdgCZf8R0iqsnds-u4CU';
 					
+					//define('SERVER_API_KEY','AIzaSyDQcVP0eF_55UrqTxYOAmdeeEzt2lQ6PAg');		
+					define('SERVER_API_KEY','AAAAXmNqxY4:APA91bG0X6RHVhwJKXUQGNSSCas44hruFdR6_CFd6WHPwx9abUr-WsrfEzsFInJawElgrp24QzaE4ksfmXu6kmIL6JG3yP487fierMys5byv-I1agRtMPIoSqdgCZf8R0iqsnds-u4CU');		
+					
 					foreach($customers_data as $custmr_data){
 						
-						$device_token=$custmr_data->fcm_token;
+						//$device_token=$custmr_data->fcm_token;
+						$device_token='fiv6reOde8w:APA91bGqiTQMcu9_U19hqGYOU7EioP4US-uIBDWpFvgSIk02mJc2xxK_Ervmp6BgFHMH3dapxgsnpDFjx7UfjykubJYueoeFAuXya85yMzMhU33IOdQqXjrl51Z-QMW7PoYNc6-VgbNo';
 						//$device_token="cfroufH_wtc:APA91bFjkWZ0WG_xvcLrtkAG3hheQK0tUipIPufdCYT85UkzhRyL_vEn8nOK--0zTj1w1b6OTcvnv81PhxFe4jgEpyAAwlHZ8MQvJBznCQLIAi4RD30vphR8uiZFWrzZ3SVVnYPjRSla";
 						$device_token1=rtrim($device_token);
-						
-						
-						
-						
+						 
 		if(!empty($device_token)){
 			
 			
-			define('SERVER_API_KEY','AIzaSyDQcVP0eF_55UrqTxYOAmdeeEzt2lQ6PAg');
 	$tokens = array($device_token);
 
 	$header = [
@@ -210,8 +217,8 @@ class AppNotificationsController extends AppController
 		'title'=> 'Jainthela-HELLO ',
 		'body' => 'HELLO WORLD'.$message,
 		'message' => 'HELLO WORLD'.$message,
-		'icon' => 'img/icon.png',
-		'url' => $created_link
+		'icon' => $server_path.$keyname,
+		'url' => 'img/jain.png'
 	];
 	
 	$payload = array(

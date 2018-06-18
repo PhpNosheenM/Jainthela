@@ -365,6 +365,7 @@
 				if(final_amount<=dlvr_amnt){
 					delivery_chrg=dlvr_chrg;
 					var dlvr_chrg_id=$('#dlvr_chrg_id').val();
+					if(!dlvr_chrg_id){ dlvr_chrg_id=0; }
 					$('#delivery_charge_id').val(dlvr_chrg_id);
 				}else{
 					delivery_chrg=0;
