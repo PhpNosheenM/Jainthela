@@ -71,6 +71,9 @@ class AppNotificationsTable extends Table
             'foreignKey' => 'wish_list_id',
             'joinType' => 'INNER'
         ]);
+		
+        $this->belongsTo('AppNotificationTokens');
+		
         $this->belongsTo('Categories', [
             'foreignKey' => 'category_id',
             'joinType' => 'INNER'

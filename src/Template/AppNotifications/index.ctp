@@ -6,8 +6,8 @@
     color: #656C78;
     font-size: 13px;
 }
-
-</style><?php $this->set('title', 'App Notifications'); ?>
+</style>
+<?php $this->set('title', 'App Notifications'); ?>
 <div class="page-content-wrap">
         <div class="page-title">
 			<h2><span class="fa fa-arrow-circle-o-left"></span> App Notifications</h2>
@@ -21,10 +21,31 @@
 						<?= $this->Form->create($appNotification,['id'=>"jvalidate",'type'=>'file']) ?>
 						<?php $js=''; ?>
 						<div class="panel-body">
+						
+							<div class="form-group">
+								<div class="col-md-6">
+									<label class="check"><input type="radio" id="all"  value="All"  class="send_type" name="send_type" checked="checked" /> All</label>
+								</div>
+								<div class="col-md-6">
+									<label class="check"><input type="radio" id="cstmr" value="limited" class="send_type" name="send_type" /> Selected Customer</label>
+								</div>
+					        </div>
+							
+							<div class="form-group" id="cus_id" style="display:none !important;">
+								<label> Customer </label>
+								<?= $this->Form->select('customer_id',$customers,['id'=>'customer_id','empty'=>'Select Customers','multiple'=>'multiple','class'=>'form-control select multiple','label'=>false]) ?>
+								<span class="help-block"></span>
+							</div>
+							
+							<div class="form-group">
+								<label>Title</label>
+								<?= $this->Form->control('title',['class'=>'form-control','placeholder'=>'Title','label'=>false]) ?>
+								<span class="help-block"></span>
+					        </div>
 						    <div class="form-group">
-									<label>Message</label>
-									<?= $this->Form->control('message',['class'=>'form-control','placeholder'=>'Message','label'=>false]) ?>
-									<span class="help-block"></span>
+								<label>Message</label>
+								<?= $this->Form->control('message',['class'=>'form-control','placeholder'=>'Message','label'=>false]) ?>
+								<span class="help-block"></span>
 					        </div>
 							<div class="form-group">
 									<label>Link Name</label>
@@ -180,6 +201,7 @@
 								<thead>
 									<tr>
 										<th><?= ('SN.') ?></th>
+										<th><?= ('Title') ?></th>
 										<th><?= ('Date') ?></th>
 										<th><?= ('Image') ?></th>
 										<th><?= ('Message') ?></th>
@@ -190,11 +212,23 @@
 								<tbody>
 								<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); ?>
 								
-								  <?php foreach ($appNotifications as $data): ?>
+								  <?php foreach ($appNotifications as $data): 
+								  $image_web=$data->image_web;
+								  ?>
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
+									<td><?= h($data->title) ?></td>
 									<td><?= h($data->created_on) ?></td>
-									<td><img src="<?php echo $data->image_app; ?>" ></td>
+									<td>
+										<?php 
+										if(!empty($image_web)){
+										$result=$awsFileLoad->getObjectFile($data->image_web);
+										echo '<img src="data:'.$result['ContentType'].';base64,'.base64_encode($result['Body']).'" alt="" height="30px" width="40px" class="catimage"/>';
+										}else{
+										?>
+										<img src="img/jain.png" height="30px" width="40px" class="catimage">
+										<?php } ?>
+									</td>
 									<td><?= h($data->message) ?></td>
 									<td><?= h($data->screen_type) ?></td>
 									<td class="actions">
@@ -258,6 +292,19 @@
 			var dummy_item_id=$("option:selected", this).attr("item_id");
 				$("#category_id").selectpicker("val",dummy_category_id);
 				$("#item_id").selectpicker("val",dummy_item_id);
+		});
+		
+		
+		$(document).on("click", ".send_type", function(){
+			var type_value=$("input[name=send_type]:checked").val(); 
+			if(type_value=="All"){
+				$("#cus_id").hide();
+				$("#customer_id").selectpicker("val","");
+			}else{
+				
+				$("#cus_id").show();
+			}
+			
 		});
 		
 		$(document).on("click", ".iradio", function(){
