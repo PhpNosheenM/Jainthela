@@ -1,63 +1,83 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\StockTransferVoucher[]|\Cake\Collection\CollectionInterface $stockTransferVouchers
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('New Stock Transfer Voucher'), ['action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Grns'), ['controller' => 'Grns', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Grn'), ['controller' => 'Grns', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Cities'), ['controller' => 'Cities', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New City'), ['controller' => 'Cities', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Locations'), ['controller' => 'Locations', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Location'), ['controller' => 'Locations', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Stock Transfer Voucher Rows'), ['controller' => 'StockTransferVoucherRows', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Stock Transfer Voucher Row'), ['controller' => 'StockTransferVoucherRows', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="stockTransferVouchers index large-9 medium-8 columns content">
-    <h3><?= __('Stock Transfer Vouchers') ?></h3>
-    <table cellpadding="0" cellspacing="0">
-        <thead>
-            <tr>
-                <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('grn_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('city_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('transaction_date') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('location_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($stockTransferVouchers as $stockTransferVoucher): ?>
-            <tr>
-                <td><?= $this->Number->format($stockTransferVoucher->id) ?></td>
-                <td><?= $stockTransferVoucher->has('grn') ? $this->Html->link($stockTransferVoucher->grn->id, ['controller' => 'Grns', 'action' => 'view', $stockTransferVoucher->grn->id]) : '' ?></td>
-                <td><?= $stockTransferVoucher->has('city') ? $this->Html->link($stockTransferVoucher->city->name, ['controller' => 'Cities', 'action' => 'view', $stockTransferVoucher->city->id]) : '' ?></td>
-                <td><?= h($stockTransferVoucher->transaction_date) ?></td>
-                <td><?= $stockTransferVoucher->has('location') ? $this->Html->link($stockTransferVoucher->location->name, ['controller' => 'Locations', 'action' => 'view', $stockTransferVoucher->location->id]) : '' ?></td>
-                <td><?= $this->Number->format($stockTransferVoucher->voucher_no) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['action' => 'view', $stockTransferVoucher->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $stockTransferVoucher->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $stockTransferVoucher->id], ['confirm' => __('Are you sure you want to delete # {0}?', $stockTransferVoucher->id)]) ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
-    </div>
+<style>
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    border-color: transparent;
+    padding: 8px 8px !important; 
+    background: #F0F4F9;
+    color: #656C78;
+    font-size: 13px;
+}
+</style>
+<?php $this->set('title', 'Stock Transfer Vouchers'); ?>
+<div class="page-content-wrap">
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title"><strong>Stock Transfer Vouchers</strong></h3>
+					<div class="pull-right">
+						<div class="pull-left">
+								<?= $this->Form->create('Search',['type'=>'GET']) ?>
+								<?= $this->Html->link(__('<span class="fa fa-plus"></span> Add New'), ['controller'=>'Grns','action' => 'index'],['style'=>'margin-top:-30px !important;','class'=>'btn btn-success','escape'=>false]) ?>
+								<div class="form-group" style="display:inline-table">
+									<div class="input-group">
+										<div class="input-group-addon">
+											<span class="fa fa-search"></span>
+										</div>
+										<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
+										<div class="input-group-btn">
+											<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
+										</div>
+									</div>
+								</div>
+							<?= $this->Form->end() ?>
+						</div>
+					</div>
+				</div>
+				<div class="panel-body">
+					<div class="table-responsive">
+						<table class="table table-bordered">
+							<thead>
+								<tr>
+									<th><?= ('SNo.') ?></th>
+									<th><?= ('Voucher No.') ?></th>
+									<th><?= ('Transfer To') ?></th>
+									<th><?= ('Transaction Date') ?></th>
+									<th><?= ('Action') ?></th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); ?>
+								
+								  <?php foreach ($stockTransferVouchers as $stockTransferVoucher): ?>
+								<tr>
+									<td><?= $this->Number->format(++$i) ?></td>
+									<td><?= h($stockTransferVoucher->voucher_no) ?></td>
+									<td><?= h($stockTransferVoucher->location->name) ?></td>
+									<td><?= h(@$stockTransferVoucher->transaction_date) ?></td>
+									<td>
+									<!--<?= $this->Html->link(__('<span class="fa fa-edit"></span> Edit'), ['action' => 'edit',$stockTransferVoucher->id],['class'=>'btn btn-danger btn-xs','escape'=>false]) ?>-->
+									<?= $this->Html->link(__('<span class="fa fa-search"></span> View'), ['action' => 'view',$stockTransferVoucher->id],['class'=>'btn btn-warning btn-xs','escape'=>false]) ?></td>
+								</tr>
+								<?php endforeach; ?>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="panel-footer">
+					<div class="paginator pull-right">
+						<ul class="pagination">
+							<?= $this->Paginator->first(__('First')) ?>
+							<?= $this->Paginator->prev(__('Previous')) ?>
+							<?= $this->Paginator->numbers() ?>
+							<?= $this->Paginator->next(__('Next')) ?>
+							<?= $this->Paginator->last(__('Last')) ?>
+						</ul>
+						<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
 </div>

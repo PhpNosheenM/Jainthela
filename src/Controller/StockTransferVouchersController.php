@@ -16,7 +16,7 @@ class StockTransferVouchersController extends AppController
     public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->Security->setConfig('unlockedActions', ['add','edit']);
+        $this->Security->setConfig('unlockedActions', ['add','edit','index','view']);
     }
     /**
      * Index method
@@ -25,12 +25,16 @@ class StockTransferVouchersController extends AppController
      */
     public function index()
     {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$this->viewBuilder()->layout('super_admin_layout');
         $this->paginate = [
-            'contain' => ['Grns', 'Cities', 'Locations']
+            'contain' => ['Grns', 'Cities', 'Locations'],
+			'limit' => 20
         ];
         $stockTransferVouchers = $this->paginate($this->StockTransferVouchers);
-
-        $this->set(compact('stockTransferVouchers'));
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('stockTransferVouchers','paginate_limit'));
     }
 
     /**

@@ -317,7 +317,7 @@ class OrdersController extends AppController
 			 if ($this->Orders->save($order)) {
 			
 					if($order->order_type=="Credit"){
-					
+							
 						//	Party/Customer Ledger Entry
 						$AccountingEntrie = $this->Orders->AccountingEntries->newEntity(); 
 						$AccountingEntrie->ledger_id=$order->party_ledger_id;
@@ -473,6 +473,8 @@ class OrdersController extends AppController
 						$ReferenceDetail->order_id=$order->id;
 						$this->Orders->ReferenceDetails->save($ReferenceDetail);
 						
+						
+						
 						//Grn entry
 						$this->orderDeliver($order->id);
 				}else if($order->order_type=="COD"){
@@ -487,6 +489,13 @@ class OrdersController extends AppController
 					$AccountingEntrie->entry_from="Web";
 					$AccountingEntrie->order_id=$order->id;  
 					$this->Orders->AccountingEntries->save($AccountingEntrie);
+					
+					//party Ledger Update
+					$query1 = $this->Orders->query();
+					$query1->update()
+					->set(['party_ledger_id'=>$LedgerData->id])
+					->where(['id'=>$order->id])
+					->execute();
 					
 					// Sales Account Entry 
 					$AccountingEntrie = $this->Orders->AccountingEntries->newEntity(); 
@@ -634,6 +643,12 @@ class OrdersController extends AppController
 					$AccountingEntrie->order_id=$order->id; 
 					$this->Orders->AccountingEntries->save($AccountingEntrie);
 					
+					//party Ledger Update
+					$query1 = $this->Orders->query();
+					$query1->update()
+					->set(['party_ledger_id'=>$LedgerData->id])
+					->where(['id'=>$order->id])
+					->execute();
 					// Sales Account Entry 
 					$AccountingEntrie = $this->Orders->AccountingEntries->newEntity(); 
 					$AccountingEntrie->ledger_id=$order->sales_ledger_id;
