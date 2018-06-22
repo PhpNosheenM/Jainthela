@@ -238,14 +238,19 @@ class ItemsController extends AppController
 		return $this->redirect(['action' => 'index']);
     	exit;
     }
-	public function wastageReport($id = null)
-    {
+	public function todayStockReport($id = null){
+		$city_id=$this->Auth->User('city_id');
+		$this->viewBuilder()->layout('super_admin_layout');
+		$ItemsVariationsForJainthela=$this->Items->ItemsVariationsData->find()->contain(['Items','UnitVariations'=>['Units']])->where(['ItemsVariationsData.seller_id IS NULL'])->toArray();
+		$ItemsVariations=$this->Items->ItemsVariationsData->find()->contain(['Items','Sellers','UnitVariations'=>['Units']])->toArray();
+		$this->set(compact('ItemsVariations','ItemsVariationsForJainthela'));
+	}
+	public function wastageVoucher($id = null){
 		$city_id=$this->Auth->User('city_id');
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('super_admin_layout');
-		$city_id=$this->request->query('city_id');
+		//$city_id=$this->request->query('city_id');
 		$location_id=$this->request->query('location_id');
-
 		$from_date =  date("Y-m-d",strtotime($this->request->query('from_date')));
 		$to_date   =  date("Y-m-d",strtotime($this->request->query('to_date')));
 		
@@ -258,10 +263,112 @@ class ItemsController extends AppController
 		{
 			$to_date=date("d-m-Y");;
 		}
-		$ItemsVariations=$this->Items->ItemsVariationsData->find()->where(['seller_id IS NULL','current_stock > '=>0])->toArray();
-		$Locations = $this->Items->Locations->find('list');
-		$Cities = $this->Items->Cities->find('list');
-		$this->set(compact('ItemsVariations','Locations','Cities','from_date','to_date','city_id','location_id'));
+		
+		$where1=[];
+		$status="No";
+		if(empty($location_id))
+		{
+			$status="Yes";
+		}
+		$item = $this->Items->ItemLedgers->newEntity();
+        if ($this->request->is(['patch', 'post', 'put'])) { 
+				$item_ledgers=$this->request->getData()['item_ledgers'];
+				foreach($item_ledgers as $item_ledger){ 
+					$to_date   =  date("Y-m-d");
+					$ItemLedger = $this->Items->ItemLedgers->newEntity(); 
+					$ItemLedger->item_id=$item_ledger['item_id']; 
+					$ItemLedger->item_variation_id=$item_ledger['item_variation_id'];
+					$ItemLedger->transaction_date=$to_date;  
+					$ItemLedger->quantity=$item_ledger['quantity'];
+					$ItemLedger->rate=$item_ledger['rate'];
+					$ItemLedger->purchase_rate=$item_ledger['rate'];
+					$ItemLedger->status="Out";
+					$ItemLedger->city_id=$city_id;
+					$ItemLedger->location_id=$location_id;
+					$ItemLedger->wastage="Yes";
+					$this->Items->ItemLedgers->save($ItemLedger);
+				}
+				return $this->redirect(['action' => 'wastageVoucher']);
+			//pr($item_ledgers); exit;
+		}
+		
+		
+		$showItems=[];
+		if($status=="No"){
+			$to_date   =  date("Y-m-d");
+			$transaction_date=$to_date;
+			$LocationData=$this->Items->Locations->get($location_id);
+			$ItemsVariations=$this->Items->ItemsVariationsData->find()->toArray();
+			foreach($ItemsVariations as  $ItemsVariation){ 
+				$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['ItemLedgers.item_variation_id'=>$ItemsVariation->id,'ItemLedgers.city_id'=>$LocationData->city_id,'ItemLedgers.location_id'=>$location_id,'ItemLedgers.seller_id IS NULL'])->where($where1)->contain(['Items','UnitVariations'=>['Units']])->first();
+				$merge=@$ItemLedgers->item->name.'('.@$ItemLedgers->unit_variation->quantity_variation.'.'.@$ItemLedgers->unit_variation->unit->shortname.')';
+				if($ItemLedgers){ 
+				$UnitRateSerialItem = $this->itemVariationWiseReport($ItemsVariation->id,$transaction_date,$LocationData->city_id,$where1);
+				$showItems[]=['item_id'=>$ItemLedgers->item->id,'item_variation_name'=>$merge,'item_variation_id'=>$ItemsVariation->id,'stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem['unit_rate']];
+				}
+			}
+		}
+			
+		$Locations = $this->Items->Locations->find('list')->where(['city_id'=>$city_id]);
+		$this->set(compact('ItemsVariations','Locations','Cities','from_date','to_date','city_id','location_id','showItems','item'));
+	}
+	public function wastageReport($id = null)
+    {
+		$city_id=$this->Auth->User('city_id');
+		$user_id=$this->Auth->User('id');
+		$this->viewBuilder()->layout('super_admin_layout');
+		//$city_id=$this->request->query('city_id');
+		$location_id=$this->request->query('location_id');
+		$from_date =  date("Y-m-d",strtotime($this->request->query('from_date')));
+		$to_date   =  date("Y-m-d",strtotime($this->request->query('to_date')));
+		
+		
+		if($from_date=="1970-01-01")
+		{
+			$from_date=date("d-m-Y");
+		}
+		if($to_date=="1970-01-01")
+		{
+			$to_date=date("d-m-Y");;
+		}
+		
+		$where1=[];
+		$status="No";
+		if(empty($location_id))
+		{
+			$status="Yes";
+		}
+		
+		$showItems=[];
+		if($status=="No"){
+			
+			//$to_date   =  date("Y-m-d");
+			$transaction_date=date("Y-m-d",strtotime($to_date));
+			$LocationData=$this->Items->Locations->get($location_id);
+			$ItemsVariations=$this->Items->ItemsVariationsData->find();
+			foreach($ItemsVariations as  $ItemsVariation){ 
+					$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['ItemLedgers.item_variation_id'=>$ItemsVariation->id,'ItemLedgers.city_id'=>$LocationData->city_id,'ItemLedgers.location_id'=>$location_id,'ItemLedgers.seller_id IS NULL','ItemLedgers.wastage'=>'Yes','transaction_date >='=>$from_date,'transaction_date <='=>$to_date])->contain(['Items']);
+					
+					 $itemVarData = $this->Items->ItemVariations->get($ItemsVariation->id, [
+						'contain' => ['UnitVariations'=>['Units']]
+					]);
+							
+					
+					$merge=@$ItemLedgers->toArray()[0]['item']['name'].'('.@$itemVarData->unit_variation->quantity_variation.'.'.@$itemVarData->unit_variation->unit->shortname.')';
+					//pr(@$merge); exit;
+					$ItemLedgers->select(['ItemLedgers.item_id','total_quantity'=>$ItemLedgers->func()->sum('ItemLedgers.quantity')])->group('ItemLedgers.item_variation_id');
+					
+					if(@$ItemLedgers->toArray()[0]['total_quantity'] > 0){
+							//pr(@$ItemLedgers->toArray()); exit;
+					$showItems[]=['item_id'=>$itemVarData->item_id,'item_variation_name'=>$merge,'item_variation_id'=>$ItemsVariation->id,'stock'=>$ItemLedgers->toArray()[0]['total_quantity']];
+				}
+			}
+		}
+		
+		//pr($showItems);exit;
+			
+		$Locations = $this->Items->Locations->find('list')->where(['city_id'=>$city_id]);
+		$this->set(compact('ItemsVariations','Locations','Cities','from_date','to_date','city_id','location_id','showItems','item'));
 	}
 		
 	public function stockReport($id = null)

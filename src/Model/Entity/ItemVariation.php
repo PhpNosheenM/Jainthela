@@ -58,6 +58,7 @@ class ItemVariation extends Entity
         'current_stock' => true,
         'purchase_rate' => true,
         'mrp' => true,
+        'wastage' => true,
         'item_variation_master_id' => true
     ];
 }

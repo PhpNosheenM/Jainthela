@@ -14,23 +14,16 @@
 		<div class="col-md-12">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><strong>Stock Report</strong></h3>
+					<h3 class="panel-title"><strong>Wastage Report</strong></h3>
 					<div class="pull-right">
 						<div class="pull-left">
 						</div> 
 					</div> 	
 				</div>
+				
 				<div class="panel-body">   			
 					<div class="row">
 					<?= $this->Form->create('Search',['type'=>'GET']) ?>
-						
-						<div class="col-md-2">
-							<div class="form-group">
-								<label>City</label>
-								<?php echo $this->Form->select('city_id',$Cities, ['empty'=>'--Select--','label' => false,'class' => 'form-control input-sm ledger select', 'data-live-search'=>true,'value'=>$city_id]); ?>
-								
-							</div>
-						</div>
 						<div class="col-md-2">
 							<div class="form-group">
 								<label>Location</label>
@@ -53,8 +46,6 @@
 							</div>
 						</div>
 						
-						
-						
 						<div class="col-md-3">
 							<div class="form-group">
 								<label></label></br/>
@@ -65,122 +56,57 @@
 						<?= $this->Form->end() ?>
 					</div>
 				</div>  
-				<?php if(empty($location_id)){ ?>
-				<div class="panel-body">    
-					<div class="table-responsive">
-						<table class="table table-bordered">
-							<thead>
-								<tr>
-									<th><?= ('SNo.') ?></th>
-									<th><?= ('Item Name') ?></th>
-									<th><?= ('Unit') ?></th>
-									<th><?= ('Closing Stock') ?></th>
-									<th><?= ('Unit rate') ?></th>
-									<th><?= ('Amount') ?></th>
-								</tr>
-							</thead>
-							<tbody>                                            
-								<?php $i = 0; $total_amt=0; ?>
-								
-								   <?php foreach ($showItems as $showItem){  
-										//$amt=$showItem['stock']*$showItem['unit_rate'];
-										//$total_amt+=$amt;
-										$d=sizeof($showItem['stock']);
-										
-								   ?>
-								<tr>
-									<td rowspan="<?php echo $d; ?>"><?= $this->Number->format(++$i) ?></td>
-									<td rowspan="<?php echo $d; ?>"><?= h($showItem['item_name']) ?></td>
-									<?php 
-									$jk=0;
-									foreach($showItem['stock'] as $key=>$data){ 
-									$amt=$data*$showItem['unit_rate'][$key];
-									$total_amt+=$amt;
-									if($jk > 0)
-									{
-										?>
+				
+					<div class="panel-body">   
+						<div class="col-md-6">
+							<div class="table-responsive">
+								<table class="table table-bordered">
+									<thead>
 										<tr>
-										<?php
-									}
-									$jk++;
-									?>
-									<td><?php echo $showItem['item_name'].'  '.' ',$unit_variation_data[$key]; ?></td>
-									<td><?= h($data) ?></td>
-									<td><?php echo round($showItem['unit_rate'][$key],2);  ?></td>
-									<td><?= h($amt) ?></td>
-									</tr>
-								   <?php } ?>
-								    <?php } ?>
-								</tr>
-								
-								<tr>
-									<th colspan="5" style="text-align:right">Total</th>
-									<td><?= h($total_amt) ?></td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
-				</div>
-				<?php }else{  ?>
-				<div class="panel-body">    
-					<div class="table-responsive">
-						<table class="table table-bordered">
-							<thead>
-								<tr>
-									<th><?= ('SNo.') ?></th>
-									<th><?= ('Item Name') ?></th>
-									<th><?= ('Item Variation') ?></th>
-									<th><?= ('Closing Stock') ?></th>
-									<th><?= ('Unit rate') ?></th>
-									<th><?= ('Amount') ?></th>
-								</tr>
-							</thead>
-							<tbody>                                            
-								<?php $i = 0; $total_amt=0; ?>
-								
-								   <?php foreach($showItems as $showItem){
-								   $item_var_size=(sizeof($showItem));
-									//$amt=$showItem['stock']*$showItem['unit_rate'];
-									//$total_amt+=$amt;
-									//echo $item_var_size;
-								   ?>
-								<tr>
-									<td rowspan="<?php echo $item_var_size; ?>"><?= $this->Number->format(++$i) ?></td>
-									<td rowspan="<?php echo $item_var_size; ?>"><?php echo ($showItem[0]['item_name']); ?></td>
-									<?php 
-									$jk=0;
-									foreach($showItem as $data){ 
-									$amt=$data['stock']*$data['unit_rate'];
-									$total_amt+=$amt;
-									if($jk > 0)
-									{
-										?>
-										<tr>
-										<?php
-									}
-									$jk++;
-									?>
-									
-										<td><?php echo ($data['item_variation_name']); ?></td>
-										<td><?php echo ($data['stock']); ?></td>
-										<td><?php echo ($data['unit_rate']); ?></td>
-										<td><?= h($amt) ?></td>
+											<th><?= ('SNo.') ?></th>
+											<th><?= ('Item Name') ?></th>
+											<th><?= ('Wastage Quantity') ?></th>
+											
 										</tr>
-								   <?php } ?>
-								
-								   <?php } ?>
-								<tr>
-									<th colspan="5" style="text-align:right">Total</th>
-									<td><?= h($total_amt) ?></td>
-								</tr>
-							</tbody>
-						</table>
+									</thead>
+									<tbody>                                            
+										<?php $i = 0; $total_amt=0; ?>
+										
+										   <?php foreach ($showItems as $showItem){  
+											?>
+										<tr>
+											<td><?= $this->Number->format(++$i) ?></td>
+											<td><?php echo $showItem['item_variation_name']; ?></td>
+											<td><?php echo $showItem['stock']; ?></td>
+											
+										</tr>
+										 <?php } ?>
+										
+									</tbody>
+								</table>
+							</div>
+						</div>
 					</div>
-				</div>
-				<?php } ?>
+					 
 			</div>
 		</div>
 	</div>                    
 </div>
 <?= $this->Html->script('plugins/bootstrap/bootstrap-datepicker.js',['block'=>'jsDatePicker']) ?>
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
+<?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
+<?php
+	$js="
+	 
+		$(document).on('keyup', '.wastage_quantity', function()
+		{ 
+			var total_qt=$(this).attr('total_qt');
+			var wastage_quantity=$(this).val();
+			var actual_quantity=total_qt-wastage_quantity;
+			$(this).closest('tr').find('.actual_quantity').val(actual_quantity);
+			
+		});
+	 
+	";  
+echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom'));
+?>
