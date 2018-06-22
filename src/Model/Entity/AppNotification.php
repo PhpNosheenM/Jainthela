@@ -49,10 +49,12 @@ class AppNotification extends Entity
     protected $_accessible = [
         'city_id' => true,
         'location_id' => true,
+        'title' => true,
         'message' => true,
         'image_web' => true,
         'image_app' => true,
         'app_link' => true,
+        'web_link' => true,
         'item_id' => true,
         'item_variation_id' => true,
         'combo_offer_id' => true,

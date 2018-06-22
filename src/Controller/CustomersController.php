@@ -244,10 +244,11 @@ class CustomersController extends AppController
      */
     public function delete($dir)
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['patch', 'post', 'put']);
 		$id = $this->EncryptingDecrypting->decryptData($dir);
         $customer = $this->Customers->get($id);
-        if ($this->Customers->delete($customer)) {
+		$customer->status='Deactive';
+        if ($this->Customers->save($customer)) {
             $this->Flash->success(__('The customer has been deleted.'));
         } else {
             $this->Flash->error(__('The customer could not be deleted. Please, try again.'));

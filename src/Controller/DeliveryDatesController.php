@@ -1,8 +1,8 @@
 <?php
 namespace App\Controller;
-
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\View\View;
 /**
  * DeliveryDates Controller
  *
@@ -13,6 +13,12 @@ use App\Controller\AppController;
 class DeliveryDatesController extends AppController
 {
 
+	public function beforeFilter(Event $event)
+	{
+		parent::beforeFilter($event);
+		$this->Security->setConfig('unlockedActions', ['index']);
+	}
+	
     /**
      * Index method
      *
@@ -136,10 +142,11 @@ class DeliveryDatesController extends AppController
      */
     public function delete($dir)
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['patch', 'post', 'put']);
 		$id = $this->EncryptingDecrypting->decryptData($dir);
         $deliveryDate = $this->DeliveryDates->get($id);
-        if ($this->DeliveryDates->delete($deliveryDate)) {
+		$deliveryDate->status='Deactive';
+        if ($this->DeliveryDates->save($deliveryDate)) {
             $this->Flash->success(__('The delivery date has been deleted.'));
         } else {
             $this->Flash->error(__('The delivery date could not be deleted. Please, try again.'));

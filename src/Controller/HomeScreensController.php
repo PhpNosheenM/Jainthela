@@ -3,6 +3,9 @@ namespace App\Controller;
 use Cake\Filesystem\Folder;
 use Cake\Filesystem\File;
 use App\Controller\AppController;
+use Cake\Event\Event;
+use Cake\View\View;
+
 
 /**
  * HomeScreens Controller
@@ -13,6 +16,11 @@ use App\Controller\AppController;
  */
 class HomeScreensController extends AppController
 {
+	public function beforeFilter(Event $event)
+	{
+		parent::beforeFilter($event);
+		$this->Security->setConfig('unlockedActions', ['index']);
+	}
 
     /**
      * Index method
@@ -196,12 +204,11 @@ class HomeScreensController extends AppController
      */
     public function delete($dir)
     {
-        $this->request->allowMethod(['post', 'delete']);
-		$id = $this->EncryptingDecrypting->decryptData($dir);
-		
+        $this->request->allowMethod(['patch', 'post', 'put']);
 		$id = $this->EncryptingDecrypting->decryptData($dir);
         $homeScreen = $this->HomeScreens->get($id);
-        if ($this->HomeScreens->delete($homeScreen)) {
+		$homeScreen->status='Deactive';
+        if ($this->HomeScreens->save($homeScreen)) {
             $this->Flash->success(__('The home screen has been deleted.'));
         } else {
             $this->Flash->error(__('The home screen could not be deleted. Please, try again.'));

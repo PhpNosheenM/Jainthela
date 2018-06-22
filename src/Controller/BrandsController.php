@@ -206,10 +206,11 @@ class BrandsController extends AppController
      */
     public function delete($dir)
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['patch', 'post', 'put']);
 		$id = $this->EncryptingDecrypting->decryptData($dir);
         $brand = $this->Brands->get($id);
-        if ($this->Brands->delete($brand)) {
+		$brand->status='Deactive';
+        if ($this->Brands->save($brand)) {
             $this->Flash->success(__('The brand has been deleted.'));
         } else {
             $this->Flash->error(__('The brand could not be deleted. Please, try again.'));

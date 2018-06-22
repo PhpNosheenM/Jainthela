@@ -56,16 +56,15 @@
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
 									<td>
-										<?php echo $this->Html->link($order->order_no,['controller'=>'Orders','action' => 'view', $order->id, 'print'],['target'=>'_blank']); ?>
+										<?php $order_id = $EncryptingDecrypting->encryptData($order->id); ?>
+										<?php echo $this->Html->link($order->order_no,['controller'=>'Orders','action' => 'view', $order_id, 'print'],['target'=>'_blank']); ?>
 									</td>
 									<td><?= h($order->party_ledger->name) ?></td>
 									<td><?= h($order->location->name) ?></td>
 									<td><?= h($order->grand_total) ?></td>
 									<td><?= h($order->order_type) ?></td>
 									<td><?= h($order->order_status) ?></td>
-									
-									
-									
+									 
 									<td class="actions">
 										<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'edit', $order->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
 										

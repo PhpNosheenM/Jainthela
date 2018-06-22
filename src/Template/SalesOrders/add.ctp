@@ -1,4 +1,4 @@
-<?php $this->set('title', 'Order'); ?>
+<?php $this->set('title', 'Sales Order'); ?>
 <!-- PAGE CONTENT WRAPPER -->
 <div class="page-content-wrap">
 	<div class="row">
@@ -6,14 +6,16 @@
 		<?= $this->Form->create($salesOrder,['id'=>'jvalidate','class'=>'form-horizontal','type'=>'file']) ?>  
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><strong> Order </strong></h3>
+					<h3 class="panel-title"><strong> Sales Order </strong></h3>
 				</div>
 			
 				<div class="panel-body">
 					<div class="row">
+					<center><h3>Sales Order Details</h3></center>
+							<hr>
 						<div class="col-md-3">
 							<div class="form-group">
-								<label class=" control-label">Order No</label>
+								<label class=" control-label">Sales Order No</label>
 								<div class="">                                            
 									
 									<?= $this->Form->control('sales_order_no',['class'=>'form-control','placeholder'=>'','label'=>false,'value'=>$order_no,'readonly']) ?>
@@ -23,9 +25,12 @@
 								<label class=" control-label">Customer</label>
 								<div class="">     
 									<?= $this->Form->select('sales_ledger_id',$partyOptions,['empty'=>'---Select--','class'=>'form-control select prty_ledgr','label'=>false,'value'=>@$sales_orders->customer_id]) ?>	
-									<input type="hidden" name="customer_id" id="cstmr_id">
+									
 									<?php //$this->Form->select('customer_id',$customers,['empty'=>'---Select--','class'=>'form-control select','label'=>false]) ?>
 								</div>
+								
+								<input type="hidden" name="customer_id" id="cstmr_id">
+								<input type="hidden" name="customer_address_id" id="customer_address_id">
 							</div>
 						
 							
@@ -55,64 +60,89 @@
 						</div>
 					</div>
 					<div class="panel-body">    
-					<div class="row">
-						<div class="table-responsive">
-							<table class="table table-bordered main_table">
-								<thead>
-									<tr align="center">
-										<th rowspan="2" style="text-align:left;width:10px;"><label>S.N<label></th>
-										<th rowspan="2" style="text-align:left;width:300px;"><label>Item<label></th>
+						<div class="row">
+							<div class="table-responsive">
+								
+								<center><h3>Sales Item Details</h3></center>
+								<hr>
+								<table class="table table-bordered main_table">
+									<thead>
+										<tr align="center">
+											<th rowspan="2" style="text-align:left;width:10px;"><label>S.N<label></th>
+											<th rowspan="2" style="text-align:left;width:300px;"><label>Item<label></th>
+											
+											<th rowspan="2" style="text-align:center;width:130px; "><label>Quantity<label></th>
+											<th rowspan="2" style="text-align:center;width:130px;"><label>Rate<label></th>
+											
+											<th rowspan="2" style="text-align:center;"><label>Taxable Value<label></th>
+											<th colspan="2" style="text-align:center;"><label id="gstDisplay">GST<label></th>
+											<th rowspan="2" style="text-align:center;width:200px;"><label>Total<label></th>
+											<th rowspan="2" style="text-align:center;"><label>Action<label></th>
+										</tr>
+										<tr>
+											
+											<th><div align="center" style="width:50px;">%</div></th>
+											<th><div align="center"style="text-align:center;width:50px;">Rs</div></th>
+											
+										</tr>
+									</thead>
+									<tbody class="MainTbody">  
 										
-										<th rowspan="2" style="text-align:center;width:130px; "><label>Quantity<label></th>
-										<th rowspan="2" style="text-align:center;width:130px;"><label>Rate<label></th>
+									</tbody>
+									<tfoot>
 										
-										<th rowspan="2" style="text-align:center;"><label>Taxable Value<label></th>
-										<th colspan="2" style="text-align:center;"><label id="gstDisplay">GST<label></th>
-										<th rowspan="2" style="text-align:center;width:200px;"><label>Total<label></th>
-										<th rowspan="2" style="text-align:center;"><label>Action<label></th>
+										<tr>
+											<td colspan="7" style="text-align:right;">Total Taxable</td>
+											<td colspan="2" style="text-align:right;"><?= $this->Form->control('total_amount',['class'=>'form-control total_taxable_value','label'=>false,'readonly']) ?></td>
+										</tr>
+										
+										<tr>
+										 
+											<td colspan="7" style="text-align:right;">GST Amount</td>
+											<td colspan="2" style="text-align:right;"><?= $this->Form->control('total_gst',['class'=>'form-control gst_amt','label'=>false,'readonly']) ?></td>
+										</tr>
+										
+										<tr>
+										<input type="hidden" name="dlvr_amnt" id="dlvr_amnt" value="<?php echo $deliveryCharges->amount; ?>">
+										
+										<input type="hidden" name="dlvr_chrg" id="dlvr_chrg" value="<?php echo $deliveryCharges->charge; ?>">
+										
+										<input type="hidden" name="dlvr_chrg_id" id="dlvr_chrg_id" value="<?php echo $deliveryCharges->id; ?>">
+										
+										<input type="hidden" name="delivery_charge_id" id="delivery_charge_id">
+										
+										<td colspan="7" style="text-align:right;">Delivery Charges</td>
+										<td colspan="2" style="text-align:right;"><?= $this->Form->control('delivery_charge_amount',['class'=>'form-control dlvry_chrgs','label'=>false,'readonly']) ?></td>
+									</tr>
+										
+										
+										<tr>
+											
+											<td colspan="7" style="text-align:right;">Total Amount</td>
+											<td colspan="2" style="text-align:right;"><?= $this->Form->control('grand_total',['class'=>'form-control total_amt','label'=>false,'readonly']) ?></td>
+										</tr>
+									</tfoot>
+								</table>
+								
+								<center><h3>Sales Transaction Details</h3></center>
+								<hr>
+								<table width="70%" style="font-size:14px;">
+									<tr>
+										<th>Delivery Date</th>
+										<th style="padding-left:40px !important;">Delivery Time</th>
 									</tr>
 									<tr>
-										
-										<th><div align="center" style="width:50px;">%</div></th>
-										<th><div align="center"style="text-align:center;width:50px;">Rs</div></th>
-										
-									</tr>
-								</thead>
-								<tbody class="MainTbody">  
-									
-								</tbody>
-								<tfoot>
-									
-									<tr>
-										<td colspan="7" style="text-align:right;">Total Taxable</td>
-										<td colspan="2" style="text-align:right;"><?= $this->Form->control('total_amount',['class'=>'form-control total_taxable_value','label'=>false,'readonly']) ?></td>
-									</tr>
-									
-									<tr>
-										<td colspan="7" style="text-align:right;">GST Amount</td>
-										<td colspan="2" style="text-align:right;"><?= $this->Form->control('total_gst',['class'=>'form-control gst_amt','label'=>false,'readonly']) ?></td>
-									</tr>
-									<tr>
-										<td colspan="2" style="text-align:right;">
-											<div class="form-group">
-												<div class="col-md-4">
-													<!--label class="check"><input name="order_type" type="radio" id="itm"  value="Credit"  class="iradio" name="iradio" checked="checked" />Credit</label-->
-												</div>
-												<div class="col-md-4">
-													<!--label class="check"><input name="order_type" type="radio" id="slr"  value="COD" class="iradio" name="iradio"/> COD</label-->
-												</div>
-												<div class="col-md-4">
-													<!--label class="check"><input name="order_type" type="radio" id="cmbo"  value="OnLine" class="iradio" name="iradio"/> OnLine</label-->
-												</div>
-											</div>
+										<td>
+											<?= $this->Form->control('delivery_date',['class'=>'form-control datepicker','placeholder'=>'Delivery Date','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>date("d-m-Y"),'required']) ?>
 										</td>
-										<td colspan="5" style="text-align:right;">Total Amount</td>
-										<td colspan="2" style="text-align:right;"><?= $this->Form->control('grand_total',['class'=>'form-control total_amt','label'=>false,'readonly']) ?></td>
+										<td style="padding-left:40px !important;">
+											<?= $this->Form->select('delivery_time_id',$deliveryTimes,['empty'=>'----Select---Delivery---Time----','class'=>'form-control select','label'=>false,'required']) ?>
+										</td>
 									</tr>
-								</tfoot>
-							</table>
+								</table>
+								
+							</div>
 						</div>
-					</div>
 					</div>
 				</div>
 				<div class="panel-footer">
@@ -222,7 +252,9 @@
 		});
 		$(document).on('change','.prty_ledgr',function(){
 			 var customer_id=parseFloat($('option:selected', this).attr('customer_id'));
+			 var customeraddressid=parseFloat($('option:selected', this).attr('customer_address_id'));
 			 $('#cstmr_id').val(customer_id);
+			 $('#customer_address_id').val(customeraddressid);
 		});
 		
 		$(document).on('keyup','.rate',function(){
@@ -313,10 +345,37 @@
 					$(this).find('.mrp').val(per_item_sales_rate);
 			
 				$('.total_taxable_value').val(round(total_taxable_value,2));
-				$('.gst_amt').val(round(total_gst,2));
-				$('.total_amt').val(round(total_amount,2));
+					$('.gst_amt').val(round(total_gst,2));
+				 
 				
 			});
+				var ttl_amnt=parseFloat($('.total_taxable_value').val());
+				if(!ttl_amnt){ ttl_amnt=0; }
+				var ttl_gst=parseFloat($('.gst_amt').val());
+				if(!ttl_gst){ ttl_gst=0; }
+				 
+				var final_amount=parseFloat(ttl_amnt+ttl_gst);
+				if(!final_amount){ final_amount=0; }
+				 
+				var dlvr_amnt=$('#dlvr_amnt').val();
+				if(!dlvr_amnt){ dlvr_amnt=0; }
+				var dlvr_chrg=$('#dlvr_chrg').val();
+				if(!dlvr_chrg){ dlvr_chrg=0; }
+				var delivery_chrg=0;
+				if(final_amount<=dlvr_amnt){
+					delivery_chrg=dlvr_chrg;
+					var dlvr_chrg_id=$('#dlvr_chrg_id').val();
+					if(!dlvr_chrg_id){ dlvr_chrg_id=0; }
+					$('#delivery_charge_id').val(dlvr_chrg_id);
+				}else{
+					delivery_chrg=0;
+					$('#delivery_charge_id').val('');
+				}
+				$('.dlvry_chrgs').val(delivery_chrg);
+				 
+				var grand_total=parseFloat(final_amount)+parseFloat(delivery_chrg);
+				 if(!grand_total){ grand_total=0; }
+				$('.total_amt').val(round(grand_total,2));
 		}
 		
 	

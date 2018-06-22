@@ -1,8 +1,8 @@
 <?php
 namespace App\Controller;
-
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\View\View;
 /**
  * DeliveryCharges Controller
  *
@@ -13,6 +13,12 @@ use App\Controller\AppController;
 class DeliveryChargesController extends AppController
 {
 
+	public function beforeFilter(Event $event)
+	{
+		parent::beforeFilter($event);
+		$this->Security->setConfig('unlockedActions', ['index']);
+	}
+	
     /**
      * Index method
      *
@@ -146,10 +152,11 @@ class DeliveryChargesController extends AppController
      */
     public function delete($dir)
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['patch', 'post', 'put']);
 		$id = $this->EncryptingDecrypting->decryptData($dir);
         $deliveryCharge = $this->DeliveryCharges->get($id);
-        if ($this->DeliveryCharges->delete($deliveryCharge)) {
+		$deliveryCharge->status='Deactive';
+        if ($this->DeliveryCharges->save($deliveryCharge)) {
             $this->Flash->success(__('The delivery charge has been deleted.'));
         } else {
             $this->Flash->error(__('The delivery charge could not be deleted. Please, try again.'));

@@ -9,8 +9,10 @@
 					<h3 class="panel-title"><strong> Order </strong></h3>
 				</div>
 			<?php //pr($sales_orders->customer_id); ?>
-				<div class="panel-body">    
+				<div class="panel-body">
 					<div class="row">
+						<center><h3>Order Details</h3></center>
+						<hr>
 						<div class="col-md-3">
 							<div class="form-group">
 								<label class=" control-label">Order No</label>
@@ -23,23 +25,27 @@
 								<label class=" control-label">Customer</label>
 								<div class="">  
 									 
-										<?= $this->Form->select('party_ledger_id',$partyOptions,['empty'=>'---Select--','class'=>'form-control select','label'=>false,'value'=>@$sales_orders->sales_ledger_id]) ?>
+										<?= $this->Form->select('party_ledger_id',$partyOptions,['empty'=>'---Select--','class'=>'form-control select prty_ldgr','label'=>false,'value'=>@$sales_orders->sales_ledger_id]) ?>
 										
 									<?php if(!empty($ids)){
 									$transaction_date=date('d-m-Y', strtotime($sales_orders->transaction_date));
+									@$delivery_date=date('d-m-Y', strtotime($sales_orders->delivery_date));
 									$narration=$sales_orders->narration;
 									$sales_ledger_id=$sales_orders->sales_ledger_id;
 									  } ?>
 								</div>
 							</div>
-						
+							
+						<input type="hidden" name="customer_id" id="customer_id">
+						<input type="hidden" name="customer_address_id" id="customer_address_id">
 						
 						</div>
+						
 						<div class="col-md-3">
 							<div class="form-group">
 								<label class=" control-label">Transaction Date </label>
-								<div class="">       
-									<?php if(empty($ids)){ ?>		
+								<div class="">
+									<?php if(empty($ids)){ ?>
 									<?= $this->Form->control('transaction_date',['class'=>'form-control datepicker','placeholder'=>'Transaction Date','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>date("d-m-Y")]) ?>
 									<?php }else{ ?>
 										<?= $this->Form->control('transaction_date',['class'=>'form-control datepicker','placeholder'=>'Transaction Date','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>$transaction_date]) ?>
@@ -48,7 +54,7 @@
 							</div>
 							<div class="form-group">
 								<label class=" control-label">Sales Account</label>
-								<div class="">		
+								<div class="">
 									<?= $this->Form->select('sales_ledger_id',$Accountledgers,['class'=>'form-control select','label'=>false, 'value'=>@$sales_ledger_id]) ?>
 								</div>
 							</div>
@@ -57,15 +63,17 @@
 						<div class="col-md-6">
 						<div class="form-group">
 								<label class=" control-label">Narration</label>
-								<div class=""> 
+								<div class="">
 									<?= $this->Form->control('narration',['class'=>'form-control','placeholder'=>'Narration','label'=>false,'rows'=>'6','value'=>@$narration]) ?>
 								</div>
 							</div>
 						</div>
 					</div>
-					<div class="panel-body">    
+					<div class="panel-body">
 					<div class="row">
 						<div class="table-responsive">
+							<center><h3>Order Item Details</h3></center>
+							<hr>
 							<table class="table table-bordered main_table">
 								<thead>
 									<tr align="center">
@@ -139,29 +147,65 @@
 										<td colspan="2" style="text-align:right;"><?= $this->Form->control('total_amount',['class'=>'form-control total_taxable_value','label'=>false,'readonly','value'=>@$sales_orders->total_amount]) ?></td>
 									</tr>
 									
+									
 									<tr>
 										<td colspan="7" style="text-align:right;">GST Amount</td>
 										<td colspan="2" style="text-align:right;"><?= $this->Form->control('total_gst',['class'=>'form-control gst_amt','label'=>false,'readonly','value'=>@$sales_orders->total_gst]) ?></td>
 									</tr>
+									
 									<tr>
-										<td colspan="2" style="text-align:right;">
-											<div class="form-group">
-												<div class="col-md-4">
-													<label class="check"><input name="order_type" type="radio" id="itm"  value="Credit"  class="iradio" name="iradio" checked="checked" />Credit</label>
-												</div>
-												<div class="col-md-4">
-													<label class="check"><input name="order_type" type="radio" id="slr"  value="COD" class="iradio" name="iradio"/> COD</label>
-												</div>
-												<div class="col-md-4">
-													<label class="check"><input name="order_type" type="radio" id="cmbo"  value="OnLine" class="iradio" name="iradio"/> OnLine</label>
-												</div>
-											</div>
-										</td>
-										<td colspan="5" style="text-align:right;">Total Amount</td>
+										<input type="hidden" name="dlvr_amnt" id="dlvr_amnt" value="<?php echo $deliveryCharges->amount; ?>">
+										
+										<input type="hidden" name="dlvr_chrg" id="dlvr_chrg" value="<?php echo $deliveryCharges->charge; ?>">
+										
+										<input type="hidden" name="dlvr_chrg_id" id="dlvr_chrg_id" value="<?php echo $deliveryCharges->id; ?>">
+										
+										<input type="hidden" name="delivery_charge_id" id="delivery_charge_id">
+										
+										<td colspan="7" style="text-align:right;">Delivery Charges</td>
+										<td colspan="2" style="text-align:right;"><?= $this->Form->control('delivery_charge_amount',['class'=>'form-control dlvry_chrgs','label'=>false,'readonly','value'=>@$sales_orders->delivery_charge_amount]) ?></td>
+									</tr>
+									
+									<tr>
+										<td colspan="7" style="text-align:right;">Total Amount</td>
 										<td colspan="2" style="text-align:right;"><?= $this->Form->control('grand_total',['class'=>'form-control total_amt','label'=>false,'readonly','value'=>@$sales_orders->grand_total]) ?></td>
 									</tr>
 								</tfoot>
 							</table>
+							
+							<center><h3>Order Transaction Details</h3></center>
+								<hr>
+								<table width="100%" style="font-size:14px;">
+									<tr>
+										<th>Delivery Date</th>
+										<th style="padding-left:40px !important;">Delivery Time</th>
+									</tr>
+									<tr>
+										<td>
+										<?php if(!empty($ids)){ ?>
+											<?= $this->Form->control('delivery_date',['class'=>'form-control datepicker','placeholder'=>'Delivery Date','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>$delivery_date,'required']) ?>
+										<?php }else{ ?>
+											<?= $this->Form->control('delivery_date',['class'=>'form-control datepicker','placeholder'=>'Delivery Date','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>date("d-m-Y"),'required']) ?>
+										<?php }?>
+											
+										</td>
+										<td style="padding-left:40px !important;">
+											<?= $this->Form->select('delivery_time_id',$deliveryTimes,['empty'=>'----Select---Delivery---Time----','class'=>'form-control select','label'=>false,'required','value'=>@$sales_orders->delivery_time_id]) ?>
+										</td>
+										<td style="padding-left:40px !important;">
+											<div class="col-md-4">
+												<label class="check"><input name="order_type" type="radio" id="itm"  value="Credit"  class="iradio" name="iradio" checked="checked" /> Credit</label>
+											</div>
+											<div class="col-md-4">
+												<label class="check"><input name="order_type" type="radio" id="slr"  value="COD" class="iradio" name="iradio"/> COD</label>
+											</div>
+											<div class="col-md-4">
+												<label class="check"><input name="order_type" type="radio" id="cmbo"  value="OnLine" class="iradio" name="iradio"/> OnLine</label>
+											</div>
+										</td>
+									</tr>
+								</table>
+								
 						</div>
 					</div>
 					</div>
@@ -239,7 +283,12 @@ if(empty($ids)){
 				
 			}                                        
 		});
-		
+		$(document).on('change','.prty_ldgr',function(){
+			var cstmrid=$('option:selected', this).attr('customer_id');
+			var customeraddressid=$('option:selected', this).attr('customer_address_id');
+			$('#customer_id').val(cstmrid);
+			$('#customer_address_id').val(customeraddressid);
+		});
 		$(document).on('change','.seller_ledger_id',function(){
 			var seller_id=$('option:selected', this).attr('seller_id');
 			var url='".$this->Url->build(["controller" => "PurchaseInvoices", "action" => "SelectItemSellerWise"])."';
@@ -362,11 +411,39 @@ if(empty($ids)){
 					$(this).find('.sales_rate').val(per_item_sales_rate);
 					$(this).find('.mrp').val(per_item_sales_rate);
 			
-				$('.total_taxable_value').val(round(total_taxable_value,2));
-				$('.gst_amt').val(round(total_gst,2));
-				$('.total_amt').val(round(total_amount,2));
+					$('.total_taxable_value').val(round(total_taxable_value,2));
+					$('.gst_amt').val(round(total_gst,2));
+				 
 				
 			});
+				var ttl_amnt=parseFloat($('.total_taxable_value').val());
+				if(!ttl_amnt){ ttl_amnt=0; }
+				var ttl_gst=parseFloat($('.gst_amt').val());
+				if(!ttl_gst){ ttl_gst=0; }
+				 
+				var final_amount=parseFloat(ttl_amnt+ttl_gst);
+				if(!final_amount){ final_amount=0; }
+				 
+				var dlvr_amnt=$('#dlvr_amnt').val();
+				if(!dlvr_amnt){ dlvr_amnt=0; }
+				var dlvr_chrg=$('#dlvr_chrg').val();
+				if(!dlvr_chrg){ dlvr_chrg=0; }
+				var delivery_chrg=0;
+				if(final_amount<=dlvr_amnt){
+					delivery_chrg=dlvr_chrg;
+					var dlvr_chrg_id=$('#dlvr_chrg_id').val();
+					if(!dlvr_chrg_id){ dlvr_chrg_id=0; }
+					$('#delivery_charge_id').val(dlvr_chrg_id);
+				}else{
+					delivery_chrg=0;
+					$('#delivery_charge_id').val('');
+				}
+				$('.dlvry_chrgs').val(delivery_chrg);
+				
+				var grand_total=parseFloat(final_amount)+parseFloat(delivery_chrg);
+				 if(!grand_total){ grand_total=0; }
+				 alert(grand_total);
+				$('.total_amt').val(round(grand_total,2));
 		}
 		
 	
@@ -384,6 +461,20 @@ if(empty($ids)){
 				},
 				
 			}                                        
+		});
+		
+		$(document).ready(function() {
+			var cstmrid=$('.prty_ldgr').find('option:selected').attr('customer_id');
+			var customeraddressid=$('.prty_ldgr').find('option:selected').attr('customer_address_id');
+			$('#customer_id').val(cstmrid);
+			$('#customer_address_id').val(customeraddressid);
+			
+		});
+		$(document).on('change','.prty_ldgr',function(){
+			var cstmrid=$('option:selected', this).attr('customer_id');
+			var customeraddressid=$('option:selected', this).attr('customer_address_id');
+			$('#customer_id').val(cstmrid);
+			$('#customer_address_id').val(customeraddressid);
 		});
 		
 		$(document).on('change','.seller_ledger_id',function(){
@@ -433,6 +524,21 @@ if(empty($ids)){
 		});
 		
 		
+		$(document).ready(function() {
+			var gst_value=$('.item').find('option:selected').attr('gst_value'); 
+			var sale_rate=$('.item').find('option:selected').attr('sale_rate'); 
+			var gst_figure_id=$('.item').find('option:selected').attr('gst_figure_id');  
+			var item_id=$('.item').find('option:selected').attr('item_id');  
+			var current_stock=$('.item').find('option:selected').attr('current_stock');  
+			$('.item').closest('tr').find('.item_id').val(item_id);
+			$('.item').closest('tr').find('.gst_percentage').val(gst_value);
+			$('.item').closest('tr').find('.gst_figure_id').val(gst_figure_id);
+			$('.item').closest('tr').find('.rate').val(sale_rate);
+			$('.item').closest('tr').find('.quantity').attr('max',current_stock);
+			calculation();
+			
+		});
+		
 		$(document).on('change','.item',function(){ 
 			var gst_value=$(this).find('option:selected', this).attr('gst_value'); 
 			var sale_rate=$(this).find('option:selected', this).attr('sale_rate'); 
@@ -468,6 +574,7 @@ if(empty($ids)){
 				i++;
 			});
 		}
+		calculation();
 		function calculation(){
 			var total_amount=0;
 			var total_gst=0;
@@ -510,9 +617,37 @@ if(empty($ids)){
 			
 				$('.total_taxable_value').val(round(total_taxable_value,2));
 				$('.gst_amt').val(round(total_gst,2));
-				$('.total_amt').val(round(total_amount,2));
+				
+				
 				
 			});
+				var ttl_amnt=parseFloat($('.total_taxable_value').val());
+				if(!ttl_amnt){ ttl_amnt=0; }
+				var ttl_gst=parseFloat($('.gst_amt').val());
+				if(!ttl_gst){ ttl_gst=0; }
+				
+				var final_amount=parseFloat(ttl_amnt+ttl_gst);
+				if(!final_amount){ final_amount=0; }
+				
+				var dlvr_amnt=$('#dlvr_amnt').val();
+				if(!dlvr_amnt){ dlvr_amnt=0; }
+				var dlvr_chrg=$('#dlvr_chrg').val();
+				if(!dlvr_chrg){ dlvr_chrg=0; }
+				var delivery_chrg=0;
+				if(final_amount<=dlvr_amnt){
+					delivery_chrg=dlvr_chrg;
+					var dlvr_chrg_id=$('#dlvr_chrg_id').val();
+					if(!dlvr_chrg_id){ dlvr_chrg_id=0; }
+					$('#delivery_charge_id').val(dlvr_chrg_id);
+				}else{
+					delivery_chrg=0;
+					$('#delivery_charge_id').val('');
+				}
+				$('.dlvry_chrgs').val(delivery_chrg);
+				
+				var grand_total=parseFloat(final_amount)+parseFloat(delivery_chrg);
+				 if(!grand_total){ grand_total=0; }
+				$('#grand_total').val(round(grand_total,2));
 		}
 		
 	

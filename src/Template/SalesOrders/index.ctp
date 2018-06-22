@@ -47,19 +47,22 @@
 									<th><?= ('Customer Name') ?></th>
 									<th><?= ('Locality') ?></th>
 									<th><?= ('Grand Total') ?></th>
-									<th><?= ('Status') ?></th>
+									<th><?= ('Delivery Date') ?></th>
+									<th><?= ('Delivery Time') ?></th>
 									<th><?= ('Manage Order') ?></th>
 									<th><?= ('Delete') ?></th>
 								</tr>
 							</thead>
-							<tbody>                                            
+							<tbody>
 								<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); ?>
 								
 								  <?php foreach ($salesOrders as $order): //pr($order); exit;]
-											$trans_date=date('d-M-Y', strtotime($order->transaction_date));
+											$trans_date=date('d-M-Y', strtotime($order->delivery_date));
 											$status=$order->order_status;
-								   
 											$sales_order_id = $EncryptingDecrypting->encryptData($order->id);
+											$time_from=$order->delivery_time->time_from;
+											$time_to=$order->delivery_time->time_to;
+											$show_time=$time_from.' - '.$time_to;
 										?>
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
@@ -68,12 +71,14 @@
 									<td><?= h($order->city->name) ?></td>
 									<td><?= h($order->grand_total) ?></td>
 									<td><?= h($trans_date) ?></td>
+									<td><?= h($show_time) ?></td>
 									<?php if($status=='Yes'){ ?>
 									<td><?= h($order->order_status) ?></td>
 									<td>Used</td>
 									<?php }else{ ?>
+									<?php $order_id = $EncryptingDecrypting->encryptData($order->id); ?>
 									<td>
-										<?= $this->Html->link(__('<span class="fa fa-pencil"> Create Order </span>'), ['controller'=>'Orders', 'action' => 'add', $order->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
+										<?= $this->Html->link(__('<span class="fa fa-pencil"> Create Order </span>'), ['controller'=>'Orders', 'action' => 'add', $order_id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
 									</td>
 									<td>
 									<?= $this->Form->postLink('<span class="fa fa-remove"></span>', ['action' => 'delete', $sales_order_id], ['class'=>'btn btn-danger btn-condensed btn-sm','confirm' => __('Are you sure you want to delete?'),'escape'=>false]) ?>

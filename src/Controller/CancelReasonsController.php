@@ -134,10 +134,11 @@ class CancelReasonsController extends AppController
      */
     public function delete($dir)
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['patch', 'post', 'put']);
 		$id = $this->EncryptingDecrypting->decryptData($dir);
         $cancelReason = $this->CancelReasons->get($id);
-        if ($this->CancelReasons->delete($cancelReason)) {
+		$cancelReason->status='Deactive';
+        if ($this->CancelReasons->save($cancelReason)) {
             $this->Flash->success(__('The cancel reason has been deleted.'));
         } else {
             $this->Flash->error(__('The cancel reason could not be deleted. Please, try again.'));

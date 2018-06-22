@@ -167,7 +167,7 @@ class CategoriesController extends AppController
      */
     public function delete($dir)
     {
-        $this->request->allowMethod(['post', 'delete']);
+        $this->request->allowMethod(['patch', 'post', 'put']);
 		$id = $this->EncryptingDecrypting->decryptData($dir);
         $category = $this->Categories->get($id);
 		$category->status='Deactive';
