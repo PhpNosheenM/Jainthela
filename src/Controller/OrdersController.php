@@ -20,12 +20,13 @@ class OrdersController extends AppController
      * @return \Cake\Http\Response|void
      */
 	 
-	   public function beforeFilter(Event $event)
+	public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->Security->setConfig('unlockedActions', ['add', 'index', 'view']);
+        $this->Security->setConfig('unlockedActions', ['add', 'index', 'view', 'manageOrder']);
 
     }
+	
     public function index()
     {
 		$this->viewBuilder()->layout('admin_portal');
@@ -45,7 +46,35 @@ class OrdersController extends AppController
 		$paginate_limit=$this->paginate['limit'];
         $this->set(compact('orders','paginate_limit'));
     }
-
+	
+	
+	public function manageOrder($status=null)
+    {
+		$this->viewBuilder()->layout('admin_portal');
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$location_id=$this->Auth->User('location_id');
+		$status = $this->request->query('status');
+	
+		
+        $this->paginate = [
+			'limit' => 20
+        ];
+		if(!empty($status)){
+			
+			$order_data=$this->Orders->find()->where(['Orders.order_status'=>$status])->order(['Orders.id'=>'DESC'])->contain(['OrderDetails'=>['ItemVariations'],'SellerLedgers','PartyLedgers','Locations','DeliveryTimes','Customers']);
+		}else{
+			
+			$order_data=$this->Orders->find()->order(['Orders.id'=>'DESC'])->contain(['OrderDetails'=>['ItemVariations'],'SellerLedgers','PartyLedgers','Locations']);
+		}
+		
+        $orders = $this->paginate($order_data);
+		//pr( $orders); exit;
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('orders','paginate_limit','status'));
+    }
+	
+	
     /**
      * View method
      *
