@@ -365,28 +365,35 @@ class AppNotificationsController extends AppController
 				}else if($link_name=='combo_description'){
 					
 					$dummy_link='/jainthela://'.$link_name.'?id='.$combo_offer_id;
+					$dummy_web_link='/comboOffers/'.$combo_offer_id;
 					
 				}else if($link_name=='category_wise'){
 					
 					$dummy_link='/jainthela://'.$link_name.'?id='.$category_id;
+					$dummy_web_link='/Categories/'.$category_id;
 					
 				}else if($link_name=='item_wise'){
 					
 					$dummy_link='/jainthela://'.$link_name.'?id='.$item_id;
+					$dummy_web_link='/Items/'.$item_id;
 					
 				}else if($link_name=='combo'){
 					
 					$dummy_link='/jainthela://'.$link_name.'?id='.$item_id;
+					$dummy_web_link='/Items/'.$item_id;
 					
 				}else if($link_name=='store_item_wise'){
 					
 					$dummy_link='/jainthela://'.$link_name.'?id='.$category_id;
+					$dummy_web_link='/Items/'.$category_id;
 					
 				}else{
 					
 					$dummy_link='/jainthela://'.$link_name;
+					$dummy_web_link='/Items/'.$link_name;
 				}
 				$appNotification->app_link=$dummy_link;
+				$appNotification->web_link=$dummy_web_link;
             if ($banner_data=$this->AppNotifications->save($appNotification)) {
 			
 				if(empty($web_image_error))
@@ -449,23 +456,22 @@ class AppNotificationsController extends AppController
 						
 						
 						if(($web_token!='NULL')){
-							
+							$device_tokens=$web_token;
 							define('SERVER_API_KEY','AIzaSyDQcVP0eF_55UrqTxYOAmdeeEzt2lQ6PAg');	
 							$main_url=$web_url;
 						}
 						if(($app_token!='NULL')){
-							
+							$device_tokens=$app_token;
 							define('SERVER_API_KEY','AAAAXmNqxY4:APA91bG0X6RHVhwJKXUQGNSSCas44hruFdR6_CFd6WHPwx9abUr-WsrfEzsFInJawElgrp24QzaE4ksfmXu6kmIL6JG3yP487fierMys5byv-I1agRtMPIoSqdgCZf8R0iqsnds-u4CU');
 							$main_url=$app_url;
 						}
-						//$device_token='fiv6reOde8w:APA91bGqiTQMcu9_U19hqGYOU7EioP4US-uIBDWpFvgSIk02mJc2xxK_Ervmp6BgFHMH3dapxgsnpDFjx7UfjykubJYueoeFAuXya85yMzMhU33IOdQqXjrl51Z-QMW7PoYNc6-VgbNo';
-						//$device_token="cfroufH_wtc:APA91bFjkWZ0WG_xvcLrtkAG3hheQK0tUipIPufdCYT85UkzhRyL_vEn8nOK--0zTj1w1b6OTcvnv81PhxFe4jgEpyAAwlHZ8MQvJBznCQLIAi4RD30vphR8uiZFWrzZ3SVVnYPjRSla";
-						$device_token1=rtrim($device_token);
+						//$device_tokens='fiv6reOde8w:APA91bGqiTQMcu9_U19hqGYOU7EioP4US-uIBDWpFvgSIk02mJc2xxK_Ervmp6BgFHMH3dapxgsnpDFjx7UfjykubJYueoeFAuXya85yMzMhU33IOdQqXjrl51Z-QMW7PoYNc6-VgbNo';
+						//$device_tokens="cfroufH_wtc:APA91bFjkWZ0WG_xvcLrtkAG3hheQK0tUipIPufdCYT85UkzhRyL_vEn8nOK--0zTj1w1b6OTcvnv81PhxFe4jgEpyAAwlHZ8MQvJBznCQLIAi4RD30vphR8uiZFWrzZ3SVVnYPjRSla"; 
 						 
 		if(($web_token!='NULL') || ($app_token!='NULL')){
 			
 			
-	$tokens = array($device_token);
+	$tokens = array($device_tokens);
 
 	$header = [
 		'Content-Type:application/json',
@@ -514,20 +520,22 @@ class AppNotificationsController extends AppController
 						
 						$customers_data=$this->AppNotifications->Customers->find()->where(['Customers.id'=>$main_custmr_data])->first();
 						
-						$device_token=$customers_data->fcm_token;
-						$main_device_token=$customers_data->device_token;
+						$device_token1=$customers_data->fcm_token;
+						$main_device_token1=$customers_data->device_token;
 						
-						if((!empty($device_token))){
+						if((!empty($device_token1))){
 							define('SERVER_API_KEY','AIzaSyDQcVP0eF_55UrqTxYOAmdeeEzt2lQ6PAg');		
 							$main_url=$web_url;
+							$device_token=$device_token1;
 						}
-						if((!empty($main_device_token))){
+						if((!empty($main_device_token1))){
 							define('SERVER_API_KEY','AAAAXmNqxY4:APA91bG0X6RHVhwJKXUQGNSSCas44hruFdR6_CFd6WHPwx9abUr-WsrfEzsFInJawElgrp24QzaE4ksfmXu6kmIL6JG3yP487fierMys5byv-I1agRtMPIoSqdgCZf8R0iqsnds-u4CU');	
 							$main_url=$app_url;
+							$device_token=$main_device_token1;
 						}
 						 
 						 
-		if((!empty($device_token)) || (!empty($main_device_token))){
+		if((!empty($device_token1)) || (!empty($main_device_token1))){
 			
 			
 	$tokens = array($device_token);
