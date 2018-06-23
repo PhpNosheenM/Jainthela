@@ -1,4 +1,4 @@
-<?php $this->set('title', 'Order'); ?>
+<?php $this->set('title', 'Invoice'); ?>
 <!-- PAGE CONTENT WRAPPER -->
 <div class="page-content-wrap">
 	<div class="row">
@@ -6,16 +6,16 @@
 		<?= $this->Form->create($order,['id'=>'jvalidate','class'=>'form-horizontal','type'=>'file']) ?>  
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><strong> Order </strong></h3>
+					<h3 class="panel-title"><strong> Invoice </strong></h3>
 				</div>
 			<?php //pr($sales_orders->customer_id); ?>
 				<div class="panel-body">
 					<div class="row">
-						<center><h3>Order Details</h3></center>
+						<center><h3>Invoice Details</h3></center>
 						<hr>
 						<div class="col-md-3">
 							<div class="form-group">
-								<label class=" control-label">Order No</label>
+								<label class=" control-label">Invoice No</label>
 								<div class="">
 									
 									<?= $this->Form->control('order_no',['class'=>'form-control','placeholder'=>'','label'=>false,'value'=>$order_no,'readonly']) ?>
@@ -72,7 +72,7 @@
 					<div class="panel-body">
 					<div class="row">
 						<div class="table-responsive">
-							<center><h3>Order Item Details</h3></center>
+							<center><h3>Invoice Item Details</h3></center>
 							<hr>
 							<table class="table table-bordered main_table">
 								<thead>
@@ -173,7 +173,7 @@
 								</tfoot>
 							</table>
 							
-							<center><h3>Order Transaction Details</h3></center>
+							<center><h3>Invoice Transaction Details</h3></center>
 								<hr>
 								<table width="100%" style="font-size:14px;">
 									<tr>
@@ -442,7 +442,7 @@ if(empty($ids)){
 				
 				var grand_total=parseFloat(final_amount)+parseFloat(delivery_chrg);
 				 if(!grand_total){ grand_total=0; }
-				 alert(grand_total);
+				 //alert(grand_total);
 				$('.total_amt').val(round(grand_total,2));
 		}
 		

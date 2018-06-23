@@ -7,14 +7,14 @@
     font-size: 13px;
 }
 </style>
-<?php $this->set('title', 'Orders'); ?><!-- PAGE CONTENT WRAPPER -->
+<?php $this->set('title', 'Invoice'); ?><!-- PAGE CONTENT WRAPPER -->
 <div class="page-content-wrap">
 
 	<div class="row">
 		<div class="col-md-12">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><strong> Manage Orders </strong></h3>
+					<h3 class="panel-title"><strong> Manage Invoice </strong></h3>
 					<div class="pull-right">
 					<?php if($status=='pending'){
 						$class1="btn btn-xs blue";
@@ -34,14 +34,14 @@
 							<thead>
 								<tr height="40px">
 									<th><?= ('SNo.') ?></th>
-									<th><?= ('Order No') ?></th>
+									<th><?= ('Invoice No') ?></th>
 									<th><?= ('Customer Name') ?></th>
 									<th><?= ('Locality') ?></th>
 									<th><?= ('Grand Total') ?></th>
-									<th><?= ('Order Type') ?></th>
-									<th><?= ('Order Date') ?></th>
+									<th><?= ('Invoice Type') ?></th>
+									<th><?= ('Invoice Date') ?></th>
 									<th><?= ('Delivery Date') ?></th>
-									<th><?= ('Order Time') ?></th>
+									<th><?= ('Delivery Time') ?></th>
 									<th><?= ('Status') ?></th>
 									<th><?= ('Action') ?></th>
 									<th><?= ('Edit') ?></th>
@@ -52,10 +52,10 @@
 								
 								  <?php foreach ($orders as $order): //pr($order); exit; 
 								  
-								  $order_date=$order->order_date;
+								  $order_date=$order->transaction_date;
 								  $delivery_date=$order->delivery_date;
-								  $time_from=$order->delivery_time->time_from;
-								  $time_to=$order->delivery_time->time_to;
+								  @$time_from=$order->delivery_time->time_from;
+								  @$time_to=$order->delivery_time->time_to;
 								  $delivery_time=$time_from.'-'.$time_to;
 								  ?>
 								<tr 
@@ -67,7 +67,7 @@
 										<?php $order_id = $EncryptingDecrypting->encryptData($order->id); ?>
 										<?php echo $this->Html->link($order->order_no,['controller'=>'Orders','action' => 'view', $order_id, 'print'],['target'=>'_blank']); ?>
 									</td>
-									<td><?= h($order->customer->name) ?></td>
+									<td><?= h(@$order->customer->name) ?></td>
 									<td><?= h($order->location->name) ?></td>
 									<td><?= h($order->grand_total) ?></td>
 									<td><?= h($order->order_type) ?></td>

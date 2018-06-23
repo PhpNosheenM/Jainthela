@@ -46,7 +46,7 @@ echo $this->Html->link('Close',array(),['escape'=>false,'class'=>'btn  red hidde
 				<tr style="background-color:#fff; color:#000;">
 					<td align="left" colspan="5">
 						<b>
-							Customer : <?= $sales_orders->customer->name ?> <br>Order No.: <?= $sales_orders->order_no ?>
+							Customer : <?= $sales_orders->customer->name ?> <br>Invoice No.: <?= $sales_orders->order_no ?>
 						</b>
 					</td>
 				</tr>

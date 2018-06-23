@@ -20,6 +20,7 @@
             echo $this->Form->control('name');
             echo $this->Form->control('icon');
             echo $this->Form->control('controller');
+            echo $this->Form->control('menu_for_user');
             echo $this->Form->control('action');
             echo $this->Form->control('parent_id', ['options' => $parentMenus, 'empty' => true]);
             echo $this->Form->control('preference');

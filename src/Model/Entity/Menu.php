@@ -35,6 +35,7 @@ class Menu extends Entity
     protected $_accessible = [
         'name' => true,
         'icon' => true,
+        'menu_for_user' => true,
         'controller' => true,
         'action' => true,
         'parent_id' => true,

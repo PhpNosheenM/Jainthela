@@ -43,7 +43,7 @@
 							<thead>
 								<tr>
 									<th><?= ('SNo.') ?></th>
-									<th><?= ('Sales Order No') ?></th>
+									<th><?= ('Order No') ?></th>
 									<th><?= ('Customer Name') ?></th>
 									<th><?= ('Locality') ?></th>
 									<th><?= ('Grand Total') ?></th>

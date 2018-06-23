@@ -7,14 +7,14 @@
     font-size: 13px;
 }
 </style>
-<?php $this->set('title', 'Orders'); ?><!-- PAGE CONTENT WRAPPER -->
+<?php $this->set('title', 'Invoices'); ?><!-- PAGE CONTENT WRAPPER -->
 <div class="page-content-wrap">
 
 	<div class="row">
 		<div class="col-md-12">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><strong>Orders</strong></h3>
+					<h3 class="panel-title"><strong>Invoices</strong></h3>
 					<div class="pull-right">
 					<div class="pull-left">
 						<?= $this->Form->create('Search',['type'=>'GET']) ?>
@@ -39,11 +39,11 @@
 							<thead>
 								<tr>
 									<th><?= ('SNo.') ?></th>
-									<th><?= ('Order No') ?></th>
+									<th><?= ('Invoice No') ?></th>
 									<th><?= ('Customer Name') ?></th>
 									<th><?= ('Locality') ?></th>
 									<th><?= ('Grand Total') ?></th>
-									<th><?= ('Order Type') ?></th>
+									<th><?= ('Invoice Type') ?></th>
 									<th><?= ('Status') ?></th>
 									
 									<th scope="col" class="actions"><?= __('Actions') ?></th>

@@ -58,14 +58,14 @@ class OrdersController extends AppController
 	
 		
         $this->paginate = [
-			'limit' => 20
+			'limit' => 20 
         ];
 		if(!empty($status)){
 			
-			$order_data=$this->Orders->find()->where(['Orders.order_status'=>$status])->order(['Orders.id'=>'DESC'])->contain(['OrderDetails'=>['ItemVariations'],'SellerLedgers','PartyLedgers','Locations','DeliveryTimes','Customers']);
+			$order_data=$this->Orders->find()->where(['Orders.order_status'=>$status])->order(['Orders.id'=>'DESC'])->contain(['SellerLedgers','PartyLedgers','Locations','DeliveryTimes','Customers']);
 		}else{
 			
-			$order_data=$this->Orders->find()->order(['Orders.id'=>'DESC'])->contain(['OrderDetails'=>['ItemVariations'],'SellerLedgers','PartyLedgers','Locations']);
+			$order_data=$this->Orders->find()->order(['Orders.id'=>'DESC'])->contain(['SellerLedgers','PartyLedgers','Locations','DeliveryTimes','Customers']);
 		}
 		
         $orders = $this->paginate($order_data);
