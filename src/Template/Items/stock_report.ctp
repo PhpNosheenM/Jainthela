@@ -86,7 +86,7 @@
 										//$amt=$showItem['stock']*$showItem['unit_rate'];
 										//$total_amt+=$amt;
 										$d=sizeof($showItem['stock']);
-										
+									if($d> 0){
 								   ?>
 								<tr>
 									<td rowspan="<?php echo $d; ?>"><?= $this->Number->format(++$i) ?></td>
@@ -112,7 +112,7 @@
 								   <?php } ?>
 								    <?php } ?>
 								</tr>
-								
+								<?php } ?>
 								<tr>
 									<th colspan="5" style="text-align:right">Total</th>
 									<td><?= h($total_amt) ?></td>

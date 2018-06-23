@@ -31,11 +31,12 @@ class WastageVouchersController extends AppController
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('super_admin_layout');
         $this->paginate = [
-            'contain' => ['Cities', 'Locations']
+            'contain' => ['Cities', 'Locations'],
+			'limit' => 20
         ];
         $wastageVouchers = $this->paginate($this->WastageVouchers);
-
-        $this->set(compact('wastageVouchers'));
+		$paginate_limit=$this->paginate['limit'];
+        $this->set(compact('wastageVouchers','paginate_limit'));
     }
 
     /**

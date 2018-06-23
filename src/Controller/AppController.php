@@ -171,7 +171,7 @@ class AppController extends Controller
 		/*   Get Menu    */
 	}
 	public function stockReportApp($city_id = null,$from_date = null,$transaction_date = null)
-    {  
+    { 
 		$this->loadModel('Items');
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('super_admin_layout');
@@ -181,6 +181,7 @@ class AppController extends Controller
 		
 		//pr($city_id); exit; exit;
 		$showItems=[];
+		$showItems1=[];
 		
 		if($city_id){
 			 $Items = $this->Items->find()->toArray();
@@ -195,13 +196,37 @@ class AppController extends Controller
 				}
 			
 		}
-		//pr($showItems); exit;
+		//$LocationData=$this->Items->Locations->get($location_id);
+			$ItemsVariations=$this->Items->ItemsVariationsData->find()->toArray(); 
+			foreach($ItemsVariations as  $ItemsVariation){  
+					
+						//$location_id=1;
+						$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['ItemLedgers.item_variation_id'=>$ItemsVariation->id,'ItemLedgers.city_id'=>$city_id,'ItemLedgers.location_id != '=>0,'ItemLedgers.seller_id IS NULL'])->contain(['Items','UnitVariations'=>['Units']])->first();
+						
+						if($ItemLedgers){  
+							$UnitRateSerialItem = $this->itemVariationWiseReport1($ItemsVariation->id,$transaction_date,$ItemLedgers->location_id);
+							$showItems1[$ItemLedgers->item->id]=['stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem[	'unit_rate']];
+							//pr($showItems);exit;
+					}
+			}
+		
 		$closingValue=0;
 		foreach($showItems as $showItem){ 
-			$closingValue+=$showItem['stock'][1]*$showItem['unit_rate'][1];
+			if(@$showItem['stock'][1] > 0){
+				$closingValue+=$showItem['stock'][1]*$showItem['unit_rate'][1];
+			}
 			
 		}
-		return $closingValue;
+		
+		$closingValue1=0;
+		foreach($showItems1 as $showItem){ 
+			if(@$showItem['stock'] > 0){
+				$closingValue1+=$showItem['stock']*$showItem['unit_rate'];
+			}
+			
+		}
+		//pr($closingValue1);exit;
+		return $closingValue+$closingValue1;
 		
 	}
 	
@@ -231,7 +256,7 @@ class AppController extends Controller
 				}
 		
 				$closingValue=0;
-				
+				$remaining=0;
 				$item_var_val=[];
 				$item_stock=[];
 				foreach($stock  as $key=>$stockRow){ 
@@ -240,9 +265,10 @@ class AppController extends Controller
 						$remaining=count($stock[$key]); 
 						$rate+=$data;
 					}
-					//pr($remaining);
-					$item_var_val[$key]=$rate/$remaining;
-					$item_stock[$key]=$remaining;
+					if($remaining > 0){
+						$item_var_val[$key]=$rate/$remaining;
+						$item_stock[$key]=$remaining;
+					}
 					
 				}
 		$Data=['stock'=>$item_stock,'unit_rate'=>$item_var_val]; //pr($Data); exit;
@@ -250,12 +276,12 @@ class AppController extends Controller
 		exit;
 	}
 
-	public function itemVariationWiseReport1($item_variation_id=null,$transaction_date,$city_id){ 
+	public function itemVariationWiseReport1($item_variation_id=null,$transaction_date,$location_id){ 
 		$this->viewBuilder()->layout('super_admin_layout');
 		//$city_id=$this->Auth->User('city_id'); 
-		$location_id=$this->Auth->User('location_id'); 
+		//$location_id=$this->Auth->User('location_id'); 
 		
-		$StockLedgers =  $this->Items->ItemLedgers->find()->where(['item_variation_id'=>$item_variation_id,'transaction_date <='=>$transaction_date])->order(['ItemLedgers.transaction_date'=>'ASC'])->toArray();
+		$StockLedgers =  $this->Items->ItemLedgers->find()->where(['item_variation_id'=>$item_variation_id,'transaction_date <='=>$transaction_date,'location_id'=>$location_id])->order(['ItemLedgers.transaction_date'=>'ASC'])->toArray();
 		
 		 $stockNew=[];
 		foreach($StockLedgers as $StockLedger){  
