@@ -56,7 +56,9 @@
 							<thead>
 								<tr>
 									<th><?= ('SNo.') ?></th>
-									<th><?= ('Order No') ?></th>
+									<th><?= ('Invoice No') ?></th>
+									<th><?= ('Party') ?></th>
+									<th><?= ('GST No') ?></th>
 									<th><?= ('Transaction Date') ?></th>
 									<th><?= ('Location') ?></th>
 									<th><?= ('Taxable Amount') ?></th>
@@ -70,6 +72,8 @@
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
 									<td><?php echo $this->Html->link($order->order_no,['controller'=>'Orders','action' => 'view', $order->id],['target'=>'_blank']); ?></td>
+									<td><?= h($order->party_ledger->name) ?></td>
+									<td><?= h(@$order->party_ledger->customer_data->gstin) ?></td>
 									<td><?= h(date("d-m-Y",strtotime($order->transaction_date))) ?></td>
 									<td><?= h($order->location->name) ?></td>
 									<td><?php echo $this->Money->moneyFormatIndia($order->total_amount,2); ?></td>
@@ -86,7 +90,7 @@
 							<tfoot>
 								<?php if($total_sales_amount > 0){ ?>
 								<tr>
-									<td colspan="4" align="right"><b>Total</b></td>
+									<td colspan="6" align="right"><b>Total</b></td>
 									<td><b><?php echo $this->Money->moneyFormatIndia($total_sales_amount,2); ?></b></td>
 									<td><b><?php echo $this->Money->moneyFormatIndia($total_gst_amount,2); ?></b></td>
 									<td><b><?php echo $this->Money->moneyFormatIndia($total_amount,2); ?></b></td>

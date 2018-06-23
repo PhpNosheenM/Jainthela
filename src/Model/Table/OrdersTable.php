@@ -120,6 +120,8 @@ class OrdersTable extends Table
             'foreignKey' => 'party_ledger_id',
             'joinType' => 'LEFT'
         ]);
+		
+		
 		$this->belongsTo('SalesOrders');
     }
 

@@ -104,6 +104,21 @@ class LedgersTable extends Table
         $this->hasMany('SalesVoucherRows', [
             'foreignKey' => 'ledger_id'
         ]);
+		$this->belongsTo('CustomerData', [
+            'className' => 'Customers',
+            'foreignKey' => 'customer_id',
+            'joinType' => 'LEFT'
+        ]);
+		$this->belongsTo('VendorData', [
+            'className' => 'Vendors',
+            'foreignKey' => 'vendor_id',
+            'joinType' => 'LEFT'
+        ]);
+		$this->belongsTo('SellerData', [
+            'className' => 'Sellers',
+            'foreignKey' => 'seller_id',
+            'joinType' => 'LEFT'
+        ]);
     }
 
     /**
