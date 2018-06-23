@@ -9,6 +9,10 @@ class AppController extends Controller
     public function initialize()
     {
         parent::initialize();
+		
+		$encryption=$this->loadComponent('Encryption');
+        $this->set(compact('encryption'));
+		
         $this->loadComponent('RequestHandler');
         $this->loadComponent('AwsFile');
         $this->loadComponent('Sms');
@@ -71,9 +75,5 @@ class AppController extends Controller
           return 1;
         }
     }
-
-
-
-
 }
 ?>

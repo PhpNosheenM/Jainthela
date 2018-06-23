@@ -213,13 +213,13 @@ class CartsController extends AppController
 				// removeCartCombo for code reuseabilty in both function removeFromCart and fetchCart
 				$this->removeCartCombo($customer_id,$city_id,$combo_offer_id);
 				$current_item = $this->Carts->find()->where(['Carts.city_id'=>$city_id,'Carts.customer_id' => $customer_id, 'Carts.combo_offer_id' =>$combo_offer_id])->contain(['ComboOffers'=>['ComboOfferDetails'=>['ItemVariations'=>['Items','ItemVariationMasters','UnitVariations'=>['Units']]]]])->first();
-				if(empty($current_item)) { $current_item = []; }
+				if(empty($current_item)) { $current_item = (object)[]; }
 			}
 			else{
 				// removeCartCommon for code reuseabilty in both function removeFromCart and fetchCart
 				$this->removeCartCommon($customer_id,$city_id,$item_variation_id);
 				$current_item = $this->Carts->find()->where(['Carts.city_id'=>$city_id,'Carts.customer_id' => $customer_id, 'Carts.item_variation_id' =>$item_variation_id])->contain(['ItemVariations'=>['Items','ItemVariationMasters','UnitVariations'=>['Units']]])->first();
-				if(empty($current_item)) { $current_item = []; }
+				if(empty($current_item)) { $current_item = (object)[]; }
 			}
 			$item_in_cart = $this->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])->count();
 			$success=true;
@@ -236,7 +236,6 @@ class CartsController extends AppController
 			$city_id=$this->request->data('city_id');
 			$combo_offer_id = $this->request->data('combo_offer_id');
 			$isCombo = $this->request->data('isCombo');
-			
 			$isPromoCode = $this->request->data('isPromoCode');
 			$promo_category_id = $this->request->data('promo_category_id');
 			$promo_item_id = $this->request->data('promo_item_id');
@@ -252,13 +251,14 @@ class CartsController extends AppController
 			$grand_total = 0.00;
 			$payableAmount = 0.00;
 			$Combototal = 0.00;
-			$promo_discount = 0;	
+			$promo_discount ='0';	
 			$promo_amount = 0;	
 			$delivery_charge_amount = '0.00';
 			$tag=$this->request->data('tag');
+			$total_GST=0;
 			if(!empty($city_id) && !empty($customer_id))
 			{
-				$exists = $this->Carts->Customers->exists(['id'=>$customer_id]);
+					$exists = $this->Carts->Customers->exists(['id'=>$customer_id]);
 				if($exists == 1)
 				{
 						if($tag=='add')
@@ -395,7 +395,7 @@ class CartsController extends AppController
 									$promo_amount = 0;
 									if(!empty($carts_data))
 									{
-									$total_GST = 0;
+									
 										foreach($carts_data as $cart_data)
 										{
 											if(!empty($promo_item_id) && $promo_item_id > 0)
@@ -416,15 +416,15 @@ class CartsController extends AppController
 											}
 											$grand_total1+=$cart_data->amount;
 											$grand_total_gst = $cart_data->amount;
-											//pr($grand_total_gst);
-											// GST Calculation
 											
+											// GST Calculation
+											//$total_GST = 0;
 											$gst_percentage = 0;
 											$gst_percentage = $cart_data->item_variation->item->gst_figure->tax_percentage;
 											  
 											$total_GST += $grand_total_gst * $gst_percentage / 100; 
 										}
-										
+
 										if(!empty($promo_item_id) && $promo_item_id > 0)
 										{
 											if($discount_in_percentage > 0)
@@ -453,14 +453,11 @@ class CartsController extends AppController
 												}
 											}
 										}
-										//pr($total_GST); 
-										$total_GST = number_format($total_GST,2);
-										$grand_total_before_promoCode = number_format($grand_total1, 2);
-										$grand_total1 = $grand_total1 - $promo_discount;
-										$promo_discount=number_format($promo_discount, 2);	
-								
+										
+										
+										
 									}
-									
+									//pr($comboData);exit;
 									if(!empty($comboData))
 									{
 										foreach($comboData as $combo)
@@ -469,8 +466,12 @@ class CartsController extends AppController
 										}
 									}
 
+									//$total_GST = number_format(round($total_GST), 2);
+									$grand_total_before_promoCode = number_format(round($grand_total1), 2);
+									$grand_total1 = $grand_total1 - $promo_discount;
+									$promo_discount=number_format(round($promo_discount), 2);										
 
-									$grand_total=number_format($grand_total1, 2);
+									$grand_total=number_format(round($grand_total1), 2);
 									$payableAmount = $payableAmount + $grand_total1 + $total_GST;
 
 									if($promo_free_shipping == 'Yes')
@@ -498,7 +499,7 @@ class CartsController extends AppController
 									$payableAmount = number_format($payableAmount,2);
 								
 								}else{
-										$total_GST = 0;
+
 										$payableAmount = number_format(0, 2);
 										$grand_total1=0;
 										if(!empty($carts_data))
@@ -509,16 +510,13 @@ class CartsController extends AppController
 											  $grand_total_gst =$cart_data->amount;
 											  
 												// GST Calculation
-												
+												//$total_GST = 0;
 												$gst_percentage = 0;
 												$gst_percentage = $cart_data->item_variation->item->gst_figure->tax_percentage;
 												  
 												$total_GST += $grand_total_gst * $gst_percentage / 100; 
-												//$total_GST = number_format($total_GST, 2);
+												//$total_GST = number_format(round($total_GST), 2);
 											}
-											
-											
-											
 										}
 
 										if(!empty($comboData))
@@ -529,8 +527,8 @@ class CartsController extends AppController
 											}
 										}
 
-
-										$grand_total=number_format($grand_total1, 2);
+										$grand_total_before_promoCode = number_format(round($grand_total1), 2);
+										$grand_total=number_format(round($grand_total1), 2);
 										$payableAmount = $payableAmount + $grand_total1 + $total_GST;
 
 										$delivery_charges=$this->Carts->DeliveryCharges->find()->where(['city_id'=>$city_id,'status'=>'Active']);
@@ -563,8 +561,8 @@ class CartsController extends AppController
 							{
 							  $success = true;
 							  $message = 'Cart Data found';
-							  $this->set(compact('success', 'message','address_available','promo_discount','grand_total_before_promoCode','total_GST','grand_total','delivery_charge_amount','payableAmount','remaining_wallet_amount','carts','item_in_cart','comboData','Combototal'));
-							  $this->set('_serialize', ['success', 'message','promo_discount','grand_total_before_promoCode','total_GST','remaining_wallet_amount','grand_total','delivery_charge_amount', 'payableAmount','item_in_cart','address_available','carts','comboData','Combototal']);
+							  $this->set(compact('success', 'message','address_available','promo_discount','grand_total_before_promoCode','total_GST','grand_total','delivery_charge_amount','payableAmount','remaining_wallet_amount','carts','item_in_cart','comboData','Combototal','promo_detail_id'));
+							  $this->set('_serialize', ['success', 'message','promo_discount','grand_total_before_promoCode','promo_detail_id','total_GST','remaining_wallet_amount','grand_total','delivery_charge_amount', 'payableAmount','item_in_cart','address_available','carts','comboData','Combototal']);
 							}
 
 				}
@@ -964,4 +962,4 @@ class CartsController extends AppController
 		
 		
 
-} ?>
+}

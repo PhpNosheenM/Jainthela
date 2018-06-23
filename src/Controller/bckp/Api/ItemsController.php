@@ -92,7 +92,10 @@ class ItemsController extends AppController
         }else { $categoryWhere =''; }
 
         $items = $this->Items->find()
-        ->contain(['ItemsVariations' => function ($q) use($sellerWhere){ return $q->where($sellerWhere)->contain(['UnitVariations'=>['Units'],'Sellers','ItemVariationMasters']); } ])
+        ->contain(['ItemsVariations' => function ($q) use($sellerWhere)
+          {
+             return $q->where($sellerWhere)->contain(['UnitVariations'=>['Units'],'Sellers','ItemVariationMasters']); }
+        ])
         ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id])
         ->where($categoryWhere)
         ->where($brandWhere)
@@ -104,9 +107,12 @@ class ItemsController extends AppController
           foreach($items as $item){
             foreach ($item->items_variations as $items_variation_data) {
               $item_id=$item->id;
-              $inWishList = $this->Items->WishListItems->find()->where(['item_id'=>$item_id])->contain(['WishLists'=>function($q) use($customer_id){
+              $items_variation_id = $items_variation_data->id;
+              $inWishList = $this->Items->WishListItems->find()->where(['item_id'=>$item_id,'item_variation_id'=>$items_variation_id])
+              ->contain(['WishLists'=>function($q) use($customer_id){
                 return $q->select(['WishLists.customer_id'])->where(['customer_id'=>$customer_id]);}])->count();
-                if($inWishList  == 1)
+                $items_variation_data->inWishList = false;
+                if($inWishList  >= 1)
                 { $items_variation_data->inWishList = true; }
                 else { $items_variation_data->inWishList = false; }
 
@@ -213,9 +219,11 @@ class ItemsController extends AppController
                 $item->ItemAverageRating = number_format($item->ItemAverageRating,1);
                 foreach ($item->items_variations as $items_variation_data) {
                   $item_id=$item->id;
-                  $inWishList = $this->Items->WishListItems->find()->where(['item_id'=>$item_id])->contain(['WishLists'=>function($q) use($customer_id){
+                  $items_variation_id = $items_variation_data->id;
+                  $inWishList = $this->Items->WishListItems->find()->where(['item_id'=>$item_id,'item_variation_id'=>$items_variation_id])->contain(['WishLists'=>function($q) use($customer_id){
                     return $q->select(['WishLists.customer_id'])->where(['customer_id'=>$customer_id]);}])->count();
-                    if($inWishList  == 1)
+                    $items_variation_data->inWishList = false;
+                    if($inWishList  >= 1)
                     { $items_variation_data->inWishList = true; }
                     else { $items_variation_data->inWishList = false; }
 
@@ -246,6 +254,30 @@ class ItemsController extends AppController
                   $reletedItem = $this->Items->Categories->find()->where(['status'=>'Active','city_id'=>$city_id,'id'=>$category_id])->contain(['ItemActive'=>['ItemsVariations'=>['ItemVariationMasters','UnitVariations'=>['Units']]]]);
                   if(!empty($reletedItem->toArray()))
                   {
+
+                    $count_value = 0;
+                      $inWishList = 0;
+                      foreach($reletedItem as $item_detail){
+                        foreach ($item_detail->item_active as $item) {
+                        foreach ($item->items_variations as $items_variation_data) {
+                          $item_id=$item->id;
+                          $items_variation_id = $items_variation_data->id;
+                          $inWishList = $this->Items->WishListItems->find()->where(['item_id'=>$item_id,'item_variation_id'=>$items_variation_id])
+                          ->contain(['WishLists'=>function($q) use($customer_id){
+                            return $q->select(['WishLists.customer_id'])->where(['customer_id'=>$customer_id]);}])->count();
+                            if($inWishList  >= 1)
+                            { $items_variation_data->inWishList = true; }
+                            else { $items_variation_data->inWishList = false; }
+
+                            $count_cart = $this->Items->Carts->find()->select(['Carts.cart_count'])->where(['Carts.item_variation_id'=>$items_variation_data->id,'Carts.customer_id'=>$customer_id]);
+                            foreach ($count_cart as $count) {
+                              $count_value = $count->cart_count;
+                            }
+                            $items_variation_data->cart_count = $count_value;
+                          }
+                        }
+                      }
+
                     $Itemc = array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"HomeScreens"=>$reletedItem);
                     array_push($dynamic,$Itemc);
 
@@ -531,9 +563,11 @@ class ItemsController extends AppController
                     {
                         foreach ($sellerItem->item->items_variations as $items_variation_data) {
                           $item_id=$sellerItem->item->id;
-                          $inWishList = $this->Items->WishListItems->find()->where(['item_id'=>$item_id])->contain(['WishLists'=>function($q) use($customer_id){
+                          $items_variation_id = $items_variation_data->id;
+                          $inWishList = $this->Items->WishListItems->find()->where(['item_id'=>$item_id,'item_variation_id'=>$items_variation_id])->contain(['WishLists'=>function($q) use($customer_id){
                             return $q->select(['WishLists.customer_id'])->where(['customer_id'=>$customer_id]);}])->count();
-                            if($inWishList  == 1)
+                            $items_variation_data->inWishList = false;
+                            if($inWishList  >= 1)
                             { $items_variation_data->inWishList = true; }
                             else { $items_variation_data->inWishList = false; }
 
