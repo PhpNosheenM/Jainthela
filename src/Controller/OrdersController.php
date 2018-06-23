@@ -33,7 +33,12 @@ class OrdersController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
 		$location_id=$this->Auth->User('location_id');
-		
+		$user_type =$this->Auth->User('user_type');
+		if($user_type=="Super Admin"){
+		$this->viewBuilder()->layout('super_admin_layout');	
+		}else if($user_type=="Admin"){ 
+		$this->viewBuilder()->layout('admin_portal');
+		}
 	
 		
         $this->paginate = [
@@ -896,7 +901,7 @@ class OrdersController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
-		$this->viewBuilder()->layout('admin_portal');
+		$this->viewBuilder()->layout('super_admin_layout');
 		$location_id = $this->request->query('location_id');
 		$from_date = $this->request->query('from_date');
 		$to_date   = $this->request->query('to_date');

@@ -163,7 +163,12 @@ class SellersController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
+		$user_type=$this->Auth->User('user_type'); 
+		if($user_type=="Super Admin"){
+		$this->viewBuilder()->layout('super_admin_layout');
+		}else{
 		$this->viewBuilder()->layout('seller_layout');
+		}
         $this->paginate = [
 			'limit' => 20
         ];
@@ -242,7 +247,12 @@ class SellersController extends AppController
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
+		$user_type=$this->Auth->User('user_type'); 
+		if($user_type=="Super Admin"){
 		$this->viewBuilder()->layout('super_admin_layout');
+		}else{
+		$this->viewBuilder()->layout('seller_layout');
+		}
         $seller = $this->Sellers->newEntity();
         if ($this->request->is('post')) {
 			
@@ -366,8 +376,8 @@ class SellersController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
-		$this->viewBuilder()->layout('admin_portal');
-		$id=6;
+		$this->viewBuilder()->layout('super_admin_layout');
+		//$id=6;
 		$seller = $this->Sellers->get($id);
 		$Categories = $this->Sellers->Categories->find()->where(['city_id'=>$city_id,'parent_id IS NULL']);
 		

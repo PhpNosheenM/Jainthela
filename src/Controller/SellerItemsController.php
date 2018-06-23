@@ -348,7 +348,13 @@ class SellerItemsController extends AppController
 	public function sellerItemApproval()
 	{
 		$sellerItemApproval = $this->SellerItems->newEntity();
+		$user_type=$this->Auth->User('user_type'); 
+		if($user_type=="Super Admin"){
+		$this->viewBuilder()->layout('super_admin_layout');
+		}else{
 		$this->viewBuilder()->layout('admin_portal');
+		}
+		//$this->viewBuilder()->layout('admin_portal');
 		$sellers = $this->SellerItems->Sellers->find('list')->where(['Sellers.status'=>'Active']);
 		if ($this->request->is('post')) {
 			$seller_id=$this->request->getData('seller_id'); 
