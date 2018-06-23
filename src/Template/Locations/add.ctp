@@ -54,7 +54,7 @@
 					<br>
 					<br>
 					<br>
-						<fieldset>
+					<!--	<fieldset>
 						<legend><center>Seller Registration</center></legend>
 						<div class="col-md-6">
 						
@@ -236,7 +236,7 @@
 							</table>
 						</div>
 					</div>
-				</div>
+				</div> -->
 							
 							<div class="panel-footer">
 								<center>
