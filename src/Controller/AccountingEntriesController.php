@@ -164,7 +164,10 @@ class AccountingEntriesController extends AppController
 		$to_date   = $this->request->query('to_date');
 		$from_date = date("Y-m-d",strtotime($from_date));
 		$to_date   = date("Y-m-d",strtotime($to_date));
-		
+		if($from_date=="1970-01-01"){
+			$from_date = date("Y-m-d");
+			$to_date   = date("Y-m-d");
+		}
 		$AccountingGroups=$this->AccountingEntries->Ledgers->AccountingGroups->find()
 		->where(['AccountingGroups.nature_of_group_id IN'=>[1,2],'AccountingGroups.city_id'=>$city_id]);
 		$Groups=[];
@@ -218,7 +221,7 @@ class AccountingEntriesController extends AppController
 	}
 	
 	public function ProfitLossStatement()
-    { 
+    {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
@@ -227,7 +230,10 @@ class AccountingEntriesController extends AppController
 		$to_date   = $this->request->query('to_date');
 		$from_date = date("Y-m-d",strtotime($from_date));
 		$to_date   = date("Y-m-d",strtotime($to_date));
-		
+		if($from_date=="1970-01-01"){
+			$from_date = date("Y-m-d");
+			$to_date   = date("Y-m-d");
+		}
 		$AccountingGroups=$this->AccountingEntries->Ledgers->AccountingGroups->find()
 		->where(['AccountingGroups.nature_of_group_id IN'=>[3,4],'AccountingGroups.city_id'=>$city_id]);
 		$Groups=[];

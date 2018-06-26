@@ -121,6 +121,7 @@ class OrdersTable extends Table
             'joinType' => 'LEFT'
         ]);
 		$this->belongsTo('SalesOrders');
+		$this->belongsTo('Companies');
     }
 
     /**

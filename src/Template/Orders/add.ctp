@@ -6,7 +6,7 @@
 		<?= $this->Form->create($order,['id'=>'jvalidate','class'=>'form-horizontal','type'=>'file']) ?>  
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><strong> Invoice </strong></h3>
+					<h3 class="panel-title"><strong> Create Invoice </strong></h3>
 				</div>
 			<?php //pr($sales_orders->customer_id); ?>
 				<div class="panel-body">

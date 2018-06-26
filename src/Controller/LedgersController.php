@@ -124,7 +124,10 @@ class LedgersController extends AppController
 		$to_date   = $this->request->query('to_date');
 		$from_date = date("Y-m-d",strtotime($from_date));
 		$to_date   = date("Y-m-d",strtotime($to_date));
-		
+		if($from_date=="1970-01-01"){
+			$from_date = date("Y-m-d");
+			$to_date   = date("Y-m-d");
+		}
 		$AccountingGroups=$this->Ledgers->AccountingGroups->find()->where(['AccountingGroups.nature_of_group_id IN'=>[1,2,3,4],'AccountingGroups.city_id'=>$city_id]);
 		
 		$Groups=[]; $ledgerData=[];
