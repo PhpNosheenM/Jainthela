@@ -148,7 +148,7 @@
 									<tr class="MainTr">
 			
 										<td width="30%" valign="top">
-											<?= $this->Form->select('item_variation_id',$itemVariation_option,['class'=>'form-control itemVariations','label'=>false, 'data-live-search'=>true]) ?>
+											<?= $this->Form->select('item_variation_id',$itemVariation_option,['empty'=>'---Select--Item---','class'=>'form-control itemVariations','label'=>false, 'data-live-search'=>true]) ?>
 										</td>
 										<td width="10%" valign="top">
 											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false, 'value'=>1]) ?>
@@ -162,6 +162,8 @@
 										</td>
 										<td>
 											<?php echo $this->Form->input('amount', ['label' => false,'class' => 'amount form-control input-sm number','placeholder'=>'amount','readonly'=>'readonly']); ?>
+											
+											<?php echo $this->Form->input('gst_percentage', ['type'=>'hidden','label' => false,'class' =>'form-control input-sm gst_percentage','placeholder'=>'amount','readonly'=>'readonly']); ?>
 										</td>
 										
 										<td valign="top"  >
@@ -170,11 +172,21 @@
 										</td>
 									</tr>
 								</tbody>
+								<tfoot>
+									<tr>
+										<td colspan="4" align="right">Total GST Amount</td>
+										<td>
+										<?php echo $this->Form->input('gst_amount', ['label' => false,'class' => 'form-control input-sm tot_gst','placeholder'=>'amount','readonly'=>'readonly']); ?>
+										</td>
+										<td></td>
+									</tr>
+								</tfoot>
 							</table>
 						</div>
 					</div>
 				</div>
 				<div class="panel-footer">
+					
 					<center>
 						<?= $this->Form->button(__('Submit'),['class'=>'btn btn-primary']) ?>
 					</center>
@@ -190,7 +202,7 @@
 		<tr class="MainTr">
 			
 			<td width="30%" valign="top">
-				<?= $this->Form->select('item_variation_id',$itemVariation_option,['class'=>'form-control itemVariations','label'=>false, 'data-live-search'=>true]) ?>
+				<?= $this->Form->select('item_variation_id',$itemVariation_option,['empty'=>'---Select--Item---','class'=>'form-control itemVariations','label'=>false, 'data-live-search'=>true]) ?>
 			</td> 
 			<td width="10%" valign="top">
 				<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false, 'value'=>1]) ?>
@@ -203,6 +215,8 @@
 			</td>
 			<td>
 				<?php echo $this->Form->input('amount', ['label' => false,'class' =>  'amount form-control input-sm number','placeholder'=>'amount','readonly'=>'readonly']); ?>
+				
+				<?php echo $this->Form->input('gst_percentage', ['type'=>'hidden','label' => false,'class' =>'form-control input-sm gst_percentage','placeholder'=>'amount','readonly'=>'readonly']); ?>
 			</td>
 			
 			<td valign="top"  >
@@ -286,7 +300,11 @@
 		}
 		$(document).on("change",".itemVariations",function(){
 			var rate=$("option:selected", this).attr("rate");
+			var gst_per=$("option:selected", this).attr("gst_per");
+			//alert(gst_per);
+			if(!gst_per){ gst_per=0; }
 			$(this).closest("tr").find(".amnt").val(rate);
+			$(this).closest("tr").find(".gst_percentage").val(gst_per);
 			renameRows();
 		});
 		function renameRows(){
@@ -299,20 +317,22 @@
 						$(this).find("td:nth-child(3) input.extra").attr({name:"combo_offer_details["+i+"][extra]",id:"combo_offer_details-"+i+"-extra"}).rules("add", "required");
 						$(this).find("td:nth-child(4) input.rate").attr({name:"combo_offer_details["+i+"][rate]",id:"combo_offer_details-"+i+"-rate"}).rules("add", "required");
 						$(this).find("td:nth-child(5) input.amount").attr({name:"combo_offer_details["+i+"][amount]",id:"combo_offer_details-"+i+"-amount"}).rules("add", "required");
+						$(this).find("td:nth-child(5) input.gst_percentage").attr({name:"combo_offer_details["+i+"][gst]",id:"gst_percentage-"+i+"-gst"}).rules("add", "required");
 						 
 						i++;
 			});
 			calculation();
 		}
 		function calculation(){
+			var total_gst=0;
 			var i=0; var grand_total=0;
 			$(".main_table tbody tr").each(function(){
 				var print_rate=0;
 				var print_rate1=0;
 				var quantity=$(this).find("td:nth-child(2) input.quantity").val();
 				var rate=parseFloat($(this).find("option:selected", this).attr("rate"));
+				 
 				var amount=quantity*rate;
-				
 				print_rate1=print_rate+amount;
 				grand_total=grand_total+print_rate1;
 				if(!grand_total){ grand_total=0; }
@@ -333,11 +353,17 @@
 			if(!actual_rate){ actual_rate=0; }
 			var garad_amount=quantity1*actual_amount;
 			if(!garad_amount){ garad_amount=0; }
-			$(this).find("td:nth-child(5) input").val(garad_amount);
+			$(this).find("td:nth-child(5) input.amount").val(garad_amount);
+			var gst_percentage=$(this).find("td:nth-child(5) input.gst_percentage").val();
+			if(!gst_percentage){ gst_percentage=0; }
+			 
 			$(this).find("td:nth-child(4) input").val(actual_amount);
+			var gst_amount=garad_amount*gst_percentage/100;
+			if(!gst_amount){ gst_amount=0; }
+			 
+			total_gst+=gst_amount;
 		});
-		
-		
+		$(".tot_gst").val(total_gst);
 		}
 		
 		$(".quant").die().live("keyup",function(){

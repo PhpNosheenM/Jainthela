@@ -16,7 +16,7 @@
 				<div class="panel-heading">
 					<h3 class="panel-title"><strong> Manage Invoice </strong></h3>
 					<div class="pull-right">
-					<?php if($status=='pending'){
+					<?php if($status=='placed'){
 						$class1="btn btn-xs blue";
 						$class2="btn btn-default";
 					}else {
@@ -24,7 +24,7 @@
 						$class2="btn btn-xs blue";
 					}
 					 ?> 
-						<?php echo $this->Html->link('Pending',['controller'=>'Orders','action' => 'manage_order?status=pending'],['escape'=>false,'class'=>$class1]); ?>
+						<?php echo $this->Html->link('Pending',['controller'=>'Orders','action' => 'manage_order?status=placed'],['escape'=>false,'class'=>$class1]); ?>
 						<?php echo $this->Html->link('All',['controller'=>'Orders','action' => 'manage_order'],['escape'=>false,'class'=>$class2]); ?>&nbsp;
 				</div> 	
 				</div>
@@ -44,6 +44,7 @@
 									<th><?= ('Delivery Time') ?></th>
 									<th><?= ('Status') ?></th>
 									<th><?= ('Action') ?></th>
+									<th><?= ('Other') ?></th>
 									<th><?= ('Edit') ?></th>
 								</tr>
 							</thead>
@@ -76,15 +77,41 @@
 									<td><?= h($delivery_time) ?></td>
 									<td><?= h($order->order_status) ?></td>
 									<td>&nbsp; 
-										<?= $this->Html->link(__('Packing'), ['action' => 'edit', $order->id],['class'=>'btn btn-success  btn-condensed btn-sm','escape'=>false]) ?>
-									
-										<?= $this->Html->link(__('Dispatch'), ['action' => 'edit', $order->id],['class'=>'btn btn-warning  btn-condensed btn-sm','escape'=>false]) ?>
+										<?php if($order->packing_flag=='Deactive'){ ?>
+											<?= $this->form->button(__('Packing'),['class'=>'btn btn-success btn-condensed btn-sm pckg']) ?>
+										<?php } ?>
 										
-										<?= $this->Html->link(__('Deliver'), ['action' => 'edit', $order->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>
-										 
+										<?php if(($order->packing_flag=='Active') && ($order->dispatch_flag=='Deactive')){ ?>
+											<?= $this->form->button(__('Dispatch'),['class'=>'btn btn-warning  btn-condensed btn-sm dsptch']) ?>
+										<?php } ?>
+										
+										<?php if($order->dispatch_flag=='Active'){ ?>
+											 
+											<a class="btn btn-primary dlvr btn-condensed btn-sm" order_id="<?php echo $order->id; ?>" > Deliver</a>
+										<?php } ?>
+										
 										 <?= $this->Html->link(__('Cancel'), ['action' => 'edit', $order->id],['class'=>'btn btn-danger  btn-condensed btn-sm','escape'=>false]) ?>
+										 <input type="hidden" class="ordr_id" value="<?php echo $order->id ?>" >
 									</td>
 									
+									<td>&nbsp; 
+									
+										<?php 
+										if(($order->order_status!='Delivered') && ($order->order_status!='Delivered')){
+										if(empty($order->otp)){ ?>
+										
+											<?= $this->form->button(__('OTP'),['class'=>'btn btn-success btn-condensed btn-sm otp']) ?>
+										<?php } ?>
+										
+										<?php if($order->not_received=='No'){ ?>
+										
+											<?= $this->form->button(__('SMS'),['class'=>'btn btn-warning btn-condensed btn-sm sms']) ?>
+										<?php } ?>
+										
+										<input type="hidden" class="otp_val" value="<?php echo $order->id ?>" mob="<?php echo $order->customer_address->mobile_no; ?>">
+										<?php } ?>		
+									</td>	
+										
 									<td class="actions">
 										<?= $this->Html->link(__('Edit'), ['action' => 'edit', $order->id],['class'=>'btn btn-condensed btn-sm','escape'=>false]) ?>
 										 
@@ -113,3 +140,150 @@
 	</div>                    
 	
 </div>
+<div  class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel3" aria-hidden="false" style="display: none;border:0px;" id="popup">
+<div class="modal-backdrop fade in" ></div>
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content" style="border:0px;">
+			<div class="modal-body flip-scroll" style="height: auto;
+    overflow-y: auto;" >
+				<p >
+					 Body goes here...
+				</p>
+			</div>
+		</div>
+	</div>
+</div>
+<?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
+<?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
+<?php
+   $js="var jvalidate = $('#jvalidate').validate({
+		ignore: [],
+		rules: {                                            
+				party_ledger_id: {
+						required: true,
+				},
+				sales_ledger_id: {
+						required: true,
+				},
+				
+			}                                        
+		});
+		
+		$(document).on('click','.otp',function(){
+			var mn=$(this);
+			var ordr_id=$(this).closest('tr').find('.otp_val').val();
+			var mob=$(this).closest('tr').find('.otp_val').attr('mob');
+			var url='".$this->Url->build(["controller" => "Orders", "action" => "otpSend"])."';
+			url=url+'/'+ordr_id+'/'+mob
+			 
+			$.ajax({
+				url: url,
+				type: 'GET'
+			}).done(function(response) {
+				mn.hide();
+			});
+		});
+		
+		$(document).on('click','.sms',function(){
+			var mns=$(this);
+			var ordr_id=$(this).closest('tr').find('.otp_val').val();
+			var mob=$(this).closest('tr').find('.otp_val').attr('mob');
+			var url='".$this->Url->build(["controller" => "Orders", "action" => "smsSend"])."';
+			url=url+'/'+ordr_id+'/'+mob
+			 
+			$.ajax({
+				url: url,
+				type: 'GET'
+			}).done(function(response) {
+			 
+				mns.hide();
+			});
+			
+		});
+		
+		$(document).on('click','.pckg',function(){
+			var mns1=$(this);
+			var ordr_id=$(this).closest('tr').find('.ordr_id').val();
+			var url='".$this->Url->build(["controller" => "Orders", "action" => "packing"])."';
+			url=url+'/'+ordr_id
+			$.ajax({
+				url: url,
+				type: 'GET'
+			}).done(function(response) {
+				mns1.hide();
+			});
+			
+		});
+		
+		$(document).on('click','.dsptch',function(){
+			var mns2=$(this);
+			var ordr_id=$(this).closest('tr').find('.ordr_id').val();
+			var url='".$this->Url->build(["controller" => "Orders", "action" => "dispatch"])."';
+			url=url+'/'+ordr_id
+			$.ajax({
+				url: url,
+				type: 'GET'
+			}).done(function(response) {
+				mns2.hide();
+			});
+			
+		});
+		
+		 
+		$(document).on('click','.dlvr',function(){
+		$('#popup').show();
+		var order_id=$(this).closest('tr').find('.ordr_id').val();
+		 
+ 		$('#popup').find('div.modal-body').html('Loading...');
+		var url='".$this->Url->build(["controller" => "Orders", "action" => "ajax_deliver"])."';
+		url=url+'/'+order_id;
+		$.ajax({
+			url: url,
+			type: 'GET'
+			//dataType: 'text'
+		}).done(function(response) {
+			$('#popup').find('div.modal-body').html(response);
+		});	
+		});
+	  
+	  
+		$(document).on('keyup','.actual_quantity',function(){
+			var actual_quantity=$(this).val();
+			var gst_per=$(this).attr('gst');
+			var price=$(this).attr('price');
+			var seprate_amount=actual_quantity*price;
+			$(this).closest('tr').find('.amount').val(seprate_amount);
+			var gst_val=(seprate_amount*gst_per/100);
+			$(this).closest('tr').find('.gst_value').val(gst_val);
+			var with_gst=seprate_amount+gst_val;
+			$(this).closest('tr').find('.net_amount').val(with_gst);
+			manage_calculation();
+		});
+	 
+	 function manage_calculation(){
+		 var all_first_amount=0;
+		 var all_first_gst_value=0;
+		 var all_first_net_amount=0;
+		 $('.main_table tbody tr').each(function(){
+			 
+			 var first_amount=parseFloat($(this).find('td:nth-child(6) input.amount').val());
+			 if(!first_amount){ first_amount=0; }
+			 var first_gst_value=parseFloat($(this).find('td:nth-child(6) input.gst_value').val());
+			 if(!first_gst_value){ first_gst_value=0; }
+			 var first_net_amount=parseFloat($(this).find('td:nth-child(6) input.net_amount').val());
+			 if(!first_net_amount){ first_net_amount=0; }
+			 
+			 all_first_amount+=first_amount;
+			 all_first_gst_value+=first_gst_value;
+			 all_first_net_amount+=first_net_amount;
+			 
+		 });
+		
+		 $('.txbl').val(all_first_amount.toFixed(2));
+		 $('.ttl_gst').val(all_first_gst_value.toFixed(2));
+		 $('.grnd_ttl').val(all_first_net_amount.toFixed(2));
+	 }
+		
+		";  
+echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		
+?>

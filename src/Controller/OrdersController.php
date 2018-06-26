@@ -23,7 +23,7 @@ class OrdersController extends AppController
 	public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->Security->setConfig('unlockedActions', ['add', 'index', 'view', 'manageOrder']);
+        $this->Security->setConfig('unlockedActions', ['add', 'index', 'view', 'manageOrder', 'ajaxDeliver']);
 
     }
 	
@@ -42,16 +42,89 @@ class OrdersController extends AppController
 	
 		
         $this->paginate = [
-            'contain' => ['OrderDetails'=>['ItemVariations'],'SellerLedgers','PartyLedgers','Locations'],
+            //'contain' => ['OrderDetails'=>['ItemVariations'],'SellerLedgers','PartyLedgers','Locations'],
 			'limit' => 20
         ];
-        
-        $orders = $this->paginate($this->Orders);
+		
+		$order_data=$this->Orders->find()->order(['Orders.id'=>'DESC'])->contain(['SellerLedgers','PartyLedgers','Locations','DeliveryTimes','Customers']);
+
+        $orders = $this->paginate($order_data);
 		//pr( $orders); exit;
 		$paginate_limit=$this->paginate['limit'];
         $this->set(compact('orders','paginate_limit'));
     }
 	
+	public function ajaxDeliver($id = null)
+    {
+		//$this->viewBuilder()->layout('');
+         $Orders = $this->Orders->get($id, [
+            'contain' => ['SellerLedgers','PartyLedgers','Locations','DeliveryTimes','Customers','CustomerAddresses', 'OrderDetails'=>['ItemVariations'=>['Items'], 'ComboOffers']]
+        ]);
+		 
+        $this->set('Orders', $Orders);
+        $this->set('_serialize', ['Orders']);
+    }
+	
+	public function dispatch($ordr_id=null)
+    {
+	$ordr_id;
+	$order = $this->Orders->get($ordr_id);
+	$order->dispatch_flag='Active';
+	$order->dispatch_on= date('Y-m-d h:i:s a');
+	$this->Orders->save($order);
+	exit;
+	}
+	
+	public function packing($ordr_id=null)
+    {
+	$ordr_id;
+	$order = $this->Orders->get($ordr_id);
+	$order->packing_flag='Active';
+	$order->packing_on= date('Y-m-d h:i:s a');
+	$this->Orders->save($order);
+	
+	$sms=str_replace(' ', '+', 'You are not Receiving Our Call to receive order, your order has been again return to warehouse of jainthla please collect from their');
+	$sms_sender='JAINTE';
+	$sms=str_replace(' ', '+', $sms);
+	//file_get_contents('http://103.39.134.40/api/mt/SendSMS?user=phppoetsit&password=9829041695&senderid='.$sms_sender.'&channel=Trans&DCS=0&flashsms=0&number='.$mob.'&text='.$sms.'&route=7');
+	
+	exit;
+	}
+	
+/////order not receive by customer on delivery time send sms start///////////	
+	public function smsSend($ordr_id=null,$mob=null)
+    {
+	$ordr_id;
+	$mob;
+	$order = $this->Orders->get($ordr_id);
+	$order->not_received='Yes';
+	$this->Orders->save($order);
+	
+	$sms=str_replace(' ', '+', 'You are not Receiving Our Call to receive order, your order has been again return to warehouse of jainthla please collect from their');
+	$sms_sender='JAINTE';
+	$sms=str_replace(' ', '+', $sms);
+	//file_get_contents('http://103.39.134.40/api/mt/SendSMS?user=phppoetsit&password=9829041695&senderid='.$sms_sender.'&channel=Trans&DCS=0&flashsms=0&number='.$mob.'&text='.$sms.'&route=7');
+	
+	exit;
+	}
+/////order not receive by customer on delivery time send sms end///////////	
+	
+	public function otpSend($ordr_id=null,$mob=null)
+    {
+	$ordr_id;
+	$mob;
+	$random=(string)mt_rand(1000,9999);
+	$order = $this->Orders->get($ordr_id);
+	$order->otp=$random;
+	$this->Orders->save($order);
+	
+	$sms=str_replace(' ', '+', 'Your order delivery confirmation one time OTP is: '.$random.'');
+	$sms_sender='JAINTE';
+	$sms=str_replace(' ', '+', $sms);
+	//file_get_contents('http://103.39.134.40/api/mt/SendSMS?user=phppoetsit&password=9829041695&senderid='.$sms_sender.'&channel=Trans&DCS=0&flashsms=0&number='.$mob.'&text='.$sms.'&route=7');
+	
+	exit;
+	}
 	
 	public function orderRelatedToSeller($status=null){
 		$this->viewBuilder()->layout('super_admin_layout');
@@ -129,10 +202,10 @@ class OrdersController extends AppController
         ];
 		if(!empty($status)){
 			
-			$order_data=$this->Orders->find()->where(['Orders.order_status'=>$status])->order(['Orders.id'=>'DESC'])->contain(['SellerLedgers','PartyLedgers','Locations','DeliveryTimes','Customers']);
+			$order_data=$this->Orders->find()->where(['Orders.order_status'=>$status])->order(['Orders.id'=>'DESC'])->contain(['SellerLedgers','PartyLedgers','Locations','DeliveryTimes','Customers','CustomerAddresses']);
 		}else{
 			
-			$order_data=$this->Orders->find()->order(['Orders.id'=>'DESC'])->contain(['SellerLedgers','PartyLedgers','Locations','DeliveryTimes','Customers']);
+			$order_data=$this->Orders->find()->order(['Orders.id'=>'DESC'])->contain(['SellerLedgers','PartyLedgers','Locations','DeliveryTimes','Customers','CustomerAddresses']);
 		}
 		
         $orders = $this->paginate($order_data);
@@ -317,9 +390,8 @@ class OrdersController extends AppController
 		$this->loadmodel('SalesOrders');
 		$sales_orders=$this->Orders->find()->where(['Orders.id'=>$ids])->contain(['DeliveryTimes','OrderDetails'=>['ItemVariations'=>['ItemVariationMasters','Items','UnitVariations'=>['Units']]], 'Customers'=>['CustomerAddresses']])->first();
 		 
-		//pr($sales_orders); exit;
-		
-        $this->set(compact('ids', 'sales_orders', 'order', 'locations', 'customers', 'drivers', 'customerAddresses', 'promotionDetails', 'deliveryCharges', 'deliveryTimes', 'cancelReasons','order_no','partyOptions','Accountledgers','items'));
+		$company_details=$this->Orders->Companies->find()->where(['Companies.city_id'=>$city_id])->first();
+        $this->set(compact('ids', 'sales_orders', 'order', 'locations', 'customers', 'drivers', 'customerAddresses', 'promotionDetails', 'deliveryCharges', 'deliveryTimes', 'cancelReasons','order_no','partyOptions','Accountledgers','items','company_details'));
     }
 
     /**

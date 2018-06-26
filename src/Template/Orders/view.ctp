@@ -1,5 +1,4 @@
 <style>
-
 @media print{
 	.maindiv{
 		width:100% !important;
@@ -23,30 +22,45 @@ margin-bottom: 0;
     margin: 0px 0px 0px 0px;  /* this affects the margin in the printer settings */
 }
 </style>
-<div style="border:solid 1px #c7c7c7;background-color: #FFF;padding:10px;width: 100%;font-size:14px;" class="maindiv">	
-<?php
-if(empty($print))
-{
-	echo $this->Html->link('Print',['controller'=>'Orders','action'=>'view',$ids,'print'],['escape'=>false,'class'=>'btn  blue hidden-print fa fa-print','target'=>'_blank',]);
-}
-else
-{
-	echo $this->Html->link('Print',array(),['escape'=>false,'class'=>'btn  blue hidden-print fa fa-print','onclick'=>'javascript:window.print();']);
-}
-echo $this->Html->link('Close',array(),['escape'=>false,'class'=>'btn  red hidden-print fa fa-remove pull-right','onclick'=>'javascript:window.close();']);
-
-?>
+	<div style="border:solid 1px #c7c7c7;background-color: #FFF;padding:10px;width: 100%;font-size:14px;" class="maindiv">	
+		<?php
+		if(empty($print))
+		{
+			echo $this->Html->link('Print',['controller'=>'Orders','action'=>'view',$ids,'print'],['escape'=>false,'class'=>'btn  blue hidden-print fa fa-print','target'=>'_blank',]);
+		}
+		else
+		{
+			echo $this->Html->link('Print',array(),['escape'=>false,'class'=>'btn  blue hidden-print fa fa-print','onclick'=>'javascript:window.print();']);
+		}
+			echo $this->Html->link('Close',array(),['escape'=>false,'class'=>'btn  red hidden-print fa fa-remove pull-right','onclick'=>'javascript:window.close();']);
+		?>
+		
+		<div class="col-md-12" >
+			<div class="col-md-2">
+				<?php echo $this->Html->image('/img/jain.png', ['height' => '150', 'width'=>'100px', 'class'=>'img-rounded img-responsive']); ?>
+			</div>
+			<div class="col-md-10" align="center" style="color:#337AB7; font-size: 18px;font-weight: bold;">
+				<div align="center" style="color:#337AB7; font-size: 25px;font-weight: bold;">
+					<?= h($company_details->firm_name) ?>
+				</div>
+				(<?= h($company_details->firm_address) ?>), Pincode:-<?= h($company_details->firm_pincode) ?><br>
+				Contact Number: - <?= h($company_details->firm_contact) ?> ,Email: - <?= h($company_details->firm_email) ?><br>
+				GSTIN Number:- <?= h($company_details->gstin) ?>
+			</div>
+		</div>
+		 
 		<div align="center" style="color:#F98630; font-size: 16px;font-weight: bold;">
 			INVOICE - <?= $sales_orders->order_no ?>
 		</div>
 	<div style="border:solid 2px #F98630; margin-bottom:0px;"></div>
-		<table width="100%">	
-			
+		<table width="100%">
 			<tbody>
 				<tr style="background-color:#fff; color:#000;">
 					<td align="left" colspan="5">
 						<b>
-							Customer : <?= $sales_orders->customer->name ?> <br>Invoice No.: <?= $sales_orders->order_no ?>
+							Customer : <?= $sales_orders->customer->name ?> 
+							(<?= h($sales_orders->customer->username) ?>)
+							<br>Invoice No.: <?= $sales_orders->order_no ?>
 						</b>
 					</td>
 				</tr>
@@ -238,4 +252,12 @@ echo $this->Html->link('Close',array(),['escape'=>false,'class'=>'btn  red hidde
 				</tr>-->
 			</tfoot>
 		</table>
+		
+		 <div style="border:solid 2px #F98630; margin-bottom:0px;"></div>
+		<fieldset>
+			<center><legend>Terms & Condition</legend></center>
+			<div>
+				<p class="MsoNormal" style="mso-margin-top-alt: auto; mso-margin-bottom-alt: auto; text-align: justify; line-height: normal; mso-outline-level: 1;"><strong><span style="font-size: 14.0pt; font-family: 'Times New Roman','serif'; mso-fareast-font-family: 'Times New Roman'; mso-font-kerning: 18.0pt;">Return policy</span></strong></p><p class="MsoNormal" style="mso-margin-top-alt: auto; mso-margin-bottom-alt: auto; text-align: justify; line-height: normal; mso-outline-level: 1;"><span style="font-size: 12.0pt; font-family: 'Century','serif'; mso-fareast-font-family: 'Times New Roman'; mso-bidi-font-family: 'Times New Roman'; color: #404040; mso-themecolor: text1; mso-themetint: 191;">.</span></p><p style="text-align: justify; line-height: 115%; background: white; mso-background-themecolor: background1;"><span lang="EN-IN" style="font-family: 'Century','serif'; mso-bidi-font-family: Arial; color: #404040; mso-themecolor: text1; mso-themetint: 191;">Most unopened items in new condition and returned within 3 days will receive a refund or exchange. Some items have a modified return policy noted on the receipt, packing slip, JainThela policy board (refund exceptions), JainThela.com or in the item department. Items that are opened or damaged or do not have a receipt may be denied a refund or exchange.</span></p><p style="text-align: justify; line-height: 115%; background: white; mso-background-themecolor: background1;"></p>
+			</div>
+		</fieldset>
 	</div>

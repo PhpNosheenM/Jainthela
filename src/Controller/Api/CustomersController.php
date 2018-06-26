@@ -126,7 +126,6 @@ class CustomersController extends AppController
 			}else{
 					$success = false;
 					$message = 'mobile already taken';
-
 				}
 
 		}else{
@@ -228,13 +227,13 @@ class CustomersController extends AppController
 							$result = $query->update()->set(['token' => $arr])->where(['id' => $customers->id])->execute();
 						    $customer_data = $this->Customers->get($customers->id);
 
-							$accounting_group = $this->Customers->Ledgers->AccountingGroups->find()->where(['customer'=>1])->first();
+							/* $accounting_group = $this->Customers->Ledgers->AccountingGroups->find()->where(['customer'=>1])->first();
 							$ledger = $this->Customers->Ledgers->newEntity();
 							$ledger->name = $customer_data->name;
 							$ledger->accounting_group_id = $accounting_group->id;
 							$ledger->customer_id=$customer_data->id;
 							$ledger->bill_to_bill_accounting='yes';
-							$this->Customers->Ledgers->save($ledger);
+							$this->Customers->Ledgers->save($ledger); */
 
 						$success=true;
 						$message="data has been saved successfully";
@@ -265,12 +264,8 @@ class CustomersController extends AppController
 		$user = $this->Auth->identify();
     if (!$user) {
   			//throw new UnauthorizedException();
-          $this->set([
-            'success' => false,
-            'message' => 'Invalid username or password',
-            'users' => [],
-            '_serialize' => ['success', 'users','message']
-          ]);
+          $this->set(['success' => false,'message' => 'Invalid username or password','users' => (object)[],
+            '_serialize' => ['success', 'users','message']]);
   		}else {
         $arr = JWT::encode(['sub' => $user['id'],'exp' =>  time() + 604800],Security::salt());
         $query = $this->Customers->query();
@@ -423,14 +418,14 @@ class CustomersController extends AppController
    public function addAddress()
    {
      $customer_id = $this->request->data['customer_id'];
-     $default_address_value = $this->request->data['default_address'];
-     $customer_address_id = $this->request->data['id'];
+     @$default_address_value = $this->request->data['default_address'];
+     @$customer_address_id = $this->request->data['id'];
      if(!empty($customer_id))
        {
-          $exists = $this->Customers->CustomerAddresses->exists(['id'=>$customer_address_id,'customer_id'=>$customer_id]);
+          $exists = $this->Customers->CustomerAddresses->exists(['id'=>@$customer_address_id,'customer_id'=>$customer_id]);
             if($exists == 0)
             {
-                if($default_address_value == 1)
+                if(@$default_address_value == 1)
                 {
                   $query = $this->Customers->CustomerAddresses->query();
                   $result = $query->update()->set(['default_address' => 0])
@@ -441,6 +436,10 @@ class CustomersController extends AppController
               $customerAddress = $this->Customers->CustomerAddresses->newEntity();
               $customerAddress = $this->Customers->CustomerAddresses->patchEntity($customerAddress, $this->request->getData());
             //  $customerAddress->default_address = 1;
+			
+			
+			//pr($customerAddress);exit;
+			
               if ($this->Customers->CustomerAddresses->save($customerAddress)) {
                   $success=true;
                   $message="Inserted Successfully";

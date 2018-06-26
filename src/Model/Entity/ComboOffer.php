@@ -47,6 +47,7 @@ class ComboOffer extends Entity
     protected $_accessible = [
         'city_id' => true,
         'admin_id' => true,
+        'gst_amount' => true,
         'name' => true,
         'print_rate' => true,
         'discount_per' => true,

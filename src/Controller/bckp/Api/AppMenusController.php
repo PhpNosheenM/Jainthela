@@ -19,27 +19,27 @@ class AppMenusController extends AppController
     public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['myMenus','mysubMenus']);
+        $this->Auth->allow(['myMenus','mysubMenus','webMenu','menuItem']);
     }
 
-	
+
 	 public function mysubMenus()
 		{
 			 $city_id = @$this->request->query['city_id'];
 			 $menu_id = @$this->request->query['menu_id'];
 			 $submenuData=[];
 			   if(!empty($city_id) and !empty($menu_id))
-				{	
+				{
 					 $isValidCity = $this->CheckAvabiltyOfCity($city_id);
 					 if($isValidCity == 0)
 					 {
 						 $submenuData = $this->AppMenus->find()->select(['id','name','link','title_content'])->where(['city_id'=>$city_id,'status'=>0,'parent_id'=>$menu_id]);
 						 if($submenuData->toArray()){
-							 
+
 							$success = true;
-							$message = 'Data Found Successfully'; 
+							$message = 'Data Found Successfully';
 						 }else {
-							 
+
 							$success = false;
 							$message = 'No Data Found';
 						 }
@@ -47,7 +47,7 @@ class AppMenusController extends AppController
 						$success = false;
 						$message = 'Invalid City';
 					 }
-			
+
 				}else{
 					$success = false;
 					$message = 'City Id or menu_id Empty';
@@ -67,11 +67,11 @@ class AppMenusController extends AppController
          if($isValidCity == 0)
          {
              $menuData = $this->AppMenus->find()->select(['id','name','link','title_content'])->where(['city_id'=>$city_id,'status'=>0,'parent_id IS'=>Null]);
-			
+
              if(!empty($menuData->toArray()))
              {
 				 foreach($menuData as $menu){
-					 
+
 					$title_content= $menu->title_content;
 					 if($title_content=='Menu'){
 						 $menus[]=$menu;
@@ -88,14 +88,14 @@ class AppMenusController extends AppController
 				array_push($dynamic,array("header_name"=>'Other',"title"=>$Other));
 			/* 	$Categories = $this->AppMenus->Categories->find()->select(['id','name'])->where(['city_id'=>$city_id,'section_show'=>'Yes','status'=>'Active'])->contain(['ChildCategories'=>function($q){
 					return $q->select(['ChildCategories.parent_id','ChildCategories.id','ChildCategories.name']); */
-					
+
 				$Categories = $this->AppMenus->Categories->find()
 						->select(['id','name'])
 						->where(['city_id'=>$city_id,'section_show'=>'Yes','status'=>'Active','parent_id IS'=>Null])
 						->contain(['ChildCategories'=>function($q){
 							return $q->select(['ChildCategories.parent_id','ChildCategories.id','ChildCategories.name']);
 						}]);
-				
+
 			    //array_push($dynamic,array("header_name"=>'Shop By Category',"title"=>$Categories));
 
                $success = true;
@@ -116,4 +116,70 @@ class AppMenusController extends AppController
       }
       $this->set(['success' => $success,'message'=>$message,'dynamic' => $dynamic,"Allcategories"=>$Categories,'_serialize' => ['success','message','dynamic','Allcategories']]);
     }
+
+    public function webMenu($city_id = null)
+    {
+      $city_id = @$this->request->query['city_id'];
+       $Categories=[];
+      if(!empty($city_id))
+      {
+        // CheckAvabiltyOfCity function is avaliable in app controller for checking city_id in cities table
+          $isValidCity = $this->CheckAvabiltyOfCity($city_id);
+           if($isValidCity == 0)
+           {
+  				     $Categories = $this->AppMenus->Categories->find()
+  						   ->select(['id','name'])
+  						   ->where(['city_id'=>$city_id,'section_show'=>'Yes','status'=>'Active','parent_id IS'=>Null]);
+                 if(!empty($Categories->toArray()))
+                 {
+                   $success = true;
+                   $message = 'Data Found Successfully';
+                 }else {
+                      $success = false;
+                      $message = 'No Data Found';
+                 }
+          } else {   $success = false; $message = 'Invalid City';  }
+      }else
+      {
+        $success = false;
+        $message = 'City Id Empty';
+      }
+      $this->set(['success' => $success,'message'=>$message,"Allcategories"=>$Categories,'_serialize' => ['success','message','Allcategories']]);
+    }
+
+    public function menuItem($category_id = null,$city_id=null)
+    {
+      $category_id = @$this->request->query['category_id'];
+      $city_id = @$this->request->query['city_id'];
+      $Categories=[];
+      if(!empty($city_id))
+      {
+        // CheckAvabiltyOfCity function is avaliable in app controller for checking city_id in cities table
+          $isValidCity = $this->CheckAvabiltyOfCity($city_id);
+           if($isValidCity == 0)
+           {
+             $items = $this->AppMenus->Categories->Items->find()
+             ->select(['id','name','category_id'])
+             ->contain(['ItemsVariations' => function ($q)
+               { return $q->select(['ItemsVariations.id','ItemsVariations.item_id']); }
+             ])
+             ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id,'Items.category_id'=>$category_id]);
+
+                 if(!empty($items->toArray()))
+                 {
+                   $success = true;
+                   $message = 'Data Found Successfully';
+                 }else {
+                      $success = false;
+                      $message = 'No Data Found';
+                 }
+          } else {   $success = false; $message = 'Invalid City';  }
+      }else
+      {
+        $success = false;
+        $message = 'City Id Empty';
+      }
+      $this->set(['success' => $success,'message'=>$message,"items"=>$items,'_serialize' => ['success','message','items']]);
+    }
+
 }

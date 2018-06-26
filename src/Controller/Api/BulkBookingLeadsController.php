@@ -14,21 +14,32 @@ use Firebase\JWT\JWT;
  */
 class BulkBookingLeadsController extends AppController
 {
+	public function initialize()
+	 {
+			 parent::initialize();
+			 $this->Auth->allow(['add']);
+	 }	
+	 
     public function add()
     {
         $bulkBookingLead = $this->BulkBookingLeads->newEntity();
         if ($this->request->is('post')) {
-			//pr(getallheaders());exit;
-			$token = '';
-          foreach(getallheaders() as $key => $value) {
-             if($key == 'Authorization' || $key == 'authorization')
-             {
-               $token = $value;
-             }
-          }
-		//  echo $token;exit;
-          // checkToken function is avaliable in app controller for checking token in customer table
-         $token = str_replace("Bearer ","",$token);
+			$lead_from = $this->request->data('lead_from');
+			$token = $this->request->data('token');
+		
+			if($lead_from != 'web')
+			{
+				$token = '';
+				foreach(getallheaders() as $key => $value) {
+					 if($key == 'Authorization' || $key == 'authorization')
+					 {
+					   $token = $value;
+					 }
+					$token = str_replace("Bearer ","",$token); 
+				}				
+			}
+			
+          // checkToken function is avaliable in app controller for checking token in customer table         
           $isValidToken = $this->checkToken($token);
 
             if($isValidToken == 0)
@@ -62,16 +73,18 @@ class BulkBookingLeadsController extends AppController
                       $bulkBookingLead->lead_no = $maxLead;
                       $bulkBookingLead->delivery_date = date('Y-m-d',strtotime($this->request->getData('delivery_date')));
 
-
-
-					//  pr($bulkBookingLead);exit;
+					  
+					  if($lead_from == 'web')
+					  {
+						  $bulkBookingLead->customer_id = $this->Encryption->decrypt($this->request->data('customer_id'));
+						  $bulkBookingLead->city_id = $this->Encryption->decrypt($this->request->data('city_id'));						  
+					  }
+					 	
+					//pr($bulkBookingLead);exit;
                       if ($bulkBookingLeadData = $this->BulkBookingLeads->save($bulkBookingLead)) {
-
-                          foreach ($rowsDatas as $rowsData) {
+							foreach ($rowsDatas as $rowsData) {
                             if($rowsData['image_name']['error'] == 0)
                              {
-                            //   $deletekeyname = 'bulkbooking/customer/'.$bulkBookingLeadData->id;
-                        //       $this->AwsFile->deleteMatchingObjects($deletekeyname);
                                foreach ($bulkBookingLeadData->bulk_booking_lead_rows as $imageData) {
                                  $keyname = 'bulkbooking/customer/'.$bulkBookingLeadData->id.'/'.$imageData->image_name;
                                  $this->AwsFile->putObjectFile($keyname,$rowsData['image_name']['tmp_name'],$rowsData['image_name']['type']);
@@ -104,11 +117,18 @@ class BulkBookingLeadsController extends AppController
                   }
 
               }else {
-                          $success = false;
-                          $message = 'Invalid Token';
+					  $success = false;
+					  $message = 'Invalid Token';
 			  }
-
         }
-        $this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
+		
+		if($lead_from == 'web')
+		{
+			//$this->Flash->success(__('Thank you ! Our Team will get back to you'));
+			return $this->redirect(['controller'=>'home','action' => 'bulk-booking/?msg'.$message]);			
+		}else
+		{
+			$this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);	
+		}
     }
 }

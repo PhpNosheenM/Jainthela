@@ -123,6 +123,7 @@ class OrdersTable extends Table
 		
 		
 		$this->belongsTo('SalesOrders');
+		$this->belongsTo('Companies');
     }
 
     /**

@@ -1,4 +1,4 @@
-<?php $this->set('title', 'Sales Order'); ?>
+<?php $this->set('title', 'Create Order'); ?>
 <!-- PAGE CONTENT WRAPPER -->
 <div class="page-content-wrap">
 	<div class="row">
@@ -6,16 +6,16 @@
 		<?= $this->Form->create($salesOrder,['id'=>'jvalidate','class'=>'form-horizontal','type'=>'file']) ?>  
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><strong> Sales Order </strong></h3>
+					<h3 class="panel-title"><strong> Create Order </strong></h3>
 				</div>
 			
 				<div class="panel-body">
 					<div class="row">
-					<center><h3>Sales Order Details</h3></center>
+					<center><h3> Order Details</h3></center>
 							<hr>
 						<div class="col-md-3">
 							<div class="form-group">
-								<label class=" control-label">Sales Order No</label>
+								<label class=" control-label"> Order No</label>
 								<div class="">                                            
 									
 									<?= $this->Form->control('sales_order_no',['class'=>'form-control','placeholder'=>'','label'=>false,'value'=>$order_no,'readonly']) ?>
@@ -63,7 +63,7 @@
 						<div class="row">
 							<div class="table-responsive">
 								
-								<center><h3>Sales Item Details</h3></center>
+								<center><h3> Item Details</h3></center>
 								<hr>
 								<table class="table table-bordered main_table">
 									<thead>
@@ -124,7 +124,7 @@
 									</tfoot>
 								</table>
 								
-								<center><h3>Sales Transaction Details</h3></center>
+								<center><h3> Transaction Details</h3></center>
 								<hr>
 								<table width="70%" style="font-size:14px;">
 									<tr>

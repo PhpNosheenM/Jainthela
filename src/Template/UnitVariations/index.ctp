@@ -27,7 +27,7 @@
 					</div>
 					<div class="form-group">
 						<label>Unit</label>
-							<?php echo $this->Form->select('unit_id', $units,['class'=>'form-control unit','label'=>false]) ?>
+							<?php echo $this->Form->select('unit_id', $units,['empty'=>'---Select--Unit---','class'=>'form-control unit','label'=>false]) ?>
 					</div>
 				
 				</div>
