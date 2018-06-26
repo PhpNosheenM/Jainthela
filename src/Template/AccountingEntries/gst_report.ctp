@@ -109,7 +109,6 @@
 								</div>
 								
 						</div>
-						
 						<div class="form-group" >
 								<div class="col-md-12" align="center">
 								</div>
@@ -125,11 +124,11 @@
 											</tr>
 										</thead>
 										<tbody>
-										<?php $totalgstinput=0; foreach($GstFigures as $GstFigure) {?>
+										<?php $totalgstinput1=0; foreach($GstFigures as $GstFigure) {?>
 											<tr>
 												<td><?php echo $GstFigure->name; ?></td>
 												<td><?php echo @$inputIgst[@$GstFigure->id]; ?></td>
-												<?php $totalgstinput+=@$inputIgst[@$GstFigure->id]; ?>
+												<?php $totalgstinput1+=@$inputIgst[@$GstFigure->id]; ?>
 											</tr>
 										<?php } ?>
 										</tbody>
@@ -137,7 +136,7 @@
 										<tfoot>
 											<tr>
 												<td scope="col"  style="text-align:right";><b>Total IGST</b></td>
-												<td scope="col" style="text-align:right";><b><?php echo $totalgstinput; ?></b></td>
+												<td scope="col" style="text-align:right";><b><?php echo $totalgstinput1; ?></b></td>
 												
 											</tr>
 											
@@ -154,11 +153,11 @@
 											</tr>
 										</thead>
 										<tbody>
-										<?php $totalgstoutput=0; foreach($GstFigures as $GstFigure) {?>
+										<?php $totalgstoutput1=0; foreach($GstFigures as $GstFigure) {?>
 											<tr>
 												<td><?php echo $GstFigure->name; ?></td>
 												<td><?php echo @$outputIgst[@$GstFigure->id]; ?></td>
-												<?php $totalgstoutput+=@$outputIgst[@$GstFigure->id]; ?>
+												<?php $totalgstoutput1+=@$outputIgst[@$GstFigure->id]; ?>
 											</tr>
 										<?php } ?>
 										</tbody>
@@ -166,13 +165,55 @@
 										<tfoot>
 											<tr>
 												<td scope="col"  style="text-align:right";><b>Total IGST</b></td>
-												<td scope="col" style="text-align:right";><b><?php echo $totalgstoutput; ?></b></td>
+												<td scope="col" style="text-align:right";><b><?php echo $totalgstoutput1; ?></b></td>
 												
 											</tr>
 											
 										</tfoot>
 									</table>
 								</div>
+								
+						</div>
+						<div class="form-group" >
+								<div class="col-md-12" align="center">
+								</div>
+						</div>
+						<div class="form-group" >
+								<div class="col-md-3 " align="center" style="font-weight: bold"></div>
+								<div class="col-md-6 " align="center" style="font-weight: bold"></b>Total GST</b>
+									<table class="table table-bordered  table-condensed" width="100%" border="1">
+										<thead>
+											
+											<tr>
+												<th style="background-color:#f7c062"  scope="col">GST</th>
+												<th style="background-color:#f7c062"  scope="col" >Amount</th>
+											</tr>
+										</thead>
+										<tbody>
+										
+											<tr>
+												<td >Total Input GST</td>
+												<td style="text-align:right";><?php echo @$totalgstinput+$totalgstinput1; ?></td>
+											</tr>
+											
+											<tr>
+												<td>Total Output GST</td>
+												<td style="text-align:right";><?php echo @$totalgstoutput+$totalgstoutput1; ?></td>
+											</tr>
+									
+										</tbody>
+										
+										<tfoot>
+											<tr>
+												<td   style="text-align:left";><b>Diffrence</b></td>
+												<td scope="col" style="text-align:right";><?php echo ((@$totalgstinput+$totalgstinput1)-(@$totalgstoutput+$totalgstoutput1)); ?></td>
+												
+											</tr>
+											
+										</tfoot>
+									</table>
+								</div>
+								
 								
 						</div>
 						

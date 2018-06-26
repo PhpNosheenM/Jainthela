@@ -875,6 +875,8 @@ class ItemsController extends AppController
 		//$location_id=$this->Auth->User('location_id'); 
 		$this->viewBuilder()->layout('super_admin_layout');
 		$location_id = $this->request->query('location_id');
+		$seller_id = $this->request->query('seller_id');
+		$gst_figure_id = $this->request->query('gst_figure_id');
 		$from_date = $this->request->query('from_date');
 		$to_date   = $this->request->query('to_date');
 		if(empty($from_date) || empty($to_date))
@@ -900,11 +902,26 @@ class ItemsController extends AppController
 			//$to_date   = date("Y-m-d",strtotime($to_date));
 			$where['Orders.location_id']=$location_id;
 		}
-		//pr($where); exit;
-		$orders = $this->Items->Orders->find()->contain(['Locations','PartyLedgers'=>['CustomerData']])->where($where)->where(['location_id'=>$location_id]);
+		if($gst_figure_id){ 
+			 $orders=$this->Items->Orders->find()->contain(['Locations','PartyLedgers'=>['CustomerData'],'OrderDetails'=>function ($q) use($gst_figure_id) {
+							return $q->where(['OrderDetails.gst_figure_id'=>$gst_figure_id])->contain(['GstFigures','Items']);
+						}])->where($where);
+						
+			 $orders->innerJoinWith('OrderDetails',function ($q) use($gst_figure_id) {
+							return $q->where(['OrderDetails.gst_figure_id'=>$gst_figure_id])->contain(['GstFigures']);
+						})->group('OrderDetails.order_id')
+					->autoFields(true);
+
+			//pr($orders->toArray()); exit;
+		}else{
+			$orders = $this->Items->Orders->find()->contain(['Locations','PartyLedgers'=>['CustomerData']])->where($where)->where(['location_id'=>$location_id]);
+			//pr($orders->toArray()); exit;
+		}
 		$Locations = $this->Items->Orders->Locations->find('list')->where(['city_id'=>$city_id]);
+		//$Sellers = $this->Items->Sellers->find('list')->where(['city_id'=>$city_id]);
+		$GstFigures = $this->Items->GstFigures->find('list')->where(['city_id'=>$city_id]);
 		//pr($orders->toArray()); exit;
-		$this->set(compact('from_date','to_date','orders','Locations','location_id'));
+		$this->set(compact('from_date','to_date','orders','Locations','location_id','gst_figure_id','Sellers','GstFigures'));
 	}
 	
 		public function PurchaseReport()
@@ -936,7 +953,7 @@ class ItemsController extends AppController
 			$where['PurchaseInvoices.city_id ']=$city_id;
 		}
 		
-	//	pr($from_date); exit;
+		//pr($from_date); exit;
 		$PurchaseInvoices = $this->Items->PurchaseInvoices->find()->contain(['Cities','SellerLedgers'=>['SellerData']])->where($where);
 		$Locations = $this->Items->Orders->Locations->find('list');
 		//pr($PurchaseInvoices->toArray()); exit;
