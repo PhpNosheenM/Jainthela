@@ -124,7 +124,10 @@ class HomeScreensController extends AppController
 
 							$Items = $this->HomeScreens->Categories->find();
 							$Items->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])->contain(['SellerItems'=> function($q) use($city_id,$Items) { 
-								return $q->contain(['Items','ItemVariations'=>['ItemVariationMasters','UnitVariations'=>['Units']]])
+								return $q->contain(['Items','ItemRating' => function($q) use($Items) {
+									return $q->select(['ItemRating.id','AverageReviewRatings.item_id','ItemAverageRating' => $Items->func()->avg('AverageReviewRatings.rating')])
+									->leftJoinWith('AverageReviewRatings');
+								} ,'ItemVariations'=>['ItemVariationMasters','UnitVariations'=>['Units']]])
 									->select(['SellerItems.category_id','sellerItemCount'=>$Items->func()->count('ItemVariations.seller_item_id')])
 									->innerJoinWith('ItemVariations')
 									->having(['sellerItemCount' > 0])	
@@ -136,21 +139,33 @@ class HomeScreensController extends AppController
 							]);
 
 							if(!empty($Items->toArray())){
-								
-							foreach($Items as $itemData)
-							{	
-								foreach ($itemData->seller_items as $Item) {
-									foreach ($Item->item_variations as $items_variation) {
+							$inWishList = 0;
+								foreach($Items as $itemData)
+								{	
+									foreach ($itemData->seller_items as $Item) {
+										
+										$Item->ItemAverageRating = number_format($Item->ItemAverageRating,1);
+										
+										foreach ($Item->item_variations as $items_variation) {
+											$item_id=$Item->id;
+											$items_variation_id = $items_variation->id;
+											$inWishList = $this->HomeScreens->Categories->Items->WishListItems->find()->where(['item_id'=>$item_id,'item_variation_id'=>$items_variation_id])->contain(['WishLists'=>function($q) use($customer_id){
+											return $q->select(['WishLists.customer_id'])->where(['customer_id'=>$customer_id]);}])->count();
+											$items_variation->inWishList = false;
+											if($inWishList  >= 1)
+											{ $items_variation->inWishList = true; }
+											else { $items_variation->inWishList = false; }
+											
 											$count_cart = $this->HomeScreens->Carts->find()->select(['Carts.cart_count'])->where(['Carts.item_variation_id'=>$items_variation->id,'Carts.customer_id'=>$customer_id]);
 											$items_variation->cart_count = 0;
 											$count_value = 0;
 											foreach ($count_cart as $count) {
 											  $count_value = $count->cart_count;
 											}			
-											$items_variation->cart_count = $count_value;
-										}
-								}
-							}	
+												$items_variation->cart_count = $count_value;
+											}
+									}
+								}	
 								$Itemc=array("layout"=>$HomeScreen->layout,"title"=>$HomeScreen->title,"category_id"=>$HomeScreen->category_id,"HomeScreens"=>$Items);
 								array_push($dynamic,$Itemc);
 

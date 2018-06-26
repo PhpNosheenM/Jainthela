@@ -23,7 +23,7 @@ class AppMenusController extends AppController
     }
 
 
-	 public function mysubMenus()
+		public function mysubMenus()
 		{
 			 $city_id = @$this->request->query['city_id'];
 			 $menu_id = @$this->request->query['menu_id'];
@@ -125,12 +125,17 @@ class AppMenusController extends AppController
       {
         // CheckAvabiltyOfCity function is avaliable in app controller for checking city_id in cities table
           $isValidCity = $this->CheckAvabiltyOfCity($city_id);
+		
            if($isValidCity == 0)
-           {
-  				     $Categories = $this->AppMenus->Categories->find()
+           {		
+					 $Main_category = $this->AppMenus->Categories->find()
   						   ->select(['id','name'])
-  						   ->where(['city_id'=>$city_id,'section_show'=>'Yes','status'=>'Active','parent_id IS'=>Null]);
-                 if(!empty($Categories->toArray()))
+  						   ->where(['city_id'=>$city_id,'section_show'=>'Yes','status'=>'Active','parent_id IS'=>Null])->limit(4);
+					 $OthersCategories = $this->AppMenus->Categories->find()
+  						   ->select(['id','name'])
+  						   ->where(['city_id'=>$city_id,'section_show'=>'Yes','status'=>'Active','parent_id IS'=>Null])->skip(4);
+						   
+                 if(!empty($Main_category->toArray()))
                  {
                    $success = true;
                    $message = 'Data Found Successfully';
@@ -144,7 +149,8 @@ class AppMenusController extends AppController
         $success = false;
         $message = 'City Id Empty';
       }
-      $this->set(['success' => $success,'message'=>$message,"Allcategories"=>$Categories,'_serialize' => ['success','message','Allcategories']]);
+	 
+      $this->set(['success' => $success,'message'=>$message,"Allcategories"=>$Main_category,"more"=>$OthersCategories,'_serialize' => ['success','message','Allcategories','more']]);
     }
 
     public function menuItem($category_id = null,$city_id=null)
@@ -158,13 +164,26 @@ class AppMenusController extends AppController
           $isValidCity = $this->CheckAvabiltyOfCity($city_id);
            if($isValidCity == 0)
            {
-             $items = $this->AppMenus->Categories->Items->find()
-             ->select(['id','name','category_id'])
-             ->contain(['ItemsVariations' => function ($q)
-               { return $q->select(['ItemsVariations.id','ItemsVariations.item_id']); }
+			   
+			   $items = $this->AppMenus->Categories->find()
+				->contain(['SellerItems' => function($q) use($city_id,$category_id) {
+					return $q->where(['SellerItems.city_id'=>$city_id])
+					->contain(['Items'=> function($q) {
+						return $q->select(['id','name','category_id']);
+					}, 'ItemVariations' => function ($q)
+						{ return $q->select(['ItemVariations.seller_item_id','ItemVariations.id','ItemVariations.item_id']); }    
+					]);
+				}])->where(['Categories.parent_id'=>$category_id]);
+			   
+			   
+/*              $items = $this->AppMenus->Categories->SellerItems->find()
+			->contain(['Items' => function($q) {
+				return $q->select(['id','name','category_id']);
+			},'ItemVariations' => function ($q)
+               { return $q->select(['ItemVariations.seller_item_id','ItemVariations.id','ItemVariations.item_id']); }
              ])
-             ->where(['Items.status'=>'Active','Items.approve'=>'Approved','Items.ready_to_sale'=>'Yes','Items.section_show'=>'Yes','Items.city_id'=>$city_id,'Items.category_id'=>$category_id]);
-
+             ->where(['SellerItems.city_id'=>$city_id,'SellerItems.category_id'=>$category_id]);
+			->where(['SellerItems.city_id'=>$city_id,'SellerItems.category_id'=>$category_id]); */
                  if(!empty($items->toArray()))
                  {
                    $success = true;

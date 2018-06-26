@@ -82,7 +82,7 @@ class WalletsController extends AppController
 
           if(empty($wallet_details->toArray()))
           {
-            $success=false;
+            $success=true;
             $message="No Transaction details";
           }
           else

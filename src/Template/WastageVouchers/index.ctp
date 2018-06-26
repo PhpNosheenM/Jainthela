@@ -1,61 +1,85 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\WastageVoucher[]|\Cake\Collection\CollectionInterface $wastageVouchers
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('New Wastage Voucher'), ['action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Cities'), ['controller' => 'Cities', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New City'), ['controller' => 'Cities', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Locations'), ['controller' => 'Locations', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Location'), ['controller' => 'Locations', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Wastage Voucher Rows'), ['controller' => 'WastageVoucherRows', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Wastage Voucher Row'), ['controller' => 'WastageVoucherRows', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="wastageVouchers index large-9 medium-8 columns content">
-    <h3><?= __('Wastage Vouchers') ?></h3>
-    <table cellpadding="0" cellspacing="0">
-        <thead>
-            <tr>
-                <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('voucher_no') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('city_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('location_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('created_on') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('created_by') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($wastageVouchers as $wastageVoucher): ?>
-            <tr>
-                <td><?= $this->Number->format($wastageVoucher->id) ?></td>
-                <td><?= $this->Number->format($wastageVoucher->voucher_no) ?></td>
-                <td><?= $wastageVoucher->has('city') ? $this->Html->link($wastageVoucher->city->name, ['controller' => 'Cities', 'action' => 'view', $wastageVoucher->city->id]) : '' ?></td>
-                <td><?= $wastageVoucher->has('location') ? $this->Html->link($wastageVoucher->location->name, ['controller' => 'Locations', 'action' => 'view', $wastageVoucher->location->id]) : '' ?></td>
-                <td><?= h($wastageVoucher->created_on) ?></td>
-                <td><?= $this->Number->format($wastageVoucher->created_by) ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['action' => 'view', $wastageVoucher->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $wastageVoucher->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $wastageVoucher->id], ['confirm' => __('Are you sure you want to delete # {0}?', $wastageVoucher->id)]) ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
-    </div>
+<style>
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    border-color: transparent;
+    padding: 8px 8px !important; 
+    background: #F0F4F9;
+    color: #656C78;
+    font-size: 13px;
+}
+</style>
+<?php $this->set('title', 'Wastage Vouchers'); ?>
+<div class="page-content-wrap">
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title"><strong>Wastage Vouchers</strong></h3>
+					<div class="pull-right">
+						<div class="pull-left">
+								<?= $this->Form->create('Search',['type'=>'GET']) ?>
+								<?= $this->Html->link(__('<span class="fa fa-plus"></span> Add New'), ['action' => 'add'],['style'=>'margin-top:-30px !important;','class'=>'btn btn-success','escape'=>false]) ?>
+								<div class="form-group" style="display:inline-table">
+									<div class="input-group">
+										<div class="input-group-addon">
+											<span class="fa fa-search"></span>
+										</div>
+										<?= $this->Form->control('search',['class'=>'form-control','placeholder'=>'Search...','label'=>false]) ?>
+										<div class="input-group-btn">
+											<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
+										</div>
+									</div>
+								</div>
+							<?= $this->Form->end() ?>
+						</div> 
+					</div> 	
+				</div>
+				<div class="panel-body">    
+					<div class="table-responsive">
+						<table class="table table-bordered">
+							<thead>
+								<tr>
+									<th><?= ('SNo.') ?></th>
+									<th><?= ('Voucher No.') ?></th>
+									<th><?= ('City') ?></th>
+									<th><?= ('Location') ?></th>
+									<th><?= ('Created On') ?></th>
+									<th><?= ('Action') ?></th>
+								</tr>
+							</thead>
+							<tbody>
+								<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); ?>
+									<?php foreach ($wastageVouchers as $wastageVoucher):
+								  
+								  ?>
+								<tr>
+									<td><?= $this->Number->format(++$i) ?></td>
+									<td><?= h($wastageVoucher->voucher_no) ?></td>
+									<td><?= h($wastageVoucher->city->name) ?></td>
+									<td><?= h(@$wastageVoucher->location->name) ?></td>
+									<td><?= h($wastageVoucher->created_on) ?></td>
+									<td>
+									<?= $this->Html->link(__('<span class="fa fa-search"></span> View'), ['action' => 'view',$wastageVoucher->id],['class'=>'btn btn-warning btn-xs','escape'=>false]) ?></td>
+								</tr>
+								<?php endforeach; ?>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="panel-footer">
+					<div class="paginator pull-right">
+						<ul class="pagination">
+							<?= $this->Paginator->first(__('First')) ?>
+							<?= $this->Paginator->prev(__('Previous')) ?>
+							<?= $this->Paginator->numbers() ?>
+							<?= $this->Paginator->next(__('Next')) ?>
+							<?= $this->Paginator->last(__('Last')) ?>
+						</ul>
+						<p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
 </div>

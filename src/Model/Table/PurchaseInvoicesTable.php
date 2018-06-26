@@ -64,7 +64,12 @@ class PurchaseInvoicesTable extends Table
             'foreignKey' => 'seller_ledger_id',
             'joinType' => 'LEFT'
         ]);
-		
+		/* $this->belongsTo('PartyLedgers', [
+            'className' => 'Ledgers',
+            'foreignKey' => 'party_ledger_id',
+            'joinType' => 'LEFT'
+        ]);
+		 */
 		 $this->belongsTo('PurchaseLedgers', [
 			'className' => 'Ledgers',
             'foreignKey' => 'purchase_ledger_id',

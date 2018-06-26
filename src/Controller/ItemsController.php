@@ -414,7 +414,7 @@ class ItemsController extends AppController
 						$merge=@$ItemLedgers->item->name.'('.@$ItemLedgers->unit_variation->quantity_variation.'.'.@$ItemLedgers->unit_variation->unit->shortname.')';
 						
 						if($ItemLedgers){ //pr($merge); exit;
-						$UnitRateSerialItem = $this->itemVariationWiseReport($ItemsVariation->id,$transaction_date,$LocationData->city_id,$where1);
+						$UnitRateSerialItem = $this->itemVariationWiseReport($ItemsVariation->id,$transaction_date,$location_id,$where1);
 						
 						$showItems[$ItemLedgers->item->id][]=['item_name'=>$ItemLedgers->item->name,'item_variation_name'=>$merge,'stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem['unit_rate']];
 						//pr($showItems); exit;
@@ -434,7 +434,7 @@ class ItemsController extends AppController
 							
 							$UnitRateSerialItem = $this->itemWiseReport($Item->id,$transaction_date,$city_id,$where1);
 							$showItems[$Item->id]=['item_name'=>$merge,'stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem['unit_rate']]; 
-							//pr($showItems); exit;
+							
 						}
 				}
 			}
@@ -464,12 +464,12 @@ class ItemsController extends AppController
 		pr($item_id); exit;
 		
 	} */
-	public function itemVariationWiseReport($item_variation_id=null,$transaction_date,$city_id,$where1){
+	public function itemVariationWiseReport($item_variation_id=null,$transaction_date,$location_id,$where1){
 		$this->viewBuilder()->layout('super_admin_layout');
 		//$city_id=$this->Auth->User('city_id');
-		$location_id=$this->Auth->User('location_id');
+		//$location_id=$this->Auth->User('location_id');
 
-		$StockLedgers =  $this->Items->ItemLedgers->find()->where(['item_variation_id'=>$item_variation_id,'transaction_date <='=>$transaction_date])->order(['ItemLedgers.transaction_date'=>'ASC'])->toArray();
+		$StockLedgers =  $this->Items->ItemLedgers->find()->where(['item_variation_id'=>$item_variation_id,'transaction_date <='=>$transaction_date,'location_id'=>$location_id])->order(['ItemLedgers.transaction_date'=>'ASC'])->toArray();
 		
 		 $stockNew=[];
 		foreach($StockLedgers as $StockLedger){
@@ -542,17 +542,18 @@ class ItemsController extends AppController
 						}
 					}
 				}
-	
-				foreach($ItemLedgers as $ItemLedger){
-					if($ItemLedger->status=='Out'){
-						if(sizeof(@$stock[$ItemLedger->unit_variation_id])>0){
+			
+				foreach($ItemLedgers as $ItemLedger){ 
+					if($ItemLedger->status=='Out'){ 
+						if(sizeof(@$stock[$ItemLedger->unit_variation_id])>0){ 
 							$stock[$ItemLedger->unit_variation_id] = array_slice($stock[$ItemLedger->unit_variation_id], $ItemLedger->quantity); 
+							
 						}
 					}
 				}
 		
 				$closingValue=0;
-				
+				$remaining=0;
 				$item_var_val=[];
 				$item_stock=[];
 				foreach($stock  as $key=>$stockRow){ 
@@ -561,9 +562,10 @@ class ItemsController extends AppController
 						$remaining=count($stock[$key]); 
 						$rate+=$data;
 					}
-					//pr($remaining);
-					$item_var_val[$key]=$rate/$remaining;
-					$item_stock[$key]=$remaining;
+					if($remaining > 0){
+						$item_var_val[$key]=$rate/$remaining;
+						$item_stock[$key]=$remaining;
+					}
 					
 				}
 		//pr($item_stock); 
@@ -870,7 +872,7 @@ class ItemsController extends AppController
     { 
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
-		$location_id=$this->Auth->User('location_id'); 
+		//$location_id=$this->Auth->User('location_id'); 
 		$this->viewBuilder()->layout('super_admin_layout');
 		$location_id = $this->request->query('location_id');
 		$from_date = $this->request->query('from_date');
@@ -898,10 +900,10 @@ class ItemsController extends AppController
 			//$to_date   = date("Y-m-d",strtotime($to_date));
 			$where['Orders.location_id']=$location_id;
 		}
-	//	pr($from_date); exit;
-		$orders = $this->Items->Orders->find()->contain(['Locations'])->where($where);
+		//pr($where); exit;
+		$orders = $this->Items->Orders->find()->contain(['Locations','PartyLedgers'=>['CustomerData']])->where($where)->where(['location_id'=>$location_id]);
 		$Locations = $this->Items->Orders->Locations->find('list')->where(['city_id'=>$city_id]);
-		//pr($orders); exit;
+		//pr($orders->toArray()); exit;
 		$this->set(compact('from_date','to_date','orders','Locations','location_id'));
 	}
 	
@@ -931,10 +933,11 @@ class ItemsController extends AppController
 		{
 			$to_date   = date("Y-m-d",strtotime($to_date));
 			$where['PurchaseInvoices.transaction_date <=']=$to_date;
+			$where['PurchaseInvoices.city_id ']=$city_id;
 		}
 		
 	//	pr($from_date); exit;
-		$PurchaseInvoices = $this->Items->PurchaseInvoices->find()->contain(['Cities'])->where($where);
+		$PurchaseInvoices = $this->Items->PurchaseInvoices->find()->contain(['Cities','SellerLedgers'=>['SellerData']])->where($where);
 		$Locations = $this->Items->Orders->Locations->find('list');
 		//pr($PurchaseInvoices->toArray()); exit;
 		$this->set(compact('from_date','to_date','PurchaseInvoices','Locations','location_id'));

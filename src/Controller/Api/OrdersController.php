@@ -236,6 +236,7 @@ class OrdersController extends AppController
       if ($this->request->is('post')) {
           $customer_address_id = $this->request->data['customer_address_id'];
           $customer_id = $this->request->data['customer_id'];
+		  $delivery_date = $this->request->data['delivery_date'];
           $location_data = $this->Orders->CustomerAddresses->find()
           ->select(['location_id'])->where(['id'=>$customer_address_id]);
             if(!empty($location_data->toArray()))
@@ -254,27 +255,26 @@ class OrdersController extends AppController
               {  
 				  if(!empty($carts_data_fetch->combo_offers_data)){
 					 $total_combo_qty=$carts_data_fetch->cart_count;
-					  foreach($carts_data_fetch->combo_offers_data->combo_offer_details as $combo_offer_detail){
-						  
-						/* $this->request->data['order_details'][$i]['item_id']=$carts_data_fetch->item_variation->item->id;
+					 $amount=$carts_data_fetch->quantity * $carts_data_fetch->rate;
+						//$this->request->data['order_details'][$i]['item_id']=$combo_offer_detail->item_variation->item_id;
+						//$this->request->data['order_details'][$i]['item_variation_id']=$combo_offer_detail->item_variation_id;
+						$this->request->data['order_details'][$i]['combo_offer_id']=$carts_data_fetch->combo_offer_id;
+						$this->request->data['order_details'][$i]['quantity']=$carts_data_fetch->quantity;
+						$this->request->data['order_details'][$i]['rate']=$carts_data_fetch->rate;
+						$this->request->data['order_details'][$i]['amount']=$amount;
+						$this->request->data['order_details'][$i]['gst_figure_id']=$carts_data_fetch->combo_offers_data->gst_figure_id;
+						
+					   $i++;					 
+				 
+					  /* foreach($carts_data_fetch->combo_offers_data->combo_offer_details as $combo_offer_detail){
+						 $this->request->data['order_details'][$i]['item_id']=$carts_data_fetch->item_variation->item->id;
 						$this->request->data['order_details'][$i]['item_variation_id']=$carts_data_fetch->item_variation_id;
 						$this->request->data['order_details'][$i]['combo_offer_id']=$carts_data_fetch->combo_offer_id;
 						$this->request->data['order_details'][$i]['quantity']=$carts_data_fetch->quantity;
 						$this->request->data['order_details'][$i]['rate']=$carts_data_fetch->item_variation->sales_rate;
-						$this->request->data['order_details'][$i]['amount']=$amount; */
-						 // $amount=$carts_data_fetch->cart_count * $carts_data_fetch->item_variation->sales_rate;
-						 
-							$amount=$combo_offer_detail->quantity *$combo_offer_detail->rate;
-							$this->request->data['order_details'][$i]['item_id']=$combo_offer_detail->item_variation->item_id;
-							$this->request->data['order_details'][$i]['item_variation_id']=$combo_offer_detail->item_variation_id;
-							$this->request->data['order_details'][$i]['combo_offer_id']=$carts_data_fetch->combo_offer_id;
-							$this->request->data['order_details'][$i]['quantity']=$combo_offer_detail->quantity*$total_combo_qty;
-							$this->request->data['order_details'][$i]['rate']=$combo_offer_detail->rate;
-							$this->request->data['order_details'][$i]['amount']=$amount*$total_combo_qty;
-							$this->request->data['order_details'][$i]['gst_figure_id']=$combo_offer_detail->item_variation->item->gst_figure_id;
-							
-						   $i++;
-					   }
+						$this->request->data['order_details'][$i]['amount']=$amount; 
+						$amount=$carts_data_fetch->cart_count * $carts_data_fetch->item_variation->sales_rate;
+						} */
 					  
 				  } else{
 					  
@@ -296,7 +296,7 @@ class OrdersController extends AppController
 			//$total_amount=
 			//pr($this->request->data); exit;
 			$this->request->data['total_amount']=$this->request->data['grand_total_before_promoCode'];
-			$this->request->data['grand_total']=$this->request->data['pay_Amount'];
+			$this->request->data['grand_total']=$this->request->data['pay_amount'];
             $order = $this->Orders->patchEntity($order, $this->request->getData()); 
 			 
 			$CityData = $this->Orders->Cities->get($order->city_id); 
@@ -319,7 +319,10 @@ class OrdersController extends AppController
             $order->location_id = $location_id;
             //$order->sales_ledger_id = $sales_ledgers['id'];
             $order->order_status = 'placed';
-
+			if(!empty($delivery_date))
+			{ $order->delivery_date = date('Y-m-d',strtotime($delivery_date)); }
+			else { $order->delivery_date = '0000-00-00';  }
+			
 			$accountLedgers = $this->Orders->AccountingGroups->find()->where(['AccountingGroups.sale_invoice_sales_account'=>1,'AccountingGroups.city_id'=>$order->city_id])->first();
 			$salesLedger = $this->Orders->Ledgers->find()->where(['Ledgers.accounting_group_id' =>$accountLedgers->id,'city_id'=>$order->city_id])->first();
 			$order->sales_ledger_id=$salesLedger->id;
@@ -335,7 +338,6 @@ class OrdersController extends AppController
 			$Round_off_amt=round(($p-$q),2);
 			$order->grand_total=round($order->grand_total);	
 			$order->round_off=$Round_off_amt;
-			$order->order_from=="App"
 			//pr($order); exit;
 		
 			if ($orders = $this->Orders->save($order)) {
@@ -516,12 +518,19 @@ class OrdersController extends AppController
 				
 				}
 
-                $message='Order placed successfully';
-          			$success=true;
+			///////////////////////START DELETE FROM CART/////////////////
+				
+				$query = $this->Orders->Customers->Carts->query();
+				$result = $query->delete()
+					->where(['customer_id' => $customer_id])
+					->execute(); 
+			///////////////////////END DELETE FROM CART/////////////////			
+				$message='Thank You ! Your Order placed successfully.';
+          		$success=true;
             }else
             { 
-              $message='Order not placed';
-        			$success=false;
+				$message='Order not placed';
+        		$success=false;
             }
         }
         $this->set(compact('success', 'message'));

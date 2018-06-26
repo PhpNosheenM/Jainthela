@@ -56,13 +56,10 @@ class SellerItemsController extends AppController
           $category_id = explode(',',$category_id);
           $categoryWhere = ['Items.category_id IN'=>$category_id];
 		  $sellerItems_category = ['SellerItems.category_id IN'=>$category_id];
-        }else { $categoryWhere =''; $sellerItems_category = ''; $category_id = ''; }
+        }else { $categoryWhere =''; $sellerItems_category = ''; }
 
         $sellerItem = $this->SellerItems->find();
-         $sellerItem->contain(['Sellers','ItemRating' => function($q) use($sellerItem) {
-					return $q->select(['ItemRating.id','AverageReviewRatings.item_id','ItemAverageRating' => $sellerItem->func()->avg('AverageReviewRatings.rating')])
-					->leftJoinWith('AverageReviewRatings');
-				},'Items' => function($q) use($city_id,$categoryWhere,$limit,$page) {
+         $sellerItem->contain(['Sellers','Items' => function($q) use($city_id,$categoryWhere,$limit,$page) {
 			return $q->where($categoryWhere)
 			->limit($limit)
 			->page($page);
@@ -77,19 +74,14 @@ class SellerItemsController extends AppController
 		->group(['SellerItems.id'])
 		->autoFields(true);
 	
-		
-	
-	
         if(!empty($sellerItem->toArray()))
         {
-		 
-                   
+          $count_value = 0;
+          $inWishList = 0;
           foreach($sellerItem as $item){
-			  $item->ItemAverageRating = number_format($item->ItemAverageRating,1);
-			  foreach ($item->item_variations as $items_variation_data) {
-              $item_id=$item->item->id;
+            foreach ($item->item_variations as $items_variation_data) {
+              $item_id=$item->id;
               $items_variation_id = $items_variation_data->id;
-			   $inWishList = 0;
               $inWishList = $this->SellerItems->Items->WishListItems->find()->where(['item_id'=>$item_id,'item_variation_id'=>$items_variation_id])
               ->contain(['WishLists'=>function($q) use($customer_id){
                 return $q->select(['WishLists.customer_id'])->where(['customer_id'=>$customer_id]);}])->count();
@@ -99,7 +91,7 @@ class SellerItemsController extends AppController
                 else { $items_variation_data->inWishList = false; }
 
                 $count_cart = $this->SellerItems->Items->Carts->find()->select(['Carts.cart_count'])->where(['Carts.item_variation_id'=>$items_variation_data->id,'Carts.customer_id'=>$customer_id]);
-				 $count_value = 0;
+
                 foreach ($count_cart as $count) {
                   $count_value = $count->cart_count;
                 }
@@ -116,9 +108,6 @@ class SellerItemsController extends AppController
 
           $brandArr = [];
           $Brands = $this->SellerItems->Items->find()->contain(['Brands'])->where($categoryWhere)->toArray();
-		  
-		 
-		  
           if(!empty($Brands))
           {
             $i = 0;
@@ -157,7 +146,7 @@ class SellerItemsController extends AppController
           foreach ($brandArr as $value) {
             $brandData[] = ['id'=>$value['id'],'name'=>$value['name']];
           }
- 
+
           $filters['0'] = ['filter_name' => 'Categories','filter' =>$this->SellerItems->Items->Categories->find()->select(['id','name'])->where(['parent_id IN'=>$category_id])->toArray()];
           $filters['1'] = ['filter_name'=>'Brands','filter' =>$brandData];
 
@@ -212,13 +201,12 @@ class SellerItemsController extends AppController
 		$this->set(['success' => $success,'message'=>$message,'category' => $category,'_serialize' => ['success','message','category']]);
 	}  
   
-    public function productDetail($item_id = null,$city_id =null,$category_id=null,$customer_id=null,$seller_id=null)
+    public function productDetail($item_id = null,$city_id =null,$category_id=null,$customer_id=null)
     {
       $item_id = @$this->request->query['item_id'];
       $city_id = @$this->request->query['city_id'];
       $category_id = @$this->request->query['category_id'];
       $customer_id = @$this->request->query['customer_id'];
-	  $seller_id = @$this->request->query['seller_id'];
       $items = [];
       $reletedItems = [];
       if(!empty($city_id))
@@ -232,35 +220,27 @@ class SellerItemsController extends AppController
 		  ->where(['Carts.customer_id'=>$customer_id])->count();
           if(!empty($item_id) && !empty($category_id))
           {
-			  
-			if(empty($seller_id))
-			{
-				 $sellerWhere = ['SellerItems.seller_id IS NULL'];	
-			}else {
-			  $sellerWhere = ['SellerItems.seller_id' =>$seller_id];
-			}
-			
             $items = $this->SellerItems->find();
 			$items->contain(['Categories','Brands','Sellers','Cities','ItemVariations'=>['UnitVariations'=>['Units'],'ItemVariationMasters']])
 			->contain(['Items' => function ($q) use($item_id,$items) {			
-				return $q->select(['Items.id','Items.category_id','Items.name','Items.alias_name','Items.description','Items.minimum_stock','AverageReviewRatings.item_id','ItemAverageRating' => $items->func()->avg('AverageReviewRatings.rating')])
+				return $q->select(['Items.id','AverageReviewRatings.item_id','ItemAverageRating' => $items->func()->avg('AverageReviewRatings.rating')])
 				 ->contain(['LeftItemReviewRatings'=>['Customers']])
             ->leftJoinWith('AverageReviewRatings')
 			->where(['Items.id'=>$item_id]);	
 			}])->autoFields(true)
 			->where(['SellerItems.city_id' =>$city_id])
-			->where($sellerWhere)
 			->where(['SellerItems.category_id'=>$category_id]);
 
-//			pr($items->toArray());exit;
+			
+			//pr($items->toArray());exit;
 			
             if(!empty($items->toArray()))
-            { 
+            { $count_value = 0;
               $inWishList = 0;
               foreach($items as $item){
                 $item->ItemAverageRating = number_format($item->ItemAverageRating,1);
                 foreach ($item->item_variations as $items_variation_data) {
-                  $item_id=$item->item->id;
+                  $item_id=$item->id;
                   $items_variation_id = $items_variation_data->id;
                   $inWishList = $this->SellerItems->Items->WishListItems->find()->where(['item_id'=>$item_id,'item_variation_id'=>$items_variation_id])->contain(['WishLists'=>function($q) use($customer_id){
                     return $q->select(['WishLists.customer_id'])->where(['customer_id'=>$customer_id]);}])->count();
@@ -270,7 +250,6 @@ class SellerItemsController extends AppController
                     else { $items_variation_data->inWishList = false; }
 
                     $count_cart = $this->SellerItems->Items->Carts->find()->select(['Carts.cart_count'])->where(['Carts.item_variation_id'=>$items_variation_data->id,'Carts.customer_id'=>$customer_id]);
-					$count_value = 0;
                     foreach ($count_cart as $count) {
                       $count_value = $count->cart_count;
                     }
@@ -436,8 +415,8 @@ class SellerItemsController extends AppController
                 foreach ($items as $item) {
                     $Category[] = ['id' =>$item->item->category->id,'name'=> $item->item->category->name];
                     
+					//$Category = array_unique($Category);
 					
-				
 					foreach ($item->item_variations as $items_variation_data) {
 
                       $item_id=$item->item->id;
@@ -456,9 +435,6 @@ class SellerItemsController extends AppController
                         $items_variation_data->cart_count = $count_value;
                       }
                 }
-					 
-					$Category = array_map("unserialize", array_unique(array_map("serialize", $Category)));
-					
               }
               else { $items = []; }
 
@@ -480,9 +456,7 @@ class SellerItemsController extends AppController
         $page=@$this->request->query['page'];
         $seller_id = @$this->request->query['seller_id'];
         $cart_item_count = 0;
-        if(!empty($seller_id)) 
-		{ $sellerWhere = ['ItemVariations.seller_id' =>$seller_id]; } 
-		else {$sellerWhere ='';}
+        if(!empty($seller_id)) { $sellerWhere = ['ItemsVariations.seller_id' =>$seller_id]; } else {$sellerWhere ='';}
         $limit=10;
         $items = [];
         $filters = [];
@@ -496,15 +470,14 @@ class SellerItemsController extends AppController
             $cart_item_count = $this->SellerItems->Items->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])->count();
 
             $sellerItems = $this->SellerItems->find()
-            ->contain(['Items'=>['ItemVariations' => function ($q) use($sellerWhere){
-					return $q->where($sellerWhere)->contain(['ItemVariationMasters','UnitVariations'=>['Units']]);
-			}]])
+            // ->contain(['Items'=>['ItemVariations'=>['ItemVariationMasters','UnitVariations'=>['Units']]]])
             ->where(['SellerItems.seller_id'=>$seller_id])->limit($limit)->page($page);
 
             $shopes = $this->SellerItems->Sellers->find()
 						->select(['id','firm_name','firm_address','saller_image'])
 						->where(['id'=>$seller_id,'status'=>'Active']);
-			
+
+
             /* pr($items->toArray());exit;
 
             $items = $this->Items->find()

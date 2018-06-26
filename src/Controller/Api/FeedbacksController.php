@@ -33,7 +33,7 @@ class FeedbacksController extends AppController
 			//pr(getallheaders());exit;
 			
 			foreach(getallheaders() as $key => $value) {
-				if($key == 'Authorization' || $key == 'authorization')
+				if($key == 'Authorization')
 				{
 				  $token = $value;
 				}
@@ -41,26 +41,22 @@ class FeedbacksController extends AppController
 
 			 $token = str_replace("Bearer ","",$token);
 			$isValidToken = $this->checkToken($token);
-		
-
 			if(!empty($customer_id) and (!empty($city_id))){
 
 				$isValidCity = $this->CheckAvabiltyOfCity($city_id);
 				if($isValidCity == 0)
 				{
 					$Feedbacks = $this->Feedbacks->patchEntity($Feedbacks, $this->request->getData());
+					
+					//pr($Feedbacks);exit;
 					if ($Feedbacks_data = $this->Feedbacks->save($Feedbacks)) {
 						$success=true;
 						$message="data has been saved successfully";
 						//$data=$Feedbacks_data;
-
 					}else{
-						//pr($Feedbacks);exit;
 						$success=false;
 						$message="data has not been saved";
 					}
-
-
 				}else{
 					$success = false;
 					$message = 'Invalid City';

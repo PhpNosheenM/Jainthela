@@ -154,7 +154,7 @@ class WishListsController extends AppController
         if(!empty($customer_id))
         {
             $wishlist = $this->WishLists->find()
-                      ->contain(['WishListItems'=>['ItemVariations'=>['UnitVariations'=>['Units'],'Items']]])
+                      ->contain(['WishListItems'=>['ItemVariations'=>['ItemVariationMasters','UnitVariations'=>['Units'],'Items']]])
                       ->where(['customer_id'=>$customer_id]);
             $wishlistCombo = $this->WishLists->find()
                         ->contain(['WishListItems'=>['ComboOffers'=>['ComboOfferDetails']]])

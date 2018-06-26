@@ -281,6 +281,7 @@ class AccountingEntriesController extends AppController
 		//pr($groupForPrint); exit;
 		$openingValue= 0;
 		$closingValue= $this->stockReportApp($city_id,$from_date,$to_date);
+		//$closingValue= 0;
 		$this->set(compact('from_date','to_date', 'groupForPrint', 'closingValue', 'openingValue'));
 		
 	}
