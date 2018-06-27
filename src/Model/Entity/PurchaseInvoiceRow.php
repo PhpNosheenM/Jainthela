@@ -62,6 +62,7 @@ class PurchaseInvoiceRow extends Entity
         'item' => true,
         'item_variation' => true,
         'item_ledgers' => true,
+        'grn_row_id' => true,
         'purchase_return_rows' => true
     ];
 }

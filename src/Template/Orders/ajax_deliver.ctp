@@ -8,10 +8,12 @@ label{
 	margin-bottom: 1px !important;
 }
 </style>
-<div style="">
-	<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+<div style="" class="qwerty">
+	<button type="button" class="btn btn-secondary" data-dismiss="popup">Close</button>
 		<center><h4>INVOICE NUMBER:- <?php echo $Orders->order_no; ?></h4></center>
-		<table class=" table-striped table-condensed table-hover  scroll" width="100%" border="0">
+		
+		
+		<table class=" " width="100%" border="0">
 			<thead>
 				<tr style="background-color:#fff; color:#000;">
 					<td align="left" class="modal-header" colspan="5">
@@ -137,3 +139,4 @@ label{
 		</table>
 		
 </div>
+

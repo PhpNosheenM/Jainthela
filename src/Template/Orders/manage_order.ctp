@@ -169,6 +169,9 @@
 			}                                        
 		});
 		
+		$(document).on('click','.button1',function(){ 
+			alert();
+		});
 		$(document).on('click','.otp',function(){
 			var mn=$(this);
 			var ordr_id=$(this).closest('tr').find('.otp_val').val();
