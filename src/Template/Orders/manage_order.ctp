@@ -285,6 +285,76 @@
 		 $('.ttl_gst').val(all_first_gst_value.toFixed(2));
 		 $('.grnd_ttl').val(all_first_net_amount.toFixed(2));
 	 }
+	  
+		$(document).on('click','.get_order',function(){	
+		var order_id=$(this).attr('order_id');
+		var s1 = [];
+		var s2 = [];
+		var s3 = [];
+		var s4 = [];
+		var s5 = [];
+		var s6 = [];
+		$('.main_table tbody tr').each(function(){ 
+		 
+			 var row = [];
+			 var items = [];
+			 var amounts = [];
+			 var gst_values = [];
+			 var net_amounts = [];
+			 var detail_ids = [];
+			 
+			var actual_quantity = $(this).find('td:nth-child(4) .actual_quantity').val();
+			var amount = $(this).find('td:nth-child(6) .amount').val();
+			var gst_value = $(this).find('td:nth-child(6) .gst_value').val();
+			var net_amount = $(this).find('td:nth-child(6) .net_amount').val();
+			var item_id = $(this).find('td:nth-child(2) .item_id').val();
+			var detail_id = $(this).find('td:nth-child(2) .dtl').val();
+			row.push(actual_quantity);
+			 s1.push(row);
+			 items.push(item_id);
+			 s2.push(items);
+			 amounts.push(amount);
+			 s3.push(amounts);
+			 gst_values.push(gst_value);
+			 s4.push(gst_values);
+			 net_amounts.push(net_amount);
+			 s5.push(net_amounts);
+			 detail_ids.push(detail_id);
+			 s6.push(detail_ids);
+		});
+		  var txbl_value=$('.txbl').val();
+		  var ttl_gst=$('.ttl_gst').val();
+		  var grnd_ttl=$('.grnd_ttl').val();
+		  
+			$('.get_order').prop('disabled', true);
+			$('.get_order').text('Delivered.....');
+						var url='".$this->Url->build(['controller'=>'Orders','action'=>'updateOrders'])."';
+						url=url+'/'+order_id+'/'+s2+'/'+s1+'/'+s3+'/'+s4+'/'+s5+'/'+s6+'/'+txbl_value+'/'+ttl_gst+'/'+grnd_ttl,
+						 
+						$.ajax({
+							url: url,
+						}).done(function(response) {
+							var order_id=$('.get_order').attr('order_id');
+							var m_data = new FormData();
+							m_data.append('order_id',order_id);
+							
+							$.ajax({
+							url: '".$this->Url->build(['controller' => 'Orders', 'action' => 'ajax_deliver_api'])."',
+							data: m_data,
+							processData: false,
+							contentType: false,
+							type: 'POST',
+							dataType:'text',
+							success: function(data)   // A function to be called if request succeeds
+							{
+								location.reload();
+								//$('.setup').html(data);
+							}
+							});
+						});	
+			 
+		
+	});
 		
 		";  
 echo $this->Html->scriptBlock($js, array('block' => 'scriptBottom')); 		

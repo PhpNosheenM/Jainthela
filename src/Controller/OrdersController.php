@@ -23,7 +23,7 @@ class OrdersController extends AppController
 	public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->Security->setConfig('unlockedActions', ['add', 'index', 'view', 'manageOrder', 'ajaxDeliver']);
+        $this->Security->setConfig('unlockedActions', ['add', 'index', 'view', 'manageOrder', 'ajaxDeliver','updateOrders']);
 
     }
 	
@@ -188,6 +188,38 @@ class OrdersController extends AppController
 		$Sellers = $this->Orders->OrderDetails->Items->Sellers->find('list')->where(['city_id'=>$city_id]);
 		$this->set(compact('from_date','to_date','orders','Locations','location_id','seller_id','Sellers','GstFigures'));
 	}
+	
+	public function updateOrders($order_id = null,$item_id = null,$actual_quantity=null,$amount = null,$gst_value = null,$net_amount =null, $detail_id = null, $taxable_value = null, $total_gst = null,$grand_total = null){
+		$order_id;
+		$taxable_value;
+		$total_gst;
+		$grand_total;
+		$quantity=explode(',',$actual_quantity);
+		$items=explode(',',$item_id);
+		$item_amount=explode(',',$amount);
+		$gst_values=explode(',',$gst_value);
+		$net_amounts=explode(',',$net_amount);
+		$detail_ids=explode(',',$detail_id);
+		$x=0;
+		foreach($detail_ids as $detail_id){
+			
+			$qty = $quantity[$x];
+			$amt = $item_amount[$x];
+			$gst = $gst_values[$x];
+			$nt_amt = $net_amounts[$x];
+			$dtl_id = $detail_ids[$x];
+			$final_amount+=$amt;
+				$query = $this->Orders->OrderDetails->query();
+					$query->update()
+							->set(['actual_quantity' => $qty, 'amount' => $amt, 'gst_value' => $gst, 'net_amount' => $nt_amt])
+							->where(['id'=>$dtl_id,'order_id'=>$order_id])
+							->execute();
+				$x++;	
+			
+		}
+		 
+	exit;
+	}	
 	public function manageOrder($status=null)
     {
 		$this->viewBuilder()->layout('admin_portal');

@@ -77,7 +77,8 @@ label{
 													<?= h($i++)?>
 												</td>
 												<td align="center">
-													<?php echo $this->Form->input('order_details['.$k.'][item_id]', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm number item_id','value'=>@$order_detail->item_id]); ?>
+													<?php echo $this->Form->input('order_details['.$k.'][item_id]', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm number item_id','value'=>@$order_detail->item_id,'detail_id'=>$order_detail->id]); ?>
+													<?php echo $this->Form->input('order_details['.$k.'][id]', ['type'=>'hidden','label' => false,'class' => 'form-control input-sm number dtl','value'=>@$order_detail->id]); ?>
 													<?= h(@$order_detail->item_variation->item->name.'('.$order_detail->item_variation->item->alias_name.')')?>
 												</td>
 												<td align="center">
