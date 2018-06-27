@@ -95,6 +95,7 @@
 										 <td width="">
 											<?php echo @$total_grn_row->item->name;  ?>
 											<input type="hidden" value="<?php echo $total_grn_row->item_id; ?>" class="item_id1" >
+											<input type="hidden" value="<?php echo $total_grn_row->id; ?>" class="grn_row_id" >
 											
 										</td>
 										<td width="">
@@ -343,10 +344,11 @@
 							 $(this).attr('row_no',i);
 							$(this).find('td:nth-child(1)').html(++i); i--;
 							$(this).find('.item_id1 ').attr({name:'purchase_invoice_rows['+i+'][item_id]',id:'purchase_invoice_rows['+i+'][item_id]'});
+							$(this).find('.grn_row_id ').attr({name:'purchase_invoice_rows['+i+'][grn_row_id]',id:'purchase_invoice_rows['+i+'][grn_row_id]'});
 							
 							$(this).find('.unit_variation_id1 ').attr({name:'purchase_invoice_rows['+i+'][unit_variation_id]',id:'purchase_invoice_rows['+i+'][unit_variation_id]'}).rules('add', 'required')
 							$(this).find('.quantity ').attr({name:'purchase_invoice_rows['+i+'][quantity]',id:'purchase_invoice_rows['+i+'][quantity]'}).rules('add', 'required');
-							$(this).find('.rate ').attr({name:'purchase_invoice_rows['+i+'][purchase_rate]',id:'purchase_invoice_rows['+i+'][purchase_rate]'}).rules('add', 'required');
+							$(this).find('.rate ').attr({name:'purchase_invoice_rows['+i+'][rate]',id:'purchase_invoice_rows['+i+'][rate]'}).rules('add', 'required');
 							$(this).find('.taxable_value ').attr({name:'purchase_invoice_rows['+i+'][taxable_value]',id:'purchase_invoice_rows['+i+'][taxable_value]'});
 							$(this).find('.gst_percentage ').attr({name:'purchase_invoice_rows['+i+'][gst_percentage]',id:'purchase_invoice_rows['+i+'][gst_percentage]'});
 							$(this).find('.gst_value ').attr({name:'purchase_invoice_rows['+i+'][gst_value]',id:'purchase_invoice_rows['+i+'][gst_value]'});
@@ -361,7 +363,7 @@
 							$(this).find('input.item_id2 ').attr({name:'purchase_invoice_rows['+i+'][item_id]',id:'purchase_invoice_rows['+i+'][item_id]'})
 							$(this).find('input.item_variation_id2 ').attr({name:'purchase_invoice_rows['+i+'][item_variation_id]',id:'purchase_invoice_rows['+i+'][item_variation_id]'}).rules('add', 'required');
 							$(this).find('.quantity ').attr({name:'purchase_invoice_rows['+i+'][quantity]',id:'purchase_invoice_rows['+i+'][quantity]'}).rules('add', 'required');
-							$(this).find('.rate ').attr({name:'purchase_invoice_rows['+i+'][purchase_rate]',id:'purchase_invoice_rows['+i+'][purchase_rate]'}).rules('add', 'required');
+							$(this).find('.rate ').attr({name:'purchase_invoice_rows['+i+'][rate]',id:'purchase_invoice_rows['+i+'][rate]'}).rules('add', 'required');
 							$(this).find('.taxable_value ').attr({name:'purchase_invoice_rows['+i+'][taxable_value]',id:'purchase_invoice_rows['+i+'][taxable_value]'});
 							$(this).find('.gst_percentage ').attr({name:'purchase_invoice_rows['+i+'][gst_percentage]',id:'purchase_invoice_rows['+i+'][gst_percentage]'});
 							$(this).find('.gst_value ').attr({name:'purchase_invoice_rows['+i+'][gst_value]',id:'purchase_invoice_rows['+i+'][gst_value]'});

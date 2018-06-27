@@ -33,11 +33,11 @@ class PurchaseInvoicesController extends AppController
 		$location_id=$this->Auth->User('location_id');
 		$this->viewBuilder()->layout('super_admin_layout');
         $this->paginate = [
-            'contain' => ['Cities','SellerLedgers'=>['Sellers']],
+            'contain' => ['Cities','SellerLedgers'=>['Sellers','VendorData']],
 			'limit' => 20
         ];
         $purchaseInvoices = $this->paginate($this->PurchaseInvoices);
-		
+		//pr($purchaseInvoices); exit;
 		$paginate_limit=$this->paginate['limit'];
         $this->set(compact('purchaseInvoices','paginate_limit'));
     }
