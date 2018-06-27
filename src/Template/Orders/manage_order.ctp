@@ -142,10 +142,9 @@
 </div>
 <div  class="modal fade in" tabindex="-1" role="dialog" aria-labelledby="myModalLabel3" aria-hidden="false" style="display: none;border:0px;" id="popup">
 <div class="modal-backdrop fade in" ></div>
-	<div class="modal-dialog modal-lg">
+	<div class="modal-dialog modal-sm" style="overflow-y: scroll; max-height:85%; width:800px;  margin-top: 50px; margin-bottom:50px;">
 		<div class="modal-content" style="border:0px;">
-			<div class="modal-body flip-scroll" style="height: auto;
-    overflow-y: auto;" >
+			<div class="modal-body flip-scroll">
 				<p >
 					 Body goes here...
 				</p>
