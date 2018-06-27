@@ -2,7 +2,8 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
-
+use Cake\Event\Event;
+use Cake\View\View;
 /**
  * PurchaseReturns Controller
  *
@@ -18,6 +19,13 @@ class PurchaseReturnsController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
+	public function beforeFilter(Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Security->setConfig('unlockedActions', ['add','index']);
+
+    }
+	
     public function index()
     {
         $this->paginate = [
@@ -49,8 +57,16 @@ class PurchaseReturnsController extends AppController
      *
      * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
      */
-    public function add()
+
+    public function add($invoice_id=null)
     {
+		$status=$this->request->query('status');
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$this->viewBuilder()->layout('super_admin_layout');
+		
+		$purchase_invoices=$this->PurchaseReturns->PurchaseInvoices->find()->where(['PurchaseInvoices.id'=>$invoice_id])->contain(['PurchaseInvoiceRows'])->first();
+		 
         $purchaseReturn = $this->PurchaseReturns->newEntity();
         if ($this->request->is('post')) {
             $purchaseReturn = $this->PurchaseReturns->patchEntity($purchaseReturn, $this->request->getData());
@@ -64,10 +80,30 @@ class PurchaseReturnsController extends AppController
         $purchaseInvoices = $this->PurchaseReturns->PurchaseInvoices->find('list', ['limit' => 200]);
         $financialYears = $this->PurchaseReturns->FinancialYears->find('list', ['limit' => 200]);
         $locations = $this->PurchaseReturns->Locations->find('list', ['limit' => 200]);
-        $sellerLedgers = $this->PurchaseReturns->SellerLedgers->find('list', ['limit' => 200]);
-        $purchaseLedgers = $this->PurchaseReturns->PurchaseLedgers->find('list', ['limit' => 200]);
+        //$sellerLedgers = $this->PurchaseReturns->SellerLedgers->find('list', ['limit' => 200]);
+        //$purchaseLedgers = $this->PurchaseReturns->PurchaseLedgers->find('list', ['limit' => 200]);
         $cities = $this->PurchaseReturns->Cities->find('list', ['limit' => 200]);
-        $this->set(compact('purchaseReturn', 'purchaseInvoices', 'financialYears', 'locations', 'sellerLedgers', 'purchaseLedgers', 'cities'));
+		
+		$accountLedgers = $this->PurchaseReturns->PurchaseInvoices->AccountingGroups->find()->where(['AccountingGroups.purchase_invoice_purchase_account'=>1,'AccountingGroups.city_id'=>$city_id])->first();
+		
+		$accountingGroups2 = $this->PurchaseReturns->PurchaseInvoices->AccountingGroups
+		->find('children', ['for' => $accountLedgers->id])
+		->find('List')->toArray();
+		
+		$accountingGroups2[$accountLedgers->id]=$accountLedgers->name;
+		ksort($accountingGroups2);
+		if($accountingGroups2)
+		{
+			$account_ids="";
+			foreach($accountingGroups2 as $key=>$accountingGroup)
+			{
+				$account_ids .=$key.',';
+			}
+			$account_ids = explode(",",trim($account_ids,','));
+			$Accountledgers = $this->PurchaseReturns->PurchaseInvoices->AccountingGroups->Ledgers->find('list')->where(['Ledgers.accounting_group_id IN' =>$account_ids]);
+        }
+		
+        $this->set(compact('purchaseReturn', 'purchaseInvoices', 'financialYears', 'locations', 'sellerLedgers', 'purchaseLedgers', 'cities', 'purchase_invoices'));
     }
 
     /**
