@@ -46,7 +46,7 @@
 									<th scope="col" class="actions"><?= __('Actions') ?></th>
 								</tr>
 							</thead>
-							<tbody>                                            
+							<tbody>
 								<?php $i = $paginate_limit*($this->Paginator->counter('{{page}}')-1); ?>
 								
 								  <?php foreach ($purchaseInvoices as $purchaseInvoice): //pr($purchaseInvoice);  ?>
@@ -57,9 +57,11 @@
 									<td><?= h($purchaseInvoice->total_amount) ?></td>
 									
 									<td class="actions">
+									<?php if($status=='return'){ ?>
+										<?= $this->Html->link(__('Purchase Return'), ['controller'=>'PurchaseReturns','action' => 'add', $purchaseInvoice->id],['class'=>'btn btn-warning  btn-condensed btn-sm','escape'=>false]) ?>
+									<?php }else{ ?>
 										<!--<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'edit', $purchaseInvoice->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>-->
-										
-									
+									<?php } ?>
 									</td>
 								</tr>
 								<?php endforeach; ?>

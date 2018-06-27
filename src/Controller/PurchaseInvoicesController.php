@@ -28,6 +28,7 @@ class PurchaseInvoicesController extends AppController
     }
     public function index()
     {
+		$status=$this->request->query('status');
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
 		$location_id=$this->Auth->User('location_id');
@@ -39,7 +40,7 @@ class PurchaseInvoicesController extends AppController
         $purchaseInvoices = $this->paginate($this->PurchaseInvoices);
 		//pr($purchaseInvoices); exit;
 		$paginate_limit=$this->paginate['limit'];
-        $this->set(compact('purchaseInvoices','paginate_limit'));
+        $this->set(compact('purchaseInvoices','paginate_limit','status'));
     }
 
     /**
