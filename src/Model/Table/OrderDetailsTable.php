@@ -41,6 +41,14 @@ class OrderDetailsTable extends Table
         $this->belongsTo('Orders', [
             'foreignKey' => 'order_id',
             'joinType' => 'INNER'
+        ]); 
+		$this->belongsTo('Items', [
+            'foreignKey' => 'item_id',
+            'joinType' => 'INNER'
+        ]);
+		$this->belongsTo('GstFigures', [
+            'foreignKey' => 'gst_figure_id',
+            'joinType' => 'INNER'
         ]);
         $this->belongsTo('ItemVariations', [
             'foreignKey' => 'item_variation_id'

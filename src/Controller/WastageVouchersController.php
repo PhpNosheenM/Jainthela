@@ -104,26 +104,44 @@ class WastageVouchersController extends AppController
 			$wastageVoucher->created_by = $user_id;
 			
             if ($this->WastageVouchers->save($wastageVoucher)) {
-				
 				foreach($wastageVoucher->wastage_voucher_rows as $data){  
-					$to_date   =  date("Y-m-d");
-					$ItemLedger = $this->WastageVouchers->WastageVoucherRows->Items->ItemLedgers->newEntity(); 
-					$ItemLedger->item_id=$data->item_id; 
-					$ItemLedger->item_variation_id=$data->item_variation_id; 
-					$ItemLedger->transaction_date=$to_date;  
-					$ItemLedger->quantity=$data->quantity; 
-					$ItemLedger->rate=$data->rate; 
-					$ItemLedger->purchase_rate=$data->rate; 
-					$ItemLedger->status="Out";
-					$ItemLedger->city_id=$city_id;
-					$ItemLedger->location_id=$location_id;
-					$ItemLedger->wastage="Yes";
-					$ItemLedger->wastage_voucher_id=$wastageVoucher->id;
-					$ItemLedger->wastage_voucher_row_id=$data->id;
-					$this->WastageVouchers->WastageVoucherRows->Items->ItemLedgers->save($ItemLedger);
+					if($data->quantity > 0){
+						$to_date   =  date("Y-m-d");
+						$ItemLedger = $this->WastageVouchers->WastageVoucherRows->Items->ItemLedgers->newEntity(); 
+						$ItemLedger->item_id=$data->item_id; 
+						$ItemLedger->item_variation_id=$data->item_variation_id; 
+						$ItemLedger->transaction_date=$to_date;  
+						$ItemLedger->quantity=$data->quantity; 
+						$ItemLedger->rate=$data->rate; 
+						$ItemLedger->purchase_rate=$data->rate; 
+						$ItemLedger->status="Out";
+						$ItemLedger->city_id=$city_id;
+						$ItemLedger->location_id=$location_id;
+						$ItemLedger->wastage="Yes";
+						$ItemLedger->wastage_voucher_id=$wastageVoucher->id;
+						$ItemLedger->wastage_voucher_row_id=$data->id;
+						$this->WastageVouchers->WastageVoucherRows->Items->ItemLedgers->save($ItemLedger);
+						
+						$ItemVariationData = $this->WastageVouchers->WastageVoucherRows->Items->ItemVariations->get($data->item_variation_id);
+						$current_stock=$ItemVariationData->current_stock-$data->quantity; 
+						$out_of_stock="No";
+						$ready_to_sale="Yes";
+						if($current_stock <= 0){
+							$ready_to_sale="No";
+							$out_of_stock="Yes";
+						}
+						
+						$query = $this->WastageVouchers->WastageVoucherRows->Items->ItemVariations->query();
+						$query->update()
+						->set(['current_stock'=>$current_stock,'out_of_stock'=>$out_of_stock,'ready_to_sale'=>$ready_to_sale])
+						->where(['id'=>$data->item_variation_id])
+						->execute();
+						
+					
+					}
 				}
 				
-				
+				$this->WastageVouchers->WastageVoucherRows->deleteAll(['wastage_voucher_id' => $wastageVoucher->id,'quantity'=>0]);
 				
                 $this->Flash->success(__('The wastage voucher has been saved.'));
 

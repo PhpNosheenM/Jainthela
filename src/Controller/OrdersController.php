@@ -126,6 +126,68 @@ class OrdersController extends AppController
 	exit;
 	}
 	
+	public function orderRelatedToSeller($status=null){
+		$this->viewBuilder()->layout('super_admin_layout');
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$location_id=$this->Auth->User('location_id');
+		$location_id = $this->request->query('location_id');
+		$seller_id = $this->request->query('seller_id');
+		$gst_figure_id = $this->request->query('gst_figure_id');
+		$from_date = $this->request->query('from_date');
+		$to_date   = $this->request->query('to_date');
+		if(empty($from_date) || empty($to_date))
+		{
+			$from_date = date("Y-m-01");
+			$to_date   = date("Y-m-d");
+		}else{
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$to_date= date("Y-m-d",strtotime($to_date));
+		}
+		if(!empty($from_date))
+		{
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$where['Orders.transaction_date >=']=$from_date;
+		}
+		if(!empty($to_date))
+		{
+			$to_date   = date("Y-m-d",strtotime($to_date));
+			$where['Orders.transaction_date <=']=$to_date;
+		}
+		if(!empty($location_id))
+		{
+			//$to_date   = date("Y-m-d",strtotime($to_date));
+			$where['Orders.location_id']=$location_id;
+		}
+		$orders=[];
+		if($seller_id){ 
+			 $orders=$this->Orders->find()->contain(['Locations','PartyLedgers'=>['CustomerData'],'OrderDetails'=>['Items','ItemVariations'=>function ($q) use($seller_id) {
+							return $q->where(['ItemVariations.seller_id'=>$seller_id])->contain(['Sellers']);
+						}]])->where($where);
+		
+			  $orders->innerJoinWith('OrderDetails.ItemVariations',function ($q) use($seller_id) {
+							return $q->where(['ItemVariations.seller_id'=>$seller_id])->contain(['Sellers']);
+						})->group('OrderDetails.order_id')
+					->autoFields(true);
+
+			//pr($orders->toArray()); exit;
+		}else{
+			
+			 $orders=$this->Orders->find()->contain(['Locations','PartyLedgers'=>['CustomerData'],'OrderDetails'=>['Items','ItemVariations'=>function ($q) {
+							return $q->where(['ItemVariations.seller_id IS NULL']);
+						}]])->where($where);
+			//pr($orders->toArray()); exit;
+			  $orders->innerJoinWith('OrderDetails.ItemVariations',function ($q)  {
+							return $q->where(['ItemVariations.seller_id IS NULL']);
+						})->group('OrderDetails.order_id')
+					->autoFields(true);
+				//pr($orders->toArray()); exit;
+		}
+		
+		$Locations = $this->Orders->Locations->find('list')->where(['city_id'=>$city_id]);
+		$Sellers = $this->Orders->OrderDetails->Items->Sellers->find('list')->where(['city_id'=>$city_id]);
+		$this->set(compact('from_date','to_date','orders','Locations','location_id','seller_id','Sellers','GstFigures'));
+	}
 	public function manageOrder($status=null)
     {
 		$this->viewBuilder()->layout('admin_portal');
@@ -271,6 +333,7 @@ class OrdersController extends AppController
 						$ItemLedger->transaction_date=$order->transaction_date;  
 						$ItemLedger->quantity=$data->quantity;
 						$ItemLedger->rate=$GrnRow->purchase_rate;
+						$ItemLedger->amount=$GrnRow->purchase_rate*$data->quantity;
 						$ItemLedger->purchase_rate=$GrnRow->purchase_rate;
 						$ItemLedger->sales_rate=$GrnRow->sales_rate; 
 						$ItemLedger->status="In";
