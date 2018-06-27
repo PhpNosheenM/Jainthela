@@ -931,6 +931,7 @@ class ItemsController extends AppController
 		$location_id=$this->Auth->User('location_id'); 
 		$this->viewBuilder()->layout('super_admin_layout');
 		$location_id = $this->request->query('location_id');
+		$gst_figure_id = $this->request->query('gst_figure_id');
 		$from_date = $this->request->query('from_date');
 		$to_date   = $this->request->query('to_date');
 		if(empty($from_date) || empty($to_date))
@@ -953,10 +954,27 @@ class ItemsController extends AppController
 			$where['PurchaseInvoices.city_id ']=$city_id;
 		}
 		
-		//pr($from_date); exit;
-		$PurchaseInvoices = $this->Items->PurchaseInvoices->find()->contain(['Cities','SellerLedgers'=>['SellerData']])->where($where);
-		$Locations = $this->Items->Orders->Locations->find('list');
+		if($gst_figure_id){ 
+			 $PurchaseInvoices=$this->Items->PurchaseInvoices->find()->contain(['SellerLedgers'=>['SellerData'],'PurchaseInvoiceRows'=>function ($q) use($gst_figure_id) {
+							return $q->where(['PurchaseInvoiceRows.gst_figure_id'=>$gst_figure_id])->contain(['GstFigures','Items']);
+						}])->where($where);
+						
+			 $PurchaseInvoices->innerJoinWith('PurchaseInvoiceRows',function ($q) use($gst_figure_id) {
+							return $q->where(['PurchaseInvoiceRows.gst_figure_id'=>$gst_figure_id])->contain(['GstFigures']);
+						})->group('PurchaseInvoiceRows.purchase_invoice_id')
+					->autoFields(true);
+
+			//pr($PurchaseInvoices->toArray()); exit;
+		}else{
+			$PurchaseInvoices = $this->Items->PurchaseInvoices->find()->contain(['SellerLedgers'=>['SellerData']])->where($where)->where(['PurchaseInvoices.city_id'=>$city_id]);
+			//pr($orders->toArray()); exit;
+		}
+		
 		//pr($PurchaseInvoices->toArray()); exit;
-		$this->set(compact('from_date','to_date','PurchaseInvoices','Locations','location_id'));
+		//pr($from_date); exit;
+		//$PurchaseInvoices = $this->Items->PurchaseInvoices->find()->contain(['Cities','SellerLedgers'=>['SellerData']])->where($where);
+		//$Locations = $this->Items->Orders->Locations->find('list');
+		$GstFigures = $this->Items->GstFigures->find('list')->where(['city_id'=>$city_id]);
+		$this->set(compact('from_date','to_date','PurchaseInvoices','Locations','gst_figure_id','location_id','GstFigures'));
 	}
 }

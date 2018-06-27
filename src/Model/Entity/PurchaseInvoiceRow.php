@@ -51,7 +51,7 @@ class PurchaseInvoiceRow extends Entity
         'discount_amount' => true,
         'taxable_value' => true,
         'net_amount' => true,
-        'gst_percentage' => true,
+        'gst_figure_id' => true,
         'gst_value' => true,
         'round_off' => true,
         'purchase_rate' => true,
