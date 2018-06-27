@@ -279,7 +279,7 @@
 			 all_first_amount+=first_amount;
 			 all_first_gst_value+=first_gst_value;
 			 all_first_net_amount+=first_net_amount;
-			 
+			
 		 });
 		
 		 $('.txbl').val(all_first_amount.toFixed(2));
