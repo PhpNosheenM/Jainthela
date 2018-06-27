@@ -350,7 +350,7 @@
 							$(this).find('.quantity ').attr({name:'purchase_invoice_rows['+i+'][quantity]',id:'purchase_invoice_rows['+i+'][quantity]'}).rules('add', 'required');
 							$(this).find('.rate ').attr({name:'purchase_invoice_rows['+i+'][rate]',id:'purchase_invoice_rows['+i+'][rate]'}).rules('add', 'required');
 							$(this).find('.taxable_value ').attr({name:'purchase_invoice_rows['+i+'][taxable_value]',id:'purchase_invoice_rows['+i+'][taxable_value]'});
-							$(this).find('.gst_percentage ').attr({name:'purchase_invoice_rows['+i+'][gst_percentage]',id:'purchase_invoice_rows['+i+'][gst_percentage]'});
+							$(this).find('.gst_percentage ').attr({name:'purchase_invoice_rows['+i+'][gst_figure_id]',id:'purchase_invoice_rows['+i+'][gst_figure_id]'});
 							$(this).find('.gst_value ').attr({name:'purchase_invoice_rows['+i+'][gst_value]',id:'purchase_invoice_rows['+i+'][gst_value]'});
 							$(this).find('.net_amount ').attr({name:'purchase_invoice_rows['+i+'][net_amount]',id:'purchase_invoice_rows['+i+'][net_amount]'});
 							
@@ -365,7 +365,7 @@
 							$(this).find('.quantity ').attr({name:'purchase_invoice_rows['+i+'][quantity]',id:'purchase_invoice_rows['+i+'][quantity]'}).rules('add', 'required');
 							$(this).find('.rate ').attr({name:'purchase_invoice_rows['+i+'][rate]',id:'purchase_invoice_rows['+i+'][rate]'}).rules('add', 'required');
 							$(this).find('.taxable_value ').attr({name:'purchase_invoice_rows['+i+'][taxable_value]',id:'purchase_invoice_rows['+i+'][taxable_value]'});
-							$(this).find('.gst_percentage ').attr({name:'purchase_invoice_rows['+i+'][gst_percentage]',id:'purchase_invoice_rows['+i+'][gst_percentage]'});
+							$(this).find('.gst_percentage ').attr({name:'purchase_invoice_rows['+i+'][gst_figure_id]',id:'purchase_invoice_rows['+i+'][gst_figure_id]'});
 							$(this).find('.gst_value ').attr({name:'purchase_invoice_rows['+i+'][gst_value]',id:'purchase_invoice_rows['+i+'][gst_value]'});
 							$(this).find('.net_amount ').attr({name:'purchase_invoice_rows['+i+'][net_amount]',id:'purchase_invoice_rows['+i+'][net_amount]'});
 							

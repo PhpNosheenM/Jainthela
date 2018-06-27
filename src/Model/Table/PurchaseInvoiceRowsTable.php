@@ -61,6 +61,11 @@ class PurchaseInvoiceRowsTable extends Table
         $this->hasMany('PurchaseReturnRows', [
             'foreignKey' => 'purchase_invoice_row_id'
         ]);
+		
+		$this->belongsTo('GstFigures', [
+            'foreignKey' => 'gst_figure_id',
+            'joinType' => 'INNER'
+        ]);
     }
 
     /**
