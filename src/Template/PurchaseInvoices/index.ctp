@@ -53,7 +53,7 @@
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
 									<td><?= h($purchaseInvoice->invoice_no) ?></td>
-									<td><?= h($purchaseInvoice->seller_ledger->seller->name) ?></td>
+									<td><?= h(@$purchaseInvoice->seller_ledger->seller->name) ?></td>
 									<td><?= h($purchaseInvoice->total_amount) ?></td>
 									
 									<td class="actions">
