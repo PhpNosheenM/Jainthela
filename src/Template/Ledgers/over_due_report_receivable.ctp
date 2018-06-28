@@ -32,6 +32,15 @@
 										<?= $this->Form->control('to_date',['class'=>'form-control datepicker','placeholder'=>'To','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>date('d-m-Y',strtotime($to_date))]) ?>
 										</div>
 								</div>
+								<div class="col-md-4 col-xs-12">
+									<div class="input-group">
+									
+										<span class="input-group-addon add-on"> Sort By </span>
+										<?php $options['ASC'] = 'ASCENDING'; ?>
+										<?php $options['DESC'] = 'DESCENDING'; ?>
+										<?= $this->Form->select('ordr',$options,['class'=>'form-control select','label'=>false,'value'=>@$ordr]) ?>
+										</div>
+								</div>
 							<div class="input-group-btn">
 								<?= $this->Form->button(__('Search'),['class'=>'btn btn-primary']) ?>
 							</div>

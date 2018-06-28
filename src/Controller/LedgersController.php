@@ -300,6 +300,7 @@ class LedgersController extends AppController
 		$ledger_id = $this->request->query('ledger_id');
 		//$from_date = $this->request->query('from_date');
 		$to_date   = $this->request->query('to_date');
+		$ordr   = $this->request->query('ordr');
 		if(empty($to_date))
 		{
 			$to_date   = date("Y-m-d");
@@ -331,10 +332,10 @@ class LedgersController extends AppController
 		}
 		$reference_details = $this->Ledgers->ReferenceDetails->find()->contain(['Ledgers'])->where(['ReferenceDetails.city_id'=>$city_id, 'ReferenceDetails.type != ' => 'On Account']);
 		$reference_details->select(['total_debit' => $reference_details->func()->sum('ReferenceDetails.debit'),'total_credit' => $reference_details->func()->sum('ReferenceDetails.credit')])
-		->where(['ReferenceDetails.ledger_id IN '=> $ledgerAccountids,'ReferenceDetails.transaction_date <=' => $to_date])
+		->where(['ReferenceDetails.ledger_id IN '=> $ledgerAccountids,'ReferenceDetails.transaction_date <=' => $to_date])->order(['ReferenceDetails.id'=>$ordr])
 		->group(['ReferenceDetails.ref_name','ReferenceDetails.ledger_id'])->autoFields(true);	
 		//pr($reference_details->toArray()); exit;
-		$this->set(compact('companies','reference_details','run_time_date','url','status','to_date'));
+		$this->set(compact('companies','reference_details','run_time_date','url','status','to_date','ordr'));
 		//pr($reference_details->toArray()); exit;
 			
 	}
