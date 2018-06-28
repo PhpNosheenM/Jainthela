@@ -23,7 +23,7 @@ class OrdersController extends AppController
 	public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->Security->setConfig('unlockedActions', ['add', 'index', 'view', 'manageOrder', 'ajaxDeliver']);
+        $this->Security->setConfig('unlockedActions', ['add', 'index', 'view', 'manageOrder', 'ajaxDeliver','updateOrders']);
 
     }
 	
@@ -187,6 +187,60 @@ class OrdersController extends AppController
 		$Locations = $this->Orders->Locations->find('list')->where(['city_id'=>$city_id]);
 		$Sellers = $this->Orders->OrderDetails->Items->Sellers->find('list')->where(['city_id'=>$city_id]);
 		$this->set(compact('from_date','to_date','orders','Locations','location_id','seller_id','Sellers','GstFigures'));
+	}
+	
+	public function updateOrders($order_id = null,$item_id = null,$actual_quantity=null,$amount = null,$gst_value = null,$net_amount =null, $detail_id = null, $taxable_value = null, $total_gst = null,$grand_total = null){
+		
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$location_id=$this->Auth->User('location_id');
+		$location_id = $this->request->query('location_id');
+		
+		$order_id;
+		$taxable_value;
+		$total_gst;
+		$grand_total;
+		$quantity=explode(',',$actual_quantity);
+		$items=explode(',',$item_id);
+		$item_amount=explode(',',$amount);
+		$gst_values=explode(',',$gst_value);
+		$net_amounts=explode(',',$net_amount);
+		$detail_ids=explode(',',$detail_id);
+		$x=0;
+		foreach($detail_ids as $detail_id){
+			
+			$qty = $quantity[$x];
+			$amt = $item_amount[$x];
+			$gst = $gst_values[$x];
+			$nt_amt = $net_amounts[$x];
+			$dtl_id = $detail_ids[$x];
+			$final_amount+=$amt;
+				$query = $this->Orders->OrderDetails->query();
+					$query->update()
+							->set(['actual_quantity' => $qty, 'amount' => $amt, 'gst_value' => $gst, 'net_amount' => $nt_amt])
+							->where(['id'=>$dtl_id,'order_id'=>$order_id])
+							->execute();
+				$x++;
+		
+		}
+		
+		$Orders = $this->Orders->get($order_id);
+		$customer_id=$Orders->customer_id;
+		$amount_from_wallet=$Orders->amount_from_wallet;
+		//$amount_from_jain_cash=$Orders->amount_from_jain_cash;
+		//$amount_from_promo_code=$Orders->amount_from_promo_code;
+		$online_amount=$Orders->online_amount;
+		$discount_percent=$Orders->discount_percent;
+		
+		$paid_amount=$amount_from_wallet+$amount_from_jain_cash+$amount_from_promo_code+$online_amount;
+		
+		$total_amount=$final_amount;
+		$discount_percent=$Orders->discount_percent;
+		$discount_amount=$total_amount*($discount_percent/100);
+		
+		$delivery_charges=$this->Orders->DeliveryCharges->find()->where(['DeliveryCharges.city_id'=>$city_id, 'DeliveryCharges.status'=>'Active']);
+		
+	exit;
 	}
 	public function manageOrder($status=null)
     {
