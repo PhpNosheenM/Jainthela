@@ -1,4 +1,4 @@
-<?php $this->set('title', 'Purchase Invoice'); ?>
+<?php $this->set('title', 'Purchase Return'); ?>
 <!-- PAGE CONTENT WRAPPER -->
 <div class="page-content-wrap">
 	<div class="row">
@@ -8,36 +8,27 @@
 				<div class="panel-heading">
 					<h3 class="panel-title"><strong> Purchase Return</strong></h3>
 				</div>
-			<?php 
-			pr($purchase_invoices->purchase_ledger_id);
-			?>
+			
 				<div class="panel-body">    
 					<div class="row">
 						<div class="col-md-3">
 							<div class="form-group">
-								<label class=" control-label">Purchase Invoice No</label>
+								<label class=" control-label">Purchase Return No</label>
 								<div class="">                                            
 									<?php //$voucher_no= $LocationData->alise.'/'.$voucher_no ;
 									//echo $voucher_no;
 									?>
-									<?= $this->Form->control('invoice_no',['class'=>'form-control','placeholder'=>'','label'=>false,'value'=>$purchase_invoices->voucher_no,'readonly']) ?>
+									<?= $this->Form->control('invoice_no',['class'=>'form-control','placeholder'=>'','label'=>false,'value'=>$voucher_no,'readonly']) ?>
 								</div>
 							</div>
-							<?php if($grnData->created_for=="Jainthela"){ ?>
+							
 							<div class="form-group">
-								<label class=" control-label">Vendor</label>
+								<label class=" control-label">Party</label>
 								<div class="">                                            
-									<?= $this->Form->select('seller_ledger_id',$partyOptions,['class'=>'form-control select','label'=>false, 'value'=>$purchase_invoices->seller_ledger_id]) ?>
+									<?= $this->Form->select('seller_ledger_id',$partyOptions,['class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
-							<?php }else{ ?>
-								<div class="form-group">
-								<label class=" control-label">Seller</label>
-								<div class="">                                            
-									<?= $this->Form->select('seller_ledger_id',$partyOptions,['class'=>'form-control select','label'=>false, 'value'=>$purchase_invoices->seller_ledger_id]) ?>
-								</div>
-							</div>
-							<?php } ?>
+							
 						
 							
 						</div>
@@ -51,7 +42,7 @@
 							<div class="form-group">
 								<label class=" control-label">Purchase Account</label>
 								<div class="">                                            
-									<?= $this->Form->select('purchase_ledger_id',$Accountledgers,['class'=>'form-control select','label'=>false, 'value'=>$purchase_invoices->purchase_ledger_id]) ?>
+									<?= $this->Form->select('purchase_ledger_id',$Accountledgers,['class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
 							
@@ -68,7 +59,7 @@
 					<div class="panel-body">    
 					<div class="row">
 						<div class="table-responsive">
-						<?php if($grnData->created_for=="Jainthela"){ ?>
+						<?php  if(sizeof($purchase_invoices->purchase_invoice_rows[0]->item_variations_data) == 0){ ?>
 							<table class="table table-bordered main_table">
 								<thead>
 									<tr align="center">
@@ -91,27 +82,27 @@
 									</tr>
 								</thead>
 								<tbody class="MainTbody"> 
-								<?php foreach($total_grn_rows as $total_grn_row){ ?>
+								<?php foreach($purchase_invoices->purchase_invoice_rows as $purchase_invoice_row){ ?>
 									<tr class="MainTr">
 										<td  valign="top">1</td>
 										 <td width="">
-											<?php echo @$total_grn_row->item->name;  ?>
-											<input type="hidden" value="<?php echo $total_grn_row->item_id; ?>" class="item_id1" >
-											<input type="hidden" value="<?php echo $total_grn_row->id; ?>" class="grn_row_id" >
+											<?php echo @$purchase_invoice_row->item->name;  ?>
+											<input type="hidden" value="<?php echo $purchase_invoice_row->item_id; ?>" class="item_id1" >
+											<input type="hidden" value="<?php echo $purchase_invoice_row->id; ?>" class="grn_row_id" >
 											
 										</td>
 										<td width="">
-											<?php echo $total_grn_row->unit_variation->quantity_variation.' '.$total_grn_row->unit_variation->unit->shortname; ?>
-											<input type="hidden" value="<?php echo $total_grn_row->unit_variation_id; ?>" class="unit_variation_id1" >
+											<?php echo $purchase_invoice_row->unit_variation->quantity_variation.' '.$purchase_invoice_row->unit_variation->unit->shortname; ?>
+											<input type="hidden" value="<?php echo $purchase_invoice_row->unit_variation_id; ?>" class="unit_variation_id1" >
 											
 										</td>
 										
 										<td  valign="top">
-											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false,'value'=>$total_grn_row->quantity,'readonly']) ?>
+											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false,'value'=>$purchase_invoice_row->quantity,'readonly']) ?>
 											
 										</td>
 										<td valign="top">
-											<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false,'value'=>$total_grn_row->purchase_rate,'readonly']) ?>
+											<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false,'value'=>$purchase_invoice_row->purchase_rate,'readonly']) ?>
 										</td>
 										
 										<td valign="top">
@@ -119,8 +110,8 @@
 										</td>
 										<td valign="top">
 											
-											<?php echo $total_grn_row->item->gst_figure->tax_percentage; ?>
-											<input type="hidden" value="<?php echo $total_grn_row->item->gst_figure->id; ?>" class="gst_percentage" tax_percentage="<?php echo $total_grn_row->item->gst_figure->tax_percentage; ?>"  >
+											<?php echo $purchase_invoice_row->item->gst_figure->tax_percentage; ?>
+											<input type="hidden" value="<?php echo $purchase_invoice_row->item->gst_figure->id; ?>" class="gst_percentage" tax_percentage="<?php echo $purchase_invoice_row->item->gst_figure->tax_percentage; ?>"  >
 											
 											
 											
@@ -173,34 +164,34 @@
 									</tr>
 								</thead>
 								<tbody class="MainTbody"> 
-								<?php foreach($total_grn_rows as $total_grn_row){ //pr($total_grn_row->item_variation); ?>
+								<?php foreach($total_grn_rows as $purchase_invoice_row){ //pr($purchase_invoice_row->item_variation); ?>
 									<tr class="MainTr">
 										<td  valign="top">1</td>
 										 <td width="">
 											<?php 
-											$merge=$total_grn_row->item_variation->item->name.'('.@$total_grn_row->item_variation->unit_variation->quantity_variation.'.'.@$total_grn_row->item_variation->unit_variation->unit->shortname.')';
+											$merge=$purchase_invoice_row->item_variation->item->name.'('.@$purchase_invoice_row->item_variation->unit_variation->quantity_variation.'.'.@$purchase_invoice_row->item_variation->unit_variation->unit->shortname.')';
 											echo @$merge;  ?>
 											
-											<input type="hidden" value="<?php echo $total_grn_row->item_id; ?>" class="item_id2" >
-											<input type="hidden" value="<?php echo $total_grn_row->item_variation_id; ?>" class="item_variation_id2" >
+											<input type="hidden" value="<?php echo $purchase_invoice_row->item_id; ?>" class="item_id2" >
+											<input type="hidden" value="<?php echo $purchase_invoice_row->item_variation_id; ?>" class="item_variation_id2" >
 											
 										</td>
 										
 										
 										<td  valign="top">
-											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false,'value'=>$total_grn_row->quantity,'readonly']) ?>
+											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false,'value'=>$purchase_invoice_row->quantity,'readonly']) ?>
 											
 										</td>
 										<td valign="top">
-											<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false,'value'=>$total_grn_row->purchase_rate,'readonly']) ?>
+											<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false,'value'=>$purchase_invoice_row->purchase_rate,'readonly']) ?>
 										</td>
 										
 										<td valign="top">
 											<?= $this->Form->control('taxable_value',['class'=>'form-control taxable_value','label'=>false,'readonly']) ?>
 										</td>
 										<td valign="top">
-											<?php echo $total_grn_row->item_variation->item->gst_figure->tax_percentage; ?>
-											<input type="hidden" value="<?php echo $total_grn_row->item_variation->item->gst_figure->id; ?>" class="gst_percentage" tax_percentage="<?php echo $total_grn_row->item_variation->item->gst_figure->tax_percentage; ?>"  >
+											<?php echo $purchase_invoice_row->item_variation->item->gst_figure->tax_percentage; ?>
+											<input type="hidden" value="<?php echo $purchase_invoice_row->item_variation->item->gst_figure->id; ?>" class="gst_percentage" tax_percentage="<?php echo $purchase_invoice_row->item_variation->item->gst_figure->tax_percentage; ?>"  >
 											
 											
 										</td>
@@ -352,7 +343,7 @@
 							$(this).find('.quantity ').attr({name:'purchase_invoice_rows['+i+'][quantity]',id:'purchase_invoice_rows['+i+'][quantity]'}).rules('add', 'required');
 							$(this).find('.rate ').attr({name:'purchase_invoice_rows['+i+'][rate]',id:'purchase_invoice_rows['+i+'][rate]'}).rules('add', 'required');
 							$(this).find('.taxable_value ').attr({name:'purchase_invoice_rows['+i+'][taxable_value]',id:'purchase_invoice_rows['+i+'][taxable_value]'});
-							$(this).find('.gst_percentage ').attr({name:'purchase_invoice_rows['+i+'][gst_percentage]',id:'purchase_invoice_rows['+i+'][gst_percentage]'});
+							$(this).find('.gst_percentage ').attr({name:'purchase_invoice_rows['+i+'][gst_figure_id]',id:'purchase_invoice_rows['+i+'][gst_figure_id]'});
 							$(this).find('.gst_value ').attr({name:'purchase_invoice_rows['+i+'][gst_value]',id:'purchase_invoice_rows['+i+'][gst_value]'});
 							$(this).find('.net_amount ').attr({name:'purchase_invoice_rows['+i+'][net_amount]',id:'purchase_invoice_rows['+i+'][net_amount]'});
 							
@@ -367,7 +358,7 @@
 							$(this).find('.quantity ').attr({name:'purchase_invoice_rows['+i+'][quantity]',id:'purchase_invoice_rows['+i+'][quantity]'}).rules('add', 'required');
 							$(this).find('.rate ').attr({name:'purchase_invoice_rows['+i+'][rate]',id:'purchase_invoice_rows['+i+'][rate]'}).rules('add', 'required');
 							$(this).find('.taxable_value ').attr({name:'purchase_invoice_rows['+i+'][taxable_value]',id:'purchase_invoice_rows['+i+'][taxable_value]'});
-							$(this).find('.gst_percentage ').attr({name:'purchase_invoice_rows['+i+'][gst_percentage]',id:'purchase_invoice_rows['+i+'][gst_percentage]'});
+							$(this).find('.gst_percentage ').attr({name:'purchase_invoice_rows['+i+'][gst_figure_id]',id:'purchase_invoice_rows['+i+'][gst_figure_id]'});
 							$(this).find('.gst_value ').attr({name:'purchase_invoice_rows['+i+'][gst_value]',id:'purchase_invoice_rows['+i+'][gst_value]'});
 							$(this).find('.net_amount ').attr({name:'purchase_invoice_rows['+i+'][net_amount]',id:'purchase_invoice_rows['+i+'][net_amount]'});
 							

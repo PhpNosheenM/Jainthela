@@ -54,6 +54,13 @@ class PurchaseInvoiceRowsTable extends Table
             'foreignKey' => 'item_variation_id',
             'joinType' => 'INNER'
         ]);
+		
+		$this->belongsTo('ItemVariationsData', [
+            'className' => 'ItemVariations',
+            'foreignKey' => 'item_variation_id',
+            'joinType' => 'LEFT'
+        ]);
+		
        
         $this->hasMany('ItemLedgers', [
             'foreignKey' => 'purchase_invoice_row_id'
@@ -64,6 +71,10 @@ class PurchaseInvoiceRowsTable extends Table
 		
 		$this->belongsTo('GstFigures', [
             'foreignKey' => 'gst_figure_id',
+            'joinType' => 'INNER'
+        ]);
+		 $this->belongsTo('UnitVariations', [
+            'foreignKey' => 'unit_variation_id',
             'joinType' => 'INNER'
         ]);
     }

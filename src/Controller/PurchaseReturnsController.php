@@ -59,14 +59,22 @@ class PurchaseReturnsController extends AppController
      */
 
     public function add($invoice_id=null)
-    {
+    { 
 		$status=$this->request->query('status');
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
 		$this->viewBuilder()->layout('super_admin_layout');
 		
-		$purchase_invoices=$this->PurchaseReturns->PurchaseInvoices->find()->where(['PurchaseInvoices.id'=>$invoice_id])->contain(['PurchaseInvoiceRows'])->first();
-		 
+		$purchase_invoices=$this->PurchaseReturns->PurchaseInvoices->find()->where(['PurchaseInvoices.id'=>$invoice_id])->contain(['PurchaseInvoiceRows'=>['Items'=>['GstFigures'],'ItemVariationsData','UnitVariations'=>['Units']]])->first();
+		//pr($purchase_invoices->purchase_invoice_rows[0]); exit;
+		$CityData = $this->PurchaseReturns->PurchaseInvoices->Cities->get($city_id);
+		$StateData = $this->PurchaseReturns->PurchaseInvoices->Cities->States->get($CityData->state_id);
+		$Voucher_no = $this->PurchaseReturns->find()->select(['voucher_no'])->where(['PurchaseReturns.city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
+		if($Voucher_no){$voucher_no=$Voucher_no->voucher_no+1;}
+		else{$voucher_no=1;}
+		$order_no=$CityData->alise_name.'/PR/'.$voucher_no;
+		$voucher_no=$StateData->alias_name.'/'.$order_no;
+		// pr($purchase_invoices); exit;
         $purchaseReturn = $this->PurchaseReturns->newEntity();
         if ($this->request->is('post')) {
             $purchaseReturn = $this->PurchaseReturns->patchEntity($purchaseReturn, $this->request->getData());
@@ -77,12 +85,10 @@ class PurchaseReturnsController extends AppController
             }
             $this->Flash->error(__('The purchase return could not be saved. Please, try again.'));
         }
-        $purchaseInvoices = $this->PurchaseReturns->PurchaseInvoices->find('list', ['limit' => 200]);
-        $financialYears = $this->PurchaseReturns->FinancialYears->find('list', ['limit' => 200]);
-        $locations = $this->PurchaseReturns->Locations->find('list', ['limit' => 200]);
-        //$sellerLedgers = $this->PurchaseReturns->SellerLedgers->find('list', ['limit' => 200]);
-        //$purchaseLedgers = $this->PurchaseReturns->PurchaseLedgers->find('list', ['limit' => 200]);
-        $cities = $this->PurchaseReturns->Cities->find('list', ['limit' => 200]);
+       
+		$Partyledger = $this->PurchaseReturns->PurchaseInvoices->SellerLedgers->get($purchase_invoices->seller_ledger_id,['contain'=>['Cities']]);
+			
+		$partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id,'city_id'=>$Partyledger->city_id,'state_id'=>$Partyledger->city->state_id,'bill_to_bill_accounting'=>$Partyledger->bill_to_bill_accounting,'vendor_id'=>$Partyledger->vendor_id];
 		
 		$accountLedgers = $this->PurchaseReturns->PurchaseInvoices->AccountingGroups->find()->where(['AccountingGroups.purchase_invoice_purchase_account'=>1,'AccountingGroups.city_id'=>$city_id])->first();
 		
@@ -101,9 +107,8 @@ class PurchaseReturnsController extends AppController
 			}
 			$account_ids = explode(",",trim($account_ids,','));
 			$Accountledgers = $this->PurchaseReturns->PurchaseInvoices->AccountingGroups->Ledgers->find('list')->where(['Ledgers.accounting_group_id IN' =>$account_ids]);
-        }
-		
-        $this->set(compact('purchaseReturn', 'purchaseInvoices', 'financialYears', 'locations', 'sellerLedgers', 'purchaseLedgers', 'cities', 'purchase_invoices'));
+        } //pr($Accountledgers->toArray()); exit;
+        $this->set(compact('purchaseReturn', 'purchaseInvoices', 'financialYears', 'locations', 'sellerLedgers', 'purchaseLedgers', 'cities', 'purchase_invoices','partyOptions','Accountledgers','voucher_no'));
     }
 
     /**

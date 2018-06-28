@@ -82,7 +82,7 @@
 										
 										<th rowspan="2" style="text-align:center;width:130px; "><label>Quantity<label></th>
 										<th rowspan="2" style="text-align:center;width:130px;"><label>Rate<label></th>
-										
+										<th colspan="2" style="text-align:center;"><label id="Discount">Discount<label></th>
 										<th rowspan="2" style="text-align:center;"><label>Taxable Value<label></th>
 										<th colspan="2" style="text-align:center;"><label id="gstDisplay">GST<label></th>
 										<th rowspan="2" style="text-align:center;width:200px;"><label>Total<label></th>
@@ -90,6 +90,8 @@
 									</tr>
 									<tr>
 										
+										<th><div align="center" style="width:50px;">%</div></th>
+										<th><div align="center"style="text-align:center;width:50px;">Rs</div></th>
 										<th><div align="center" style="width:50px;">%</div></th>
 										<th><div align="center"style="text-align:center;width:50px;">Rs</div></th>
 										
@@ -102,41 +104,41 @@
 											@$g++;
 								?>
 									<tr class="MainTr">
-			<td  valign="top"><?php echo $g; ?></td>
-			<td  valign="top" class="itemList"> 
-				<?= $this->Form->select('item_variation_id',$items,['empty'=>'--select--','style'=>'','class'=>'form-control item','label'=>false,'readonly', 'value'=>$sales_order_row->item_variation_id]) ?>
-				<?= $this->Form->control('item_id',['type'=>'hidden','class'=>'form-control item_id','label'=>false,'readonly', 'value'=>$sales_order_row->item_id]) ?>
-			</td>
-			
-			<td  valign="top">
-				<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false, 'value'=>$sales_order_row->quantity]) ?>
-				<span class="itemQty" style="font-size:10px;"></span>
-			</td>
-			<td valign="top">
-				<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false, 'value'=>$sales_order_row->rate]) ?>
-			</td>
-			
-			<td valign="top">
-				<?= $this->Form->control('taxable_value',['class'=>'form-control taxable_value','label'=>false,'readonly', 'value'=>$sales_order_row->amount]) ?>
-			</td>
-			<td valign="top">
-				<?= $this->Form->control('gst_percentage',['class'=>'form-control gst_percentage','label'=>false,'readonly', 'value'=>$sales_order_row->gst_percentage]) ?>
-				<?= $this->Form->control('gst_figure_id',['type'=>'hidden','class'=>'form-control gst_figure_id','label'=>false,'readonly', 'value'=>$sales_order_row->gst_figure_id]) ?>
-				<span class="gstAmt" style=" text-align:left;font-size:13px;"></span>
-			</td>
-			<td valign="top">
-				<?= $this->Form->control('gst_value',['class'=>'form-control gst_value','label'=>false,'readonly', 'value'=>$sales_order_row->gst_value]) ?>
-			</td>
-			
-			<td valign="top">
-				<?= $this->Form->control('net_amount',['class'=>'form-control net_amount','label'=>false,'readonly','value'=>$sales_order_row->net_amount]) ?>
-			</td>
-			
-			<td valign="top"  >
-				<a class="btn btn-primary  btn-condensed btn-sm add_row" role="button" ><i class="fa fa-plus"></i></a>
-				<a class="btn btn-danger  btn-condensed btn-sm delete_row " role="button" ><i class="fa fa-times"></i></a>
-			</td>
-		</tr>
+										<td  valign="top"><?php echo $g; ?></td>
+										<td  valign="top" class="itemList"> 
+											<?= $this->Form->select('item_variation_id',$items,['empty'=>'--select--','style'=>'','class'=>'form-control item','label'=>false,'readonly', 'value'=>$sales_order_row->item_variation_id]) ?>
+											<?= $this->Form->control('item_id',['type'=>'hidden','class'=>'form-control item_id','label'=>false,'readonly', 'value'=>$sales_order_row->item_id]) ?>
+										</td>
+										
+										<td  valign="top">
+											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false, 'value'=>$sales_order_row->quantity]) ?>
+											<span class="itemQty" style="font-size:10px;"></span>
+										</td>
+										<td valign="top">
+											<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false, 'value'=>$sales_order_row->rate]) ?>
+										</td>
+										
+										<td valign="top">
+											<?= $this->Form->control('taxable_value',['class'=>'form-control taxable_value','label'=>false,'readonly', 'value'=>$sales_order_row->amount]) ?>
+										</td>
+										<td valign="top">
+											<?= $this->Form->control('gst_percentage',['class'=>'form-control gst_percentage','label'=>false,'readonly', 'value'=>$sales_order_row->gst_percentage]) ?>
+											<?= $this->Form->control('gst_figure_id',['type'=>'hidden','class'=>'form-control gst_figure_id','label'=>false,'readonly', 'value'=>$sales_order_row->gst_figure_id]) ?>
+											<span class="gstAmt" style=" text-align:left;font-size:13px;"></span>
+										</td>
+										<td valign="top">
+											<?= $this->Form->control('gst_value',['class'=>'form-control gst_value','label'=>false,'readonly', 'value'=>$sales_order_row->gst_value]) ?>
+										</td>
+										
+										<td valign="top">
+											<?= $this->Form->control('net_amount',['class'=>'form-control net_amount','label'=>false,'readonly','value'=>$sales_order_row->net_amount]) ?>
+										</td>
+										
+										<td valign="top"  >
+											<a class="btn btn-primary  btn-condensed btn-sm add_row" role="button" ><i class="fa fa-plus"></i></a>
+											<a class="btn btn-danger  btn-condensed btn-sm delete_row " role="button" ><i class="fa fa-times"></i></a>
+										</td>
+									</tr>
 								
 								<?php } } ?>	
 								</tbody>
@@ -241,7 +243,11 @@
 			<td valign="top">
 				<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false]) ?>
 			</td>
-			
+			<td valign="top">
+				<?= $this->Form->control('discount_percent',['class'=>'form-control discount_percent','label'=>false]) ?>
+				<?= $this->Form->control('discount_amount',['type'=>'hidden','class'=>'form-control discount_amount','label'=>false,'readonly']) ?>
+				
+			</td>
 			<td valign="top">
 				<?= $this->Form->control('taxable_value',['class'=>'form-control taxable_value','label'=>false,'readonly']) ?>
 			</td>
