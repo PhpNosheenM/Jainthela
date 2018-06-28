@@ -65,7 +65,7 @@ class PurchaseReturnsController extends AppController
 		$city_id=$this->Auth->User('city_id');
 		$this->viewBuilder()->layout('super_admin_layout');
 		
-		$purchase_invoices=$this->PurchaseReturns->PurchaseInvoices->find()->where(['PurchaseInvoices.id'=>$invoice_id])->contain(['PurchaseInvoiceRows'=>['Items'=>['GstFigures'],'ItemVariationsData','UnitVariations'=>['Units']]])->first();
+		$purchase_invoices=$this->PurchaseReturns->PurchaseInvoices->find()->where(['PurchaseInvoices.id'=>$invoice_id])->contain(['PurchaseInvoiceRows'=>['Items'=>['GstFigures'],'ItemVariationsData'=>['Items','UnitVariations'=>['Units']],'UnitVariations'=>['Units']]])->first();
 		//pr($purchase_invoices->purchase_invoice_rows[0]); exit;
 		$CityData = $this->PurchaseReturns->PurchaseInvoices->Cities->get($city_id);
 		$StateData = $this->PurchaseReturns->PurchaseInvoices->Cities->States->get($CityData->state_id);

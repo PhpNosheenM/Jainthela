@@ -117,7 +117,15 @@
 										<td valign="top">
 											<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false, 'value'=>$sales_order_row->rate]) ?>
 										</td>
-										
+										<td valign="top">
+											<?= $this->Form->control('discount_percent',['class'=>'form-control discount_percent','label'=>false]) ?>
+											
+										</td>
+										<td valign="top">
+											<?= $this->Form->control('discount_amount',['class'=>'form-control discount_amount','label'=>false,'readonly']) ?>
+											
+											
+										</td>
 										<td valign="top">
 											<?= $this->Form->control('taxable_value',['class'=>'form-control taxable_value','label'=>false,'readonly', 'value'=>$sales_order_row->amount]) ?>
 										</td>
@@ -145,13 +153,13 @@
 								<tfoot>
 									
 									<tr>
-										<td colspan="7" style="text-align:right;">Total Taxable</td>
+										<td colspan="9" style="text-align:right;">Total Taxable</td>
 										<td colspan="2" style="text-align:right;"><?= $this->Form->control('total_amount',['class'=>'form-control total_taxable_value','label'=>false,'readonly','value'=>@$sales_orders->total_amount]) ?></td>
 									</tr>
 									
 									
 									<tr>
-										<td colspan="7" style="text-align:right;">GST Amount</td>
+										<td colspan="9" style="text-align:right;">GST Amount</td>
 										<td colspan="2" style="text-align:right;"><?= $this->Form->control('total_gst',['class'=>'form-control gst_amt','label'=>false,'readonly','value'=>@$sales_orders->total_gst]) ?></td>
 									</tr>
 									
@@ -164,12 +172,12 @@
 										
 										<input type="hidden" name="delivery_charge_id" id="delivery_charge_id">
 										
-										<td colspan="7" style="text-align:right;">Delivery Charges</td>
+										<td colspan="9" style="text-align:right;">Delivery Charges</td>
 										<td colspan="2" style="text-align:right;"><?= $this->Form->control('delivery_charge_amount',['class'=>'form-control dlvry_chrgs','label'=>false,'readonly','value'=>@$sales_orders->delivery_charge_amount]) ?></td>
 									</tr>
 									
 									<tr>
-										<td colspan="7" style="text-align:right;">Total Amount</td>
+										<td colspan="9" style="text-align:right;">Total Amount</td>
 										<td colspan="2" style="text-align:right;"><?= $this->Form->control('grand_total',['class'=>'form-control total_amt','label'=>false,'readonly','value'=>@$sales_orders->grand_total]) ?></td>
 									</tr>
 								</tfoot>
@@ -248,7 +256,7 @@
 				
 			</td>
 			<td valign="top">
-				<?= $this->Form->control('discount_amount',['type'=>'hidden','class'=>'form-control discount_amount','label'=>false,'readonly']) ?>
+				<?= $this->Form->control('discount_amount',['class'=>'form-control discount_amount','label'=>false,'readonly']) ?>
 				
 				
 			</td>
@@ -341,6 +349,10 @@ if(empty($ids)){
 			calculation();
 		});
 		
+		$(document).on('keyup','.discount_percent',function(){
+			calculation();
+		});
+		
 		$(document).on('change','.gst_percentage',function(){
 			calculation();
 		});
@@ -373,6 +385,8 @@ if(empty($ids)){
 				$(this).find('select.item ').attr({name:'order_details['+i+'][item_variation_id]',id:'order_details['+i+'][item_variation_id]'}).rules('add', 'required');
 				$(this).find('.quantity ').attr({name:'order_details['+i+'][quantity]',id:'order_details['+i+'][quantity]'}).rules('add', 'required');
 				$(this).find('.rate ').attr({name:'order_details['+i+'][rate]',id:'order_details['+i+'][rate]'}).rules('add', 'required');
+				$(this).find('.discount_percent ').attr({name:'order_details['+i+'][discount_percent]',id:'order_details['+i+'][discount_percent]'}).rules('add', 'required');
+				$(this).find('.discount_amount ').attr({name:'order_details['+i+'][discount_amount]',id:'order_details['+i+'][discount_amount]'}).rules('add', 'required');
 				$(this).find('.taxable_value ').attr({name:'order_details['+i+'][amount]',id:'order_details['+i+'][amount]'});
 				$(this).find('.gst_percentage ').attr({name:'order_details['+i+'][gst_percentage]',id:'order_details['+i+'][gst_percentage]'});
 				$(this).find('.gst_figure_id ').attr({name:'order_details['+i+'][gst_figure_id]',id:'order_details['+i+'][gst_figure_id]'});
@@ -390,6 +404,8 @@ if(empty($ids)){
 			$('.main_table tbody tr').each(function(){
 					var qty=$(this).find('.quantity').val();
 					var rate=$(this).find('.rate').val();
+					var discount_percent=$(this).find('.discount_percent').val();
+					//alert(discount_percent);
 					var quantity_factor=$(this).find('option:selected', this).attr('quantity_factor');
 					var commission=$(this).find('option:selected', this).attr('commission');
 					var unit=$(this).find('option:selected', this).attr('unit');
@@ -397,7 +413,16 @@ if(empty($ids)){
 					$(this).find('.item_id').val(item_id);
 					var total_qty=quantity_factor*qty;
 					$(this).find('.itemQty').html(total_qty +' '+ unit);
-					var taxable_value=qty*rate;
+					var taxable_value_before_dis=qty*rate;
+					var taxable_value_after_dis=qty*rate;
+					if(discount_percent){
+						var dis=round(round(taxable_value_before_dis*discount_percent)/100,2);
+						var taxable_value_after_dis=taxable_value_before_dis-dis;
+						$('.discount_amount').val(round(dis,2));
+					}
+					
+					
+					var taxable_value=taxable_value_after_dis;
 					$(this).find('.taxable_value').val(taxable_value);
 					var gst_percentage=parseFloat($(this).find('.gst_percentage').val()); 
 					

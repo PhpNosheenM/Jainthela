@@ -59,7 +59,10 @@
 					<div class="panel-body">    
 					<div class="row">
 						<div class="table-responsive">
-						<?php  if(sizeof($purchase_invoices->purchase_invoice_rows[0]->item_variations_data) == 0){ ?>
+						<?php  
+						$status=sizeof($purchase_invoices->purchase_invoice_rows[0]->item_variations_data);
+						//pr($status); exit;
+						if($status == 0){ ?>
 							<table class="table table-bordered main_table">
 								<thead>
 									<tr align="center">
@@ -102,7 +105,7 @@
 											
 										</td>
 										<td valign="top">
-											<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false,'value'=>$purchase_invoice_row->purchase_rate,'readonly']) ?>
+											<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false,'value'=>$purchase_invoice_row->rate,'readonly']) ?>
 										</td>
 										
 										<td valign="top">
@@ -164,12 +167,14 @@
 									</tr>
 								</thead>
 								<tbody class="MainTbody"> 
-								<?php foreach($total_grn_rows as $purchase_invoice_row){ //pr($purchase_invoice_row->item_variation); ?>
+								<?php foreach($purchase_invoices->purchase_invoice_rows as $purchase_invoice_row){ 
+								//pr($purchase_invoice_row->item_variations_data);
+								 ?>
 									<tr class="MainTr">
 										<td  valign="top">1</td>
 										 <td width="">
 											<?php 
-											$merge=$purchase_invoice_row->item_variation->item->name.'('.@$purchase_invoice_row->item_variation->unit_variation->quantity_variation.'.'.@$purchase_invoice_row->item_variation->unit_variation->unit->shortname.')';
+											$merge=$purchase_invoice_row->item_variations_data->item->name.'('.@$purchase_invoice_row->item_variations_data->unit_variation->quantity_variation.'.'.@$purchase_invoice_row->item_variations_data->unit_variation->unit->shortname.')';
 											echo @$merge;  ?>
 											
 											<input type="hidden" value="<?php echo $purchase_invoice_row->item_id; ?>" class="item_id2" >
@@ -331,21 +336,21 @@
 		renameRows();
 		function renameRows(){ 
 				var i=0; 
-				var seller_type='$grnData->created_for';
-				if(seller_type=='Jainthela'){
+				var seller_type='$status';
+				if(seller_type==0){
 					$('.main_table tbody tr').each(function(){ 
 							 $(this).attr('row_no',i);
 							$(this).find('td:nth-child(1)').html(++i); i--;
-							$(this).find('.item_id1 ').attr({name:'purchase_invoice_rows['+i+'][item_id]',id:'purchase_invoice_rows['+i+'][item_id]'});
-							$(this).find('.grn_row_id ').attr({name:'purchase_invoice_rows['+i+'][grn_row_id]',id:'purchase_invoice_rows['+i+'][grn_row_id]'});
+							$(this).find('.item_id1 ').attr({name:'purchase_return_rows['+i+'][item_id]',id:'purchase_return_rows['+i+'][item_id]'});
+							$(this).find('.grn_row_id ').attr({name:'purchase_return_rows['+i+'][purchase_invoice_row_id]',id:'purchase_return_rows['+i+'][purchase_invoice_row_id]'});
 							
-							$(this).find('.unit_variation_id1 ').attr({name:'purchase_invoice_rows['+i+'][unit_variation_id]',id:'purchase_invoice_rows['+i+'][unit_variation_id]'}).rules('add', 'required')
-							$(this).find('.quantity ').attr({name:'purchase_invoice_rows['+i+'][quantity]',id:'purchase_invoice_rows['+i+'][quantity]'}).rules('add', 'required');
-							$(this).find('.rate ').attr({name:'purchase_invoice_rows['+i+'][rate]',id:'purchase_invoice_rows['+i+'][rate]'}).rules('add', 'required');
-							$(this).find('.taxable_value ').attr({name:'purchase_invoice_rows['+i+'][taxable_value]',id:'purchase_invoice_rows['+i+'][taxable_value]'});
-							$(this).find('.gst_percentage ').attr({name:'purchase_invoice_rows['+i+'][gst_figure_id]',id:'purchase_invoice_rows['+i+'][gst_figure_id]'});
-							$(this).find('.gst_value ').attr({name:'purchase_invoice_rows['+i+'][gst_value]',id:'purchase_invoice_rows['+i+'][gst_value]'});
-							$(this).find('.net_amount ').attr({name:'purchase_invoice_rows['+i+'][net_amount]',id:'purchase_invoice_rows['+i+'][net_amount]'});
+							$(this).find('.unit_variation_id1 ').attr({name:'purchase_return_rows['+i+'][unit_variation_id]',id:'purchase_return_rows['+i+'][unit_variation_id]'}).rules('add', 'required')
+							$(this).find('.quantity ').attr({name:'purchase_return_rows['+i+'][quantity]',id:'purchase_return_rows['+i+'][quantity]'}).rules('add', 'required');
+							$(this).find('.rate ').attr({name:'purchase_return_rows['+i+'][rate]',id:'purchase_return_rows['+i+'][rate]'}).rules('add', 'required');
+							$(this).find('.taxable_value ').attr({name:'purchase_return_rows['+i+'][taxable_value]',id:'purchase_return_rows['+i+'][taxable_value]'});
+							$(this).find('.gst_percentage ').attr({name:'purchase_return_rows['+i+'][gst_figure_id]',id:'purchase_return_rows['+i+'][gst_figure_id]'});
+							$(this).find('.gst_value ').attr({name:'purchase_return_rows['+i+'][gst_value]',id:'purchase_return_rows['+i+'][gst_value]'});
+							$(this).find('.net_amount ').attr({name:'purchase_return_rows['+i+'][net_amount]',id:'purchase_return_rows['+i+'][net_amount]'});
 							
 							i++; 
 					});
