@@ -245,7 +245,11 @@
 			</td>
 			<td valign="top">
 				<?= $this->Form->control('discount_percent',['class'=>'form-control discount_percent','label'=>false]) ?>
+				
+			</td>
+			<td valign="top">
 				<?= $this->Form->control('discount_amount',['type'=>'hidden','class'=>'form-control discount_amount','label'=>false,'readonly']) ?>
+				
 				
 			</td>
 			<td valign="top">
