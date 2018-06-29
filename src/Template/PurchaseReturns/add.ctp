@@ -86,6 +86,7 @@
 								</thead>
 								<tbody class="MainTbody"> 
 								<?php foreach($purchase_invoices->purchase_invoice_rows as $purchase_invoice_row){ 
+								//pr($purchase_invoice_row->grn_row);
 								$due_qty=$purchase_invoice_row->grn_row->quantity-$purchase_invoice_row->grn_row->transfer_quantity;
 								if($due_qty > 0){
 								?>

@@ -57,7 +57,7 @@
 									<td><?= h($purchaseInvoice->total_amount) ?></td>
 									
 									<td class="actions">
-									<?php if($status=='return'){ ?>
+									<?php if($status=='return'  && $total_qty[$purchaseInvoice->id] != $transfer_qty[$purchaseInvoice->id]){ ?>
 										<?= $this->Html->link(__('Purchase Return'), ['controller'=>'PurchaseReturns','action' => 'add', $purchaseInvoice->id],['class'=>'btn btn-warning  btn-condensed btn-sm','escape'=>false]) ?>
 									<?php }else{ ?>
 										<!--<?= $this->Html->link(__('<span class="fa fa-pencil"></span>'), ['action' => 'edit', $purchaseInvoice->id],['class'=>'btn btn-primary  btn-condensed btn-sm','escape'=>false]) ?>-->
