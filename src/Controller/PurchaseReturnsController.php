@@ -28,9 +28,12 @@ class PurchaseReturnsController extends AppController
 	
     public function index()
     {
+
         $this->paginate = [
             'contain' => ['PurchaseInvoices', 'FinancialYears', 'Locations', 'SellerLedgers', 'PurchaseLedgers', 'Cities']
         ];
+		
+		
         $purchaseReturns = $this->paginate($this->PurchaseReturns);
 
         $this->set(compact('purchaseReturns'));
@@ -65,8 +68,9 @@ class PurchaseReturnsController extends AppController
 		$city_id=$this->Auth->User('city_id');
 		$this->viewBuilder()->layout('super_admin_layout');
 		
-		$purchase_invoices=$this->PurchaseReturns->PurchaseInvoices->find()->where(['PurchaseInvoices.id'=>$invoice_id])->contain(['PurchaseInvoiceRows'=>['Items'=>['GstFigures'],'ItemVariationsData'=>['Items','UnitVariations'=>['Units']],'UnitVariations'=>['Units']]])->first();
-		//pr($purchase_invoices->purchase_invoice_rows[0]); exit;
+		$purchase_invoices=$this->PurchaseReturns->PurchaseInvoices->find()->where(['PurchaseInvoices.id'=>$invoice_id])->contain(['PurchaseInvoiceRows'=>['GrnRows'=>['Grns'],'Items'=>['GstFigures'],'ItemVariationsData'=>['Items'=>['GstFigures'],'UnitVariations'=>['Units']],'UnitVariations'=>['Units']]])->first();
+		//pr($purchase_invoices->purchase_invoice_rows[0]->grn_row)
+		$seller_type=$purchase_invoices->purchase_invoice_rows[0]->grn_row->grn->created_for;
 		$CityData = $this->PurchaseReturns->PurchaseInvoices->Cities->get($city_id);
 		$StateData = $this->PurchaseReturns->PurchaseInvoices->Cities->States->get($CityData->state_id);
 		$Voucher_no = $this->PurchaseReturns->find()->select(['voucher_no'])->where(['PurchaseReturns.city_id'=>$city_id])->order(['voucher_no' => 'DESC'])->first();
@@ -78,6 +82,12 @@ class PurchaseReturnsController extends AppController
         $purchaseReturn = $this->PurchaseReturns->newEntity();
         if ($this->request->is('post')) {
             $purchaseReturn = $this->PurchaseReturns->patchEntity($purchaseReturn, $this->request->getData());
+			$purchaseReturn->transaction_date = date('Y-m-d',strtotime($purchaseReturn->transaction_date));
+			if($seller_type=="Seller"){
+				
+			}else{
+				
+			}
             if ($this->PurchaseReturns->save($purchaseReturn)) {
                 $this->Flash->success(__('The purchase return has been saved.'));
 

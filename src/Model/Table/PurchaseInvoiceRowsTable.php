@@ -55,6 +55,11 @@ class PurchaseInvoiceRowsTable extends Table
             'joinType' => 'INNER'
         ]);
 		
+		$this->belongsTo('GrnRows', [
+            'foreignKey' => 'grn_row_id',
+            'joinType' => 'INNER'
+        ]);
+		
 		$this->belongsTo('ItemVariationsData', [
             'className' => 'ItemVariations',
             'foreignKey' => 'item_variation_id',

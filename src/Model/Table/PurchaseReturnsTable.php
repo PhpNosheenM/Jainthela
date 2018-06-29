@@ -95,17 +95,6 @@ class PurchaseReturnsTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
-        $validator
-            ->scalar('voucher_no')
-            ->maxLength('voucher_no', 10)
-            ->requirePresence('voucher_no', 'create')
-            ->notEmpty('voucher_no');
-
-        $validator
-            ->scalar('invoice_no')
-            ->maxLength('invoice_no', 10)
-            ->requirePresence('invoice_no', 'create')
-            ->notEmpty('invoice_no');
 
         $validator
             ->date('transaction_date')
@@ -132,7 +121,7 @@ class PurchaseReturnsTable extends Table
             ->requirePresence('total_amount', 'create')
             ->notEmpty('total_amount');
 
-        $validator
+        /* $validator
             ->scalar('entry_from')
             ->maxLength('entry_from', 10)
             ->requirePresence('entry_from', 'create')
@@ -162,7 +151,7 @@ class PurchaseReturnsTable extends Table
             ->scalar('status')
             ->maxLength('status', 10)
             ->requirePresence('status', 'create')
-            ->notEmpty('status');
+            ->notEmpty('status'); */
 
         return $validator;
     }
