@@ -97,13 +97,13 @@ class PurchaseReturnsTable extends Table
 
         $validator
             ->scalar('voucher_no')
-            ->maxLength('voucher_no', 10)
+            //->maxLength('voucher_no', 10)
             ->requirePresence('voucher_no', 'create')
             ->notEmpty('voucher_no');
 
         $validator
             ->scalar('invoice_no')
-            ->maxLength('invoice_no', 10)
+           // ->maxLength('invoice_no', 10)
             ->requirePresence('invoice_no', 'create')
             ->notEmpty('invoice_no');
 
