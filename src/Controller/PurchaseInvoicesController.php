@@ -45,9 +45,9 @@ class PurchaseInvoicesController extends AppController
 		$total_qty=[];
 		$transfer_qty=[];
 		foreach($purchase_invoices as $datas){
-			foreach($datas as $data){
-				$total_qty[$datas->id]+=$data->grn_row->quantity;
-				$transfer_qty[$datas->id]+=$data->grn_row->transfer_quantity;
+			foreach($datas as $data){ pr($data); exit;
+				$total_qty[]+=$data->grn_row->quantity;
+				$transfer_qty[]+=$data->grn_row->transfer_quantity;
 			}
 			pr($total_qty); 
 				pr($transfer_qty); 
