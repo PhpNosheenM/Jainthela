@@ -133,7 +133,15 @@
 									</tr>
 									<tr>
 										<td>
-											<?= $this->Form->control('delivery_date',['class'=>'form-control datepicker','placeholder'=>'Delivery Date','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>date("d-m-Y"),'required']) ?>
+										
+										<?php 
+											for($t=0;$t<=3;$t++){
+											$date_days=date('d-m-Y', strtotime("+".$t."days"));
+											$options1[$date_days] = $date_days; 
+											}
+											?> 
+											<?= $this->Form->select('delivery_date',$options1,['empty'=>'---Select--Deliver--Date---','class'=>'form-control select','label'=>false,'required']) ?>
+											<?php //$this->Form->control('delivery_date',['class'=>'form-control datepicker','placeholder'=>'Delivery Date','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>date("d-m-Y"),'required']) ?>
 										</td>
 										<td style="padding-left:40px !important;">
 											<?= $this->Form->select('delivery_time_id',$deliveryTimes,['empty'=>'----Select---Delivery---Time----','class'=>'form-control select','label'=>false,'required']) ?>
