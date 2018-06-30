@@ -101,11 +101,7 @@ class PurchaseReturnRowsTable extends Table
             ->requirePresence('net_amount', 'create')
             ->notEmpty('net_amount');
 
-        $validator
-            ->integer('gst_percentage')
-            ->requirePresence('gst_percentage', 'create')
-            ->notEmpty('gst_percentage');
-
+        
         $validator
             ->decimal('gst_value')
             ->requirePresence('gst_value', 'create')
@@ -115,25 +111,14 @@ class PurchaseReturnRowsTable extends Table
             ->decimal('round_off')
             ->allowEmpty('round_off');
 
-        $validator
-            ->decimal('purchase_rate')
-            ->requirePresence('purchase_rate', 'create')
-            ->notEmpty('purchase_rate');
-
+      
         $validator
             ->decimal('sales_rate')
             ->allowEmpty('sales_rate');
 
-        $validator
-            ->scalar('gst_type')
-            ->maxLength('gst_type', 100)
-            ->requirePresence('gst_type', 'create')
-            ->notEmpty('gst_type');
+      
 
-        $validator
-            ->decimal('mrp')
-            ->requirePresence('mrp', 'create')
-            ->notEmpty('mrp');
+       
 
         return $validator;
     }

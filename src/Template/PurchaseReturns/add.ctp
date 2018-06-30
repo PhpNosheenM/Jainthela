@@ -85,7 +85,10 @@
 									</tr>
 								</thead>
 								<tbody class="MainTbody"> 
-								<?php foreach($purchase_invoices->purchase_invoice_rows as $purchase_invoice_row){ ?>
+								<?php foreach($purchase_invoices->purchase_invoice_rows as $purchase_invoice_row){ 
+								$due_qty=$purchase_invoice_row->grn_row->quantity-$purchase_invoice_row->grn_row->transfer_quantity;
+								if($due_qty > 0){
+								?>
 									<tr class="MainTr">
 										<td  valign="top">1</td>
 										 <td width="">
@@ -101,7 +104,7 @@
 										</td>
 										
 										<td  valign="top">
-											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false,'value'=>$purchase_invoice_row->quantity,'readonly']) ?>
+											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false,'value'=>$due_qty,'readonly']) ?>
 											
 										</td>
 										<td valign="top">
@@ -127,7 +130,7 @@
 											<?= $this->Form->control('net_amount',['class'=>'form-control net_amount','label'=>false,'readonly']) ?>
 										</td>
 									</tr>
-								<?php } ?>
+								<?php } } ?>
 								</tbody>
 								<tfoot>
 									
@@ -195,8 +198,8 @@
 											<?= $this->Form->control('taxable_value',['class'=>'form-control taxable_value','label'=>false,'readonly']) ?>
 										</td>
 										<td valign="top">
-											<?php echo $purchase_invoice_row->item_variation->item->gst_figure->tax_percentage; ?>
-											<input type="hidden" value="<?php echo $purchase_invoice_row->item_variation->item->gst_figure->id; ?>" class="gst_percentage" tax_percentage="<?php echo $purchase_invoice_row->item_variation->item->gst_figure->tax_percentage; ?>"  >
+											<?php echo $purchase_invoice_row->item_variations_data->item->gst_figure->tax_percentage; ?>
+											<input type="hidden" value="<?php echo $purchase_invoice_row->item_variations_data->item->gst_figure->id; ?>" class="gst_percentage" tax_percentage="<?php echo $purchase_invoice_row->item_variations_data->item->gst_figure->tax_percentage; ?>"  >
 											
 											
 										</td>
@@ -362,14 +365,14 @@
 					$('.main_table tbody tr').each(function(){
 							 $(this).attr('row_no',i);
 							$(this).find('td:nth-child(1)').html(++i); i--;
-							$(this).find('input.item_id2 ').attr({name:'purchase_invoice_rows['+i+'][item_id]',id:'purchase_invoice_rows['+i+'][item_id]'})
-							$(this).find('input.item_variation_id2 ').attr({name:'purchase_invoice_rows['+i+'][item_variation_id]',id:'purchase_invoice_rows['+i+'][item_variation_id]'}).rules('add', 'required');
-							$(this).find('.quantity ').attr({name:'purchase_invoice_rows['+i+'][quantity]',id:'purchase_invoice_rows['+i+'][quantity]'}).rules('add', 'required');
-							$(this).find('.rate ').attr({name:'purchase_invoice_rows['+i+'][rate]',id:'purchase_invoice_rows['+i+'][rate]'}).rules('add', 'required');
-							$(this).find('.taxable_value ').attr({name:'purchase_invoice_rows['+i+'][taxable_value]',id:'purchase_invoice_rows['+i+'][taxable_value]'});
-							$(this).find('.gst_percentage ').attr({name:'purchase_invoice_rows['+i+'][gst_figure_id]',id:'purchase_invoice_rows['+i+'][gst_figure_id]'});
-							$(this).find('.gst_value ').attr({name:'purchase_invoice_rows['+i+'][gst_value]',id:'purchase_invoice_rows['+i+'][gst_value]'});
-							$(this).find('.net_amount ').attr({name:'purchase_invoice_rows['+i+'][net_amount]',id:'purchase_invoice_rows['+i+'][net_amount]'});
+							$(this).find('input.item_id2 ').attr({name:'purchase_return_rows['+i+'][item_id]',id:'purchase_return_rows['+i+'][item_id]'})
+							$(this).find('input.item_variation_id2 ').attr({name:'purchase_return_rows['+i+'][item_variation_id]',id:'purchase_return_rows['+i+'][item_variation_id]'}).rules('add', 'required');
+							$(this).find('.quantity ').attr({name:'purchase_return_rows['+i+'][quantity]',id:'purchase_return_rows['+i+'][quantity]'}).rules('add', 'required');
+							$(this).find('.rate ').attr({name:'purchase_return_rows['+i+'][rate]',id:'purchase_return_rows['+i+'][rate]'}).rules('add', 'required');
+							$(this).find('.taxable_value ').attr({name:'purchase_return_rows['+i+'][taxable_value]',id:'purchase_return_rows['+i+'][taxable_value]'});
+							$(this).find('.gst_percentage ').attr({name:'purchase_return_rows['+i+'][gst_figure_id]',id:'purchase_return_rows['+i+'][gst_figure_id]'});
+							$(this).find('.gst_value ').attr({name:'purchase_return_rows['+i+'][gst_value]',id:'purchase_return_rows['+i+'][gst_value]'});
+							$(this).find('.net_amount ').attr({name:'purchase_return_rows['+i+'][net_amount]',id:'purchase_return_rows['+i+'][net_amount]'});
 							
 							i++; 
 					});

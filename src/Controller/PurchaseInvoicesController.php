@@ -37,6 +37,24 @@ class PurchaseInvoicesController extends AppController
             'contain' => ['Cities','SellerLedgers'=>['Sellers','VendorData']],
 			'limit' => 20
         ];
+		
+		$purchase_invoices=$this->PurchaseInvoices->find()->where(['PurchaseInvoices.city_id'=>$city_id])->contain(['PurchaseInvoiceRows'=>['GrnRows'=>function($p) {
+						return $p->select(['id','quantity','transfer_quantity']);
+		}]])->toArray();
+		
+		$total_qty=[];
+		$transfer_qty=[];
+		foreach($purchase_invoices as $datas){
+			foreach($datas as $data){ pr($data); exit;
+				$total_qty[]+=$data->grn_row->quantity;
+				$transfer_qty[]+=$data->grn_row->transfer_quantity;
+			}
+			pr($total_qty); 
+				pr($transfer_qty); 
+				exit;
+		}
+		
+		pr($purchase_invoices); exit;
         $purchaseInvoices = $this->paginate($this->PurchaseInvoices);
 		//pr($purchaseInvoices); exit;
 		$paginate_limit=$this->paginate['limit'];
