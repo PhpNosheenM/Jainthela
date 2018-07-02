@@ -82,7 +82,7 @@
 							<div class="form-group">                                        
 								<label align="left" class="col-md-3 control-label">Bill to Bill</label>
 								<div class="col-md-9 col-xs-12">
-									<?php $options =[['value'=>'no','text'=>'No'],['value'=>'yes','text'=>'Yes']]; ?>
+									<?php $options =[['value'=>'yes','text'=>'Yes'],['value'=>'no','text'=>'No']]; ?>
 									<?= $this->Form->select('bill_to_bill_accounting',$options,['class'=>'form-control select bill_to_bill','label'=>false]) ?>
 								</div>
 							</div> 
@@ -290,6 +290,8 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			if(bill_accounting=="no"){ 
 				$(".window").hide();
 				$("div.window table tbody").find("tr").remove();
+				
+				$("div.window table.refTbl tfoot tr td:nth-child(2) input.total").rules("remove", "equalTo");
 			}
 			else{
 				var mainAmt=$(".balance").val();
@@ -363,6 +365,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			$(this).prop("checked",true);
 			$(this).val(1);
 		});
+		
 		
 		
 		function renameRows(){
