@@ -181,10 +181,10 @@ class AdminsController extends AppController
 			$user = $this->Auth->identify();
 			if ($user) 
 			{
-				$city = $this->Admins->Locations->get($user['location_id']);
-				$user['city_id']=$city->id;
-				$state = $this->Admins->Locations->Cities->get($city->id);
-                $user['state_id']=$state->id;
+				$location = $this->Admins->Locations->get($user['location_id']);
+				$user['city_id']=$location->city_id;
+				$city = $this->Admins->Locations->Cities->get($location->city_id);
+                $user['state_id']=$city->state_id;
 				$user['user_type']='Admin';
 				$characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
                 $charactersLength = strlen($characters);

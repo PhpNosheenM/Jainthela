@@ -27,6 +27,7 @@ class UnitVariationsController extends AppController
     }
     public function index($id = null)
     {
+		$city_id=$this->Auth->User('city_id');
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('super_admin_layout');
 		
@@ -40,7 +41,7 @@ class UnitVariationsController extends AppController
 		   $id = $this->EncryptingDecrypting->decryptData($id);
 		}
 		
-		$unitVariations = $this->UnitVariations->find();
+		$unitVariations = $this->UnitVariations->find()->where(['UnitVariations.city_id'=>$city_id]);
 		if($id)
 		{
 		   $unitVariation = $this->UnitVariations->get($id);
@@ -61,6 +62,7 @@ class UnitVariationsController extends AppController
 			$unitVariation = $this->UnitVariations->patchEntity($unitVariation, $this->request->getData());
 			$unitVariation->convert_unit_qty=$convert_unit_qty;
 			$unitVariation->created_by=$user_id;
+			$unitVariation->city_id=$city_id;
 			if($id)
 			{
 				$unitVariation->id=$id;
