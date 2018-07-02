@@ -182,7 +182,7 @@ class PurchaseInvoicesController extends AppController
 				$gstCity=$sellerData->seller->city->state_id;
 			}
 			
-			//pr($gstCity); exit;
+			
 			if ($this->PurchaseInvoices->save($purchaseInvoice)) {
 				
 			//Accounting Entries for Purchase account//
@@ -217,7 +217,7 @@ class PurchaseInvoicesController extends AppController
 					
 					//Accounting Entries for CGST//
 					$gstLedgerCGST = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()
-					->where(['Ledgers.gst_figure_id' =>$purchase_invoice_row->gst_percentage, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'CGST'])->first();
+					->where(['Ledgers.gst_figure_id' =>$purchase_invoice_row->gst_figure_id, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'CGST'])->first();
 					$AccountingEntrieCGST = $this->PurchaseInvoices->AccountingEntries->newEntity();
 					$AccountingEntrieCGST->ledger_id=$gstLedgerCGST->id;
 					$AccountingEntrieCGST->debit=$gstAmtInsert;
@@ -231,7 +231,7 @@ class PurchaseInvoicesController extends AppController
 					
 					//Accounting Entries for SGST//
 					 $gstLedgerSGST = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()
-					->where(['Ledgers.gst_figure_id' =>$purchase_invoice_row->gst_percentage, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'SGST'])->first();
+					->where(['Ledgers.gst_figure_id' =>$purchase_invoice_row->gst_figure_id, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'SGST'])->first();
 					$AccountingEntrieSGST = $this->PurchaseInvoices->AccountingEntries->newEntity();
 					$AccountingEntrieSGST->ledger_id=$gstLedgerSGST->id;
 					$AccountingEntrieSGST->debit=$gstAmtInsert;
@@ -251,7 +251,7 @@ class PurchaseInvoicesController extends AppController
 					
 					//Accounting Entries for IGST//
 					 $gstLedgerIGST = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()
-					->where(['Ledgers.gst_figure_id' =>$purchase_invoice_row->gst_percentage, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'IGST'])->first();
+					->where(['Ledgers.gst_figure_id' =>$purchase_invoice_row->gst_figure_id, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'IGST'])->first();
 					$AccountingEntrieIGST = $this->PurchaseInvoices->AccountingEntries->newEntity();
 					$AccountingEntrieIGST->ledger_id=$gstLedgerIGST->id;
 					$AccountingEntrieIGST->debit=$gstAmtInsert;
