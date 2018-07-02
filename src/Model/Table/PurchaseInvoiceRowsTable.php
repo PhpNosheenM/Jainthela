@@ -124,10 +124,10 @@ class PurchaseInvoiceRowsTable extends Table
             ->requirePresence('net_amount', 'create')
             ->notEmpty('net_amount');
 
-        $validator
+        /* $validator
             ->integer('gst_percentage')
             ->requirePresence('gst_percentage', 'create')
-            ->notEmpty('gst_percentage');
+            ->notEmpty('gst_percentage'); */
 
         $validator
             ->decimal('gst_value')
