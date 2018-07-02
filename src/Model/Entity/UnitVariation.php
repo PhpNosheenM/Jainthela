@@ -29,6 +29,7 @@ class UnitVariation extends Entity
      */
     protected $_accessible = [
         'unit_id' => true,
+        'city_id' => true,
         'quantity_variation' => true,
         'convert_unit_qty' => true,
         'created_by' => true,

@@ -156,7 +156,7 @@ class SellerItemsController extends AppController
 			}
 			
         }
-        $categories = $this->SellerItems->Categories->find('threaded')->contain(['Items']);
+        $categories = $this->SellerItems->Categories->find('threaded')->where(['Categories.city_id'=>$city_id])->contain(['Items']);
 		
         $sellers = $this->SellerItems->Sellers->find('list');
         $this->set(compact('sellerItem', 'categories', 'sellers'));
@@ -165,6 +165,7 @@ class SellerItemsController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
+		$user_type=$this->Auth->User('user_type');
 		//$location_id=$this->Auth->User('location_id');
 		$this->viewBuilder()->layout('seller_layout');
         $itemVariation = $this->SellerItems->ItemVariations->newEntity();

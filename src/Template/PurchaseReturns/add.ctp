@@ -105,7 +105,7 @@
 										</td>
 										
 										<td  valign="top">
-											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false,'value'=>$due_qty,'readonly']) ?>
+											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false,'value'=>$due_qty]) ?>
 											
 										</td>
 										<td valign="top">
@@ -145,10 +145,8 @@
 										<td colspan="1" style="text-align:right;"><?= $this->Form->control('total_gst',['class'=>'form-control gst_amt','label'=>false,'readonly']) ?></td>
 									</tr>
 									<tr>
-										<td  colspan="2"  style="text-align:center;">Against Refrence</td>
-										<td  colspan="2" style="text-align:right;"><?= $this->Form->control('ref_name',['class'=>'form-control gst_value','label'=>false,'readonly','value'=>$ReferenceDetails->ref_name]) ?></td>
-										<td  style="text-align:right;"><?= $this->Form->control('ref_amount',['class'=>'form-control total_amt','label'=>false,'readonly']) ?></td>
-										<td colspan="3" style="text-align:right;">Total Amount</td>
+										 
+										<td colspan="8" style="text-align:right;">Total Amount</td>
 										<td colspan="1" style="text-align:right;"><?= $this->Form->control('total_amount',['class'=>'form-control total_amt','label'=>false,'readonly']) ?></td>
 									</tr>
 								</tfoot>
@@ -191,7 +189,7 @@
 										
 										
 										<td  valign="top">
-											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false,'value'=>$purchase_invoice_row->quantity,'readonly']) ?>
+											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false,'value'=>$purchase_invoice_row->quantity]) ?>
 											
 										</td>
 										<td valign="top">
@@ -229,15 +227,31 @@
 										<td colspan="1" style="text-align:right;"><?= $this->Form->control('total_gst',['class'=>'form-control gst_amt','label'=>false,'readonly']) ?></td>
 									</tr>
 									<tr>
-										<td  style="text-align:right;">Refrence</td>
-										<td  style="text-align:right;"><?= $this->Form->control('gst_value',['class'=>'form-control gst_value','label'=>false,'readonly']) ?></td>
-										<td  style="text-align:right;"><?= $this->Form->control('gst_value',['class'=>'form-control gst_value','label'=>false,'readonly']) ?></td>
-										<td colspan="4" style="text-align:right;">Total Amount</td>
+										 
+										<td colspan="7" style="text-align:right;">Total Amount</td>
 										<td colspan="1" style="text-align:right;"><?= $this->Form->control('total_amount',['class'=>'form-control total_amt','label'=>false,'readonly']) ?></td>
 									</tr>
 								</tfoot>
 							</table>
+							
+							
+							 
+							
 							<?php } ?>
+							
+							<center><h3>Against Refrence</h3></center>
+								<hr>
+								<table width="60%" style="font-size:14px;">
+									<tr>
+										<th>Refrence</th>
+										<th style="padding-left:40px !important;">Amount</th>
+									</tr>
+									<tr>
+										<td style="text-align:right;"><?= $this->Form->control('ref_name',['class'=>'form-control gst_value','label'=>false,'readonly','value'=>$ReferenceDetails->ref_name]) ?></td>
+										<td  style="text-align:right;"><?= $this->Form->control('ref_amount',['class'=>'form-control total_amt','label'=>false,'readonly']) ?></td>
+									</tr>
+								</table>
+								
 						</div>
 					</div>
 					</div>

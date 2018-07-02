@@ -210,7 +210,7 @@ class ItemsController extends AppController
 
             $this->Flash->error(__('The item could not be saved. Please, try again.'));
         }
-		$unitVariations = $this->Items->ItemVariationMasters->UnitVariations->find('all')->contain(['Units']);
+		$unitVariations = $this->Items->ItemVariationMasters->UnitVariations->find()->where(['UnitVariations.city_id'=>$city_id])->contain(['Units']);
 		$unit_option=[];
 		$i=0; foreach($unitVariations as $unitVariation){
 			$unit_option[]=['text'=>$unitVariation->quantity_variation .' ' .$unitVariation->unit->unit_name ,'value'=>$unitVariation->id ];
@@ -804,7 +804,7 @@ class ItemsController extends AppController
 			//spr($item); exit;
             $this->Flash->error(__('The item could not be saved. Please, try again.'));
         }
-		$unitVariations = $this->Items->ItemVariationMasters->UnitVariations->find('all')->contain(['Units']);
+		$unitVariations = $this->Items->ItemVariationMasters->UnitVariations->find()->where(['UnitVariations.city_id'=>$city_id])->contain(['Units']);
 		$unit_option=[];
 		$i=0; foreach($unitVariations as $unitVariation){
 			$unit_option[]=['text'=>$unitVariation->quantity_variation .' ' .$unitVariation->unit->unit_name ,'value'=>$unitVariation->id ];
