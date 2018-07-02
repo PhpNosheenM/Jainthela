@@ -323,6 +323,10 @@
 				name: {
 						required: true,
 				},
+				invoice_no: {
+						required: true,
+						//maxlength: false,
+				},
 				
 			}                                        
 		});

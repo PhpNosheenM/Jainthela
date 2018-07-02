@@ -164,6 +164,14 @@
 									</tr>
 									
 									<tr>
+										<td colspan="9" style="text-align:right;">Discount</td>
+										<td colspan="2" style="text-align:right;">
+										<?= $this->Form->control('discount_percent',['class'=>'form-control dis_per','label'=>false,'value'=>@$sales_orders->discount_percent]) ?>
+										<?= $this->Form->control('discount_amount',['class'=>'form-control dis_amnt','label'=>false,'value'=>@$sales_orders->discount_amount]) ?>
+										</td>
+									</tr>
+									
+									<tr>
 										<input type="hidden" name="dlvr_amnt" id="dlvr_amnt" value="<?php echo $deliveryCharges->amount; ?>">
 										
 										<input type="hidden" name="dlvr_chrg" id="dlvr_chrg" value="<?php echo $deliveryCharges->charge; ?>">
@@ -466,10 +474,17 @@ if(empty($ids)){
 				if(!ttl_amnt){ ttl_amnt=0; }
 				var ttl_gst=parseFloat($('.gst_amt').val());
 				if(!ttl_gst){ ttl_gst=0; }
-				 
+				
+				var dis_per=$('.dis_per').val();
+				if(!dis_per){ dis_per=0; }
+				
 				var final_amount=parseFloat(ttl_amnt+ttl_gst);
 				if(!final_amount){ final_amount=0; }
-				 
+				var dis_amount=(final_amount*dis_per/100);
+				if(!dis_amount){ dis_amount=0; }
+				$('.dis_amnt').val(dis_amount);
+				
+				final_amount=final_amount-dis_amount;
 				var dlvr_amnt=$('#dlvr_amnt').val();
 				if(!dlvr_amnt){ dlvr_amnt=0; }
 				var dlvr_chrg=$('#dlvr_chrg').val();
