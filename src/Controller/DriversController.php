@@ -29,7 +29,12 @@ class DriversController extends AppController
     {
 		$city_id=$this->Auth->User('city_id'); 
 		$user_id=$this->Auth->User('id');
+		$user_type =$this->Auth->User('user_type');
+		if($user_type=="Super Admin"){
+		$this->viewBuilder()->layout('super_admin_layout');	
+		}else if($user_type=="Admin"){ 
 		$this->viewBuilder()->layout('admin_portal');
+		}
         $this->paginate = [
 			'contain' => ['Locations'],
             'limit' => 20

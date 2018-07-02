@@ -459,7 +459,7 @@ class OrdersController extends AppController
 			$ids= $this->EncryptingDecrypting->decryptData($id);
 		}
 		
-		$user_id=$this->Auth->User('id');
+		$user_id=$this->Auth->User('id'); 
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
 		$state_id=$this->Auth->User('state_id'); 
