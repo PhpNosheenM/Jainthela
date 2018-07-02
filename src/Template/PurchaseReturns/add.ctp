@@ -145,7 +145,10 @@
 										<td colspan="1" style="text-align:right;"><?= $this->Form->control('total_gst',['class'=>'form-control gst_amt','label'=>false,'readonly']) ?></td>
 									</tr>
 									<tr>
-										<td colspan="8" style="text-align:right;">Total Amount</td>
+										<td  colspan="2"  style="text-align:center;">Against Refrence</td>
+										<td  colspan="2" style="text-align:right;"><?= $this->Form->control('ref_name',['class'=>'form-control gst_value','label'=>false,'readonly','value'=>$ReferenceDetails->ref_name]) ?></td>
+										<td  style="text-align:right;"><?= $this->Form->control('ref_amount',['class'=>'form-control total_amt','label'=>false,'readonly']) ?></td>
+										<td colspan="3" style="text-align:right;">Total Amount</td>
 										<td colspan="1" style="text-align:right;"><?= $this->Form->control('total_amount',['class'=>'form-control total_amt','label'=>false,'readonly']) ?></td>
 									</tr>
 								</tfoot>
@@ -226,7 +229,10 @@
 										<td colspan="1" style="text-align:right;"><?= $this->Form->control('total_gst',['class'=>'form-control gst_amt','label'=>false,'readonly']) ?></td>
 									</tr>
 									<tr>
-										<td colspan="7" style="text-align:right;">Total Amount</td>
+										<td  style="text-align:right;">Refrence</td>
+										<td  style="text-align:right;"><?= $this->Form->control('gst_value',['class'=>'form-control gst_value','label'=>false,'readonly']) ?></td>
+										<td  style="text-align:right;"><?= $this->Form->control('gst_value',['class'=>'form-control gst_value','label'=>false,'readonly']) ?></td>
+										<td colspan="4" style="text-align:right;">Total Amount</td>
 										<td colspan="1" style="text-align:right;"><?= $this->Form->control('total_amount',['class'=>'form-control total_amt','label'=>false,'readonly']) ?></td>
 									</tr>
 								</tfoot>
@@ -306,6 +312,8 @@
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 
 <?php
+	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name">';
+	$dd='<input type="text" class="form-control input-sm rightAligntextClass dueDays " placeholder="Due Days">';
    $js="var jvalidate = $('#jvalidate').validate({
 		ignore: [],
 		rules: {                                            
@@ -336,6 +344,39 @@
 		$(document).on('change','.gst_type',function(){
 			calculation();
 		});
+		
+			$(document).on('change','.refType',function(){
+				var type=$(this).val();
+				var currentRefRow=$(this).closest('tr');
+				var ledger_id='".$purchase_invoices->seller_ledger_id."'; alert(ledger_id);
+				//var due_days=$(this).closest('tr.MainTr').find('select.ledger option:selected').attr('default_days');
+				var SelectedTr=$(this).closest('tr.MainTr');
+				if(type=='Against'){
+					$(this).closest('tr').find('td:nth-child(2)').html('Loading Ref List...');
+					var url='".$this->Url->build(['controller'=>'ReferenceDetails','action'=>'listRef'])."';
+					url=url+'/'+ledger_id;
+					$.ajax({
+						url: url,
+					}).done(function(response) { 
+						currentRefRow.find('td:nth-child(2)').html(response);
+						currentRefRow.find('td:nth-child(5)').html('');
+						
+						renameRefRows(SelectedTr);
+					});
+				}else if(type=='On Account'){
+					currentRefRow.find('td:nth-child(2)').html('');
+					currentRefRow.find('td:nth-child(5)').html('');
+				}else{
+					currentRefRow.find('td:nth-child(2)').html('".$kk."');
+					currentRefRow.find('td:nth-child(5)').html('".$dd."');
+					//currentRefRow.find('td:nth-child(5) input.dueDays').val(due_days);
+				}
+				//var SelectedTr=$(this).closest('tr.MainTr');
+				renameRefRows();
+			});
+		function renameRefRows(){
+			
+		}
 		
 		renameRows();
 		function renameRows(){ 

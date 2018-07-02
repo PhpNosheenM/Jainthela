@@ -48,6 +48,7 @@ class PurchaseReturnRow extends Entity
         'purchase_invoice_row_id' => true,
         'item_id' => true,
         'item_variation_id' => true,
+        'unit_variation_id' => true,
         'quantity' => true,
         'rate' => true,
         'discount_percentage' => true,

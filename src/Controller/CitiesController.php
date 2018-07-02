@@ -448,7 +448,7 @@ class CitiesController extends AppController
 					['name'=>'Transport Receive', 'accounting_group_id'=>$trans_rec->id,'city_id'=>$city->id,'bill_to_bill_accounting'=>'no','gst_figure_id'=>null,'tax_percentage'=>0,'input_output'=>null,'gst_type'=>null,'round_off'=>0,'cash'=>0,'flag'=>1,'ccavenue'=>'no','ccavenue_charges'=>'no','tds_account'=>'no','discount'=>null,'transport'=>'Receive'],
 					['name'=>'Transport Paid', 'accounting_group_id'=>$trans_paid->id,'city_id'=>$city->id,'bill_to_bill_accounting'=>'no','gst_figure_id'=>null,'tax_percentage'=>0,'input_output'=>null,'gst_type'=>null,'round_off'=>0,'cash'=>0,'flag'=>1,'ccavenue'=>'no','ccavenue_charges'=>'no','tds_account'=>'no','discount'=>null,'transport'=>'Paid'],
 				];
-
+			//pr($gstLedgerEntrys->toArray()); exit;
 
 				foreach($gstLedgerEntrys as $gstLedgerEntry)
 				{

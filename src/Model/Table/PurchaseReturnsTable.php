@@ -5,6 +5,8 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use Cake\Event\Event;
+use ArrayObject;
 
 /**
  * PurchaseReturns Model
@@ -58,13 +60,21 @@ class PurchaseReturnsTable extends Table
             'joinType' => 'INNER'
         ]);
         $this->belongsTo('SellerLedgers', [
+			'className' => 'Ledgers',
             'foreignKey' => 'seller_ledger_id',
-            'joinType' => 'INNER'
+            'joinType' => 'LEFT'
         ]);
-        $this->belongsTo('PurchaseLedgers', [
+		
+		 $this->belongsTo('PurchaseLedgers', [
+			'className' => 'Ledgers',
             'foreignKey' => 'purchase_ledger_id',
+            'joinType' => 'LEFT'
+        ]);
+		 $this->belongsTo('Ledgers', [
+            'foreignKey' => 'ledger_id',
             'joinType' => 'INNER'
         ]);
+        
         $this->belongsTo('Cities', [
             'foreignKey' => 'city_id',
             'joinType' => 'INNER'
@@ -163,6 +173,16 @@ class PurchaseReturnsTable extends Table
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
+	/*  public function beforeSave($event, $entity, $options) {
+		$entity->transaction_date = date('Y-m-d', strtotime($entity->transaction_date));
+	} */
+	 
+	public function beforeMarshal(Event $event, ArrayObject $data, ArrayObject $options)
+	{
+		if (isset($data['transaction_date'])) {
+			$data['transaction_date'] =date('Y-m-d', strtotime($data['transaction_date']));
+		}
+	}
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['purchase_invoice_id'], 'PurchaseInvoices'));

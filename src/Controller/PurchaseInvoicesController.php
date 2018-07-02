@@ -39,26 +39,27 @@ class PurchaseInvoicesController extends AppController
         ];
 		
 		$purchase_invoices=$this->PurchaseInvoices->find()->where(['PurchaseInvoices.city_id'=>$city_id])->contain(['PurchaseInvoiceRows'=>['GrnRows'=>function($p) {
-						return $p->select(['id','quantity','transfer_quantity']);
+						return $p->select(['id','quantity','transfer_quantity'])->contain(['Grns']);
 		}]])->toArray();
-		
+		//pr($purchase_invoices); exit;
 		$total_qty=[];
 		$transfer_qty=[];
+		$created_for=[];
 		foreach($purchase_invoices as $datas){
 			foreach($datas->purchase_invoice_rows as $data){
 				@$total_qty[@$datas->id]+=@$data->grn_row->quantity;
 				@$transfer_qty[@$datas->id]+=@$data->grn_row->transfer_quantity;
+				@$created_for[@$datas->id]=@$data->grn_row->grn->created_for;
 			}
 			
 		}
 		
 		//pr($total_qty); 
-		//pr($transfer_qty); 
-		//exit;
+		//pr($created_for); exit;
         $purchaseInvoices = $this->paginate($this->PurchaseInvoices);
 		//pr($purchaseInvoices); exit;
 		$paginate_limit=$this->paginate['limit'];
-        $this->set(compact('purchaseInvoices','paginate_limit','status','transfer_qty','total_qty'));
+        $this->set(compact('purchaseInvoices','paginate_limit','status','transfer_qty','total_qty','created_for'));
     }
 
     /**

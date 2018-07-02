@@ -46,6 +46,7 @@ class PurchaseInvoice extends Entity
         'voucher_no' => true,
         'invoice_no' => true,
         'location_id' => true,
+        'purchase_invoice_id' => true,
         'transaction_date' => true,
         'seller_ledger_id' => true,
         'purchase_ledger_id' => true,

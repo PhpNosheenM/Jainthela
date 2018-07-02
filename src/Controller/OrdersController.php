@@ -46,7 +46,7 @@ class OrdersController extends AppController
 			'limit' => 20
         ];
 		
-		$order_data=$this->Orders->find()->order(['Orders.id'=>'DESC'])->contain(['SellerLedgers','PartyLedgers','Locations','DeliveryTimes','Customers']);
+		$order_data=$this->Orders->find()->order(['Orders.id'=>'DESC'])->contain(['SellerLedgers','PartyLedgers','Locations','DeliveryTimes','Customers'])->where(['Orders.city_id'=>$city_id]);
 
         $orders = $this->paginate($order_data);
 		//pr( $orders); exit;

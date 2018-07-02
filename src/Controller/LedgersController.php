@@ -92,7 +92,7 @@ class LedgersController extends AppController
 		$datacreditor[]=$SundryCredior->id;
 		$alldebtors=array_merge($datadebtor,$debtorArray,$datacreditor,$creditorArray);  //pr($alldebtors); exit;
 		$accountingGroups = $this->Ledgers->AccountingGroups->find('list')->where(['id NOT IN'=>$alldebtors]);
-        $ledgers = $this->paginate($this->Ledgers);
+        $ledgers = $this->paginate($this->Ledgers->find()->where(['Ledgers.city_id'=>$city_id]));
 		
 		$paginate_limit=$this->paginate['limit'];
         $this->set(compact('ledgers','paginate_limit','accountingGroups'));
