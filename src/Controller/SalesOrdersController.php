@@ -133,9 +133,9 @@ class SalesOrdersController extends AppController
 	*/
 		$customers = $this->SalesOrders->Customers->find('list')->where(['Customers.city_id'=>$city_id]);
 		 
-		$itemList=$this->SalesOrders->Items->find()->contain(['ItemVariations'=> function ($q) {
+		$itemList=$this->SalesOrders->Items->find()->contain(['ItemVariations'=> function ($q) use($city_id){
 								return $q
-								->where(['ItemVariations.status'=>'Active','current_stock >'=>'0'])->contain(['UnitVariations'=>['Units']]);
+								->where(['ItemVariations.status'=>'Active','current_stock >'=>'0','ItemVariations.city_id'=>$city_id])->contain(['UnitVariations'=>['Units']]);
 								}]);
 		//pr($itemList->toArray()); exit;
 		$items=array();
