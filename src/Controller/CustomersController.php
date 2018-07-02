@@ -60,7 +60,12 @@ class CustomersController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
-		$this->viewBuilder()->layout('admin_portal');
+		$user_type=$this->Auth->User('user_type');
+		if($user_type=='Super Admin'){
+			$this->viewBuilder()->layout('super_admin_layout');
+		}else if($user_type=='Admin'){
+			$this->viewBuilder()->layout('admin_portal');
+		}
         $this->paginate = [
             'contain' => ['Cities'],
 			'limit' => 20
