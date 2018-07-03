@@ -96,7 +96,11 @@ class VendorsController extends AppController
 			$vendor->registration_date=date('Y-m-d', strtotime($registration_date));
 			$bill_to_bill_accounting=$vendor->bill_to_bill_accounting;
 			$data=$this->Vendors->Cities->get($city_id);
-			@$reference_details=$this->request->getData()['reference_details'];
+			$reference_details=[];
+			if(@$this->request->getData()['reference_details']){
+				@$reference_details=$this->request->getData()['reference_details'];
+			}
+			//@$reference_details=$this->request->getData()['reference_details'];
 			// pr($reference_details); exit;
             if ($data=$this->Vendors->save($vendor)) {
 				

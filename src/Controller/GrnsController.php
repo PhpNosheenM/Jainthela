@@ -234,7 +234,7 @@ class GrnsController extends AppController
             $partyOptions[]=['text' =>$Partyledger->name, 'value' => $Partyledger->id];
         }
         
-       $units = $this->Grns->Units->find()->where(['status'=>'Active'])->contain(['UnitVariations']);
+       $units = $this->Grns->Units->find()->where(['status'=>'Active','city_id'=>$city_id])->contain(['UnitVariations']);
        
         $unitVariationOptions=[];
         foreach($units as $unit)
