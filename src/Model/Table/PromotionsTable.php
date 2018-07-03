@@ -49,6 +49,8 @@ class PromotionsTable extends Table
             'foreignKey' => 'city_id',
             'joinType' => 'INNER'
         ]);
+
+		$this->belongsTo('Carts');
         $this->hasMany('PromotionDetails', [
             'foreignKey' => 'promotion_id',
 			'dependent' => true,

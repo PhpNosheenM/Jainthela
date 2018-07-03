@@ -50,6 +50,15 @@ class SellerItemsTable extends Table
 		$this->belongsTo('Brands');
 		$this->belongsTo('Cities');
 		
+		
+		
+		$this->hasMany('ItemRating', [
+			'className'=>'ItemReviewRatings',
+            'foreignKey' => 'item_id',
+            'joinType' => 'INNER'
+        ]);
+		
+		
         $this->belongsTo('Categories', [
             'foreignKey' => 'category_id',
             'joinType' => 'INNER'

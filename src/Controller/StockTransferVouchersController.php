@@ -81,7 +81,7 @@ class StockTransferVouchersController extends AppController
             $stockTransferVoucher->transaction_date=$transaction_date;
             $total_tranfer_quantity=0;
             $total_quantity=0;
-             
+            // pr($stockTransferVoucher); exit;
            
             if ($this->StockTransferVouchers->save($stockTransferVoucher)) {
                 $total_tranfer_quantity=0;
@@ -102,8 +102,8 @@ class StockTransferVouchersController extends AppController
                     //////////////////////  Item Ledger Out Entry /////////////////////////////////
                     $amount = $data['transfer_quantity']*$grn_row->purchase_rate;
                     $query = $this->StockTransferVouchers->Grns->ItemLedgers->query();
-                    $query->insert(['item_id','city_id','unit_variation_id','transaction_date','quantity','rate','purchase_rate','amount','stock_transfer_voucher_id','grn_row_id','status'])
-                    ->values(['item_id' => $grn_row->item_id,'city_id' => $city_id,'unit_variation_id' => $grn_row->unit_variation_id,'transaction_date' => $transaction_date,'quantity' => $data['transfer_quantity'],'rate' => $grn_row->purchase_rate,'purchase_rate' => $grn_row->purchase_rate,'amount' => $amount,'stock_transfer_voucher_id' => $stockTransferVoucher->id,'grn_row_id' => $data['grn_row_id'],'status'=>'Out'])->execute();
+                    $query->insert(['item_id','city_id','unit_variation_id','transaction_date','quantity','rate','purchase_rate','amount','stock_transfer_voucher_id','grn_row_id','status','expiry_date'])
+                    ->values(['item_id' => $grn_row->item_id,'city_id' => $city_id,'unit_variation_id' => $grn_row->unit_variation_id,'transaction_date' => $transaction_date,'quantity' => $data['transfer_quantity'],'rate' => $grn_row->purchase_rate,'purchase_rate' => $grn_row->purchase_rate,'amount' => $amount,'stock_transfer_voucher_id' => $stockTransferVoucher->id,'grn_row_id' => $data['grn_row_id'],'status'=>'Out','expiry_date'=>$grn_row->expiry_date])->execute();
     
                 }
                 if($total_quantity == $total_tranfer_quantity)
@@ -116,12 +116,13 @@ class StockTransferVouchersController extends AppController
                 }
 
                 foreach($stockTransferVoucher->stock_transfer_voucher_rows as $stock_transfer_voucher_row)
-                {
+                { 
                     /////////////////////////////// Item Ledger In //////////////////////////
+					$grn_row = $this->StockTransferVouchers->Grns->GrnRows->get($stock_transfer_voucher_row->grn_row_id);
                      $amount = $stock_transfer_voucher_row->quantity*$stock_transfer_voucher_row->purchase_rate;
                     $query = $this->StockTransferVouchers->Grns->ItemLedgers->query();
-                    $query->insert(['item_id','city_id','location_id','unit_variation_id','item_variation_id','transaction_date','quantity','rate','purchase_rate','amount','sale_rate','stock_transfer_voucher_id','stock_transfer_voucher_row_id','status'])
-                    ->values(['item_id' => $stock_transfer_voucher_row->item_id,'city_id' => $city_id,'location_id' => $stockTransferVoucher->location_id,'unit_variation_id' => $stock_transfer_voucher_row->unit_variation_id,'item_variation_id' => $stock_transfer_voucher_row->item_variation_id,'transaction_date' => $transaction_date,'quantity' => $stock_transfer_voucher_row->quantity,'rate' => $stock_transfer_voucher_row->purchase_rate,'purchase_rate' => $stock_transfer_voucher_row->purchase_rate,'amount' => $amount,'sale_rate' => $stock_transfer_voucher_row->sales_rate,'stock_transfer_voucher_id' => $stockTransferVoucher->id,'stock_transfer_voucher_row_id' => $stock_transfer_voucher_row->id,'status'=>'In'])->execute();
+                    $query->insert(['item_id','city_id','location_id','unit_variation_id','item_variation_id','transaction_date','quantity','rate','purchase_rate','amount','sale_rate','stock_transfer_voucher_id','stock_transfer_voucher_row_id','status','expiry_date'])
+                    ->values(['item_id' => $stock_transfer_voucher_row->item_id,'city_id' => $city_id,'location_id' => $stockTransferVoucher->location_id,'unit_variation_id' => $stock_transfer_voucher_row->unit_variation_id,'item_variation_id' => $stock_transfer_voucher_row->item_variation_id,'transaction_date' => $transaction_date,'quantity' => $stock_transfer_voucher_row->quantity,'rate' => $stock_transfer_voucher_row->purchase_rate,'purchase_rate' => $stock_transfer_voucher_row->purchase_rate,'amount' => $amount,'sale_rate' => $stock_transfer_voucher_row->sales_rate,'stock_transfer_voucher_id' => $stockTransferVoucher->id,'stock_transfer_voucher_row_id' => $stock_transfer_voucher_row->id,'status'=>'In','expiry_date'=>$grn_row->expiry_date])->execute();
 
                      /////////////////////////////// Item Variation //////////////////////////
                     $itemVariations = $this->StockTransferVouchers->StockTransferVoucherRows->ItemVariations->get($stock_transfer_voucher_row->item_variation_id);
