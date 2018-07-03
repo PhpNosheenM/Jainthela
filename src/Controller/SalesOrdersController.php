@@ -224,7 +224,10 @@ class SalesOrdersController extends AppController
 		$this->loadmodel('DeliveryCharges');
 		$deliveryCharges=$this->DeliveryCharges->find()->where(['DeliveryCharges.city_id'=>$city_id, 'DeliveryCharges.status'=>'Active'])->first();
 		
-        $this->set(compact('salesOrder', 'locations', 'customers', 'drivers', 'customerAddresses', 'promotionDetails', 'deliveryCharges', 'deliveryTimes', 'cancelReasons','order_no','partyOptions','Accountledgers','items'));
+		$this->loadmodel('DeliveryDates');
+		$deliverydates=$this->DeliveryDates->find()->where(['DeliveryDates.city_id'=>$city_id, 'DeliveryDates.status'=>'Active'])->first();
+		
+        $this->set(compact('salesOrder', 'locations', 'customers', 'drivers', 'customerAddresses', 'promotionDetails', 'deliveryCharges', 'deliveryTimes', 'cancelReasons','order_no','partyOptions','Accountledgers','items','deliverydates'));
 		
     }
 

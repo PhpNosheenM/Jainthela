@@ -158,7 +158,7 @@ class SellerItemsController extends AppController
         }
         $categories = $this->SellerItems->Categories->find('threaded')->where(['Categories.city_id'=>$city_id])->contain(['Items']);
 		
-        $sellers = $this->SellerItems->Sellers->find('list');
+        $sellers = $this->SellerItems->Sellers->find('list')->where(['Sellers.city_id'=>$city_id]);
         $this->set(compact('sellerItem', 'categories', 'sellers'));
     }
 	public function itemVariation()
@@ -341,8 +341,9 @@ class SellerItemsController extends AppController
 	
 	public function getSellerItems()
 	{
+		$city_id=$this->Auth->User('city_id');
 		$seller_id= $this->request->query('id');
-		$categories = $this->SellerItems->Categories->find('threaded')->contain(['Items'=>['SellerItems'=>function ($q) use($seller_id){return $q->where(['SellerItems.seller_id'=>@$seller_id]);}]]);
+		$categories = $this->SellerItems->Categories->find('threaded')->where(['Categories.city_id'=>$city_id])->contain(['Items'=>['SellerItems'=>function ($q) use($seller_id){return $q->where(['SellerItems.seller_id'=>@$seller_id]);}]]);
 		
 		$this->set(compact('getSellerItems','categories'));
 	}
@@ -350,13 +351,14 @@ class SellerItemsController extends AppController
 	{
 		$sellerItemApproval = $this->SellerItems->newEntity();
 		$user_type=$this->Auth->User('user_type'); 
+		$city_id=$this->Auth->User('city_id'); 
 		if($user_type=="Super Admin"){
 		$this->viewBuilder()->layout('super_admin_layout');
 		}else{
 		$this->viewBuilder()->layout('admin_portal');
 		}
 		//$this->viewBuilder()->layout('admin_portal');
-		$sellers = $this->SellerItems->Sellers->find('list')->where(['Sellers.status'=>'Active']);
+		$sellers = $this->SellerItems->Sellers->find('list')->where(['Sellers.status'=>'Active','Sellers.city_id'=>$city_id]);;
 		if ($this->request->is('post')) {
 			$seller_id=$this->request->getData('seller_id'); 
 			$ids=$this->request->getData('ids'); 

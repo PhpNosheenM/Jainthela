@@ -135,7 +135,8 @@
 										<td>
 										
 										<?php 
-											for($t=0;$t<=3;$t++){
+											$next_day=$deliverydates->next_day;
+											for($t=0;$t<=$next_day;$t++){
 											$date_days=date('d-m-Y', strtotime("+".$t."days"));
 											$options1[$date_days] = $date_days; 
 											}
