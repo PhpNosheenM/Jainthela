@@ -241,8 +241,8 @@ class ItemsController extends AppController
 	public function todayStockReport($id = null){
 		$city_id=$this->Auth->User('city_id');
 		$this->viewBuilder()->layout('super_admin_layout');
-		$ItemsVariationsForJainthela=$this->Items->ItemsVariationsData->find()->contain(['Items','UnitVariations'=>['Units']])->where(['ItemsVariationsData.seller_id IS NULL'])->toArray();
-		$ItemsVariations=$this->Items->ItemsVariationsData->find()->contain(['Items','Sellers','UnitVariations'=>['Units']])->toArray();
+		$ItemsVariationsForJainthela=$this->Items->ItemsVariationsData->find()->contain(['Items','UnitVariations'=>['Units']])->where(['ItemsVariationsData.seller_id IS NULL','ItemsVariationsData.city_id'=>$city_id])->toArray();
+		$ItemsVariations=$this->Items->ItemsVariationsData->find()->contain(['Items','Sellers','UnitVariations'=>['Units']])->where(['ItemsVariationsData.city_id'=>$city_id])->toArray();
 		$this->set(compact('ItemsVariations','ItemsVariationsForJainthela'));
 	}
 	public function wastageVoucher($id = null){

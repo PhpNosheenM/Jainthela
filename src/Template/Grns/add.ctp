@@ -18,7 +18,7 @@
     </div> 
    
     <div class="panel panel-default">
-        <?= $this->Form->create($grn) ?>
+        <?= $this->Form->create($grn,['id'=>"jvalidate",'class'=>"form-horizontal"]) ?>  
        
         <div class="panel-body">
             <div class="row">
@@ -114,8 +114,17 @@
 <!-- END CONTENT FRAME -->
 <?= $this->Html->script('plugins/bootstrap/bootstrap-datepicker.js',['block'=>'jsDatePicker']) ?>
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
+<?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
 <?php
-    $js="
+    $js="var jvalidate = $('#jvalidate').validate({ 
+		ignore: [],
+			rules: {                                            
+					vendor_ledger_id: {
+							required: true,
+					}
+					
+			}	                                  
+		});
     $(document).ready(function() {
         $(document).on('click','.delete-tr',function() 
         {

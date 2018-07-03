@@ -60,12 +60,8 @@ class CustomersController extends AppController
     {
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
-		$user_type=$this->Auth->User('user_type');
-		if($user_type=='Super Admin'){
-			$this->viewBuilder()->layout('super_admin_layout');
-		}else if($user_type=='Admin'){
-			$this->viewBuilder()->layout('admin_portal');
-		}
+		$this->viewBuilder()->layout('super_admin_layout');
+
         $this->paginate = [
             'contain' => ['Cities'],
 			'limit' => 20
@@ -131,7 +127,10 @@ class CustomersController extends AppController
 			$customer->city_id=$city_id;
 			$customer->created_by=$user_id;
 			$data=$this->Customers->Cities->get($city_id);
-			$reference_details=$this->request->getData()['reference_details'];
+			$reference_details=[];
+			if(@$this->request->getData()['reference_details']){
+				$reference_details=$this->request->getData()['reference_details'];
+			}
 			
             if ($this->Customers->save($customer)) {
 				
@@ -145,9 +144,9 @@ class CustomersController extends AppController
 					$ledger->customer_id=$customer->id;
 					$ledger->bill_to_bill_accounting='yes';
 					 
-					
+					//pr($ledger); exit;
 				if($this->Customers->Ledgers->save($ledger))
-				{
+				{ 
 				
 					//Create Accounting Entry//
 			        $transaction_date=$data->books_beginning_from;
