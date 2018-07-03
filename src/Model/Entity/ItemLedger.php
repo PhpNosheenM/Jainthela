@@ -64,6 +64,7 @@ class ItemLedger extends Entity
         'unit_variation_id' => true,
         'seller_id' => true,
         'transaction_date' => true,
+        'expiry_date' => true,
         'quantity' => true,
         'rate' => true,
         'amount' => true,

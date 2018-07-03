@@ -238,6 +238,14 @@ class ItemsController extends AppController
 		return $this->redirect(['action' => 'index']);
     	exit;
     }
+	public function expiryReport($id = null){
+		$city_id=$this->Auth->User('city_id');
+		$this->viewBuilder()->layout('super_admin_layout');
+		$ItemsVariationsForJainthela=$this->Items->ItemsVariationsData->find()->contain(['Items','UnitVariations'=>['Units']])->where(['ItemsVariationsData.seller_id IS NULL','ItemsVariationsData.city_id'=>$city_id])->toArray();
+		pr($ItemsVariationsForJainthela); 
+		exit;
+		
+	}
 	public function todayStockReport($id = null){
 		$city_id=$this->Auth->User('city_id');
 		$this->viewBuilder()->layout('super_admin_layout');

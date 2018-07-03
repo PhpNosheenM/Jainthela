@@ -60,6 +60,7 @@
                                 <td><label>Unit Variation<label></td>
                                 <td><label>Quantity<label></td>
                                 <td><label>Purchase Rate Per Unit<label></td>
+                                <td><label>Expiry Date<label></td>
                                 <td><label>Action<label></td>
                             </tr>
                         </thead>
@@ -68,7 +69,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="3" >   
+                                <td colspan="4" >   
                                     <button type="button" class="add_row btn btn-default input-sm"><i class="fa fa-plus"></i> Add row</button>
                                 </td>
                                 <td>
@@ -93,20 +94,23 @@
     <tbody>
         <tr class="main_tr" class="tab">
             <td width="">
-                <?php echo $this->Form->input('item_id', ['empty'=>'---Select---','options'=>$itemOptions,'label' => false,'class' => 'form-control input-medium ','required'=>'required']); ?>
+                <?php echo $this->Form->input('item_id', ['empty'=>'---Select---','options'=>$itemOptions,'label' => false,'class' => 'form-control input-medium item_id','required'=>'required']); ?>
             </td>
             <td width="">
-                <?php echo $this->Form->input('unit_variation_id', ['empty'=>'---Select---','options'=>$unitVariationOptions,'label' => false,'class' => 'form-control input-medium ','required'=>'required']); ?>
+                <?php echo $this->Form->input('unit_variation_id', ['empty'=>'---Select---','options'=>$unitVariationOptions,'label' => false,'class' => 'form-control input-medium unit_variation_id','required'=>'required']); ?>
             </td>
             <td width="" >
-                <?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass total','placeholder'=>'Qty','required'=>true]); ?>
+                <?php echo $this->Form->input('quantity', ['label' => false,'class' => 'form-control input-sm numberOnly rightAligntextClass total quantity','placeholder'=>'Qty','required'=>true]); ?>
             </td>
             <td width="">
-                <?php echo $this->Form->input('purchase_rate', ['label' => false,'class' => 'form-control input-sm total numberOnly rightAligntextClass','required'=>'required','placeholder'=>'Purchase Rate','required']); ?> 
+                <?php echo $this->Form->input('purchase_rate', ['label' => false,'class' => 'form-control input-sm total numberOnly rightAligntextClass purchase_rate','required'=>'required','placeholder'=>'Purchase Rate','required']); ?> 
+            </td>
+			<td width="">
+				<?php echo $this->Form->control('expiry_date',['class'=>'form-control datepicker expiry_date','data-date-format'=>'dd-mm-yyyy', 'label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y'),'data-date-format' => 'dd-mm-yyyy','required'=>'required']); ?>
             </td>
             <td align="center">
                 <a class="btn btn-danger delete-tr btn-xs" href="#" role="button" style="margin-bottom: 5px;"><i class="fa fa-times"></i></a>
-                 <?php echo $this->Form->input('net_amount', ['label' => false,'class' => 'form-control input-sm total numberOnly rightAligntextClass','required'=>'required','placeholder'=>'','required','style'=>'display:none']); ?> 
+                 <?php echo $this->Form->input('net_amount', ['label' => false,'class' => 'form-control input-sm total numberOnly rightAligntextClass net_amount','required'=>'required','placeholder'=>'','required','style'=>'display:none']); ?> 
             </td>
         </tr>
     </tbody>
@@ -138,13 +142,13 @@
             
             $('#main_table tbody#main_tbody tr.main_tr').each(function()
             { 
-                var quantity=parseFloat($(this).find('td:nth-child(3) input').val());
+                var quantity=parseFloat($(this).find('.quantity').val());
                 if(!quantity){ quantity=0; }
 
-                var purchase_rate=parseFloat($(this).find('td:nth-child(4) input').val());
+                var purchase_rate=parseFloat($(this).find('.purchase_rate').val());
                 if(!purchase_rate){ purchase_rate=0; }
                 var net_mount = quantity*purchase_rate;
-               $(this).find('td:nth-child(5) input').val(round(net_mount,2));
+               $(this).find('.net_amount').val(round(net_mount,2));
 
                 total_purchase=total_purchase+round(net_mount,2);
             });
@@ -174,11 +178,12 @@
             var i=0;
             $('#main_table tbody#main_tbody tr.main_tr').each(function()
             {
-                $(this).find('td:nth-child(1) select').select().attr({name:'grn_rows['+i+'][item_id]', id:'grn_rows-'+i+'-item_id'});
-                 $(this).find('td:nth-child(2) select').select().attr({name:'grn_rows['+i+'][unit_variation_id]', id:'grn_rows-'+i+'-unit_variation_id'});
-                $(this).find('td:nth-child(3) input').attr({name:'grn_rows['+i+'][quantity]', id:'grn_rows-'+i+'-quantity'});
-                $(this).find('td:nth-child(4) input').attr({name:'grn_rows['+i+'][purchase_rate]', id:'grn_rows-'+i+'-purchase_rate'});
-                 $(this).find('td:nth-child(5) input').attr({name:'grn_rows['+i+'][net_amount]', id:'grn_rows-'+i+'-net_amount'});
+                $(this).find('.item_id').select().attr({name:'grn_rows['+i+'][item_id]', id:'grn_rows-'+i+'-item_id'});
+                 $(this).find('.unit_variation_id').select().attr({name:'grn_rows['+i+'][unit_variation_id]', id:'grn_rows-'+i+'-unit_variation_id'});
+                $(this).find('.quantity').attr({name:'grn_rows['+i+'][quantity]', id:'grn_rows-'+i+'-quantity'});
+                $(this).find('.purchase_rate').attr({name:'grn_rows['+i+'][purchase_rate]', id:'grn_rows-'+i+'-purchase_rate'});
+                 $(this).find('.net_amount').attr({name:'grn_rows['+i+'][net_amount]', id:'grn_rows-'+i+'-net_amount'});
+                 $(this).find('.expiry_date').datepicker().attr({name:'grn_rows['+i+'][expiry_date]', id:'grn_rows-'+i+'-expiry_date'});
                 i++;
             });
             calculate();
