@@ -136,6 +136,7 @@ class LocationsController extends AppController
         if ($this->request->is('post')) {
             $location = $this->Locations->patchEntity($location, $this->request->getData());
 			$location->created_by=$user_id;
+			$location->city_id=$city_id;
 			//$location->id=2;
 		
            if ($location=$this->Locations->save($location)) {

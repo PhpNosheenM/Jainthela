@@ -1,19 +1,19 @@
-<?php $this->set('title', 'Purchase Invoice'); ?>
+<?php $this->set('title', 'Purchase Return'); ?>
 <!-- PAGE CONTENT WRAPPER -->
 <div class="page-content-wrap">
 	<div class="row">
 		<div class="col-md-12">
-		<?= $this->Form->create($purchaseInvoice,['id'=>'jvalidate','class'=>'form-horizontal','type'=>'file']) ?>  
+		<?= $this->Form->create($purchaseReturn,['id'=>'jvalidate','class'=>'form-horizontal','type'=>'file']) ?>  
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><strong> Purchase Invoice</strong></h3>
+					<h3 class="panel-title"><strong> Purchase Return</strong></h3>
 				</div>
 			
 				<div class="panel-body">    
 					<div class="row">
 						<div class="col-md-3">
 							<div class="form-group">
-								<label class=" control-label">Purchase Invoice No</label>
+								<label class=" control-label">Purchase Return No</label>
 								<div class="">                                            
 									<?php //$voucher_no= $LocationData->alise.'/'.$voucher_no ;
 									//echo $voucher_no;
@@ -21,21 +21,14 @@
 									<?= $this->Form->control('invoice_no',['class'=>'form-control','placeholder'=>'','label'=>false,'value'=>$voucher_no,'readonly']) ?>
 								</div>
 							</div>
-							<?php if($grnData->created_for=="Jainthela"){ ?>
+							
 							<div class="form-group">
-								<label class=" control-label">Vendor</label>
+								<label class=" control-label">Party</label>
 								<div class="">                                            
 									<?= $this->Form->select('seller_ledger_id',$partyOptions,['class'=>'form-control select','label'=>false]) ?>
 								</div>
 							</div>
-							<?php }else{ ?>
-								<div class="form-group">
-								<label class=" control-label">Seller</label>
-								<div class="">                                            
-									<?= $this->Form->select('seller_ledger_id',$partyOptions,['class'=>'form-control select','label'=>false]) ?>
-								</div>
-							</div>
-							<?php } ?>
+							
 						
 							
 						</div>
@@ -66,7 +59,10 @@
 					<div class="panel-body">    
 					<div class="row">
 						<div class="table-responsive">
-						<?php if($grnData->created_for=="Jainthela"){ ?>
+						<?php  
+						$status=sizeof($purchase_invoices->purchase_invoice_rows[0]->item_variations_data);
+						//pr($status); exit;
+						if($status == 0){ ?>
 							<table class="table table-bordered main_table">
 								<thead>
 									<tr align="center">
@@ -89,27 +85,31 @@
 									</tr>
 								</thead>
 								<tbody class="MainTbody"> 
-								<?php foreach($total_grn_rows as $total_grn_row){ ?>
+								<?php foreach($purchase_invoices->purchase_invoice_rows as $purchase_invoice_row){ 
+								//pr($purchase_invoice_row->grn_row);
+								$due_qty=$purchase_invoice_row->grn_row->quantity-$purchase_invoice_row->grn_row->transfer_quantity;
+								if($due_qty > 0){
+								?>
 									<tr class="MainTr">
 										<td  valign="top">1</td>
 										 <td width="">
-											<?php echo @$total_grn_row->item->name;  ?>
-											<input type="hidden" value="<?php echo $total_grn_row->item_id; ?>" class="item_id1" >
-											<input type="hidden" value="<?php echo $total_grn_row->id; ?>" class="grn_row_id" >
+											<?php echo @$purchase_invoice_row->item->name;  ?>
+											<input type="hidden" value="<?php echo $purchase_invoice_row->item_id; ?>" class="item_id1" >
+											<input type="hidden" value="<?php echo $purchase_invoice_row->id; ?>" class="grn_row_id" >
 											
 										</td>
 										<td width="">
-											<?php echo $total_grn_row->unit_variation->quantity_variation.' '.$total_grn_row->unit_variation->unit->shortname; ?>
-											<input type="hidden" value="<?php echo $total_grn_row->unit_variation_id; ?>" class="unit_variation_id1" >
+											<?php echo $purchase_invoice_row->unit_variation->quantity_variation.' '.$purchase_invoice_row->unit_variation->unit->shortname; ?>
+											<input type="hidden" value="<?php echo $purchase_invoice_row->unit_variation_id; ?>" class="unit_variation_id1" >
 											
 										</td>
 										
 										<td  valign="top">
-											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false,'value'=>$total_grn_row->quantity,'readonly']) ?>
+											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false,'value'=>$due_qty]) ?>
 											
 										</td>
 										<td valign="top">
-											<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false,'value'=>$total_grn_row->purchase_rate,'readonly']) ?>
+											<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false,'value'=>$purchase_invoice_row->rate,'readonly']) ?>
 										</td>
 										
 										<td valign="top">
@@ -117,8 +117,8 @@
 										</td>
 										<td valign="top">
 											
-											<?php echo $total_grn_row->item->gst_figure->tax_percentage; ?>
-											<input type="hidden" value="<?php echo $total_grn_row->item->gst_figure->id; ?>" class="gst_percentage" tax_percentage="<?php echo $total_grn_row->item->gst_figure->tax_percentage; ?>"  >
+											<?php echo $purchase_invoice_row->item->gst_figure->tax_percentage; ?>
+											<input type="hidden" value="<?php echo $purchase_invoice_row->item->gst_figure->id; ?>" class="gst_percentage" tax_percentage="<?php echo $purchase_invoice_row->item->gst_figure->tax_percentage; ?>"  >
 											
 											
 											
@@ -131,7 +131,7 @@
 											<?= $this->Form->control('net_amount',['class'=>'form-control net_amount','label'=>false,'readonly']) ?>
 										</td>
 									</tr>
-								<?php } ?>
+								<?php } } ?>
 								</tbody>
 								<tfoot>
 									
@@ -145,6 +145,7 @@
 										<td colspan="1" style="text-align:right;"><?= $this->Form->control('total_gst',['class'=>'form-control gst_amt','label'=>false,'readonly']) ?></td>
 									</tr>
 									<tr>
+										 
 										<td colspan="8" style="text-align:right;">Total Amount</td>
 										<td colspan="1" style="text-align:right;"><?= $this->Form->control('total_amount',['class'=>'form-control total_amt','label'=>false,'readonly']) ?></td>
 									</tr>
@@ -171,34 +172,36 @@
 									</tr>
 								</thead>
 								<tbody class="MainTbody"> 
-								<?php foreach($total_grn_rows as $total_grn_row){ //pr($total_grn_row->item_variation); ?>
+								<?php foreach($purchase_invoices->purchase_invoice_rows as $purchase_invoice_row){ 
+								//pr($purchase_invoice_row->item_variations_data);
+								 ?>
 									<tr class="MainTr">
 										<td  valign="top">1</td>
 										 <td width="">
 											<?php 
-											$merge=$total_grn_row->item_variation->item->name.'('.@$total_grn_row->item_variation->unit_variation->quantity_variation.'.'.@$total_grn_row->item_variation->unit_variation->unit->shortname.')';
+											$merge=$purchase_invoice_row->item_variations_data->item->name.'('.@$purchase_invoice_row->item_variations_data->unit_variation->quantity_variation.'.'.@$purchase_invoice_row->item_variations_data->unit_variation->unit->shortname.')';
 											echo @$merge;  ?>
 											
-											<input type="hidden" value="<?php echo $total_grn_row->item_id; ?>" class="item_id2" >
-											<input type="hidden" value="<?php echo $total_grn_row->item_variation_id; ?>" class="item_variation_id2" >
+											<input type="hidden" value="<?php echo $purchase_invoice_row->item_id; ?>" class="item_id2" >
+											<input type="hidden" value="<?php echo $purchase_invoice_row->item_variation_id; ?>" class="item_variation_id2" >
 											
 										</td>
 										
 										
 										<td  valign="top">
-											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false,'value'=>$total_grn_row->quantity,'readonly']) ?>
+											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false,'value'=>$purchase_invoice_row->quantity]) ?>
 											
 										</td>
 										<td valign="top">
-											<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false,'value'=>$total_grn_row->purchase_rate,'readonly']) ?>
+											<?= $this->Form->control('rate',['class'=>'form-control rate','label'=>false,'value'=>$purchase_invoice_row->purchase_rate,'readonly']) ?>
 										</td>
 										
 										<td valign="top">
 											<?= $this->Form->control('taxable_value',['class'=>'form-control taxable_value','label'=>false,'readonly']) ?>
 										</td>
 										<td valign="top">
-											<?php echo $total_grn_row->item_variation->item->gst_figure->tax_percentage; ?>
-											<input type="hidden" value="<?php echo $total_grn_row->item_variation->item->gst_figure->id; ?>" class="gst_percentage" tax_percentage="<?php echo $total_grn_row->item_variation->item->gst_figure->tax_percentage; ?>"  >
+											<?php echo $purchase_invoice_row->item_variations_data->item->gst_figure->tax_percentage; ?>
+											<input type="hidden" value="<?php echo $purchase_invoice_row->item_variations_data->item->gst_figure->id; ?>" class="gst_percentage" tax_percentage="<?php echo $purchase_invoice_row->item_variations_data->item->gst_figure->tax_percentage; ?>"  >
 											
 											
 										</td>
@@ -224,12 +227,31 @@
 										<td colspan="1" style="text-align:right;"><?= $this->Form->control('total_gst',['class'=>'form-control gst_amt','label'=>false,'readonly']) ?></td>
 									</tr>
 									<tr>
+										 
 										<td colspan="7" style="text-align:right;">Total Amount</td>
 										<td colspan="1" style="text-align:right;"><?= $this->Form->control('total_amount',['class'=>'form-control total_amt','label'=>false,'readonly']) ?></td>
 									</tr>
 								</tfoot>
 							</table>
+							
+							
+							 
+							
 							<?php } ?>
+							
+							<center><h3>Against Refrence</h3></center>
+								<hr>
+								<table width="60%" style="font-size:14px;">
+									<tr>
+										<th>Refrence</th>
+										<th style="padding-left:40px !important;">Amount</th>
+									</tr>
+									<tr>
+										<td style="text-align:right;"><?= $this->Form->control('ref_name',['class'=>'form-control gst_value','label'=>false,'readonly','value'=>$ReferenceDetails->ref_name]) ?></td>
+										<td  style="text-align:right;"><?= $this->Form->control('ref_amount',['class'=>'form-control total_amt','label'=>false,'readonly']) ?></td>
+									</tr>
+								</table>
+								
 						</div>
 					</div>
 					</div>
@@ -304,6 +326,8 @@
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
 
 <?php
+	$kk='<input type="text" class="form-control input-sm ref_name " placeholder="Reference Name">';
+	$dd='<input type="text" class="form-control input-sm rightAligntextClass dueDays " placeholder="Due Days">';
    $js="var jvalidate = $('#jvalidate').validate({
 		ignore: [],
 		rules: {                                            
@@ -312,6 +336,10 @@
 				},
 				name: {
 						required: true,
+				},
+				invoice_no: {
+						required: true,
+						//maxlength: false,
 				},
 				
 			}                                        
@@ -335,24 +363,57 @@
 			calculation();
 		});
 		
+			$(document).on('change','.refType',function(){
+				var type=$(this).val();
+				var currentRefRow=$(this).closest('tr');
+				var ledger_id='".$purchase_invoices->seller_ledger_id."'; alert(ledger_id);
+				//var due_days=$(this).closest('tr.MainTr').find('select.ledger option:selected').attr('default_days');
+				var SelectedTr=$(this).closest('tr.MainTr');
+				if(type=='Against'){
+					$(this).closest('tr').find('td:nth-child(2)').html('Loading Ref List...');
+					var url='".$this->Url->build(['controller'=>'ReferenceDetails','action'=>'listRef'])."';
+					url=url+'/'+ledger_id;
+					$.ajax({
+						url: url,
+					}).done(function(response) { 
+						currentRefRow.find('td:nth-child(2)').html(response);
+						currentRefRow.find('td:nth-child(5)').html('');
+						
+						renameRefRows(SelectedTr);
+					});
+				}else if(type=='On Account'){
+					currentRefRow.find('td:nth-child(2)').html('');
+					currentRefRow.find('td:nth-child(5)').html('');
+				}else{
+					currentRefRow.find('td:nth-child(2)').html('".$kk."');
+					currentRefRow.find('td:nth-child(5)').html('".$dd."');
+					//currentRefRow.find('td:nth-child(5) input.dueDays').val(due_days);
+				}
+				//var SelectedTr=$(this).closest('tr.MainTr');
+				renameRefRows();
+			});
+		function renameRefRows(){
+			
+		}
+		
 		renameRows();
 		function renameRows(){ 
 				var i=0; 
-				var seller_type='$grnData->created_for';
-				if(seller_type=='Jainthela'){
+				var seller_type='$status';
+				if(seller_type==0){
 					$('.main_table tbody tr').each(function(){ 
 							 $(this).attr('row_no',i);
 							$(this).find('td:nth-child(1)').html(++i); i--;
-							$(this).find('.item_id1 ').attr({name:'purchase_invoice_rows['+i+'][item_id]',id:'purchase_invoice_rows['+i+'][item_id]'});
-							$(this).find('.grn_row_id ').attr({name:'purchase_invoice_rows['+i+'][grn_row_id]',id:'purchase_invoice_rows['+i+'][grn_row_id]'});
+							$(this).find('.item_id1 ').attr({name:'purchase_return_rows['+i+'][item_id]',id:'purchase_return_rows['+i+'][item_id]'});
+							$(this).find('.grn_row_id ').attr({name:'purchase_return_rows['+i+'][purchase_invoice_row_id]',id:'purchase_return_rows['+i+'][purchase_invoice_row_id]'});
 							
-							$(this).find('.unit_variation_id1 ').attr({name:'purchase_invoice_rows['+i+'][unit_variation_id]',id:'purchase_invoice_rows['+i+'][unit_variation_id]'}).rules('add', 'required')
-							$(this).find('.quantity ').attr({name:'purchase_invoice_rows['+i+'][quantity]',id:'purchase_invoice_rows['+i+'][quantity]'}).rules('add', 'required');
-							$(this).find('.rate ').attr({name:'purchase_invoice_rows['+i+'][rate]',id:'purchase_invoice_rows['+i+'][rate]'}).rules('add', 'required');
-							$(this).find('.taxable_value ').attr({name:'purchase_invoice_rows['+i+'][taxable_value]',id:'purchase_invoice_rows['+i+'][taxable_value]'});
-							$(this).find('.gst_percentage ').attr({name:'purchase_invoice_rows['+i+'][gst_figure_id]',id:'purchase_invoice_rows['+i+'][gst_figure_id]'});
-							$(this).find('.gst_value ').attr({name:'purchase_invoice_rows['+i+'][gst_value]',id:'purchase_invoice_rows['+i+'][gst_value]'});
-							$(this).find('.net_amount ').attr({name:'purchase_invoice_rows['+i+'][net_amount]',id:'purchase_invoice_rows['+i+'][net_amount]'});
+							$(this).find('.unit_variation_id1 ').attr({name:'purchase_return_rows['+i+'][unit_variation_id]',id:'purchase_return_rows['+i+'][unit_variation_id]'}).rules('add', 'required')
+							$(this).find('.quantity ').attr({name:'purchase_return_rows['+i+'][quantity]',id:'purchase_return_rows['+i+'][quantity]'}).rules('add', 'required');
+							$(this).find('.rate ').attr({name:'purchase_return_rows['+i+'][rate]',id:'purchase_return_rows['+i+'][rate]'}).rules('add', 'required');
+							$(this).find('.taxable_value ').attr({name:'purchase_return_rows['+i+'][taxable_value]',id:'purchase_return_rows['+i+'][taxable_value]'});
+							$(this).find('.gst_percentage ').attr({name:'purchase_return_rows['+i+'][gst_figure_id]',id:'purchase_return_rows['+i+'][gst_figure_id]'});
+							$(this).find('.gst_value ').attr({name:'purchase_return_rows['+i+'][gst_value]',id:'purchase_return_rows['+i+'][gst_value]'});
+							$(this).find('.net_amount ').attr({name:'purchase_return_rows['+i+'][net_amount]',id:'purchase_return_rows['+i+'][net_amount]'});
 							
 							i++; 
 					});
@@ -360,14 +421,14 @@
 					$('.main_table tbody tr').each(function(){
 							 $(this).attr('row_no',i);
 							$(this).find('td:nth-child(1)').html(++i); i--;
-							$(this).find('input.item_id2 ').attr({name:'purchase_invoice_rows['+i+'][item_id]',id:'purchase_invoice_rows['+i+'][item_id]'})
-							$(this).find('input.item_variation_id2 ').attr({name:'purchase_invoice_rows['+i+'][item_variation_id]',id:'purchase_invoice_rows['+i+'][item_variation_id]'}).rules('add', 'required');
-							$(this).find('.quantity ').attr({name:'purchase_invoice_rows['+i+'][quantity]',id:'purchase_invoice_rows['+i+'][quantity]'}).rules('add', 'required');
-							$(this).find('.rate ').attr({name:'purchase_invoice_rows['+i+'][rate]',id:'purchase_invoice_rows['+i+'][rate]'}).rules('add', 'required');
-							$(this).find('.taxable_value ').attr({name:'purchase_invoice_rows['+i+'][taxable_value]',id:'purchase_invoice_rows['+i+'][taxable_value]'});
-							$(this).find('.gst_percentage ').attr({name:'purchase_invoice_rows['+i+'][gst_figure_id]',id:'purchase_invoice_rows['+i+'][gst_figure_id]'});
-							$(this).find('.gst_value ').attr({name:'purchase_invoice_rows['+i+'][gst_value]',id:'purchase_invoice_rows['+i+'][gst_value]'});
-							$(this).find('.net_amount ').attr({name:'purchase_invoice_rows['+i+'][net_amount]',id:'purchase_invoice_rows['+i+'][net_amount]'});
+							$(this).find('input.item_id2 ').attr({name:'purchase_return_rows['+i+'][item_id]',id:'purchase_return_rows['+i+'][item_id]'})
+							$(this).find('input.item_variation_id2 ').attr({name:'purchase_return_rows['+i+'][item_variation_id]',id:'purchase_return_rows['+i+'][item_variation_id]'}).rules('add', 'required');
+							$(this).find('.quantity ').attr({name:'purchase_return_rows['+i+'][quantity]',id:'purchase_return_rows['+i+'][quantity]'}).rules('add', 'required');
+							$(this).find('.rate ').attr({name:'purchase_return_rows['+i+'][rate]',id:'purchase_return_rows['+i+'][rate]'}).rules('add', 'required');
+							$(this).find('.taxable_value ').attr({name:'purchase_return_rows['+i+'][taxable_value]',id:'purchase_return_rows['+i+'][taxable_value]'});
+							$(this).find('.gst_percentage ').attr({name:'purchase_return_rows['+i+'][gst_figure_id]',id:'purchase_return_rows['+i+'][gst_figure_id]'});
+							$(this).find('.gst_value ').attr({name:'purchase_return_rows['+i+'][gst_value]',id:'purchase_return_rows['+i+'][gst_value]'});
+							$(this).find('.net_amount ').attr({name:'purchase_return_rows['+i+'][net_amount]',id:'purchase_return_rows['+i+'][net_amount]'});
 							
 							i++; 
 					});

@@ -4,10 +4,11 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * PurchaseInvoiceRow Entity
+ * PurchaseReturnRow Entity
  *
  * @property int $id
- * @property int $purchase_invoice_id
+ * @property int $purchase_return_id
+ * @property int $purchase_invoice_row_id
  * @property int $item_id
  * @property int $item_variation_id
  * @property float $quantity
@@ -16,19 +17,21 @@ use Cake\ORM\Entity;
  * @property float $discount_amount
  * @property float $taxable_value
  * @property float $net_amount
- * @property int $item_gst_figure_id
  * @property int $gst_percentage
  * @property float $gst_value
  * @property float $round_off
+ * @property float $purchase_rate
+ * @property float $sales_rate
+ * @property string $gst_type
+ * @property float $mrp
  *
- * @property \App\Model\Entity\PurchaseInvoice $purchase_invoice
+ * @property \App\Model\Entity\PurchaseReturn $purchase_return
+ * @property \App\Model\Entity\PurchaseInvoiceRow $purchase_invoice_row
  * @property \App\Model\Entity\Item $item
  * @property \App\Model\Entity\ItemVariation $item_variation
- * @property \App\Model\Entity\ItemGstFigure $item_gst_figure
  * @property \App\Model\Entity\ItemLedger[] $item_ledgers
- * @property \App\Model\Entity\PurchaseReturnRow[] $purchase_return_rows
  */
-class PurchaseInvoiceRow extends Entity
+class PurchaseReturnRow extends Entity
 {
 
     /**
@@ -41,7 +44,8 @@ class PurchaseInvoiceRow extends Entity
      * @var array
      */
     protected $_accessible = [
-        'purchase_invoice_id' => true,
+        'purchase_return_id' => true,
+        'purchase_invoice_row_id' => true,
         'item_id' => true,
         'item_variation_id' => true,
         'unit_variation_id' => true,
@@ -51,18 +55,14 @@ class PurchaseInvoiceRow extends Entity
         'discount_amount' => true,
         'taxable_value' => true,
         'net_amount' => true,
-        'gst_figure_id' => true,
         'gst_value' => true,
+        'gst_figure_id' => true,
         'round_off' => true,
-        'purchase_rate' => true,
-        'purchase_rate' => true,
         'sales_rate' => true,
-        'gst_type' => true,
-        'mrp' => true,
+        'purchase_return' => true,
+        'purchase_invoice_row' => true,
         'item' => true,
         'item_variation' => true,
-        'item_ledgers' => true,
-        'grn_row_id' => true,
-        'purchase_return_rows' => true
+        'item_ledgers' => true
     ];
 }

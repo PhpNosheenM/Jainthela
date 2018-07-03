@@ -210,7 +210,7 @@ class ItemsController extends AppController
 
             $this->Flash->error(__('The item could not be saved. Please, try again.'));
         }
-		$unitVariations = $this->Items->ItemVariationMasters->UnitVariations->find('all')->contain(['Units']);
+		$unitVariations = $this->Items->ItemVariationMasters->UnitVariations->find()->where(['UnitVariations.city_id'=>$city_id])->contain(['Units']);
 		$unit_option=[];
 		$i=0; foreach($unitVariations as $unitVariation){
 			$unit_option[]=['text'=>$unitVariation->quantity_variation .' ' .$unitVariation->unit->unit_name ,'value'=>$unitVariation->id ];
@@ -241,8 +241,8 @@ class ItemsController extends AppController
 	public function todayStockReport($id = null){
 		$city_id=$this->Auth->User('city_id');
 		$this->viewBuilder()->layout('super_admin_layout');
-		$ItemsVariationsForJainthela=$this->Items->ItemsVariationsData->find()->contain(['Items','UnitVariations'=>['Units']])->where(['ItemsVariationsData.seller_id IS NULL'])->toArray();
-		$ItemsVariations=$this->Items->ItemsVariationsData->find()->contain(['Items','Sellers','UnitVariations'=>['Units']])->toArray();
+		$ItemsVariationsForJainthela=$this->Items->ItemsVariationsData->find()->contain(['Items','UnitVariations'=>['Units']])->where(['ItemsVariationsData.seller_id IS NULL','ItemsVariationsData.city_id'=>$city_id])->toArray();
+		$ItemsVariations=$this->Items->ItemsVariationsData->find()->contain(['Items','Sellers','UnitVariations'=>['Units']])->where(['ItemsVariationsData.city_id'=>$city_id])->toArray();
 		$this->set(compact('ItemsVariations','ItemsVariationsForJainthela'));
 	}
 	public function wastageVoucher($id = null){
@@ -804,7 +804,7 @@ class ItemsController extends AppController
 			//spr($item); exit;
             $this->Flash->error(__('The item could not be saved. Please, try again.'));
         }
-		$unitVariations = $this->Items->ItemVariationMasters->UnitVariations->find('all')->contain(['Units']);
+		$unitVariations = $this->Items->ItemVariationMasters->UnitVariations->find()->where(['UnitVariations.city_id'=>$city_id])->contain(['Units']);
 		$unit_option=[];
 		$i=0; foreach($unitVariations as $unitVariation){
 			$unit_option[]=['text'=>$unitVariation->quantity_variation .' ' .$unitVariation->unit->unit_name ,'value'=>$unitVariation->id ];
@@ -875,6 +875,8 @@ class ItemsController extends AppController
 		//$location_id=$this->Auth->User('location_id'); 
 		$this->viewBuilder()->layout('super_admin_layout');
 		$location_id = $this->request->query('location_id');
+		$seller_id = $this->request->query('seller_id');
+		$gst_figure_id = $this->request->query('gst_figure_id');
 		$from_date = $this->request->query('from_date');
 		$to_date   = $this->request->query('to_date');
 		if(empty($from_date) || empty($to_date))
@@ -900,11 +902,26 @@ class ItemsController extends AppController
 			//$to_date   = date("Y-m-d",strtotime($to_date));
 			$where['Orders.location_id']=$location_id;
 		}
-		//pr($where); exit;
-		$orders = $this->Items->Orders->find()->contain(['Locations','PartyLedgers'=>['CustomerData']])->where($where)->where(['location_id'=>$location_id]);
+		if($gst_figure_id){ 
+			 $orders=$this->Items->Orders->find()->contain(['Locations','PartyLedgers'=>['CustomerData'],'OrderDetails'=>function ($q) use($gst_figure_id) {
+							return $q->where(['OrderDetails.gst_figure_id'=>$gst_figure_id])->contain(['GstFigures','Items']);
+						}])->where($where);
+						
+			 $orders->innerJoinWith('OrderDetails',function ($q) use($gst_figure_id) {
+							return $q->where(['OrderDetails.gst_figure_id'=>$gst_figure_id])->contain(['GstFigures']);
+						})->group('OrderDetails.order_id')
+					->autoFields(true);
+
+			//pr($orders->toArray()); exit;
+		}else{
+			$orders = $this->Items->Orders->find()->contain(['Locations','PartyLedgers'=>['CustomerData']])->where($where)->where(['location_id'=>$location_id]);
+			//pr($orders->toArray()); exit;
+		}
 		$Locations = $this->Items->Orders->Locations->find('list')->where(['city_id'=>$city_id]);
+		//$Sellers = $this->Items->Sellers->find('list')->where(['city_id'=>$city_id]);
+		$GstFigures = $this->Items->GstFigures->find('list')->where(['city_id'=>$city_id]);
 		//pr($orders->toArray()); exit;
-		$this->set(compact('from_date','to_date','orders','Locations','location_id'));
+		$this->set(compact('from_date','to_date','orders','Locations','location_id','gst_figure_id','Sellers','GstFigures'));
 	}
 	
 		public function PurchaseReport()
@@ -914,6 +931,7 @@ class ItemsController extends AppController
 		$location_id=$this->Auth->User('location_id'); 
 		$this->viewBuilder()->layout('super_admin_layout');
 		$location_id = $this->request->query('location_id');
+		$gst_figure_id = $this->request->query('gst_figure_id');
 		$from_date = $this->request->query('from_date');
 		$to_date   = $this->request->query('to_date');
 		if(empty($from_date) || empty($to_date))
@@ -936,10 +954,27 @@ class ItemsController extends AppController
 			$where['PurchaseInvoices.city_id ']=$city_id;
 		}
 		
-	//	pr($from_date); exit;
-		$PurchaseInvoices = $this->Items->PurchaseInvoices->find()->contain(['Cities','SellerLedgers'=>['SellerData']])->where($where);
-		$Locations = $this->Items->Orders->Locations->find('list');
+		if($gst_figure_id){ 
+			 $PurchaseInvoices=$this->Items->PurchaseInvoices->find()->contain(['SellerLedgers'=>['SellerData'],'PurchaseInvoiceRows'=>function ($q) use($gst_figure_id) {
+							return $q->where(['PurchaseInvoiceRows.gst_figure_id'=>$gst_figure_id])->contain(['GstFigures','Items']);
+						}])->where($where);
+						
+			 $PurchaseInvoices->innerJoinWith('PurchaseInvoiceRows',function ($q) use($gst_figure_id) {
+							return $q->where(['PurchaseInvoiceRows.gst_figure_id'=>$gst_figure_id])->contain(['GstFigures']);
+						})->group('PurchaseInvoiceRows.purchase_invoice_id')
+					->autoFields(true);
+
+			//pr($PurchaseInvoices->toArray()); exit;
+		}else{
+			$PurchaseInvoices = $this->Items->PurchaseInvoices->find()->contain(['SellerLedgers'=>['SellerData']])->where($where)->where(['PurchaseInvoices.city_id'=>$city_id]);
+			//pr($orders->toArray()); exit;
+		}
+		
 		//pr($PurchaseInvoices->toArray()); exit;
-		$this->set(compact('from_date','to_date','PurchaseInvoices','Locations','location_id'));
+		//pr($from_date); exit;
+		//$PurchaseInvoices = $this->Items->PurchaseInvoices->find()->contain(['Cities','SellerLedgers'=>['SellerData']])->where($where);
+		//$Locations = $this->Items->Orders->Locations->find('list');
+		$GstFigures = $this->Items->GstFigures->find('list')->where(['city_id'=>$city_id]);
+		$this->set(compact('from_date','to_date','PurchaseInvoices','Locations','gst_figure_id','location_id','GstFigures'));
 	}
 }

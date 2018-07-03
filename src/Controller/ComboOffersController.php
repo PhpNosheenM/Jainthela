@@ -155,10 +155,10 @@ class ComboOffersController extends AppController
 			
             $this->Flash->error(__('The combo offer could not be saved. Please, try again.'));
         }
-		$itemVariations = $this->ComboOffers->ComboOfferDetails->ItemVariations->find('all')->contain(['Items','UnitVariations'=>['Units']]);
+		$itemVariations = $this->ComboOffers->ComboOfferDetails->ItemVariations->find('all')->contain(['Items'=>['GstFigures'],'UnitVariations'=>['Units']]);
 		$itemVariation_option=[];
 		$i=0; foreach($itemVariations as $itemVariation){
-			$itemVariation_option[]=['text'=>$itemVariation->item->name .' ' .$itemVariation->unit_variation->quantity_variation .' '.$itemVariation->unit_variation->unit->unit_name,'value'=>$itemVariation->id,'rate'=>$itemVariation->print_rate ];
+			$itemVariation_option[]=['text'=>$itemVariation->item->name .' ' .$itemVariation->unit_variation->quantity_variation .' '.$itemVariation->unit_variation->unit->unit_name,'value'=>$itemVariation->id,'rate'=>$itemVariation->print_rate,'gst_per'=>@$itemVariation->item->gst_figure->tax_percentage  ];
 		}
 		//pr($itemVariations->toArray()); exit;
         $this->set(compact('comboOffer', 'cities', 'itemVariation_option'));

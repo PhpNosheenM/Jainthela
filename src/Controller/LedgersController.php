@@ -92,7 +92,7 @@ class LedgersController extends AppController
 		$datacreditor[]=$SundryCredior->id;
 		$alldebtors=array_merge($datadebtor,$debtorArray,$datacreditor,$creditorArray);  //pr($alldebtors); exit;
 		$accountingGroups = $this->Ledgers->AccountingGroups->find('list')->where(['id NOT IN'=>$alldebtors]);
-        $ledgers = $this->paginate($this->Ledgers);
+        $ledgers = $this->paginate($this->Ledgers->find()->where(['Ledgers.city_id'=>$city_id]));
 		
 		$paginate_limit=$this->paginate['limit'];
         $this->set(compact('ledgers','paginate_limit','accountingGroups'));
@@ -124,7 +124,10 @@ class LedgersController extends AppController
 		$to_date   = $this->request->query('to_date');
 		$from_date = date("Y-m-d",strtotime($from_date));
 		$to_date   = date("Y-m-d",strtotime($to_date));
-		
+		if($from_date=="1970-01-01"){
+			$from_date = date("Y-m-d");
+			$to_date   = date("Y-m-d");
+		}
 		$AccountingGroups=$this->Ledgers->AccountingGroups->find()->where(['AccountingGroups.nature_of_group_id IN'=>[1,2,3,4],'AccountingGroups.city_id'=>$city_id]);
 		
 		$Groups=[]; $ledgerData=[];
@@ -297,6 +300,7 @@ class LedgersController extends AppController
 		$ledger_id = $this->request->query('ledger_id');
 		//$from_date = $this->request->query('from_date');
 		$to_date   = $this->request->query('to_date');
+		$ordr   = $this->request->query('ordr');
 		if(empty($to_date))
 		{
 			$to_date   = date("Y-m-d");
@@ -326,12 +330,14 @@ class LedgersController extends AppController
 		{
 			$ledgerAccountids[]=$ledgerAccount->id;
 		}
-		$reference_details = $this->Ledgers->ReferenceDetails->find()->contain(['Ledgers'])->where(['ReferenceDetails.city_id'=>$city_id, 'ReferenceDetails.type != ' => 'On Account']);
-		$reference_details->select(['total_debit' => $reference_details->func()->sum('ReferenceDetails.debit'),'total_credit' => $reference_details->func()->sum('ReferenceDetails.credit')])
-		->where(['ReferenceDetails.ledger_id IN '=> $ledgerAccountids,'ReferenceDetails.transaction_date <=' => $to_date])
-		->group(['ReferenceDetails.ref_name','ReferenceDetails.ledger_id'])->autoFields(true);	
+		if($ledgerAccountids){
+			$reference_details = $this->Ledgers->ReferenceDetails->find()->contain(['Ledgers'])->where(['ReferenceDetails.city_id'=>$city_id, 'ReferenceDetails.type != ' => 'On Account']);
+			$reference_details->select(['total_debit' => $reference_details->func()->sum('ReferenceDetails.debit'),'total_credit' => $reference_details->func()->sum('ReferenceDetails.credit')])
+			->where(['ReferenceDetails.ledger_id IN '=> $ledgerAccountids,'ReferenceDetails.transaction_date <=' => $to_date])->order(['ReferenceDetails.id'=>$ordr])
+			->group(['ReferenceDetails.ref_name','ReferenceDetails.ledger_id'])->autoFields(true);	
+		}
 		//pr($reference_details->toArray()); exit;
-		$this->set(compact('companies','reference_details','run_time_date','url','status','to_date'));
+		$this->set(compact('companies','reference_details','run_time_date','url','status','to_date','ordr'));
 		//pr($reference_details->toArray()); exit;
 			
 	}
@@ -354,7 +360,7 @@ class LedgersController extends AppController
 		$parentSundryDebtors = $this->Ledgers->AccountingGroups->find()
 				->where(['AccountingGroups.city_id'=>$city_id, 'AccountingGroups.vendor'=>'1'])->orWhere(['AccountingGroups.city_id'=>$city_id, 'AccountingGroups.seller'=>'1']);
 		$childSundryDebtors=[];
-		
+		//pr($parentSundryDebtors->toArray()); exit;
 		foreach($parentSundryDebtors as $parentSundryDebtor)
 		{
 			$accountingGroups = $this->Ledgers->AccountingGroups->find('children', ['for' => $parentSundryDebtor->id]);
@@ -363,7 +369,7 @@ class LedgersController extends AppController
 				$childSundryDebtors[]=$accountingGroup->id;
 			}			
 		}
-		
+		//pr($childSundryDebtors); exit;
 		$ledgerAccounts = $this->Ledgers->find()->where(['accounting_group_id IN'=>$childSundryDebtors]);	
 		
 		$ledgerAccounts = $this->Ledgers->find()->where(['accounting_group_id IN'=>$childSundryDebtors]);
@@ -374,11 +380,14 @@ class LedgersController extends AppController
 		{
 			$ledgerAccountids[]=$ledgerAccount->id;
 		}
-		$reference_details = $this->Ledgers->ReferenceDetails->find()->contain(['Ledgers'])->where(['ReferenceDetails.city_id'=>$city_id, 'ReferenceDetails.type != ' => 'On Account']);
-		$reference_details->select(['total_debit' => $reference_details->func()->sum('ReferenceDetails.debit'),'total_credit' => $reference_details->func()->sum('ReferenceDetails.credit')])
-		->where(['ReferenceDetails.ledger_id IN '=> $ledgerAccountids,'ReferenceDetails.transaction_date <=' => $to_date])
-		->group(['ReferenceDetails.ref_name','ReferenceDetails.ledger_id'])->autoFields(true);	
+		if($ledgerAccountids){
+			$reference_details = $this->Ledgers->ReferenceDetails->find()->contain(['Ledgers'])->where(['ReferenceDetails.city_id'=>$city_id, 'ReferenceDetails.type != ' => 'On Account']);
+			$reference_details->select(['total_debit' => $reference_details->func()->sum('ReferenceDetails.debit'),'total_credit' => $reference_details->func()->sum('ReferenceDetails.credit')])
+			->where(['ReferenceDetails.ledger_id IN '=> $ledgerAccountids,'ReferenceDetails.transaction_date <=' => $to_date])
+			->group(['ReferenceDetails.ref_name','ReferenceDetails.ledger_id'])->autoFields(true);	
+		}
 		//pr($reference_details->toArray()); exit;
+		
 		$this->set(compact('companies','reference_details','run_time_date','url','status','to_date'));
 		//pr($reference_details->toArray()); exit;
 			

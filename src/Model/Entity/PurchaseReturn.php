@@ -4,33 +4,41 @@ namespace App\Model\Entity;
 use Cake\ORM\Entity;
 
 /**
- * PurchaseInvoice Entity
+ * PurchaseReturn Entity
  *
  * @property int $id
- * @property int $voucher_no
+ * @property int $purchase_invoice_id
+ * @property int $financial_year_id
+ * @property string $voucher_no
+ * @property string $invoice_no
  * @property int $location_id
  * @property \Cake\I18n\FrozenDate $transaction_date
  * @property int $seller_ledger_id
  * @property int $purchase_ledger_id
  * @property string $narration
- * @property string $status
+ * @property float $total_taxable_value
+ * @property float $total_gst
+ * @property float $total_amount
+ * @property string $entry_from
  * @property int $city_id
  * @property int $created_by
- * @property \Cake\I18n\FrozenTime $created_on
  * @property int $edited_by
+ * @property \Cake\I18n\FrozenTime $created_on
  * @property \Cake\I18n\FrozenTime $edited_on
+ * @property string $status
  *
+ * @property \App\Model\Entity\PurchaseInvoice $purchase_invoice
+ * @property \App\Model\Entity\FinancialYear $financial_year
  * @property \App\Model\Entity\Location $location
  * @property \App\Model\Entity\SellerLedger $seller_ledger
  * @property \App\Model\Entity\PurchaseLedger $purchase_ledger
  * @property \App\Model\Entity\City $city
  * @property \App\Model\Entity\AccountingEntry[] $accounting_entries
  * @property \App\Model\Entity\ItemLedger[] $item_ledgers
- * @property \App\Model\Entity\PurchaseInvoiceRow[] $purchase_invoice_rows
- * @property \App\Model\Entity\PurchaseReturn[] $purchase_returns
+ * @property \App\Model\Entity\PurchaseReturnRow[] $purchase_return_rows
  * @property \App\Model\Entity\ReferenceDetail[] $reference_details
  */
-class PurchaseInvoice extends Entity
+class PurchaseReturn extends Entity
 {
 
     /**
@@ -43,31 +51,34 @@ class PurchaseInvoice extends Entity
      * @var array
      */
     protected $_accessible = [
+        'purchase_invoice_id' => true,
+        'financial_year_id' => true,
         'voucher_no' => true,
         'invoice_no' => true,
         'location_id' => true,
-        'purchase_invoice_id' => true,
         'transaction_date' => true,
         'seller_ledger_id' => true,
         'purchase_ledger_id' => true,
         'narration' => true,
-        'entry_from' => true,
-        'city_id' => true,
-        'created_by' => true,
-        'created_on' => true,
-        'edited_by' => true,
-        'edited_on' => true,
-        'location' => true,
         'total_taxable_value' => true,
         'total_gst' => true,
         'total_amount' => true,
+        'entry_from' => true,
+        'city_id' => true,
+        'created_by' => true,
+        'edited_by' => true,
+        'created_on' => true,
+        'edited_on' => true,
+        'status' => true,
+        'purchase_invoice' => true,
+        'financial_year' => true,
+        'location' => true,
         'seller_ledger' => true,
         'purchase_ledger' => true,
         'city' => true,
         'accounting_entries' => true,
         'item_ledgers' => true,
-        'purchase_invoice_rows' => true,
-        'purchase_returns' => true,
+        'purchase_return_rows' => true,
         'reference_details' => true
     ];
 }

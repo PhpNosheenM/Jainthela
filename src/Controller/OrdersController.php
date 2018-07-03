@@ -23,7 +23,7 @@ class OrdersController extends AppController
 	public function beforeFilter(Event $event)
     {
         parent::beforeFilter($event);
-        $this->Security->setConfig('unlockedActions', ['add', 'index', 'view', 'manageOrder']);
+        $this->Security->setConfig('unlockedActions', ['add', 'index', 'view', 'manageOrder', 'ajaxDeliver','updateOrders']);
 
     }
 	
@@ -42,17 +42,206 @@ class OrdersController extends AppController
 	
 		
         $this->paginate = [
-            'contain' => ['OrderDetails'=>['ItemVariations'],'SellerLedgers','PartyLedgers','Locations'],
+            //'contain' => ['OrderDetails'=>['ItemVariations'],'SellerLedgers','PartyLedgers','Locations'],
 			'limit' => 20
         ];
-        
-        $orders = $this->paginate($this->Orders);
+		
+		$order_data=$this->Orders->find()->order(['Orders.id'=>'DESC'])->contain(['SellerLedgers','PartyLedgers','Locations','DeliveryTimes','Customers'])->where(['Orders.city_id'=>$city_id]);
+
+        $orders = $this->paginate($order_data);
 		//pr( $orders); exit;
 		$paginate_limit=$this->paginate['limit'];
         $this->set(compact('orders','paginate_limit'));
     }
 	
+	public function ajaxDeliver($id = null)
+    {
+		//$this->viewBuilder()->layout('');
+         $Orders = $this->Orders->get($id, [
+            'contain' => ['SellerLedgers','PartyLedgers','Locations','DeliveryTimes','Customers','CustomerAddresses', 'OrderDetails'=>['ItemVariations'=>['Items'], 'ComboOffers']]
+        ]);
+		 
+        $this->set('Orders', $Orders);
+        $this->set('_serialize', ['Orders']);
+    }
 	
+	public function dispatch($ordr_id=null)
+    {
+	$ordr_id;
+	$order = $this->Orders->get($ordr_id);
+	$order->dispatch_flag='Active';
+	$order->dispatch_on= date('Y-m-d h:i:s a');
+	$this->Orders->save($order);
+	exit;
+	}
+	
+	public function packing($ordr_id=null)
+    {
+	$ordr_id;
+	$order = $this->Orders->get($ordr_id);
+	$order->packing_flag='Active';
+	$order->packing_on= date('Y-m-d h:i:s a');
+	$this->Orders->save($order);
+	
+	$sms=str_replace(' ', '+', 'You are not Receiving Our Call to receive order, your order has been again return to warehouse of jainthla please collect from their');
+	$sms_sender='JAINTE';
+	$sms=str_replace(' ', '+', $sms);
+	//file_get_contents('http://103.39.134.40/api/mt/SendSMS?user=phppoetsit&password=9829041695&senderid='.$sms_sender.'&channel=Trans&DCS=0&flashsms=0&number='.$mob.'&text='.$sms.'&route=7');
+	
+	exit;
+	}
+	
+/////order not receive by customer on delivery time send sms start///////////	
+	public function smsSend($ordr_id=null,$mob=null)
+    {
+	$ordr_id;
+	$mob;
+	$order = $this->Orders->get($ordr_id);
+	$order->not_received='Yes';
+	$this->Orders->save($order);
+	
+	$sms=str_replace(' ', '+', 'You are not Receiving Our Call to receive order, your order has been again return to warehouse of jainthla please collect from their');
+	$sms_sender='JAINTE';
+	$sms=str_replace(' ', '+', $sms);
+	//file_get_contents('http://103.39.134.40/api/mt/SendSMS?user=phppoetsit&password=9829041695&senderid='.$sms_sender.'&channel=Trans&DCS=0&flashsms=0&number='.$mob.'&text='.$sms.'&route=7');
+	
+	exit;
+	}
+/////order not receive by customer on delivery time send sms end///////////	
+	
+	public function otpSend($ordr_id=null,$mob=null)
+    {
+	$ordr_id;
+	$mob;
+	$random=(string)mt_rand(1000,9999);
+	$order = $this->Orders->get($ordr_id);
+	$order->otp=$random;
+	$this->Orders->save($order);
+	
+	$sms=str_replace(' ', '+', 'Your order delivery confirmation one time OTP is: '.$random.'');
+	$sms_sender='JAINTE';
+	$sms=str_replace(' ', '+', $sms);
+	//file_get_contents('http://103.39.134.40/api/mt/SendSMS?user=phppoetsit&password=9829041695&senderid='.$sms_sender.'&channel=Trans&DCS=0&flashsms=0&number='.$mob.'&text='.$sms.'&route=7');
+	
+	exit;
+	}
+	
+	public function orderRelatedToSeller($status=null){
+		$this->viewBuilder()->layout('super_admin_layout');
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$location_id=$this->Auth->User('location_id');
+		$location_id = $this->request->query('location_id');
+		$seller_id = $this->request->query('seller_id');
+		$gst_figure_id = $this->request->query('gst_figure_id');
+		$from_date = $this->request->query('from_date');
+		$to_date   = $this->request->query('to_date');
+		if(empty($from_date) || empty($to_date))
+		{
+			$from_date = date("Y-m-01");
+			$to_date   = date("Y-m-d");
+		}else{
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$to_date= date("Y-m-d",strtotime($to_date));
+		}
+		if(!empty($from_date))
+		{
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$where['Orders.transaction_date >=']=$from_date;
+		}
+		if(!empty($to_date))
+		{
+			$to_date   = date("Y-m-d",strtotime($to_date));
+			$where['Orders.transaction_date <=']=$to_date;
+		}
+		if(!empty($location_id))
+		{
+			//$to_date   = date("Y-m-d",strtotime($to_date));
+			$where['Orders.location_id']=$location_id;
+		}
+		$orders=[];
+		if($seller_id){ 
+			 $orders=$this->Orders->find()->contain(['Locations','PartyLedgers'=>['CustomerData'],'OrderDetails'=>['Items','ItemVariations'=>function ($q) use($seller_id) {
+							return $q->where(['ItemVariations.seller_id'=>$seller_id])->contain(['Sellers']);
+						}]])->where($where);
+		
+			  $orders->innerJoinWith('OrderDetails.ItemVariations',function ($q) use($seller_id) {
+							return $q->where(['ItemVariations.seller_id'=>$seller_id])->contain(['Sellers']);
+						})->group('OrderDetails.order_id')
+					->autoFields(true);
+
+			//pr($orders->toArray()); exit;
+		}else{
+			
+			 $orders=$this->Orders->find()->contain(['Locations','PartyLedgers'=>['CustomerData'],'OrderDetails'=>['Items','ItemVariations'=>function ($q) {
+							return $q->where(['ItemVariations.seller_id IS NULL']);
+						}]])->where($where);
+			//pr($orders->toArray()); exit;
+			  $orders->innerJoinWith('OrderDetails.ItemVariations',function ($q)  {
+							return $q->where(['ItemVariations.seller_id IS NULL']);
+						})->group('OrderDetails.order_id')
+					->autoFields(true);
+				//pr($orders->toArray()); exit;
+		}
+		
+		$Locations = $this->Orders->Locations->find('list')->where(['city_id'=>$city_id]);
+		$Sellers = $this->Orders->OrderDetails->Items->Sellers->find('list')->where(['city_id'=>$city_id]);
+		$this->set(compact('from_date','to_date','orders','Locations','location_id','seller_id','Sellers','GstFigures'));
+	}
+	
+	public function updateOrders($order_id = null,$item_id = null,$actual_quantity=null,$amount = null,$gst_value = null,$net_amount =null, $detail_id = null, $taxable_value = null, $total_gst = null,$grand_total = null){
+		
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id');
+		$location_id=$this->Auth->User('location_id');
+		$location_id = $this->request->query('location_id');
+		
+		$order_id;
+		$taxable_value;
+		$total_gst;
+		$grand_total;
+		$quantity=explode(',',$actual_quantity);
+		$items=explode(',',$item_id);
+		$item_amount=explode(',',$amount);
+		$gst_values=explode(',',$gst_value);
+		$net_amounts=explode(',',$net_amount);
+		$detail_ids=explode(',',$detail_id);
+		$x=0;
+		foreach($detail_ids as $detail_id){
+			
+			$qty = $quantity[$x];
+			$amt = $item_amount[$x];
+			$gst = $gst_values[$x];
+			$nt_amt = $net_amounts[$x];
+			$dtl_id = $detail_ids[$x];
+			$final_amount+=$amt;
+				$query = $this->Orders->OrderDetails->query();
+					$query->update()
+							->set(['actual_quantity' => $qty, 'amount' => $amt, 'gst_value' => $gst, 'net_amount' => $nt_amt])
+							->where(['id'=>$dtl_id,'order_id'=>$order_id])
+							->execute();
+				$x++;
+		
+		}
+		
+		$Orders = $this->Orders->get($order_id);
+		$customer_id=$Orders->customer_id;
+		$amount_from_wallet=$Orders->amount_from_wallet;
+		//$amount_from_jain_cash=$Orders->amount_from_jain_cash;
+		//$amount_from_promo_code=$Orders->amount_from_promo_code;
+		$online_amount=$Orders->online_amount;
+		$discount_percent=$Orders->discount_percent;
+		
+		$paid_amount=$amount_from_wallet+$amount_from_jain_cash+$amount_from_promo_code+$online_amount;
+		
+		$total_amount=$final_amount;
+		$discount_percent=$Orders->discount_percent;
+		$discount_amount=$total_amount*($discount_percent/100);
+		
+		$delivery_charges=$this->Orders->DeliveryCharges->find()->where(['DeliveryCharges.city_id'=>$city_id, 'DeliveryCharges.status'=>'Active']);
+		
+	exit;
+	}
 	public function manageOrder($status=null)
     {
 		$this->viewBuilder()->layout('admin_portal');
@@ -67,10 +256,10 @@ class OrdersController extends AppController
         ];
 		if(!empty($status)){
 			
-			$order_data=$this->Orders->find()->where(['Orders.order_status'=>$status])->order(['Orders.id'=>'DESC'])->contain(['SellerLedgers','PartyLedgers','Locations','DeliveryTimes','Customers']);
+			$order_data=$this->Orders->find()->where(['Orders.order_status'=>$status])->order(['Orders.id'=>'DESC'])->contain(['SellerLedgers','PartyLedgers','Locations','DeliveryTimes','Customers','CustomerAddresses']);
 		}else{
 			
-			$order_data=$this->Orders->find()->order(['Orders.id'=>'DESC'])->contain(['SellerLedgers','PartyLedgers','Locations','DeliveryTimes','Customers']);
+			$order_data=$this->Orders->find()->order(['Orders.id'=>'DESC'])->contain(['SellerLedgers','PartyLedgers','Locations','DeliveryTimes','Customers','CustomerAddresses']);
 		}
 		
         $orders = $this->paginate($order_data);
@@ -198,6 +387,7 @@ class OrdersController extends AppController
 						$ItemLedger->transaction_date=$order->transaction_date;  
 						$ItemLedger->quantity=$data->quantity;
 						$ItemLedger->rate=$GrnRow->purchase_rate;
+						$ItemLedger->amount=$GrnRow->purchase_rate*$data->quantity;
 						$ItemLedger->purchase_rate=$GrnRow->purchase_rate;
 						$ItemLedger->sales_rate=$GrnRow->sales_rate; 
 						$ItemLedger->status="In";
@@ -254,9 +444,8 @@ class OrdersController extends AppController
 		$this->loadmodel('SalesOrders');
 		$sales_orders=$this->Orders->find()->where(['Orders.id'=>$ids])->contain(['DeliveryTimes','OrderDetails'=>['ItemVariations'=>['ItemVariationMasters','Items','UnitVariations'=>['Units']]], 'Customers'=>['CustomerAddresses']])->first();
 		 
-		//pr($sales_orders); exit;
-		
-        $this->set(compact('ids', 'sales_orders', 'order', 'locations', 'customers', 'drivers', 'customerAddresses', 'promotionDetails', 'deliveryCharges', 'deliveryTimes', 'cancelReasons','order_no','partyOptions','Accountledgers','items'));
+		$company_details=$this->Orders->Companies->find()->where(['Companies.city_id'=>$city_id])->first();
+        $this->set(compact('ids', 'sales_orders', 'order', 'locations', 'customers', 'drivers', 'customerAddresses', 'promotionDetails', 'deliveryCharges', 'deliveryTimes', 'cancelReasons','order_no','partyOptions','Accountledgers','items','company_details'));
     }
 
     /**
@@ -270,7 +459,7 @@ class OrdersController extends AppController
 			$ids= $this->EncryptingDecrypting->decryptData($id);
 		}
 		
-		$user_id=$this->Auth->User('id');
+		$user_id=$this->Auth->User('id'); 
 		$city_id=$this->Auth->User('city_id'); 
 		$location_id=$this->Auth->User('location_id'); 
 		$state_id=$this->Auth->User('state_id'); 

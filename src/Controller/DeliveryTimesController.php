@@ -28,7 +28,12 @@ class DeliveryTimesController extends AppController
 		
 		$city_id=$this->Auth->User('city_id'); 
 		$user_id=$this->Auth->User('id');
-		$this->viewBuilder()->layout('admin_portal');
+		$user_type=$this->Auth->User('user_type');
+		if($user_type=='Super Admin'){
+			$this->viewBuilder()->layout('super_admin_layout');
+		}else if($user_type=='Admin'){
+			$this->viewBuilder()->layout('admin_portal');
+		}
         $this->paginate =[
 		
             'limit' => 20
@@ -45,7 +50,7 @@ class DeliveryTimesController extends AppController
 		{
 			$deliveryTime = $this->DeliveryTimes->get($id);
 		}
-		else 
+		else
 		{
 		     $deliveryTime = $this->DeliveryTimes->newEntity();	 
 		}

@@ -290,6 +290,7 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			if(bill_accounting=="no"){ 
 				$(".window").hide();
 				$("div.window table tbody").find("tr").remove();
+				$("div.window table.refTbl tfoot tr td:nth-child(2) input.total").rules("remove", "equalTo");
 			}
 			else{
 				var mainAmt=$(".balance").val();

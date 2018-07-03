@@ -209,7 +209,7 @@ class ItemVariationMastersController extends AppController
     		return $this->redirect(['action' => 'index']);
 			 
 		}
-		$Items=$this->ItemVariationMasters->Items->find('list')->where(['Items.status'=>'Active']);
+		$Items=$this->ItemVariationMasters->Items->find('list')->where(['Items.status'=>'Active','Items.city_id'=>$city_id]);
 
 		$paginate_limit=$this->paginate['limit'];
 		$this->set(compact('itemVariation','paginate_limit','Items'));

@@ -28,18 +28,38 @@ class PurchaseInvoicesController extends AppController
     }
     public function index()
     {
+		$status=$this->request->query('status');
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
 		$location_id=$this->Auth->User('location_id');
 		$this->viewBuilder()->layout('super_admin_layout');
         $this->paginate = [
-            'contain' => ['Cities','SellerLedgers'=>['Sellers']],
+            'contain' => ['Cities','SellerLedgers'=>['Sellers','VendorData']],
 			'limit' => 20
         ];
-        $purchaseInvoices = $this->paginate($this->PurchaseInvoices);
 		
+		$purchase_invoices=$this->PurchaseInvoices->find()->where(['PurchaseInvoices.city_id'=>$city_id])->contain(['PurchaseInvoiceRows'=>['GrnRows'=>function($p) {
+						return $p->select(['id','quantity','transfer_quantity'])->contain(['Grns']);
+		}]])->toArray();
+		//pr($purchase_invoices); exit;
+		$total_qty=[];
+		$transfer_qty=[];
+		$created_for=[];
+		foreach($purchase_invoices as $datas){
+			foreach($datas->purchase_invoice_rows as $data){
+				@$total_qty[@$datas->id]+=@$data->grn_row->quantity;
+				@$transfer_qty[@$datas->id]+=@$data->grn_row->transfer_quantity;
+				@$created_for[@$datas->id]=@$data->grn_row->grn->created_for;
+			}
+			
+		}
+		
+		//pr($total_qty); 
+		//pr($created_for); exit;
+        $purchaseInvoices = $this->paginate($this->PurchaseInvoices);
+		//pr($purchaseInvoices); exit;
 		$paginate_limit=$this->paginate['limit'];
-        $this->set(compact('purchaseInvoices','paginate_limit'));
+        $this->set(compact('purchaseInvoices','paginate_limit','status','transfer_qty','total_qty','created_for'));
     }
 
     /**
@@ -162,7 +182,7 @@ class PurchaseInvoicesController extends AppController
 				$gstCity=$sellerData->seller->city->state_id;
 			}
 			
-			//pr($gstCity); exit;
+			
 			if ($this->PurchaseInvoices->save($purchaseInvoice)) {
 				
 			//Accounting Entries for Purchase account//
@@ -197,7 +217,7 @@ class PurchaseInvoicesController extends AppController
 					
 					//Accounting Entries for CGST//
 					$gstLedgerCGST = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()
-					->where(['Ledgers.gst_figure_id' =>$purchase_invoice_row->gst_percentage, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'CGST'])->first();
+					->where(['Ledgers.gst_figure_id' =>$purchase_invoice_row->gst_figure_id, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'CGST'])->first();
 					$AccountingEntrieCGST = $this->PurchaseInvoices->AccountingEntries->newEntity();
 					$AccountingEntrieCGST->ledger_id=$gstLedgerCGST->id;
 					$AccountingEntrieCGST->debit=$gstAmtInsert;
@@ -211,7 +231,7 @@ class PurchaseInvoicesController extends AppController
 					
 					//Accounting Entries for SGST//
 					 $gstLedgerSGST = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()
-					->where(['Ledgers.gst_figure_id' =>$purchase_invoice_row->gst_percentage, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'SGST'])->first();
+					->where(['Ledgers.gst_figure_id' =>$purchase_invoice_row->gst_figure_id, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'SGST'])->first();
 					$AccountingEntrieSGST = $this->PurchaseInvoices->AccountingEntries->newEntity();
 					$AccountingEntrieSGST->ledger_id=$gstLedgerSGST->id;
 					$AccountingEntrieSGST->debit=$gstAmtInsert;
@@ -231,7 +251,7 @@ class PurchaseInvoicesController extends AppController
 					
 					//Accounting Entries for IGST//
 					 $gstLedgerIGST = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()
-					->where(['Ledgers.gst_figure_id' =>$purchase_invoice_row->gst_percentage, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'IGST'])->first();
+					->where(['Ledgers.gst_figure_id' =>$purchase_invoice_row->gst_figure_id, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'IGST'])->first();
 					$AccountingEntrieIGST = $this->PurchaseInvoices->AccountingEntries->newEntity();
 					$AccountingEntrieIGST->ledger_id=$gstLedgerIGST->id;
 					$AccountingEntrieIGST->debit=$gstAmtInsert;
