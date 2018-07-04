@@ -37,7 +37,7 @@ class ItemsController extends AppController
         ];
 
 		$items = $this->Items->find()->where(['Items.city_id'=>$city_id]);
-
+		
 		if ($this->request->is(['get'])){
 			$search=$this->request->getQuery('search');
 			$items->where([
@@ -69,7 +69,7 @@ class ItemsController extends AppController
         ];
 
 		$items = $this->Items->find()->where(['Items.city_id'=>$city_id]);
-//pr($items->toArray()); exit;
+
 		if ($this->request->is(['get'])){
 			$search=$this->request->getQuery('search');
 			$items->where([
@@ -83,6 +83,7 @@ class ItemsController extends AppController
 							]
 			]);
 		}
+		pr($items->toArray()); exit;
         $items = $this->paginate($items);
 		$paginate_limit=$this->paginate['limit'];
         $this->set(compact('items','paginate_limit'));
