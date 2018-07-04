@@ -215,7 +215,7 @@ class ItemsController extends AppController
 			$unit_option[]=['text'=>$unitVariation->quantity_variation .' ' .$unitVariation->unit->unit_name ,'value'=>$unitVariation->id ];
 		}
         $categories = $this->Items->Categories->find('list')->where(['Categories.city_id'=>$city_id]);
-        $brands = $this->Items->Brands->find('list');
+        $brands = $this->Items->Brands->find('list')->where(['Brands.city_id'=>$city_id]);
 
 		$gstFigures =  $this->Items->GstFigures->find('list')->where(['city_id'=>$city_id]);
 		//pr($unitVariations->toArray());exit;

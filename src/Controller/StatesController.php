@@ -18,20 +18,20 @@ class StatesController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index($id = null)
+    public function index($ids = null)
     {
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('super_admin_layout');
 		$this->paginate= [
 					'limit'=>20
 		];
-		if($id)
+		if($ids)
 		{
-		   $id = $this->EncryptingDecrypting->decryptData($id);
+		   $id = $this->EncryptingDecrypting->decryptData($ids);
 		}
 		
 		$states=$this->States->find();
-        if($id)
+        if($ids)
 		{
 		    $state = $this->States->get($id);
 		}

@@ -23,7 +23,7 @@ class CitiesController extends AppController
      * @return \Cake\Http\Response|void
      */
    
-    public function index($id = null)
+    public function index($ids = null)
     {
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('super_admin_layout');
@@ -31,13 +31,13 @@ class CitiesController extends AppController
             'contain' => ['States'],
 			'limit' =>20
         ];
-		if($id)
+		if($ids)
 		{
-		   $id = $this->EncryptingDecrypting->decryptData($id);
+		   $id = $this->EncryptingDecrypting->decryptData($ids);
 		}
 		
 		$cities = $this->Cities->find();
-        if($id)
+        if($ids)
 		{
 		    $city = $this->Cities->get($id);
 		}
