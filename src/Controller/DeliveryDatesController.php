@@ -24,7 +24,7 @@ class DeliveryDatesController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index($id=null)
+    public function index($ids=null)
     {
 		
 		$city_id=$this->Auth->User('city_id'); 
@@ -39,14 +39,14 @@ class DeliveryDatesController extends AppController
 			'limit' => 20,
          ];
 		
-		if($id)
+		if($ids)
 		{
-		   $id = $this->EncryptingDecrypting->decryptData($id);
+		   $id = $this->EncryptingDecrypting->decryptData($ids);
 		}
 		
 	     $deliverydates = $this->DeliveryDates->find()->where(['city_id'=>$city_id]);
 		
-		if($id)
+		if($ids)
 		{
 		   $deliverydate = $this->DeliveryDates->get($id);
 		}

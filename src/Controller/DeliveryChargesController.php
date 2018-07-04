@@ -24,7 +24,7 @@ class DeliveryChargesController extends AppController
      *
      * @return \Cake\Http\Response|void
      */
-    public function index($id = null)
+    public function index($ids = null)
     {
 		$city_id=$this->Auth->User('city_id'); 
 		$user_id=$this->Auth->User('id');
@@ -37,14 +37,14 @@ class DeliveryChargesController extends AppController
 		$this->paginate = [
 			'limit' => 20,
          ];
-		if($id)
+		if($ids)
 		{
-		   $id = $this->EncryptingDecrypting->decryptData($id);
+		   $id = $this->EncryptingDecrypting->decryptData($ids);
 		}
 		
 	     $deliveryCharges = $this->DeliveryCharges->find()->where(['city_id'=>$city_id]);
 		
-		if($id)
+		if($ids)
 		{
 		   $deliveryCharge = $this->DeliveryCharges->get($id);
 		}
