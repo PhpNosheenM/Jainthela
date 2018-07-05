@@ -96,8 +96,8 @@
 									</div>
 									<div class="form-group" id="var_id" style="display:none !important;">
 										<label>Item Variation</label>
-										<?= $this->Form->select('variation_id',$variation_options,['id'=>'variation_id','empty'=>'Select Combo Offers','class'=>'form-control select','label'=>false]) ?>
-										<?php //$this->Form->control('link_name',['class'=>'form-control','placeholder'=>'Link Name','label'=>false]) ?>
+										<?= $this->Form->select('variation_id',$variation_options,['id'=>'variation_id','empty'=>'Select Item Variation','class'=>'form-control select','label'=>false]) ?>
+										<?php  //$this->Form->control('link_name',['class'=>'form-control','placeholder'=>'Link Name','label'=>false]) ?>
 										<span class="help-block"></span>
 									</div>
 							<div class="form-group" id="web_image_data">

@@ -59,7 +59,7 @@ class DeliveryDatesController extends AppController
 			 
             $deliverydate = $this->DeliveryDates->patchEntity($deliverydate, $this->request->getData());
 			$deliverydate->city_id=$city_id;
-			if($id)
+			if($ids)
 			{
 				$deliverydate->id=$id;
 			}

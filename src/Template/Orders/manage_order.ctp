@@ -77,6 +77,7 @@
 									<td><?= h($delivery_time) ?></td>
 									<td><?= h($order->order_status) ?></td>
 									<td>&nbsp; 
+									<span id="al"></span>
 										<?php if($order->packing_flag=='Deactive'){ ?>
 											<?= $this->form->button(__('Packing'),['class'=>'btn btn-success btn-condensed btn-sm pckg']) ?>
 										<?php } ?>
@@ -206,6 +207,7 @@
 		$(document).on('click','.pckg',function(){
 			var mns1=$(this);
 			var ordr_id=$(this).closest('tr').find('.ordr_id').val();
+			var mn1=$(this).closest('tr').find('#al');
 			var url='".$this->Url->build(["controller" => "Orders", "action" => "packing"])."';
 			url=url+'/'+ordr_id
 			$.ajax({
@@ -213,12 +215,14 @@
 				type: 'GET'
 			}).done(function(response) {
 				mns1.hide();
+				mn1.html(response);
 			});
 			
 		});
 		
 		$(document).on('click','.dsptch',function(){
 			var mns2=$(this);
+			var mn1=$(this).closest('tr').find('#al');
 			var ordr_id=$(this).closest('tr').find('.ordr_id').val();
 			var url='".$this->Url->build(["controller" => "Orders", "action" => "dispatch"])."';
 			url=url+'/'+ordr_id
@@ -227,6 +231,7 @@
 				type: 'GET'
 			}).done(function(response) {
 				mns2.hide();
+				mn1.html(response);
 			});
 			
 		});

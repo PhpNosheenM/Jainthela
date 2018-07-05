@@ -197,7 +197,7 @@ class SuperAdminsController extends AppController
         if ($this->request->is('post')) 
 		{
 			$user = $this->Auth->identify();
-			 
+			  
 			if ($user) 
 			{ //pr($user); exit;
 				$Cities = $this->SuperAdmins->Cities->get($user['city_id']);

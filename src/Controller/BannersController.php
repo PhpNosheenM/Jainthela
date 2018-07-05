@@ -20,11 +20,13 @@ class BannersController extends AppController
         $this->Security->setConfig('unlockedActions', ['index']);
 
     }
+	
     /**
      * Index method
      *
      * @return \Cake\Http\Response|void
      */
+	
     public function index($id = null)
     {
 		$city_id=$this->Auth->User('city_id');
@@ -119,12 +121,12 @@ class BannersController extends AppController
 							]
 			]);
 		}
-		$categories=$this->Banners->Categories->find('list')->where(['Categories.status'=>'Active']);
-		$Items=$this->Banners->Items->find('list')->where(['Items.status'=>'Active']);
-		$Sellers=$this->Banners->Sellers->find('list')->where(['Sellers.status'=>'Active']);
-		$ComboOffers=$this->Banners->ComboOffers->find('list')->where(['ComboOffers.status'=>'Active']);
-		$ItemVariationMaster=$this->Banners->ItemVariations->find()->where(['ItemVariations.status'=>'Active'])->contain(['Items','UnitVariations'=>['Units']]);
-		 
+		$categories=$this->Banners->Categories->find('list')->where(['Categories.status'=>'Active','Categories.city_id'=>$city_id]);
+		$Items=$this->Banners->Items->find('list')->where(['Items.status'=>'Active','Items.city_id'=>$city_id]);
+		$Sellers=$this->Banners->Sellers->find('list')->where(['Sellers.status'=>'Active','Sellers.city_id'=>$city_id]);
+		$ComboOffers=$this->Banners->ComboOffers->find('list')->where(['ComboOffers.status'=>'Active','ComboOffers.city_id'=>$city_id]);
+		$ItemVariationMaster=$this->Banners->ItemVariations->find()->where(['ItemVariations.status'=>'Active','ItemVariations.city_id'=>$city_id])->contain(['Items','UnitVariations'=>['Units']]);
+	
 		foreach($ItemVariationMaster as $data){
 			$item_name=$data->item->name;
 			$item_id=$data->item->id;
@@ -135,11 +137,12 @@ class BannersController extends AppController
 			$show=$item_name.'('.$convert_unit_qty.'-'.$unit_name.')';
 			$variation_options[]=['value'=>$id,'text'=>$show, 'category_id'=>$category_id, 'item_id'=>$item_id];
 		}
-	 
+	
         $banners = $this->paginate($banners);
 		$paginate_limit=$this->paginate['limit'];
 		$this->set(compact('banners','banner','paginate_limit','categories','Items','Sellers','ComboOffers','ItemVariationMasters','variation_options'));
     }
+	
     public function deleteFile($dir)
     {
         $dir = $this->EncryptingDecrypting->decryptData($dir);
@@ -151,6 +154,7 @@ class BannersController extends AppController
          return $this->redirect(['action' => 'index']);
         exit;
     }
+	
     /**
      * View method
      *
@@ -158,6 +162,7 @@ class BannersController extends AppController
      * @return \Cake\Http\Response|void
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
+	
     public function view($id = null)
     {
         $banner = $this->Banners->get($id, [
