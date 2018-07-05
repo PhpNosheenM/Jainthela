@@ -125,7 +125,7 @@ class HomeScreensController extends AppController
 							$Items = $this->HomeScreens->Categories->find();
 							$Items->where(['status'=>'Active','city_id'=>$city_id,'id'=>$HomeScreen->category_id])->contain(['SellerItems'=> function($q) use($city_id,$Items) { 
 								return $q->contain(['Items','ItemRating' => function($q) use($Items) {
-									return $q->select(['ItemRating.id','AverageReviewRatings.item_id','ItemAverageRating' => $Items->func()->avg('AverageReviewRatings.rating')])
+									return $q->select(['ItemRating.item_id','ItemRating.id','AverageReviewRatings.item_id','ItemAverageRating' => $Items->func()->avg('AverageReviewRatings.rating')])
 									->leftJoinWith('AverageReviewRatings');
 								} ,'ItemVariations'=>['ItemVariationMasters','UnitVariations'=>['Units']]])
 									->select(['SellerItems.category_id','sellerItemCount'=>$Items->func()->count('ItemVariations.seller_item_id')])
@@ -175,12 +175,25 @@ class HomeScreensController extends AppController
 						}
 						
 						if($HomeScreen->model_name=='Combooffer'){
-							$Combooffers=$this->HomeScreens->ComboOffers->find()->where(['status'=>'Active','city_id'=>$city_id])->limit(3);
+							$Combooffers=$this->HomeScreens->ComboOffers->find()
+							->contain(['ComboOfferDetails'])
+							->where(['status'=>'Active','city_id'=>$city_id])->limit(3);
 
 							if($Combooffers){
 								$count_value = 0;
 								$cart_count =0;
+								$total_item=0;
 									foreach ($Combooffers as $Combooffer) {
+									$total_item = sizeof($Combooffer->combo_offer_details);
+									$Combooffer->total_item_quantity = $total_item;
+									$inWishList = $this->HomeScreens->ComboOffers->WishListItems->find()->where(['combo_offer_id'=>$Combooffer->id])->contain(['WishLists'=>function($q) use($customer_id){
+										return $q->select(['WishLists.customer_id'])->where(['customer_id'=>$customer_id]);}])->count();
+										if($inWishList  == 1)
+										{ $inWishList = true; }
+										else { $inWishList = false; }
+										
+										$Combooffer->inWishList = $inWishList;
+										
 										$count_cart = $this->HomeScreens->ComboOffers->Carts->find()->select(['Carts.cart_count'])->where(['Carts.combo_offer_id'=>$Combooffer->id,'Carts.customer_id'=>$customer_id]);
 										//pr($count_cart->toArray());exit;
 											if(!empty($count_cart->toArray()))

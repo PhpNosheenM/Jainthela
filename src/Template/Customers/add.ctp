@@ -147,7 +147,8 @@
 										<th><?= ('Address') ?></th>
 										<th><?= ('Landmark') ?></th>
 										<th><?= ('Pincode') ?></th>
-										<th><?= ('default') ?></th>
+										<th><?= ('Default') ?></th>
+										<th><?= ('Location') ?></th>
 										<th  class="actions"><?= __('Actions') ?></th>
 									</tr>
 								</thead>
@@ -167,6 +168,10 @@
 										</td>
 										<td width="10%" valign="top">
 											<?= $this->Form->control('pincode',['class'=>'form-control pincode','label'=>false]) ?>
+										</td>
+										
+										<td>
+											<?= $this->Form->select('location_id',$locations,['empty'=>'---Select--Location---','class'=>'form-control select location_id','label'=>false]) ?>
 										</td>
 										
 										<td valign="top">
@@ -247,6 +252,10 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 			</td>
 			<td width="10%" valign="top">
 				<?= $this->Form->control('pincode',['class'=>'form-control pincode','label'=>false]) ?>
+			</td>
+			
+			<td>
+				<?= $this->Form->select('location_id',$locations,['empty'=>'---Select--Location---','class'=>'form-control select location_id','label'=>false]) ?>
 			</td>
 			
 			<td valign="top">
@@ -378,7 +387,8 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 						$(this).find("td:nth-child(2) textarea.address").attr({name:"customer_addresses["+i+"][address]",id:"customer_addresses-"+i+"-address"}).rules("add", "required");
 						$(this).find("td:nth-child(3) textarea.landmark").attr({name:"customer_addresses["+i+"][landmark]",id:"customer_addresses-"+i+"-landmark"}).rules("add", "required");
 						$(this).find("td:nth-child(4) input.pincode").attr({name:"customer_addresses["+i+"][pincode]",id:"customer_addresses-"+i+"-pincode"}).rules("add", "required");
-						$(this).find("td:nth-child(5) input.default_address").attr({name:"customer_addresses["+i+"][default_address]",id:"customer_addresses-"+i+"-default_address"});
+						$(this).find("td:nth-child(5) select.location_id").attr({name:"customer_addresses["+i+"][location_id]",id:"customer_addresses-"+i+"-location_id"});
+						$(this).find("td:nth-child(6) input.default_address").attr({name:"customer_addresses["+i+"][default_address]",id:"customer_addresses-"+i+"-default_address"});
 						i++;
 			});
 		}

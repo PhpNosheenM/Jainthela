@@ -198,7 +198,9 @@ class CustomersController extends AppController
 			  
             $this->Flash->error(__('The customer could not be saved. Please, try again.'));
         }
-		$this->set(compact('customer', 'city_id','location_id'));
+		$this->loadmodel('Locations');
+		$locations=$this->Locations->find('list')->where(['Locations.city_id'=>$city_id,'Locations.Status'=>'Active']);
+		$this->set(compact('customer', 'city_id','location_id','locations'));
     }
 
     /**

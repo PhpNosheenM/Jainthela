@@ -13,7 +13,7 @@ use Cake\View\View;
 class VendorsController extends AppController
 {
 
-    /**
+    /** 
      * Index method
      *
      * @return \Cake\Http\Response|void

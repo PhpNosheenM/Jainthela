@@ -23,7 +23,7 @@
 						$class1="btn btn-default";
 						$class2="btn btn-xs blue";
 					}
-					 ?> 
+					 ?>
 						<?php echo $this->Html->link('Pending',['controller'=>'Orders','action' => 'manage_order?status=placed'],['escape'=>false,'class'=>$class1]); ?>
 						<?php echo $this->Html->link('All',['controller'=>'Orders','action' => 'manage_order'],['escape'=>false,'class'=>$class2]); ?>&nbsp;
 				</div> 	

@@ -256,6 +256,7 @@ class CartsController extends AppController
 			$delivery_charge_amount = '0.00';
 			$tag=$this->request->data('tag');
 			$total_GST=0;
+			$total_combo_GST =0;
 			if(!empty($city_id) && !empty($customer_id))
 			{
 					$exists = $this->Carts->Customers->exists(['id'=>$customer_id]);
@@ -463,7 +464,10 @@ class CartsController extends AppController
 										foreach($comboData as $combo)
 										{
 											$grand_total1+=$combo->amount;
+											$total_combo_GST += $combo->gst_amount;
 										}
+										
+										$total_GST = $total_GST + $total_combo_GST;
 									}
 
 									//$total_GST = number_format(round($total_GST), 2);
@@ -524,9 +528,11 @@ class CartsController extends AppController
 											foreach($comboData as $combo)
 											{
 												$grand_total1+=$combo->amount;
+												$total_combo_GST += $combo->gst_amount;
 											}
+											$total_GST = $total_GST + $total_combo_GST;
 										}
-
+									
 										$grand_total_before_promoCode = number_format(round($grand_total1), 2);
 										$grand_total=number_format(round($grand_total1), 2);
 										$payableAmount = $payableAmount + $grand_total1 + $total_GST;
@@ -535,16 +541,16 @@ class CartsController extends AppController
 
 										if(!empty($delivery_charges->toArray()))
 										{
-												foreach ($delivery_charges as $delivery_charge) {
-														if($delivery_charge->amount >= $grand_total)
-														{
-															 $delivery_charge_amount = "$delivery_charge->charge";
-															 $payableAmount = $payableAmount + $delivery_charge->charge;
-														}else
-														{
-															$delivery_charge_amount = "free";
-														}
+											foreach ($delivery_charges as $delivery_charge) {
+												if($delivery_charge->amount >= $grand_total)
+												{
+													 $delivery_charge_amount = "$delivery_charge->charge";
+													 $payableAmount = $payableAmount + $delivery_charge->charge;
+												}else
+												{
+													$delivery_charge_amount = "free";
 												}
+											}
 										}
 										$payableAmount = number_format($payableAmount,2);
 								}		
@@ -561,8 +567,8 @@ class CartsController extends AppController
 							{
 							  $success = true;
 							  $message = 'Cart Data found';
-							  $this->set(compact('success', 'message','address_available','promo_discount','grand_total_before_promoCode','total_GST','grand_total','delivery_charge_amount','payableAmount','remaining_wallet_amount','carts','item_in_cart','comboData','Combototal','promo_detail_id'));
-							  $this->set('_serialize', ['success', 'message','promo_discount','grand_total_before_promoCode','promo_detail_id','total_GST','remaining_wallet_amount','grand_total','delivery_charge_amount', 'payableAmount','item_in_cart','address_available','carts','comboData','Combototal']);
+							  $this->set(compact('success', 'message','address_available','promo_discount','grand_total_before_promoCode','total_GST','grand_total','delivery_charge_amount','payableAmount','remaining_wallet_amount','carts','item_in_cart','comboData','Combototal','promo_detail_id','total_combo_GST'));
+							  $this->set('_serialize', ['success', 'message','promo_discount','grand_total_before_promoCode','promo_detail_id','total_GST','total_combo_GST','remaining_wallet_amount','grand_total','delivery_charge_amount', 'payableAmount','item_in_cart','address_available','carts','comboData','Combototal']);
 							}
 
 				}

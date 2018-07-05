@@ -216,14 +216,15 @@ class OrdersTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->existsIn(['location_id'], 'Locations'));
-        $rules->add($rules->existsIn(['customer_id'], 'Customers'));
+		$rules->add($rules->existsIn(['customer_id'], 'Customers'));
+        /* $rules->add($rules->existsIn(['location_id'], 'Locations'));
+        
         $rules->add($rules->existsIn(['driver_id'], 'Drivers'));
         ///$rules->add($rules->existsIn(['customer_address_id'], 'CustomerAddresses'));
         $rules->add($rules->existsIn(['promotion_detail_id'], 'PromotionDetails'));
         $rules->add($rules->existsIn(['delivery_charge_id'], 'DeliveryCharges'));
         $rules->add($rules->existsIn(['delivery_time_id'], 'DeliveryTimes'));
-        $rules->add($rules->existsIn(['cancel_reason_id'], 'CancelReasons'));
+        $rules->add($rules->existsIn(['cancel_reason_id'], 'CancelReasons')); */
 
         return $rules;
     }
