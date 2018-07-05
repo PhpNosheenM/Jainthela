@@ -160,7 +160,9 @@ class AppController extends Controller
 		/*   Get Menu    */
 		
 		$user_type=$this->Auth->User('user_type');
-		$sidebar_menu=$this->SidebarMenu->getMenu($user_type);
+		//$sidebar_menu=$this->SidebarMenu->getMenu($user_type);
+		$this->loadModel('Menus');
+		$sidebar_menu=$this->Menus->find('threaded')->where(['status'=>1,'menu_for_user'=>$user_type]);
 		
 		$this->set(compact('sidebar_menu','user_type'));
 	}

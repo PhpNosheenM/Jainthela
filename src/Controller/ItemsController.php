@@ -69,7 +69,7 @@ class ItemsController extends AppController
         ];
 
 		$items = $this->Items->find()->where(['Items.city_id'=>$city_id]);
-//pr($items->toArray()); exit;
+
 		if ($this->request->is(['get'])){
 			$search=$this->request->getQuery('search');
 			$items->where([

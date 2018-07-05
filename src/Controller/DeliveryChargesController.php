@@ -58,7 +58,7 @@ class DeliveryChargesController extends AppController
             $deliveryCharge = $this->DeliveryCharges->patchEntity($deliveryCharge, $this->request->getData());
 			$deliveryCharge->city_id=$city_id;
 			$deliveryCharge->created_by=$user_id;
-			if($id)
+			if($ids)
 			{
 				$deliveryCharge->id=$id;
 			}

@@ -503,7 +503,7 @@ class OrdersController extends AppController
 			$order->order_from="Web";
 			$order->location_id=$location_id;
 			$order->voucher_no=$voucher_no;
-			$order->order_status="Pending";
+			$order->order_status="placed";
 			$order->transaction_date=date('Y-m-d',strtotime($order->transaction_date));
 			$Custledgers = $this->Orders->SellerLedgers->get($order->party_ledger_id,['contain'=>['Customers'=>['Cities']]]);
 			
