@@ -7,7 +7,7 @@ $this->set('title', 'Create Stock Transfer Voucher');
 <div class="page-content-wrap">
     <div class="page-title">                    
         <h2><span class="fa fa-arrow-circle-o-left"></span>  Create Stock Transfer Voucher</h2>
-    </div> 
+    </div>
     <div class="row">
         <div class="panel panel-default">
             <?= $this->Form->create($stockTransferVoucher,['onsubmit'=>'return checkValidation()']) ?>
@@ -15,26 +15,26 @@ $this->set('title', 'Create Stock Transfer Voucher');
                     <div class="col-md-12">
                         <div class="portlet light ">
                             <div class="portlet-body">
-                                    <div class="row">
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label>Voucher No :</label>&nbsp;&nbsp;
-                                                <?= h(str_pad($voucher_no, 4, '0', STR_PAD_LEFT)) ?>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label>Transaction Date <span class="required">*</span></label>
-                                                <?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm datepicker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y')]); ?>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="form-group">
-                                                <label>Transfer To</label>
-                                                  <?= $this->Form->select('location_id',$locations,['class'=>'form-control select transfer_to', 'label'=>false,'data-live-search'=>true,'required'=>true]) ?>
-                                            </div>
-                                        </div>
-                                </div>
+								<div class="row">
+									<div class="col-md-3">
+										<div class="form-group">
+											<label>Voucher No :</label>&nbsp;&nbsp;
+											<?= h(str_pad($voucher_no, 4, '0', STR_PAD_LEFT)) ?>
+										</div>
+									</div>
+									<div class="col-md-3">
+										<div class="form-group">
+											<label>Transaction Date <span class="required">*</span></label>
+											<?php echo $this->Form->control('transaction_date',['class'=>'form-control input-sm datepicker','data-date-format'=>'dd-mm-yyyy','label'=>false,'placeholder'=>'DD-MM-YYYY','type'=>'text','data-date-start-date'=>@$coreVariable[fyValidFrom],'data-date-end-date'=>@$coreVariable[fyValidTo],'value'=>date('d-m-Y')]); ?>
+										</div>
+									</div>
+									<div class="col-md-3">
+										<div class="form-group">
+											<label>Transfer To</label>
+											  <?= $this->Form->select('location_id',$locations,['class'=>'form-control select transfer_to', 'label'=>false,'data-live-search'=>true,'required'=>true]) ?>
+										</div>
+									</div>
+								</div>
                                 <br>
                                 <div class="row">
                                     <div class="table-responsive">
@@ -49,10 +49,7 @@ $this->set('title', 'Create Stock Transfer Voucher');
                                             <tbody id='main_tbody' class="tab">
                                             <?php
                                             $i=0;
-                                            foreach($grns->grn_rows as $grn_row){
-                                               
-                                                ?>
-                                                
+                                            foreach($grns->grn_rows as $grn_row){ ?>
                                                 <tr class="main_tr" class="tab">
                                                     <td width="7%" align="center"><?= $i+1 ?></td>
                                                     <td width="25%">
@@ -69,7 +66,7 @@ $this->set('title', 'Create Stock Transfer Voucher');
                                                              unset($itemOptions);
                                                             foreach($grn_row->item->item_variations as $item_variation){ 
                                                                     $purchase_rate=($item_variation->unit_variation->convert_unit_qty/$grn_row->unit_variation->convert_unit_qty)*$grn_row->purchase_rate;
-                                                                    $itemOptions[]=['value'=>$item_variation->id,'text'=>$item_variation->unit_variation->quantity_variation.' '.$item_variation->unit_variation->unit->shortname,'convert_qty'=>$item_variation->unit_variation->convert_unit_qty,'purchase_rate'=>$purchase_rate];
+                                                                    $itemOptions[]=['value'=>$item_variation->id,'text'=>$item_variation->unit_variation->quantity_variation.' '.$item_variation->unit_variation->unit->shortname,'convert_qty'=>$item_variation->unit_variation->convert_unit_qty,'purchase_rate'=>$purchase_rate,'unit_variation_id'=>$item_variation->unit_variation->id];
                                                             }
 
                                                                 ?>
@@ -209,6 +206,9 @@ $this->set('title', 'Create Stock Transfer Voucher');
         $(document).on('change','select.item_variation',function(){ 
 
               var purchase_rate =  parseFloat($(this).closest('td').find('select.item_variation option:selected').attr('purchase_rate'));
+              var unt_variation_id =  parseFloat($(this).closest('td').find('select.item_variation option:selected').attr('unit_variation_id'));
+			  
+			 $(this).closest('tr').find('.unit_variation_id').val(unt_variation_id);
              $(this).closest('td').find('input.purchase_rate').val(purchase_rate);
              $(this).closest('tr').find('td:eq(1) input').trigger('keyup');
         });

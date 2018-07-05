@@ -23,7 +23,7 @@ class CitiesController extends AppController
      * @return \Cake\Http\Response|void
      */
    
-    public function index($id = null)
+    public function index($ids = null)
     {
 		$user_id=$this->Auth->User('id');
 		$this->viewBuilder()->layout('super_admin_layout');
@@ -31,13 +31,13 @@ class CitiesController extends AppController
             'contain' => ['States'],
 			'limit' =>20
         ];
-		if($id)
+		if($ids)
 		{
-		   $id = $this->EncryptingDecrypting->decryptData($id);
+		   $id = $this->EncryptingDecrypting->decryptData($ids);
 		}
 		
 		$cities = $this->Cities->find();
-        if($id)
+        if($ids)
 		{
 		    $city = $this->Cities->get($id);
 		}
@@ -214,6 +214,7 @@ class CitiesController extends AppController
 				$accountingGroup->receipt_ledger=1;
 				$accountingGroup->debit_note_first_row=1;
 				$accountingGroup->sales_voucher_first_ledger=1;
+				$accountingGroup->bank=1;
 				$this->Cities->AccountingGroups->save($accountingGroup);
 				
 				$accountingGroup = $this->Cities->AccountingGroups->newEntity();
@@ -304,6 +305,7 @@ class CitiesController extends AppController
 				$accountingGroup->supplier=1;
 				$accountingGroup->city_id=$city->id;
 				$accountingGroup->purchase_voucher_party=1;
+				$accountingGroup->payment_ledger=1;
 				$accountingGroup->purchase_invoice_party=1;
 				$accountingGroup->purchase_voucher_first_ledger=1;
 				$accountingGroup->credit_note_all_row=1;
@@ -405,6 +407,8 @@ class CitiesController extends AppController
 				$dis_rec = $this->Cities->AccountingGroups->find()->where(['name'=>'Indirect Incomes','city_id'=>$city->id])->first();
 				$trans_paid = $this->Cities->AccountingGroups->find()->where(['name'=>'Direct Expenses','city_id'=>$city->id])->first();
 				$trans_rec = $this->Cities->AccountingGroups->find()->where(['name'=>'Direct Incomes','city_id'=>$city->id])->first();
+				$sale_acc = $this->Cities->AccountingGroups->find()->where(['name'=>'Sales Accounts','city_id'=>$city->id])->first();
+				$pur_acc = $this->Cities->AccountingGroups->find()->where(['name'=>'Purchase Accounts','city_id'=>$city->id])->first();
 				//pr($gstFigureId); exit;
 
 				$gstLedgerEntrys=[
@@ -447,6 +451,8 @@ class CitiesController extends AppController
 					['name'=>'Discount Received', 'accounting_group_id'=>$dis_rec->id,'city_id'=>$city->id,'bill_to_bill_accounting'=>'no','gst_figure_id'=>null,'tax_percentage'=>0,'input_output'=>null,'gst_type'=>null,'round_off'=>0,'cash'=>0,'flag'=>1,'ccavenue'=>'no','ccavenue_charges'=>'no','tds_account'=>'no','discount'=>'Received','transport'=>null],
 					['name'=>'Transport Receive', 'accounting_group_id'=>$trans_rec->id,'city_id'=>$city->id,'bill_to_bill_accounting'=>'no','gst_figure_id'=>null,'tax_percentage'=>0,'input_output'=>null,'gst_type'=>null,'round_off'=>0,'cash'=>0,'flag'=>1,'ccavenue'=>'no','ccavenue_charges'=>'no','tds_account'=>'no','discount'=>null,'transport'=>'Receive'],
 					['name'=>'Transport Paid', 'accounting_group_id'=>$trans_paid->id,'city_id'=>$city->id,'bill_to_bill_accounting'=>'no','gst_figure_id'=>null,'tax_percentage'=>0,'input_output'=>null,'gst_type'=>null,'round_off'=>0,'cash'=>0,'flag'=>1,'ccavenue'=>'no','ccavenue_charges'=>'no','tds_account'=>'no','discount'=>null,'transport'=>'Paid'],
+					['name'=>'Sales Accounts', 'accounting_group_id'=>$sale_acc->id,'city_id'=>$city->id,'bill_to_bill_accounting'=>'no','gst_figure_id'=>null,'tax_percentage'=>0,'input_output'=>null,'gst_type'=>null,'round_off'=>0,'cash'=>0,'flag'=>1,'ccavenue'=>'no','ccavenue_charges'=>'no','tds_account'=>'no','discount'=>null,'transport'=>null],
+					['name'=>'Purchase Account', 'accounting_group_id'=>$pur_acc->id,'city_id'=>$city->id,'bill_to_bill_accounting'=>'no','gst_figure_id'=>null,'tax_percentage'=>0,'input_output'=>null,'gst_type'=>null,'round_off'=>0,'cash'=>0,'flag'=>1,'ccavenue'=>'no','ccavenue_charges'=>'no','tds_account'=>'no','discount'=>null,'transport'=>null],
 				];
 			//pr($gstLedgerEntrys->toArray()); exit;
 

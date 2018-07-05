@@ -503,7 +503,7 @@ class OrdersController extends AppController
 			$order->order_from="Web";
 			$order->location_id=$location_id;
 			$order->voucher_no=$voucher_no;
-			$order->order_status="Pending";
+			$order->order_status="placed";
 			$order->transaction_date=date('Y-m-d',strtotime($order->transaction_date));
 			$Custledgers = $this->Orders->SellerLedgers->get($order->party_ledger_id,['contain'=>['Customers'=>['Cities']]]);
 			
@@ -992,8 +992,9 @@ class OrdersController extends AppController
 					
                 $this->Flash->success(__('The order has been saved.'));
                 return $this->redirect(['action' => 'index']);
-            }
+            }else{ pr($order); exit;
             $this->Flash->error(__('The order could not be saved. Please, try again.'));
+			}
         }
 		
 		$partyParentGroups = $this->Orders->AccountingGroups->find()
@@ -1052,9 +1053,9 @@ class OrdersController extends AppController
 								return $q
 								->where(['ItemVariations.seller_id is NULL','ItemVariations.status'=>'Active','current_stock >'=>'0'])->contain(['UnitVariations'=>['Units']]);
 								}]); */
-		$itemList=$this->Orders->Items->find()->contain(['ItemVariations'=> function ($q) {
-								return $q
-								->where(['ItemVariations.status'=>'Active','current_stock >'=>'0'])->contain(['UnitVariations'=>['Units']]);
+		$itemList=$this->Orders->Items->find()->contain(['ItemVariations'=> function ($q) use($city_id){
+								return $q 
+								->where(['ItemVariations.status'=>'Active','current_stock >'=>'0','ItemVariations.city_id '=>$city_id])->contain(['UnitVariations'=>['Units']]);
 								}]);
 		//pr($itemList->toArray()); exit;
 		$items=array();

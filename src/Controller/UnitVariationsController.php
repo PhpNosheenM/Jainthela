@@ -84,7 +84,7 @@ class UnitVariationsController extends AppController
 			]);
 		}
 		
-		$units = $this->UnitVariations->Units->find('list');
+		$units = $this->UnitVariations->Units->find('list')->where(['Units.city_id'=>$city_id]);
         $unitVariations = $this->paginate($unitVariations);
 		$paginate_limit=$this->paginate['limit'];
 		$this->set(compact('unitVariations','unitVariation', 'units','paginate_limit'));

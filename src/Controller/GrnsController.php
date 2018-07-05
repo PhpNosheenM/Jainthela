@@ -162,7 +162,7 @@ class GrnsController extends AppController
             $grn->city_id =$city_id;
             $grn->created_for ='Jainthela';
             $grn->super_admin_id =$user_id;
-
+			//pr($grn); exit;
             if ($this->Grns->save($grn)) 
             {
                 //Create Item_Ledger//
@@ -176,6 +176,7 @@ class GrnsController extends AppController
                     $item_ledger->item_id = $grn_row->item_id;
                     $item_ledger->quantity = $grn_row->quantity;
                     $item_ledger->rate = $grn_row->purchase_rate;
+                    $item_ledger->expiry_date = $grn_row->expiry_date;
                     //$item_ledger->sale_rate = $grn_row->sale_rate;
                    // $item_ledger->company_id  =$company_id;
                     $item_ledger->city_id =$city_id;

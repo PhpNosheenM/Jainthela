@@ -72,7 +72,7 @@ class DeliveryTimesController extends AppController
 			$this->Flash->error(__('The delivery time could not be saved. Please, try again.'));
 		}
 		
-		$deliveryTimes = $this->paginate($this->DeliveryTimes);
+		$deliveryTimes = $this->paginate($deliveryTimes);
         $paginate_limit=$this->paginate['limit'];
         $this->set(compact('deliveryTime','deliveryTimes','paginate_limit'));
     }
