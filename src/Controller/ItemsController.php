@@ -37,7 +37,7 @@ class ItemsController extends AppController
         ];
 
 		$items = $this->Items->find()->where(['Items.city_id'=>$city_id]);
-
+		
 		if ($this->request->is(['get'])){
 			$search=$this->request->getQuery('search');
 			$items->where([
@@ -83,6 +83,7 @@ class ItemsController extends AppController
 							]
 			]);
 		}
+		pr($items->toArray()); exit;
         $items = $this->paginate($items);
 		$paginate_limit=$this->paginate['limit'];
         $this->set(compact('items','paginate_limit'));
@@ -240,10 +241,40 @@ class ItemsController extends AppController
 	public function expiryReport($id = null){
 		$city_id=$this->Auth->User('city_id');
 		$this->viewBuilder()->layout('super_admin_layout');
-		$ItemsVariationsForJainthela=$this->Items->ItemsVariationsData->find()->contain(['Items','UnitVariations'=>['Units']])->where(['ItemsVariationsData.seller_id IS NULL','ItemsVariationsData.city_id'=>$city_id])->toArray();
-		pr($ItemsVariationsForJainthela); 
-		exit;
+		$item_variation_id=$this->request->query('item_variation_id');
+		$ItemsVariationsForJainthela1=$this->Items->ItemsVariationsData->find()->contain(['Items','UnitVariations'=>['Units']])->where(['ItemsVariationsData.seller_id IS NULL','ItemsVariationsData.city_id'=>$city_id])->toArray();
 		
+		$listItems=[];
+		foreach($ItemsVariationsForJainthela1 as $data){
+			$merge=@$data->item->name.'('.@$data->unit_variation->quantity_variation.'.'.@$data->unit_variation->unit->shortname.')';
+			$listItems[$data->id]=['text'=>$merge,'value'=>$data->id]; 
+		}
+		
+		$where1=[];
+		if(!empty($item_variation_id))
+		{
+			$where1['ItemsVariationsData.id']=$item_variation_id;
+		}
+		
+		$ItemsVariationsForJainthela=$this->Items->ItemsVariationsData->find()->contain(['Items','UnitVariations'=>['Units']])->where(['ItemsVariationsData.seller_id IS NULL','ItemsVariationsData.city_id'=>$city_id])->where($where1)->toArray();
+		
+		$itemStock=[];
+		$itemName=[];
+		foreach($ItemsVariationsForJainthela as $data){
+			$ItemLedgersexists = $this->Items->ItemLedgers->exists(['item_variation_id' => $data->id]);
+			if($ItemLedgersexists){
+				$expiry_date=date('d-m-Y');
+				$location_id=1;
+				$Itemdata=$this->Items->get($data->item_id);
+				$dateWiseItem = $this->itemVariationWiseReportForExpiryReport($data->id,$expiry_date,$location_id);
+				$itemStock[$data->id]=($dateWiseItem);
+				//$itemName[$data->id]=($Itemdata->name);
+				$merge=@$data->item->name.'('.@$data->unit_variation->quantity_variation.'.'.@$data->unit_variation->unit->shortname.')';
+				//pr($merge); exit;
+				$itemName[$data->id]=$merge; 
+			}
+		}  //pr($itemName); exit;
+		$this->set(compact('itemStock','itemName','listItems','item_variation_id'));
 	}
 	public function todayStockReport($id = null){
 		$city_id=$this->Auth->User('city_id');
@@ -471,6 +502,70 @@ class ItemsController extends AppController
 		pr($item_id); exit;
 		
 	} */
+	
+	public function itemVariationWiseReportForExpiryReport($item_variation_id=null,$transaction_date,$location_id){
+		$this->viewBuilder()->layout('super_admin_layout');
+		$transaction_date=date('Y-m-d',strtotime($transaction_date));
+		$StockLedgers =  $this->Items->ItemLedgers->find()->where(['item_variation_id'=>$item_variation_id,'transaction_date <='=>$transaction_date,'location_id'=>$location_id])->order(['ItemLedgers.transaction_date'=>'ASC'])->toArray();
+		
+		$stockNew=[];
+		foreach($StockLedgers as $StockLedger){
+			if($StockLedger->status=='In'){
+				$stockNew[]=['qty'=>$StockLedger->quantity,'rate'=>$StockLedger->rate,'expiry_date'=>date('Y-m-d',strtotime($StockLedger->expiry_date))];
+			}
+		}
+		
+		foreach($StockLedgers as $StockLedger){
+			if($StockLedger->status=='Out'){
+				/* if(sizeof(@$stock) > 0){
+					$stock= array_slice($stock, $StockLedger->quantity*100);
+				} */
+
+				if(sizeof(@$stockNew)==0){
+				break;
+				}
+
+				$outQty=$StockLedger->quantity;
+				a:
+				if(sizeof(@$stockNew)==0){
+					break;
+				}
+				$R=@$stockNew[0]['qty']-$outQty;
+				if($R>0){
+					$stockNew[0]['qty']=$R;
+				}
+				else if($R<0){
+					unset($stockNew[0]);
+					@$stockNew=array_values(@$stockNew);
+					$outQty=abs($R);
+					goto a;
+				}
+				else{
+					unset($stockNew[0]);
+					$stockNew=array_values($stockNew);
+				}
+			}
+		}
+/* pr($stockNew); exit;
+		$closingValue=0;
+		$total_stock=0;
+		$total_amt=0;
+		$unit_rate=0;
+		foreach($stockNew as $qw){
+			$total_stock+=$qw['qty'];
+			$total_amt+=$qw['rate']*$qw['qty'];
+		}
+		if($total_amt > 0 && $total_stock > 0){
+			 $unit_rate = $total_amt/$total_stock;
+		}
+
+		$Data=['stock'=>$total_stock,'unit_rate'=>$unit_rate]; */
+		return $stockNew;
+		exit;
+	}
+	
+	
+	
 	public function itemVariationWiseReport($item_variation_id=null,$transaction_date,$location_id,$where1){
 		$this->viewBuilder()->layout('super_admin_layout');
 		//$city_id=$this->Auth->User('city_id');
