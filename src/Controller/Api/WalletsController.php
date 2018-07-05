@@ -77,7 +77,7 @@ class WalletsController extends AppController
             }
           }
 
-          $plans = $this->Wallets->Plans->find()->where(['status'=>1]);
+          $plans = $this->Wallets->Plans->find()->where(['status'=>'Active']);
           if(empty($plans)){ $plans = []; }
 
           if(empty($wallet_details->toArray()))

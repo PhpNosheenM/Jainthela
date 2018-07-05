@@ -60,7 +60,7 @@ class SellerItemsController extends AppController
 
         $sellerItem = $this->SellerItems->find();
          $sellerItem->contain(['Sellers','ItemRating' => function($q) use($sellerItem) {
-					return $q->select(['ItemRating.id','AverageReviewRatings.item_id','ItemAverageRating' => $sellerItem->func()->avg('AverageReviewRatings.rating')])
+					return $q->select(['ItemRating.item_id','ItemRating.id','AverageReviewRatings.item_id','ItemAverageRating' => $sellerItem->func()->avg('AverageReviewRatings.rating')])
 					->leftJoinWith('AverageReviewRatings');
 				},'Items' => function($q) use($city_id,$categoryWhere,$limit,$page) {
 			return $q->where($categoryWhere)
