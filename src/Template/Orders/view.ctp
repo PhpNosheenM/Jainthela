@@ -22,6 +22,7 @@ margin-bottom: 0;
     margin: 0px 0px 0px 0px;  /* this affects the margin in the printer settings */
 }
 </style>
+<?php $this->set('title', 'View'); ?>
 	<div style="border:solid 1px #c7c7c7;background-color: #FFF;padding:10px;width: 100%;font-size:14px;" class="maindiv">	
 		<?php
 		if(empty($print))

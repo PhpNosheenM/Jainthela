@@ -23,17 +23,37 @@
 				<div class="panel-body">   			
 					<div class="row">
 						<div class="col-md-10"></div>
-						<div class="col-md-1">Expired In 7 days</div>
+						<div class="col-md-1">Expired In <?php echo $day_no; ?> days</div>
 						<div class="col-md-1" style=" background-color: #f27c41; width: 20px;height: 20px;border: 1px; padding: 1px; margin: 1px;">
 						</div> 
 					</div>
 					<div class="row">
 					<?= $this->Form->create('Search',['type'=>'GET']) ?>
 						
+
+						<div class="col-md-2">
+							<div class="form-group">
+								<label></label>
+								<?php echo $this->Form->select('location_id',$Locations, ['label' => false,'class' => 'form-control input-sm ledger select', 'data-live-search'=>true,'value'=>$location_id]); ?>
+								
+							</div>
+						</div>
+						
 						<div class="col-md-2">
 							<div class="form-group">
 								<label></label>
 								<?php echo $this->Form->select('item_variation_id',$listItems, ['empty'=>'--Select Item--','label' => false,'class' => 'form-control input-sm ledger select', 'data-live-search'=>true,'value'=>$item_variation_id]); ?>
+								
+							</div>
+						</div>
+						
+						
+						<div class="col-md-2">
+							<div class="form-group">
+								<label></label>
+								<?php 
+								$days=[['text'=>'3 days','value'=>3],['text'=>'5 days','value'=>5],['text'=>'7 days','value'=>7],['text'=>'10 days','value'=>10],['text'=>'15 days','value'=>15]];
+								echo $this->Form->select('day_no',$days, ['empty'=>'--Select Item--','label' => false,'class' => 'form-control input-sm ledger select', 'data-live-search'=>true,'value'=>$day_no]); ?>
 								
 							</div>
 						</div>
@@ -85,7 +105,7 @@
 											<tbody>
 												<?php $p=1;  foreach($Data as $data1){  
 														$td=date('d-m-Y'); 
-														$sevendays=7; 
+														$sevendays=$day_no; 
 														$tdsevenDays= date('d-m-Y', strtotime($td. ' + '.$sevendays.' days'));
 														$ed=date('d-m-Y',strtotime(($data1['expiry_date']))); 
 													if($ed <= $tdsevenDays){ 

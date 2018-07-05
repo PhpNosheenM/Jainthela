@@ -32,7 +32,7 @@ class StockTransferVouchersController extends AppController
             'contain' => ['Grns', 'Cities', 'Locations'],
 			'limit' => 20
         ];
-        $stockTransferVouchers = $this->paginate($this->StockTransferVouchers);
+        $stockTransferVouchers = $this->paginate($this->StockTransferVouchers->find()->where(['StockTransferVouchers.city_id'=>$city_id]));
 		$paginate_limit=$this->paginate['limit'];
         $this->set(compact('stockTransferVouchers','paginate_limit'));
     }
@@ -85,13 +85,16 @@ class StockTransferVouchersController extends AppController
            
             if ($this->StockTransferVouchers->save($stockTransferVoucher)) {
                 $total_tranfer_quantity=0;
+                $total_tranfer_quantity1=0;
                 $total_quantity=0;
                 foreach($this->request->getData('grn_rows') as $data)
                 {
                     $grn_row = $this->StockTransferVouchers->Grns->GrnRows->get($data['grn_row_id']);
                     $transfer_quantity =$grn_row->transfer_quantity;
+                    $transfer_quantity1 =$grn_row->transfer_quantity+$grn_row->return_quantity;
                     $total_quantity+=$grn_row->quantity;
                     $total_tranfer_quantity+=$data['transfer_quantity']+$transfer_quantity;
+                    $total_tranfer_quantity1+=$data['transfer_quantity']+$transfer_quantity1;
 
                     $query = $this->StockTransferVouchers->Grns->GrnRows->query();
                     $query->update()
@@ -106,7 +109,7 @@ class StockTransferVouchersController extends AppController
                     ->values(['item_id' => $grn_row->item_id,'city_id' => $city_id,'unit_variation_id' => $grn_row->unit_variation_id,'transaction_date' => $transaction_date,'quantity' => $data['transfer_quantity'],'rate' => $grn_row->purchase_rate,'purchase_rate' => $grn_row->purchase_rate,'amount' => $amount,'stock_transfer_voucher_id' => $stockTransferVoucher->id,'grn_row_id' => $data['grn_row_id'],'status'=>'Out','expiry_date'=>$grn_row->expiry_date])->execute();
     
                 }
-                if($total_quantity == $total_tranfer_quantity)
+                if($total_quantity == $total_tranfer_quantity1)
                 {
                     $query = $this->StockTransferVouchers->Grns->query();
                     $query->update()

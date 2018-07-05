@@ -39,24 +39,25 @@ class PurchaseInvoicesController extends AppController
         ];
 		
 		$purchase_invoices=$this->PurchaseInvoices->find()->where(['PurchaseInvoices.city_id'=>$city_id])->contain(['PurchaseInvoiceRows'=>['GrnRows'=>function($p) {
-						return $p->select(['id','quantity','transfer_quantity'])->contain(['Grns']);
+						return $p->select(['id','quantity','transfer_quantity','return_quantity'])->contain(['Grns']);
 		}]])->toArray();
 		//pr($purchase_invoices); exit;
 		$total_qty=[];
 		$transfer_qty=[];
 		$created_for=[];
+		$tq=0;
 		foreach($purchase_invoices as $datas){
 			foreach($datas->purchase_invoice_rows as $data){
 				@$total_qty[@$datas->id]+=@$data->grn_row->quantity;
-				@$transfer_qty[@$datas->id]+=@$data->grn_row->transfer_quantity;
+				$tq=@$data->grn_row->transfer_quantity+@$data->grn_row->return_quantity;
+				@$transfer_qty[@$datas->id]+=$tq;
 				@$created_for[@$datas->id]=@$data->grn_row->grn->created_for;
 			}
 			
 		}
 		
-		//pr($total_qty); 
-		//pr($created_for); exit;
-        $purchaseInvoices = $this->paginate($this->PurchaseInvoices);
+		
+        $purchaseInvoices = $this->paginate($this->PurchaseInvoices->find()->where(['PurchaseInvoices.city_id'=>$city_id]));
 		//pr($purchaseInvoices); exit;
 		$paginate_limit=$this->paginate['limit'];
         $this->set(compact('purchaseInvoices','paginate_limit','status','transfer_qty','total_qty','created_for'));
@@ -215,70 +216,75 @@ class PurchaseInvoicesController extends AppController
 					$gstAmtdata=round($purchase_invoice_row->gst_value/2,2);
 					$gstAmtInsert=round($gstAmtdata,2);
 					
-					//Accounting Entries for CGST//
-					$gstLedgerCGST = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()
-					->where(['Ledgers.gst_figure_id' =>$purchase_invoice_row->gst_figure_id, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'CGST'])->first();
-					$AccountingEntrieCGST = $this->PurchaseInvoices->AccountingEntries->newEntity();
-					$AccountingEntrieCGST->ledger_id=$gstLedgerCGST->id;
-					$AccountingEntrieCGST->debit=$gstAmtInsert;
-					$AccountingEntrieCGST->credit=0;
-					$AccountingEntrieCGST->transaction_date=$purchaseInvoice->transaction_date;
-					//$AccountingEntrieCGST->location_id=$location_id;
-					$AccountingEntrieCGST->city_id=$city_id;
-					$AccountingEntrieCGST->entry_from="Web";
-					$AccountingEntrieCGST->purchase_invoice_id=$purchaseInvoice->id;
-					$this->PurchaseInvoices->AccountingEntries->save($AccountingEntrieCGST);
-					
-					//Accounting Entries for SGST//
-					 $gstLedgerSGST = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()
-					->where(['Ledgers.gst_figure_id' =>$purchase_invoice_row->gst_figure_id, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'SGST'])->first();
-					$AccountingEntrieSGST = $this->PurchaseInvoices->AccountingEntries->newEntity();
-					$AccountingEntrieSGST->ledger_id=$gstLedgerSGST->id;
-					$AccountingEntrieSGST->debit=$gstAmtInsert;
-					$AccountingEntrieSGST->credit=0;
-					$AccountingEntrieSGST->transaction_date=$purchaseInvoice->transaction_date;
-					//$AccountingEntrieSGST->location_id=$location_id;
-					$AccountingEntrieSGST->city_id=$city_id;
-					$AccountingEntrieSGST->entry_from="Web";
-					$AccountingEntrieSGST->purchase_invoice_id=$purchaseInvoice->id; 
-					$this->PurchaseInvoices->AccountingEntries->save($AccountingEntrieSGST);
-					
+					if($gstAmtInsert > 0){
+						//Accounting Entries for CGST//
+						$gstLedgerCGST = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()
+						->where(['Ledgers.gst_figure_id' =>$purchase_invoice_row->gst_figure_id, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'CGST'])->first();
+						$AccountingEntrieCGST = $this->PurchaseInvoices->AccountingEntries->newEntity();
+						$AccountingEntrieCGST->ledger_id=$gstLedgerCGST->id;
+						$AccountingEntrieCGST->debit=$gstAmtInsert;
+						$AccountingEntrieCGST->credit=0;
+						$AccountingEntrieCGST->transaction_date=$purchaseInvoice->transaction_date;
+						//$AccountingEntrieCGST->location_id=$location_id;
+						$AccountingEntrieCGST->city_id=$city_id;
+						$AccountingEntrieCGST->entry_from="Web";
+						$AccountingEntrieCGST->purchase_invoice_id=$purchaseInvoice->id;
+						$this->PurchaseInvoices->AccountingEntries->save($AccountingEntrieCGST);
+						
+						//Accounting Entries for SGST//
+						 $gstLedgerSGST = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()
+						->where(['Ledgers.gst_figure_id' =>$purchase_invoice_row->gst_figure_id, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'SGST'])->first();
+						$AccountingEntrieSGST = $this->PurchaseInvoices->AccountingEntries->newEntity();
+						$AccountingEntrieSGST->ledger_id=$gstLedgerSGST->id;
+						$AccountingEntrieSGST->debit=$gstAmtInsert;
+						$AccountingEntrieSGST->credit=0;
+						$AccountingEntrieSGST->transaction_date=$purchaseInvoice->transaction_date;
+						//$AccountingEntrieSGST->location_id=$location_id;
+						$AccountingEntrieSGST->city_id=$city_id;
+						$AccountingEntrieSGST->entry_from="Web";
+						$AccountingEntrieSGST->purchase_invoice_id=$purchaseInvoice->id; 
+						$this->PurchaseInvoices->AccountingEntries->save($AccountingEntrieSGST);
+						}
 				   }
 			}else{
 				foreach($purchaseInvoice->purchase_invoice_rows as $purchase_invoice_row){ 
 					$gstAmtdata=round($purchase_invoice_row->gst_value,2);
 					$gstAmtInsert=round($gstAmtdata*2,2); 
 					
-					//Accounting Entries for IGST//
-					 $gstLedgerIGST = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()
-					->where(['Ledgers.gst_figure_id' =>$purchase_invoice_row->gst_figure_id, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'IGST'])->first();
-					$AccountingEntrieIGST = $this->PurchaseInvoices->AccountingEntries->newEntity();
-					$AccountingEntrieIGST->ledger_id=$gstLedgerIGST->id;
-					$AccountingEntrieIGST->debit=$gstAmtInsert;
-					$AccountingEntrieIGST->credit=0;
-					$AccountingEntrieIGST->transaction_date=$purchaseInvoice->transaction_date;
-					//$AccountingEntrieIGST->location_id=$location_id;
-					$AccountingEntrieIGST->city_id=$city_id;
-					$AccountingEntrieIGST->entry_from="Web";
-					$AccountingEntrieIGST->purchase_invoice_id=$purchaseInvoice->id; 
-					$this->PurchaseInvoices->AccountingEntries->save($AccountingEntrieIGST);
-					
+					if($gstAmtInsert > 0){
+						//Accounting Entries for IGST//
+						 $gstLedgerIGST = $this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->find()
+						->where(['Ledgers.gst_figure_id' =>$purchase_invoice_row->gst_figure_id, 'Ledgers.input_output'=>'input', 'Ledgers.gst_type'=>'IGST'])->first();
+						$AccountingEntrieIGST = $this->PurchaseInvoices->AccountingEntries->newEntity();
+						$AccountingEntrieIGST->ledger_id=$gstLedgerIGST->id;
+						$AccountingEntrieIGST->debit=$gstAmtInsert;
+						$AccountingEntrieIGST->credit=0;
+						$AccountingEntrieIGST->transaction_date=$purchaseInvoice->transaction_date;
+						//$AccountingEntrieIGST->location_id=$location_id;
+						$AccountingEntrieIGST->city_id=$city_id;
+						$AccountingEntrieIGST->entry_from="Web";
+						$AccountingEntrieIGST->purchase_invoice_id=$purchaseInvoice->id; 
+						$this->PurchaseInvoices->AccountingEntries->save($AccountingEntrieIGST);
+					}
 				}
 			}
 			
 			//Accounting Entries for Reference Details//
-			$ReferenceDetail = $this->PurchaseInvoices->ReferenceDetails->newEntity(); 
-			$ReferenceDetail->ledger_id=$purchaseInvoice->seller_ledger_id;
-			$ReferenceDetail->credit=$purchaseInvoice->total_amount;
-			$ReferenceDetail->debit=0;
-			$ReferenceDetail->transaction_date=$purchaseInvoice->transaction_date;
-			//$ReferenceDetail->location_id=$location_id;
-			$ReferenceDetail->city_id=$city_id;
-			$ReferenceDetail->entry_from="Web";
-			$ReferenceDetail->type='New Ref';
-			$ReferenceDetail->ref_name=$purchaseInvoice->invoice_no;
-			$ReferenceDetail->purchase_invoice_id=$purchaseInvoice->id;
-			$this->PurchaseInvoices->ReferenceDetails->save($ReferenceDetail);
+			$seller_ledger_data=$this->PurchaseInvoices->PurchaseInvoiceRows->Ledgers->get($purchaseInvoice->seller_ledger_id);
+			if($seller_ledger_data->bill_to_bill_accounting=="yes"){
+				$ReferenceDetail = $this->PurchaseInvoices->ReferenceDetails->newEntity(); 
+				$ReferenceDetail->ledger_id=$purchaseInvoice->seller_ledger_id;
+				$ReferenceDetail->credit=$purchaseInvoice->total_amount;
+				$ReferenceDetail->debit=0;
+				$ReferenceDetail->transaction_date=$purchaseInvoice->transaction_date;
+				//$ReferenceDetail->location_id=$location_id;
+				$ReferenceDetail->city_id=$city_id;
+				$ReferenceDetail->entry_from="Web";
+				$ReferenceDetail->type='New Ref';
+				$ReferenceDetail->ref_name=$purchaseInvoice->invoice_no;
+				$ReferenceDetail->purchase_invoice_id=$purchaseInvoice->id;
+				$this->PurchaseInvoices->ReferenceDetails->save($ReferenceDetail);
+			}
 			
 			foreach($to_be_send as $id=>$qty){ 
 				if($qty > 0){
