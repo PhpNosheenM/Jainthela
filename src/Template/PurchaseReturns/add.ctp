@@ -87,7 +87,7 @@
 								<tbody class="MainTbody"> 
 								<?php foreach($purchase_invoices->purchase_invoice_rows as $purchase_invoice_row){ 
 								//pr($purchase_invoice_row->grn_row);
-								$due_qty=$purchase_invoice_row->grn_row->quantity-$purchase_invoice_row->grn_row->transfer_quantity;
+								$due_qty=$purchase_invoice_row->grn_row->quantity-$purchase_invoice_row->grn_row->transfer_quantity-$purchase_invoice_row->grn_row->return_quantity;
 								if($due_qty > 0){
 								?>
 									<tr class="MainTr">
@@ -105,7 +105,7 @@
 										</td>
 										
 										<td  valign="top">
-											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false,'value'=>$due_qty]) ?>
+											<?= $this->Form->control('quantity',['class'=>'form-control quantity','label'=>false,'value'=>$due_qty,'max'=>$due_qty]) ?>
 											
 										</td>
 										<td valign="top">
@@ -239,6 +239,7 @@
 							
 							<?php } ?>
 							
+							<?php if($ReferenceDetails){ $q=0; ?>
 							<center><h3>Against Refrence</h3></center>
 								<hr>
 								<table width="60%" style="font-size:14px;">
@@ -247,10 +248,11 @@
 										<th style="padding-left:40px !important;">Amount</th>
 									</tr>
 									<tr>
-										<td style="text-align:right;"><?= $this->Form->control('ref_name',['class'=>'form-control gst_value','label'=>false,'readonly','value'=>$ReferenceDetails->ref_name]) ?></td>
-										<td  style="text-align:right;"><?= $this->Form->control('ref_amount',['class'=>'form-control total_amt','label'=>false,'readonly']) ?></td>
+										<td style="text-align:right;"><?= $this->Form->control('reference_details.'.$q.'.ref_name',['class'=>'form-control gst_value','label'=>false,'readonly','value'=>$ReferenceDetails->ref_name]) ?></td>
+										<td  style="text-align:right;"><?= $this->Form->control('reference_details.'.$q.'.debit',['class'=>'form-control total_amt','label'=>false,'readonly']) ?></td>
 									</tr>
 								</table>
+							<?php } ?>
 								
 						</div>
 					</div>

@@ -66,9 +66,9 @@ class PurchaseReturnsController extends AppController
 		$status=$this->request->query('status');
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id');
-		$financial_year_id =$this->Auth->User('financial_year_id ');
+		$financial_year_id =$this->Auth->User('financial_year_id');
 		$this->viewBuilder()->layout('super_admin_layout');
-		
+		//pr($financial_year_id); exit;
 		$purchase_invoices=$this->PurchaseReturns->PurchaseInvoices->find()->where(['PurchaseInvoices.id'=>$invoice_id])->contain(['PurchaseInvoiceRows'=>['GrnRows'=>['Grns'],'Items'=>['GstFigures'],'ItemVariationsData'=>['Items'=>['GstFigures'],'UnitVariations'=>['Units']],'UnitVariations'=>['Units']]])->first();
 		
 		$ReferenceDetails=$this->PurchaseReturns->ReferenceDetails->find()->where(['purchase_invoice_id'=>$invoice_id])->first();
@@ -103,7 +103,11 @@ class PurchaseReturnsController extends AppController
 			$purchaseReturn->city_id = $city_id;
 			$purchaseReturn->financial_year_id = $financial_year_id;
 			$purchaseReturn->purchase_invoice_id = $invoice_id;
-			//pr($purchaseReturn); exit;
+			//pr($purchaseReturn->purchase_return_rows[0]->purchase_invoice_row_id); exit;
+			$GrnRowData = $this->PurchaseReturns->PurchaseInvoices->PurchaseInvoiceRows->get($purchaseReturn->purchase_return_rows[0]->purchase_invoice_row_id,['contain'=>['GrnRows']]);
+			
+			
+			//pr(); exit;
 			if ($this->PurchaseReturns->save($purchaseReturn)) {  
 
 				//Accounting Entries for Purchase account//
@@ -132,51 +136,77 @@ class PurchaseReturnsController extends AppController
 					$gstAmtdata=$purchase_return_row->gst_value/2;
 					$gstAmtInsert=round($gstAmtdata,2);
 					
-					//Accounting Entries for CGST//
-					$gstLedgerCGST = $this->PurchaseReturns->Ledgers->find()
-					->where(['Ledgers.gst_figure_id' =>$purchase_return_row->gst_figure_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'CGST','city_id'=>$city_id])->first();
-					$AccountingEntrieCGST = $this->PurchaseReturns->AccountingEntries->newEntity();
-					$AccountingEntrieCGST->ledger_id=$gstLedgerCGST->id;
-					$AccountingEntrieCGST->credit=$gstAmtInsert;
-					$AccountingEntrieCGST->debit=0;
-					$AccountingEntrieCGST->transaction_date=$purchaseReturn->transaction_date;
-					$AccountingEntrieCGST->city_id=$city_id;
-					$AccountingEntrieCGST->entry_from="Web";
-					$AccountingEntrieCGST->purchase_return_id=$purchaseReturn->id;  
-					$this->PurchaseReturns->AccountingEntries->save($AccountingEntrieCGST);
+					if($gstAmtInsert > 0){
+						//Accounting Entries for CGST//
+						$gstLedgerCGST = $this->PurchaseReturns->Ledgers->find()
+						->where(['Ledgers.gst_figure_id' =>$purchase_return_row->gst_figure_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'CGST','city_id'=>$city_id])->first();
+						$AccountingEntrieCGST = $this->PurchaseReturns->AccountingEntries->newEntity();
+						$AccountingEntrieCGST->ledger_id=$gstLedgerCGST->id;
+						$AccountingEntrieCGST->credit=$gstAmtInsert;
+						$AccountingEntrieCGST->debit=0;
+						$AccountingEntrieCGST->transaction_date=$purchaseReturn->transaction_date;
+						$AccountingEntrieCGST->city_id=$city_id;
+						$AccountingEntrieCGST->entry_from="Web";
+						$AccountingEntrieCGST->purchase_return_id=$purchaseReturn->id;  
+						$this->PurchaseReturns->AccountingEntries->save($AccountingEntrieCGST);
+						
+						
+						//Accounting Entries for SGST//
+						 $gstLedgerSGST = $this->PurchaseReturns->Ledgers->find()
+						->where(['Ledgers.gst_figure_id' =>$purchase_return_row->gst_figure_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'SGST','city_id'=>$city_id])->first();
+						$AccountingEntrieSGST = $this->PurchaseReturns->AccountingEntries->newEntity();
+						$AccountingEntrieSGST->ledger_id=$gstLedgerSGST->id;
+						$AccountingEntrieSGST->credit=$gstAmtInsert;
+						$AccountingEntrieSGST->debit=0;
+						$AccountingEntrieSGST->transaction_date=$purchaseReturn->transaction_date;
+						$AccountingEntrieSGST->city_id=$city_id;
+						$AccountingEntrieSGST->entry_from="Web";
+						$AccountingEntrieSGST->purchase_return_id=$purchaseReturn->id;  
+						$this->PurchaseReturns->AccountingEntries->save($AccountingEntrieSGST);
+					}
+						$ItemLedger = $this->PurchaseReturns->PurchaseReturnRows->Items->ItemLedgers->newEntity(); 
+						$ItemLedger->item_id=$purchase_return_row->item_id; 
+						$ItemLedger->unit_variation_id=$purchase_return_row->unit_variation_id;
+						$ItemLedger->seller_id=NULL;
+						$ItemLedger->transaction_date=$purchaseReturn->transaction_date;  
+						$ItemLedger->quantity=$purchase_return_row->quantity;
+						$ItemLedger->rate=$purchase_return_row->rate;
+						$ItemLedger->purchase_rate=$purchase_return_row->rate;
+						//$ItemLedger->sales_rate=$purchase_return_row->rate; 
+						$ItemLedger->status="Out";
+						$ItemLedger->city_id=$city_id;
+						$ItemLedger->purchase_return_id=$purchaseReturn->id;
+						$ItemLedger->purchase_return_row_id=$purchase_return_row->id; //pr($order_detail); exit;
+						$this->PurchaseReturns->PurchaseReturnRows->Items->ItemLedgers->save($ItemLedger);
+						$this->Flash->success(__('The purchase return has been saved.'));
+						
+						$GrnRowData = $this->PurchaseReturns->PurchaseInvoices->PurchaseInvoiceRows->get($purchase_return_row->purchase_invoice_row_id,['contain'=>['GrnRows']]);
+						$newQty=$purchase_return_row->quantity+$GrnRowData->grn_row->return_quantity;
+						$query = $this->PurchaseReturns->PurchaseInvoices->PurchaseInvoiceRows->GrnRows->query();
+							$query->update()
+							->set(['return_quantity'=>$newQty])
+							->where(['id'=>$GrnRowData->grn_row_id])
+							->execute();
+						
+					}
 					
+					if($purchaseReturn->reference_details[0]){
+						$ReferenceDetail = $this->PurchaseReturns->ReferenceDetails->newEntity(); 
+						$ReferenceDetail->ledger_id=$purchaseReturn->seller_ledger_id;
+						$ReferenceDetail->debit=$purchaseReturn->total_amount;
+						$ReferenceDetail->credit=0;
+						$ReferenceDetail->transaction_date=$purchaseReturn->transaction_date;
+						//$ReferenceDetail->location_id=$location_id;
+						$ReferenceDetail->city_id=$city_id;
+						$ReferenceDetail->entry_from="Web";
+						$ReferenceDetail->type='Against';
+						$ReferenceDetail->ref_name=$purchaseReturn->reference_details[0]->ref_name;
+						$ReferenceDetail->purchase_return_id=$purchaseReturn->id; //pr($ReferenceDetail); exit;
+						$this->PurchaseReturns->ReferenceDetails->save($ReferenceDetail);
+					}
 					
-					//Accounting Entries for SGST//
-					 $gstLedgerSGST = $this->PurchaseReturns->Ledgers->find()
-					->where(['Ledgers.gst_figure_id' =>$purchase_return_row->gst_figure_id, 'Ledgers.input_output'=>'output', 'Ledgers.gst_type'=>'SGST','city_id'=>$city_id])->first();
-					$AccountingEntrieSGST = $this->PurchaseReturns->AccountingEntries->newEntity();
-					$AccountingEntrieSGST->ledger_id=$gstLedgerSGST->id;
-					$AccountingEntrieSGST->credit=$gstAmtInsert;
-					$AccountingEntrieSGST->debit=0;
-					$AccountingEntrieSGST->transaction_date=$purchaseReturn->transaction_date;
-					$AccountingEntrieSGST->city_id=$city_id;
-					$AccountingEntrieSGST->entry_from="Web";
-					$AccountingEntrieSGST->purchase_return_id=$purchaseReturn->id;  
-					$this->PurchaseReturns->AccountingEntries->save($AccountingEntrieSGST);
-					
-					$ItemLedger = $this->PurchaseReturns->PurchaseReturnRows->Items->ItemLedgers->newEntity(); 
-					$ItemLedger->item_id=$purchase_return_row->item_id; 
-					$ItemLedger->unit_variation_id=$purchase_return_row->unit_variation_id;
-					$ItemLedger->seller_id=NULL;
-					$ItemLedger->transaction_date=$purchaseReturn->transaction_date;  
-					$ItemLedger->quantity=$purchase_return_row->quantity;
-					$ItemLedger->rate=$purchase_return_row->rate;
-					$ItemLedger->purchase_rate=$purchase_return_row->rate;
-					//$ItemLedger->sales_rate=$purchase_return_row->rate; 
-					$ItemLedger->status="Out";
-					$ItemLedger->city_id=$city_id;
-					$ItemLedger->purchase_return_id=$purchaseReturn->id;
-					$ItemLedger->purchase_return_row_id=$purchase_return_row->id; //pr($order_detail); exit;
-					$this->PurchaseReturns->PurchaseReturnRows->Items->ItemLedgers->save($ItemLedger);
-					$this->Flash->success(__('The purchase return has been saved.'));
-				}
                 return $this->redirect(['action' => 'index']);
-            }
+            } pr($purchaseReturn); exit;
             $this->Flash->error(__('The purchase return could not be saved. Please, try again.'));
         }
        

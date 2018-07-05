@@ -50,7 +50,7 @@ $this->set('title', 'Create Stock Transfer Voucher');
                                             <?php
                                             $i=0;
                                             foreach($grns->grn_rows as $grn_row){
-                                               
+                                              $grn_row->total_quantity=$grn_row->total_quantity-$grn_row->return_quantity;
                                                 ?>
                                                 
                                                 <tr class="main_tr" class="tab">
@@ -58,7 +58,8 @@ $this->set('title', 'Create Stock Transfer Voucher');
                                                     <td width="25%">
                                                         <?php 
                                                         echo $this->Form->select('grn_rows_id',[$grn_row->id=>$grn_row->item->name.' '.$grn_row->unit_variation->quantity_variation.' '.$grn_row->unit_variation->unit->shortname], ['label' => false,'class' => 'form-control grn_rows_id','required'=>'required']); ?>
-                                                        <span class="itemQty" style="color:red ;font-size:10px;">current stock is <?php echo $convert_qty= $grn_row->total_quantity * $grn_row->unit_variation->convert_unit_qty ; ?> <?= ' '.$grn_row->unit_variation->unit->shortname ?> </span>
+                                                        <span class="itemQty" style="color:red ;font-size:10px;">current stock is <?php 
+														echo $convert_qty= $grn_row->total_quantity * $grn_row->unit_variation->convert_unit_qty ; ?> <?= ' '.$grn_row->unit_variation->unit->shortname ?> </span>
                                                          <?php echo $this->Form->input('item_quantity', ['label' => false,'class' => 'form-control  rightAligntextClass numberOnly item_quantity hide','placeholder'=>'Quantity','value'=>$convert_qty]); ?>
                                                         </td>
                                                     

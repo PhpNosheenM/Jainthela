@@ -196,6 +196,7 @@ class AppController extends Controller
 				}
 			
 		}
+		
 		//$LocationData=$this->Items->Locations->get($location_id);
 			$ItemsVariations=$this->Items->ItemsVariationsData->find()->toArray(); 
 			foreach($ItemsVariations as  $ItemsVariation){  
@@ -205,15 +206,15 @@ class AppController extends Controller
 						
 						if($ItemLedgers){  
 							$UnitRateSerialItem = $this->itemVariationWiseReport1($ItemsVariation->id,$transaction_date,$ItemLedgers->location_id);
-							$showItems1[$ItemLedgers->item->id]=['stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem[	'unit_rate']];
-							//pr($showItems);exit;
+							$showItems1[$ItemsVariation->id]=['stock'=>$UnitRateSerialItem['stock'],'unit_rate'=>$UnitRateSerialItem[	'unit_rate']];
+							//pr($showItems1);
 					}
 			}
-		
+		//exit;
 		$closingValue=0;
-		foreach($showItems as $showItem){ 
-			if(@$showItem['stock'][1] > 0){
-				$closingValue+=$showItem['stock'][1]*$showItem['unit_rate'][1];
+		foreach($showItems as $showItem){  
+			if(@$showItem['stock'][0] > 0){
+				$closingValue+=$showItem['stock'][0]*$showItem['unit_rate'][0];
 			}
 			
 		}
@@ -225,7 +226,7 @@ class AppController extends Controller
 			}
 			
 		}
-		//pr($closingValue1);exit;
+		//pr($closingValue1); exit;
 		return $closingValue+$closingValue1;
 		
 	}
@@ -236,7 +237,7 @@ class AppController extends Controller
 		//$city_id=$this->Auth->User('city_id');
 		$location_id=$this->Auth->User('location_id');
 	
-		$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$item_id,'seller_id IS NULL','location_id'=>0,'transaction_date <='=>$transaction_date])->order(['ItemLedgers.transaction_date'=>'ASC'])->toArray(); 
+		$ItemLedgers =  $this->Items->ItemLedgers->find()->where(['item_id'=>$item_id,'location_id'=>0,'seller_id IS NULL','transaction_date <='=>$transaction_date,'city_id'=>$city_id])->order(['ItemLedgers.transaction_date'=>'ASC'])->toArray(); 
 		
 			foreach($ItemLedgers as $ItemLedger){
 					
@@ -266,12 +267,13 @@ class AppController extends Controller
 						$rate+=$data;
 					}
 					if($remaining > 0){
-						$item_var_val[$key]=$rate/$remaining;
-						$item_stock[$key]=$remaining;
+						$item_var_val[]=$rate/$remaining;
+						$item_stock[]=$remaining;
 					}
 					
 				}
-		$Data=['stock'=>$item_stock,'unit_rate'=>$item_var_val]; //pr($Data); exit;
+		$Data=['stock'=>$item_stock,'unit_rate'=>$item_var_val]; //
+		//pr($Data); exit;
 		return $Data;
 		exit;
 	}
