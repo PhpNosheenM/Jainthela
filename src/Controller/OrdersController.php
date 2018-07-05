@@ -470,7 +470,7 @@ class OrdersController extends AppController
 		$StateData = $this->Orders->Cities->States->get($CityData->state_id);
 	// pr($ids); exit;
 		$this->loadmodel('SalesOrders');
-		$Orders=$this->Orders->get($ids,['contain'=>['OrderDetails'=>['ItemVariations','Items']]]);
+		$Orders=$this->Orders->get($ids,['contain'=>['OrderDetails'=>['ItemVariations','Items'],'Customers'=>['CustomerAddresses'],'CustomerAddresses']]);
 		//pr($Orders); exit;
 		$company_details=$this->Orders->Companies->find()->where(['Companies.city_id'=>$city_id])->first();
         $this->set(compact('ids', 'sales_orders', 'order', 'locations', 'customers', 'drivers', 'customerAddresses', 'promotionDetails', 'deliveryCharges', 'deliveryTimes', 'cancelReasons','order_no','partyOptions','Accountledgers','items','company_details','Orders'));

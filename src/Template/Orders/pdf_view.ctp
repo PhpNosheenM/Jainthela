@@ -87,25 +87,26 @@ background-color:#FFFFFF;
 			</thead>
 			<tbody>
 				<tr>
-					<td colspan="2">Invoice No : -</td>
-					<td  colspan="2">Transport Mode : -</td>
+					<td width="50%" colspan="2">Invoice No : - <?php echo $Orders->order_no; ?></td>
+					<td width="50%"  colspan="2">Transport Mode : -</td>
 				</tr>
 				
 				<tr>
-					<td  colspan="2">Invoice Date : -</td>
+					<td  colspan="2">Invoice Date : - <?php echo date('d-m-Y',strtotime($Orders->transaction_date)); ?></td>
 					<td  colspan="2">Vehical Number : -</td>
 				</tr>
 				
 				<tr>
-					<td  colspan="2">Reverse Charge : -</td>
-					<td  colspan="2">.</td>
+					<td  colspan="2">Reverse Charge : - <?php echo date('d-m-Y',strtotime($Orders->delivery_date)); ?></td>
+					<td  colspan="2">Date Of Supply</td>
 				</tr>
 				
 				<tr>
+					
 					<td>State : - Rajsthan	</td>
-					<td>Code : -</td>
-					<td >Place of Supply : -</td>
-					<td>Pin Code : -</td>
+					<td>Code : - 313001</td>
+					<td colspan="2"> Place of Supply : -<?php echo $Orders->customer_address->address; ?></td>
+					
 				</tr>
 				
 			</tbody>
@@ -124,25 +125,25 @@ background-color:#FFFFFF;
 			</thead>
 			<tbody>
 				<tr>
-					<td colspan="2">Name  : -</td>
-					<td  colspan="2">Name : -</td>
+					<td colspan="2">Name  : -<?php echo $Orders->customer->name; ?></td>
+					<td colspan="2">Name  : -<?php echo $Orders->customer->name; ?></td>
 				</tr>
 				
 				<tr>
-					<td  colspan="2">Address : -</td>
-					<td  colspan="2">Address : -</td>
+					<td  colspan="2">Address : -<?php echo $Orders->customer->customer_addresses[0]->address; ?></td>
+					<td  colspan="2">Address : -<?php echo $Orders->customer_address->address; ?></td>
 				</tr>
 				
 				<tr>
-					<td  colspan="2">GSTIN : -</td>
-					<td  colspan="2">GSTIN : -</td>
+					<td  colspan="2">GSTIN : -<?php echo $Orders->customer->gstin; ?></td>
+					<td  colspan="2">GSTIN : -<?php echo $Orders->customer->gstin; ?></td>
 				</tr>
 				
 				<tr>
 					<td>State : - Rajsthan	</td>
-					<td>Code : -</td>
-					<td >Place of Supply : -</td>
-					<td>Code : -</td>
+					<td>Code : - 313001</td>
+					<td>State : - Rajsthan	</td>
+					<td>Code : - 313001</td>
 				</tr>
 				
 			</tbody>
@@ -190,68 +191,68 @@ background-color:#FFFFFF;
 				}
 				?>
 				<tr>
-					<td  style="text-align:center"><?php echo ++$i; ?></td>
+					<td  style="text-align:right"><?php echo ++$i; ?></td>
 					<td  style="text-align:center"><?php echo $order_detail->item->name; ?></td>
-					<td  style="text-align:center"></td>
-					<td  style="text-align:center"></td>
-					<td  style="text-align:center"><?php echo $order_detail->quantity; $totalQty+=$order_detail->quantity; ?></td>
-					<td  style="text-align:center"><?php echo $order_detail->rate; ?></td>
-					<td  style="text-align:center"><?php echo $order_detail->quantity*$order_detail->rate; $totalAmt+=$order_detail->quantity*$order_detail->rate;?></td>
-					<td  style="text-align:center"><?php echo $order_detail->discount_amount; $totalDis+=$order_detail->discount_amount;?></td>
-					<td  style="text-align:center"><?php echo $order_detail->amount;  $totalTaxVal+=$order_detail->amount;?></td>
-					<td  style="text-align:center"><?php echo $order_detail->gst_percentage; ?></td>
-					<td  style="text-align:center"><?php  echo $gstAmt; ?></td>
-					<td  style="text-align:center"><?php echo $order_detail->gst_percentage; ?></td>
-					<td  style="text-align:center"><?php echo $gstAmt; ?></td>
-					<td  style="text-align:center"><?php echo $order_detail->net_amount; $total+=$order_detail->net_amount;?></td>
+					<td  style="text-align:right"></td>
+					<td  style="text-align:right"></td>
+					<td  style="text-align:right"><?php echo $order_detail->quantity; $totalQty+=$order_detail->quantity; ?></td>
+					<td  style="text-align:right"><?php echo $order_detail->rate; ?></td>
+					<td  style="text-align:right"><?php echo $order_detail->quantity*$order_detail->rate; $totalAmt+=$order_detail->quantity*$order_detail->rate;?></td>
+					<td  style="text-align:right"><?php echo $order_detail->discount_amount; $totalDis+=$order_detail->discount_amount;?></td>
+					<td  style="text-align:right"><?php echo $order_detail->amount;  $totalTaxVal+=$order_detail->amount;?></td>
+					<td  style="text-align:right"><?php echo $order_detail->gst_percentage; ?></td>
+					<td  style="text-align:right"><?php  echo $gstAmt; ?></td>
+					<td  style="text-align:right"><?php echo $order_detail->gst_percentage; ?></td>
+					<td  style="text-align:right"><?php echo $gstAmt; ?></td>
+					<td  style="text-align:right"><?php echo $order_detail->net_amount; $total+=$order_detail->net_amount;?></td>
 				</tr>
 				<?php } ?>
 				<tr>
 					<td colspan="4" style="text-align:center"><b>Total</b></td>
-					<td style="text-align:center"><?php echo $totalQty; ?></td>
-					<td style="text-align:center"></td>
-					<td style="text-align:center"><?php echo $totalAmt; ?></td>
-					<td style="text-align:center"><?php echo $totalDis; ?></td>
-					<td style="text-align:center"><?php echo $totalTaxVal; ?></td>
-					<td style="text-align:center"></td>
-					<td style="text-align:center"><?php echo $gstAmt; ?></td>
-					<td style="text-align:center"></td>
-					<td style="text-align:center"><?php echo $gstAmt; ?></td>
-					<td style="text-align:center"><?php echo $total; ?></td>
+					<td style="text-align:right"><?php echo $totalQty; ?></td>
+					<td style="text-align:right"></td>
+					<td style="text-align:right"><?php echo $totalAmt; ?></td>
+					<td style="text-align:right"><?php echo $totalDis; ?></td>
+					<td style="text-align:right"><?php echo $totalTaxVal; ?></td>
+					<td style="text-align:right"></td>
+					<td style="text-align:right"><?php echo $gstAmt; ?></td>
+					<td style="text-align:right"></td>
+					<td style="text-align:right"><?php echo $gstAmt; ?></td>
+					<td style="text-align:right"><?php echo $total; ?></td>
 				
 				</tr>
 				<tr>
 					<td colspan="9" style="text-align:center"><b>Total Invoice Amount In Words</b></td>
 					<td colspan="4" style="text-align:center"><b>Total Amount Before Tax</b></td>
-					<td style="text-align:center"><b><?php echo $totalTaxVal; ?></b></td>
+					<td style="text-align:right"><b><?php echo $totalTaxVal; ?></b></td>
 				</tr>
 				<tr>
 					<td colspan="9" rowspan="5" style="text-align:center"><b>Total Invoice Amount In Words</b></td>
 					<td colspan="4" style="text-align:center"><b>Add : CGST</b></td>
-					<td style="text-align:center"><b><?php echo $gstAmt; ?></b></td>
+					<td style="text-align:right"><b><?php echo $gstAmt; ?></b></td>
 					
 				</tr>
 				<tr>
 					<td colspan="4" style="text-align:center"><b>Add : CGST</b></td>
-					<td style="text-align:center"><b><?php echo $gstAmt; ?></b></td>
+					<td style="text-align:right"><b><?php echo $gstAmt; ?></b></td>
 				</tr>
 				<tr>
 					<td colspan="4" style="text-align:center"><b>Total Tax Amount</b></td>
-					<td style="text-align:center"><b><?php echo $totalTaxVal; ?></b></td>
+					<td style="text-align:right"><b><?php echo $totalTaxVal; ?></b></td>
 				</tr>
 				<tr>
 					<td colspan="4" style="text-align:center"><b>Total Amount After Tax</b></td>
-					<td style="text-align:center"><b><?php echo $totalTaxVal; ?></b></td>
+					<td style="text-align:right"><b><?php echo $totalTaxVal; ?></b></td>
 				</tr>
 				<tr>
 					<td colspan="4" style="text-align:center"><b>GST on Reverse Charge</b></td>
-					<td style="text-align:center"><b><?php echo "0"; ?></b></td>
+					<td style="text-align:right"><b><?php echo "0"; ?></b></td>
 				</tr>
 				
 				<tr>
 					<td colspan="4"  style="text-align:center"><b>Bank Details</b></td>
-					<td colspan="5" rowspan="6" style="text-align:center"></td>
-					<td  colspan="5" rowspan="6" style="text-align:center" valign="top"><b>Certified That the particulars given</br> above are true and correct</b></td>
+					<td colspan="5" rowspan="5" style="text-align:center"></td>
+					<td  colspan="5" rowspan="5" style="text-align:center" valign="top"><b>Certified That the particulars given</br> above are true and correct</b><br/>or SHRINAKAODA AGROPRODUCT PRIVATE LIMITED</td>
 				</tr>
 				<tr>
 					<td colspan="1"   style="text-align:center"><b>Bank Name</b></td>
@@ -267,12 +268,13 @@ background-color:#FFFFFF;
 					<td  colspan="3"  style="text-align:center"><b>CNRB0002982</b></td>
 				</tr>
 				<tr>
-					<td colspan="4" rowspan="3" style="text-align:center"><b>Terms & Conditions</b></td>
+					<td colspan="4" rowspan="2" style="text-align:center"><b>Terms & Conditions</br></br></br></br></b></td>
 					
 				</tr>
+				
 				<tr>
 					<td colspan="5" rowspan="2" style="text-align:center"><b>Common seal</b></td>
-					<td colspan="5" rowspan="2" style="text-align:center"><b>Authorised Signatory</b></td>
+					<td colspan="5"  rowspan="2" style="text-align:center"><b>Authorised Signatory</b></td>
 				</tr>
 				
 				
