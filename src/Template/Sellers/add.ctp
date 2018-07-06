@@ -50,7 +50,7 @@
 							 <div class="form-group">
 								<label class="col-md-3 control-label">Firm Pincode</label>
 								<div class="col-md-9">
-									<?= $this->Form->control('firm_pincode',['type'=>'number','class'=>'form-control','placeholder'=>'Firm Pincode','label'=>false]) ?>
+									<?= $this->Form->control('firm_pincode',['minlength'=>'6','maxlength'=>'6','type'=>'number','class'=>'form-control','placeholder'=>'Firm Pincode','label'=>false]) ?>
 								</div>
 							</div>
 							

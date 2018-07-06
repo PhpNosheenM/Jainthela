@@ -40,7 +40,7 @@
 								</div>
 							</div>
 							
-							<div class="form-group">                                        
+							<div class="form-group">
 								<label class="col-md-3 control-label">Email</label>
 								<div class="col-md-9 col-xs-12">
 									<?= $this->Form->control('email',['class'=>'form-control','placeholder'=>'Email','label'=>false]) ?>
@@ -49,13 +49,13 @@
 							
 							
 							
-							<div class="form-group">    
+							<div class="form-group">
 								<label class="col-md-3 control-label">Discount(%)</label>
 								<div class="col-md-9 col-xs-12">
-									<?= $this->Form->control('discount_in_percentage',['class'=>'form-control','placeholder'=>'Discount','label'=>false]) ?>
+									<?= $this->Form->control('discount_in_percentage',['max'=>'100','class'=>'form-control','placeholder'=>'Discount','label'=>false]) ?>
 								</div>
 							</div>
-							<div class="form-group">   
+							<div class="form-group">
 								<label class="col-md-3 control-label">Status</label>
 								<div class="col-md-9 col-xs-12">
 									<?php $options['Active'] = 'Active'; ?>
@@ -64,7 +64,7 @@
 								</div>
 							</div>
 							
-							<div class="form-group">           
+							<div class="form-group">
 								<label align="left" class="col-md-3 control-label">Opening balance</label>
 								<div class="col-md-6 col-xs-12">
 								
@@ -109,7 +109,7 @@
 							<div class="form-group">
 								<label class="col-md-3 control-label">Mobile</label>
 								<div class="col-md-9 col-xs-12">
-									<?= $this->Form->control('username',['class'=>'form-control','placeholder'=>'Mobile No','label'=>false]) ?>
+									<?= $this->Form->control('username',['type'=>'number','class'=>'form-control','placeholder'=>'Mobile No','label'=>false]) ?>
 								</div>
 							</div>
 							
@@ -167,11 +167,11 @@
 											<?= $this->Form->control('landmark',['class'=>'form-control landmark','label'=>false,'rows'=>3]) ?>
 										</td>
 										<td width="10%" valign="top">
-											<?= $this->Form->control('pincode',['class'=>'form-control pincode','label'=>false]) ?>
+											<?= $this->Form->control('pincode',['minlength'=>'6','maxlength'=>'6','type'=>'number','class'=>'form-control pincode','label'=>false]) ?>
 										</td>
 										
 										<td>
-											<?= $this->Form->select('location_id',$locations,['empty'=>'---Select--Location---','class'=>'form-control select location_id','label'=>false]) ?>
+											<?= $this->Form->select('location_id',$locations,['empty'=>'---Select--Location---','class'=>'form-control select location_id','label'=>false,'required'=>'required']) ?>
 										</td>
 										
 										<td valign="top">
@@ -251,11 +251,12 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 				<?= $this->Form->control('landmark',['class'=>'form-control landmark','label'=>false,'rows'=>3]) ?>
 			</td>
 			<td width="10%" valign="top">
-				<?= $this->Form->control('pincode',['class'=>'form-control pincode','label'=>false]) ?>
+				<?= $this->Form->control('pincode',['minlength'=>'6','maxlength'=>'6','class'=>'form-control pincode','label'=>false]) ?>
 			</td>
 			
 			<td>
-				<?= $this->Form->select('location_id',$locations,['empty'=>'---Select--Location---','class'=>'form-control select location_id','label'=>false]) ?>
+				<?= $this->Form->select('location_id',$locations,['empty'=>'---Select--Location---','class'=>'form-control location_id','label'=>false,'id'=>'location_id','required'=>'required']) ?>
+				 
 			</td>
 			
 			<td valign="top">
@@ -286,6 +287,9 @@ $option_ref[]= ['value'=>'On Account','text'=>'On Account'];
 							required: true,
 					},
 					username: {
+							required: true,
+					},
+					location_id: {
 							required: true,
 					},
 					
