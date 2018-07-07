@@ -68,23 +68,6 @@ class NotifiesTable extends Table
         $validator
             ->integer('id')
             ->allowEmpty('id', 'create');
-
-        $validator
-            ->scalar('send_flag')
-            ->maxLength('send_flag', 10)
-            ->requirePresence('send_flag', 'create')
-            ->notEmpty('send_flag');
-
-        $validator
-            ->integer('status')
-            ->requirePresence('status', 'create')
-            ->notEmpty('status');
-
-        $validator
-            ->dateTime('created_on')
-            ->requirePresence('created_on', 'create')
-            ->notEmpty('created_on');
-
         return $validator;
     }
 
@@ -98,9 +81,9 @@ class NotifiesTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         $rules->add($rules->existsIn(['customer_id'], 'Customers'));
-        $rules->add($rules->existsIn(['item_variation_id'], 'ItemVariations'));
-        $rules->add($rules->existsIn(['item_id'], 'Items'));
-        $rules->add($rules->existsIn(['combo_offer_id'], 'ComboOffers'));
+        //$rules->add($rules->existsIn(['item_variation_id'], 'ItemVariations'));
+        //$rules->add($rules->existsIn(['item_id'], 'Items'));
+        //$rules->add($rules->existsIn(['combo_offer_id'], 'ComboOffers'));
 
         return $rules;
     }
