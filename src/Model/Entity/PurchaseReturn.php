@@ -79,7 +79,6 @@ class PurchaseReturn extends Entity
         'accounting_entries' => true,
         'item_ledgers' => true,
         'purchase_return_rows' => true,
-        'reference_details' => true,
-        'ref_name' => true
+        'reference_details' => true
     ];
 }
