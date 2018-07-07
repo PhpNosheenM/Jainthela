@@ -10,6 +10,10 @@ use Cake\ORM\Entity;
  * @property int $customer_id
  * @property int $item_variation_id
  * @property string $send_flag
+ * @property int $item_id
+ * @property int $combo_offer_id
+ * @property int $status
+ * @property \Cake\I18n\FrozenTime $created_on
  *
  * @property \App\Model\Entity\Customer $customer
  * @property \App\Model\Entity\ItemVariation $item_variation
@@ -30,6 +34,10 @@ class Notify extends Entity
         'customer_id' => true,
         'item_variation_id' => true,
         'send_flag' => true,
+        'item_id' => true,
+        'combo_offer_id' => true,
+        'status' => true,
+        'created_on' => true,
         'customer' => true,
         'item_variation' => true
     ];

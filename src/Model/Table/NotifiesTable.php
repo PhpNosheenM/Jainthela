@@ -11,6 +11,8 @@ use Cake\Validation\Validator;
  *
  * @property \App\Model\Table\CustomersTable|\Cake\ORM\Association\BelongsTo $Customers
  * @property \App\Model\Table\ItemVariationsTable|\Cake\ORM\Association\BelongsTo $ItemVariations
+ * @property |\Cake\ORM\Association\BelongsTo $Items
+ * @property |\Cake\ORM\Association\BelongsTo $ComboOffers
  *
  * @method \App\Model\Entity\Notify get($primaryKey, $options = [])
  * @method \App\Model\Entity\Notify newEntity($data = null, array $options = [])
@@ -45,6 +47,14 @@ class NotifiesTable extends Table
             'foreignKey' => 'item_variation_id',
             'joinType' => 'INNER'
         ]);
+        $this->belongsTo('Items', [
+            'foreignKey' => 'item_id',
+            'joinType' => 'INNER'
+        ]);
+        $this->belongsTo('ComboOffers', [
+            'foreignKey' => 'combo_offer_id',
+            'joinType' => 'INNER'
+        ]);
     }
 
     /**
@@ -65,6 +75,16 @@ class NotifiesTable extends Table
             ->requirePresence('send_flag', 'create')
             ->notEmpty('send_flag');
 
+        $validator
+            ->integer('status')
+            ->requirePresence('status', 'create')
+            ->notEmpty('status');
+
+        $validator
+            ->dateTime('created_on')
+            ->requirePresence('created_on', 'create')
+            ->notEmpty('created_on');
+
         return $validator;
     }
 
@@ -79,6 +99,8 @@ class NotifiesTable extends Table
     {
         $rules->add($rules->existsIn(['customer_id'], 'Customers'));
         $rules->add($rules->existsIn(['item_variation_id'], 'ItemVariations'));
+        $rules->add($rules->existsIn(['item_id'], 'Items'));
+        $rules->add($rules->existsIn(['combo_offer_id'], 'ComboOffers'));
 
         return $rules;
     }
