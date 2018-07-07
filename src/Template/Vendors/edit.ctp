@@ -40,7 +40,7 @@
 									<?= $this->Form->control('firm_email',['type'=>'mail','class'=>'form-control','placeholder'=>'Firm Email','label'=>false]) ?>
 								</div>
 							</div>
-							 
+							
 							 <div class="form-group">
 								<label class="col-md-3 control-label">Firm Contact</label>
 								<div class="col-md-9">
@@ -51,7 +51,7 @@
 							 <div class="form-group">
 								<label class="col-md-3 control-label">Firm Pincode</label>
 								<div class="col-md-9">
-									<?= $this->Form->control('firm_pincode',['type'=>'number','class'=>'form-control','placeholder'=>'Firm Pincode','label'=>false]) ?>
+									<?= $this->Form->control('firm_pincode',['minlength'=>'6','maxlength'=>'6','type'=>'number','class'=>'form-control','placeholder'=>'Firm Pincode','label'=>false]) ?>
 								</div>
 							</div>
 							
@@ -65,12 +65,12 @@
 										<?= $this->Form->control('registration_date',['class'=>'form-control datepicker','placeholder'=>'Registration Date','label'=>false,'type'=>'text','data-date-format' => 'dd-mm-yyyy','value'=>$org_registration_date]) ?> 
 								</div>
 							</div>
-							  
+							
 						</div>
 						 
 						 
 						<div class="col-md-6">
-							 
+							
 							<div class="form-group">           
 								<label align="left" class="col-md-3 control-label">Opening balance</label>
 								<div class="col-md-6 col-xs-12">

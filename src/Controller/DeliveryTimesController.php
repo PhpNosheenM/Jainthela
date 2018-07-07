@@ -59,7 +59,7 @@ class DeliveryTimesController extends AppController
             $deliveryTime = $this->DeliveryTimes->patchEntity($deliveryTime, $this->request->getData());	
 		    $deliveryTime->city_id=$city_id;
 			$deliveryTime->created_by=$user_id;
-			if($id)
+			if($ids)
 			{
 				$deliveryTime->id=$id;
 			}

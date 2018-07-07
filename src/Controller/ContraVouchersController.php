@@ -210,12 +210,12 @@ class ContraVouchersController extends AppController
 		
 		$cashParentGroups = $this->ContraVouchers->ContraVoucherRows->Ledgers->AccountingGroups->find()
 						->where(['AccountingGroups.city_id'=>$city_id, 'AccountingGroups.cash'=>'1']);
-						
+			
 		$cashGroups=[];
 		
 		foreach($cashParentGroups as $cashParentGroup)
-		{
-			$cashChildGroups = $this->CreditNotes->CreditNoteRows->Ledgers->AccountingGroups
+		{ 	
+			$cashChildGroups = $this->ContraVouchers->ContraVoucherRows->Ledgers->AccountingGroups
 			->find('children', ['for' => $cashParentGroup->id])->toArray();
 			$cashGroups[]=$cashParentGroup->id;
 			foreach($cashChildGroups as $cashChildGroup){

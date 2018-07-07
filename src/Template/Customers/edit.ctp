@@ -52,7 +52,7 @@
 							<div class="form-group">    
 								<label class="col-md-3 control-label">Discount(%)</label>
 								<div class="col-md-9 col-xs-12">
-									<?= $this->Form->control('discount_in_percentage',['class'=>'form-control','placeholder'=>'Discount','label'=>false]) ?>
+									<?= $this->Form->control('discount_in_percentage',['max'=>'100','class'=>'form-control','placeholder'=>'Discount','label'=>false]) ?>
 								</div>
 							</div>
 							<div class="form-group">   
@@ -136,7 +136,7 @@
 											<?= $this->Form->control('landmark',['class'=>'form-control landmark','label'=>false,'rows'=>3,'value'=>$customer_address->landmark]) ?>
 										</td>
 										<td width="10%" valign="top">
-											<?= $this->Form->control('pincode',['class'=>'form-control pincode','label'=>false,'value'=>$customer_address->pincode]) ?>
+											<?= $this->Form->control('pincode',['minlength'=>'6','maxlength'=>'6','class'=>'form-control pincode','label'=>false,'value'=>$customer_address->pincode]) ?>
 										</td>
 										<?php if($customer_address->default_address==1){
 												@$checked="checked";
@@ -187,7 +187,7 @@
 				<?= $this->Form->control('landmark',['class'=>'form-control landmark','label'=>false,'rows'=>3]) ?>
 			</td>
 			<td width="10%" valign="top">
-				<?= $this->Form->control('pincode',['class'=>'form-control pincode','label'=>false]) ?>
+				<?= $this->Form->control('pincode',['minlength'=>'6','maxlength'=>'6','class'=>'form-control pincode','label'=>false]) ?>
 			</td>
 		
 			<td valign="top">

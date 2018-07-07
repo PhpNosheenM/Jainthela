@@ -54,8 +54,13 @@
 								<tr>
 									<td><?= $this->Number->format(++$i) ?></td>
 									<td>
-										<?php $order_id = $EncryptingDecrypting->encryptData($order->id); ?>
-										<?php echo $this->Html->link($order->order_no,['controller'=>'Orders','action' => 'view', $order_id, 'print'],['target'=>'_blank']); ?>
+										<?php if($order->order_type=="Credit"){ ?>
+											<?php $order_id = $EncryptingDecrypting->encryptData($order->id); ?>
+											<?php echo $this->Html->link($order->order_no,['controller'=>'Orders','action' => 'pdfView', $order_id, 'print'],['target'=>'_blank']); ?>
+										<?php }else { ?>
+											<?php $order_id = $EncryptingDecrypting->encryptData($order->id); ?>
+											<?php echo $this->Html->link($order->order_no,['controller'=>'Orders','action' => 'view', $order_id, 'print'],['target'=>'_blank']); ?>
+										<?php } ?>
 									</td>
 									<td><?= h($order->customer->name) ?></td>
 									<td><?= h($order->location->name) ?></td>

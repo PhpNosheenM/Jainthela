@@ -37,7 +37,7 @@ class ItemsController extends AppController
         ];
 
 		$items = $this->Items->find()->where(['Items.city_id'=>$city_id]);
-		
+
 		if ($this->request->is(['get'])){
 			$search=$this->request->getQuery('search');
 			$items->where([
@@ -69,7 +69,7 @@ class ItemsController extends AppController
         ];
 
 		$items = $this->Items->find()->where(['Items.city_id'=>$city_id]);
-
+//pr($items->toArray()); exit;
 		if ($this->request->is(['get'])){
 			$search=$this->request->getQuery('search');
 			$items->where([
@@ -83,7 +83,6 @@ class ItemsController extends AppController
 							]
 			]);
 		}
-		pr($items->toArray()); exit;
         $items = $this->paginate($items);
 		$paginate_limit=$this->paginate['limit'];
         $this->set(compact('items','paginate_limit'));
@@ -240,6 +239,8 @@ class ItemsController extends AppController
     }
 	public function expiryReport($id = null){
 		$city_id=$this->Auth->User('city_id');
+		$location_id=$this->request->query('location_id');
+		$day_no=$this->request->query('day_no');
 		$this->viewBuilder()->layout('super_admin_layout');
 		$item_variation_id=$this->request->query('item_variation_id');
 		$ItemsVariationsForJainthela1=$this->Items->ItemsVariationsData->find()->contain(['Items','UnitVariations'=>['Units']])->where(['ItemsVariationsData.seller_id IS NULL','ItemsVariationsData.city_id'=>$city_id])->toArray();
@@ -256,25 +257,32 @@ class ItemsController extends AppController
 			$where1['ItemsVariationsData.id']=$item_variation_id;
 		}
 		
-		$ItemsVariationsForJainthela=$this->Items->ItemsVariationsData->find()->contain(['Items','UnitVariations'=>['Units']])->where(['ItemsVariationsData.seller_id IS NULL','ItemsVariationsData.city_id'=>$city_id])->where($where1)->toArray();
 		
+		$ItemsVariationsForJainthela=$this->Items->ItemsVariationsData->find()->contain(['Items','UnitVariations'=>['Units']])->where(['ItemsVariationsData.seller_id IS NULL','ItemsVariationsData.city_id'=>$city_id])->where($where1)->toArray();
+		//pr($ItemsVariationsForJainthela); exit;
 		$itemStock=[];
 		$itemName=[];
 		foreach($ItemsVariationsForJainthela as $data){
 			$ItemLedgersexists = $this->Items->ItemLedgers->exists(['item_variation_id' => $data->id]);
 			if($ItemLedgersexists){
-				$expiry_date=date('d-m-Y');
-				$location_id=1;
+				$transaction_date=date('d-m-Y');
+				//$location_id=4;
 				$Itemdata=$this->Items->get($data->item_id);
-				$dateWiseItem = $this->itemVariationWiseReportForExpiryReport($data->id,$expiry_date,$location_id);
+				$dateWiseItem = $this->itemVariationWiseReportForExpiryReport($data->id,$transaction_date,$location_id);
+				
 				$itemStock[$data->id]=($dateWiseItem);
 				//$itemName[$data->id]=($Itemdata->name);
 				$merge=@$data->item->name.'('.@$data->unit_variation->quantity_variation.'.'.@$data->unit_variation->unit->shortname.')';
 				//pr($merge); exit;
 				$itemName[$data->id]=$merge; 
 			}
-		}  //pr($itemName); exit;
-		$this->set(compact('itemStock','itemName','listItems','item_variation_id'));
+		} 
+		if(empty($day_no))
+		{
+			$day_no=7;
+		}
+		$Locations = $this->Items->Locations->find('list')->where(['city_id'=>$city_id]);
+		$this->set(compact('itemStock','itemName','listItems','item_variation_id','location_id','Locations','day_no'));
 	}
 	public function todayStockReport($id = null){
 		$city_id=$this->Auth->User('city_id');
@@ -506,7 +514,9 @@ class ItemsController extends AppController
 	public function itemVariationWiseReportForExpiryReport($item_variation_id=null,$transaction_date,$location_id){
 		$this->viewBuilder()->layout('super_admin_layout');
 		$transaction_date=date('Y-m-d',strtotime($transaction_date));
-		$StockLedgers =  $this->Items->ItemLedgers->find()->where(['item_variation_id'=>$item_variation_id,'transaction_date <='=>$transaction_date,'location_id'=>$location_id])->order(['ItemLedgers.transaction_date'=>'ASC'])->toArray();
+		$StockLedgers =  $this->Items->ItemLedgers->find()->where(['item_variation_id'=>$item_variation_id,'transaction_date <='=>$transaction_date,'location_id'=>$location_id])->order(['ItemLedgers.expiry_date'=>'ASC'])->toArray();
+		//pr($item_variation_id);  
+		//pr($transaction_date);  
 		
 		$stockNew=[];
 		foreach($StockLedgers as $StockLedger){
@@ -514,6 +524,7 @@ class ItemsController extends AppController
 				$stockNew[]=['qty'=>$StockLedger->quantity,'rate'=>$StockLedger->rate,'expiry_date'=>date('Y-m-d',strtotime($StockLedger->expiry_date))];
 			}
 		}
+		//pr($stockNew);   exit;
 		
 		foreach($StockLedgers as $StockLedger){
 			if($StockLedger->status=='Out'){

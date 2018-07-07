@@ -72,6 +72,7 @@ class OrdersController extends AppController
 	$order->dispatch_flag='Active';
 	$order->dispatch_on= date('Y-m-d h:i:s a');
 	$this->Orders->save($order);
+	echo '<a class="btn btn-primary dlvr btn-condensed btn-sm" order_id="15"> Deliver</a>';
 	exit;
 	}
 	
@@ -87,7 +88,7 @@ class OrdersController extends AppController
 	$sms_sender='JAINTE';
 	$sms=str_replace(' ', '+', $sms);
 	//file_get_contents('http://103.39.134.40/api/mt/SendSMS?user=phppoetsit&password=9829041695&senderid='.$sms_sender.'&channel=Trans&DCS=0&flashsms=0&number='.$mob.'&text='.$sms.'&route=7');
-	
+	echo '<button class="btn btn-warning  btn-condensed btn-sm dsptch" type="submit">Dispatch</button>';
 	exit;
 	}
 	
@@ -434,9 +435,13 @@ class OrdersController extends AppController
 		
 		$user_id=$this->Auth->User('id');
 		$city_id=$this->Auth->User('city_id'); 
-		//$location_id=$this->Auth->User('location_id'); 
+		$user_type =$this->Auth->User('user_type');
 		$state_id=$this->Auth->User('state_id'); 
+		if($user_type=="Super Admin"){
+		$this->viewBuilder()->layout('super_admin_layout');	
+		}else if($user_type=="Admin"){ 
 		$this->viewBuilder()->layout('admin_portal');
+		}
         $order = $this->Orders->newEntity();
 		$CityData = $this->Orders->Cities->get($city_id);
 		$StateData = $this->Orders->Cities->States->get($CityData->state_id);
@@ -446,6 +451,30 @@ class OrdersController extends AppController
 		 
 		$company_details=$this->Orders->Companies->find()->where(['Companies.city_id'=>$city_id])->first();
         $this->set(compact('ids', 'sales_orders', 'order', 'locations', 'customers', 'drivers', 'customerAddresses', 'promotionDetails', 'deliveryCharges', 'deliveryTimes', 'cancelReasons','order_no','partyOptions','Accountledgers','items','company_details'));
+    }
+	
+	public function pdfView($id = null)
+    {
+		$ids = $this->EncryptingDecrypting->decryptData($id);
+		
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$user_type =$this->Auth->User('user_type');
+		$state_id=$this->Auth->User('state_id'); 
+		if($user_type=="Super Admin"){
+		$this->viewBuilder()->layout('super_admin_layout');	
+		}else if($user_type=="Admin"){ 
+		$this->viewBuilder()->layout('admin_portal');
+		}
+        $order = $this->Orders->newEntity();
+		$CityData = $this->Orders->Cities->get($city_id);
+		$StateData = $this->Orders->Cities->States->get($CityData->state_id);
+	// pr($ids); exit;
+		$this->loadmodel('SalesOrders');
+		$Orders=$this->Orders->get($ids,['contain'=>['OrderDetails'=>['ItemVariations','Items'],'Customers'=>['CustomerAddresses'],'CustomerAddresses']]);
+		//pr($Orders); exit;
+		$company_details=$this->Orders->Companies->find()->where(['Companies.city_id'=>$city_id])->first();
+        $this->set(compact('ids', 'sales_orders', 'order', 'locations', 'customers', 'drivers', 'customerAddresses', 'promotionDetails', 'deliveryCharges', 'deliveryTimes', 'cancelReasons','order_no','partyOptions','Accountledgers','items','company_details','Orders'));
     }
 
     /**
@@ -511,7 +540,7 @@ class OrdersController extends AppController
 			 if ($this->Orders->save($order)) {
 			
 					if($order->order_type=="Credit"){
-							
+			
 						//	Party/Customer Ledger Entry
 						$AccountingEntrie = $this->Orders->AccountingEntries->newEntity(); 
 						$AccountingEntrie->ledger_id=$order->party_ledger_id;
