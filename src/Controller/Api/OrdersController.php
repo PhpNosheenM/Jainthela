@@ -12,7 +12,7 @@ class OrdersController extends AppController
 	public function initialize()
 	{
 		parent::initialize();
-		$this->Auth->allow(['DriverOrderList','CustomerVerify','DriverOrderStatus']);
+		$this->Auth->allow(['DriverOrderList','CustomerVerify','DriverOrderStatus','DriverOrderDetail']);
 	}	
 	
     public function CustomerOrder()
@@ -553,5 +553,128 @@ class OrdersController extends AppController
         $this->set('_serialize', ['success', 'message']);		
 	}
 
+	
+    public function DriverOrderDetail()
+    {
+        $customer_id=$this->request->query('customer_id');
+    		$order_id=$this->request->query('order_id');
+        $city_id=$this->request->query('city_id');
+        $orders_details_data = $this->Orders->find()
+          ->contain(['OrderDetails'=>['ItemVariations'=>['ItemVariationMasters','Items','UnitVariations'=>['Units']]]])
+          ->where(['Orders.id'=>$order_id,'Orders.customer_id'=>$customer_id]);
+
+          $payableAmount = number_format(0, 2);
+          $grand_total1=0;
+			$order_details = [];
+        if(!empty($orders_details_data->toArray()))
+        {
+          //pr($orders_details_data->toArray());exit;
+          foreach ($orders_details_data as  $orders_detail) {
+              $customer_address_id = $orders_detail->customer_address_id;
+              foreach ($orders_detail->order_details as $data) {
+                  $count_cart = $this->Orders->Carts->find()->select(['Carts.cart_count'])->where(['Carts.item_variation_id'=>$data->item_variation->id,'Carts.customer_id'=>$customer_id]);
+                    $data->item_variation->cart_count = 0;
+                    $count_value = 0;
+                    foreach ($count_cart as $count) {
+                      $count_value = $count->cart_count;
+                    }
+                    $data->item_variation->cart_count = $count_value;
+              }
+          }
+
+          $customer_addresses=$this->Orders->CustomerAddresses->find()
+            ->where(['CustomerAddresses.customer_id' => $customer_id, 'CustomerAddresses.id'=>$customer_address_id])->first();
+
+
+          $categories = $this->Orders->find()
+          ->where(['customer_id' => $customer_id])
+          ->contain(['OrderDetails'=>['ItemVariations'=>['ItemVariationMasters','Items'=>['Categories']]]]);
+			$category = [];
+          if(!empty($categories->toArray()))
+          {
+              $category_arr = [];
+              foreach ($categories as $cat_date) {
+                foreach ($cat_date->order_details as $order_data) {
+                  $cat_name = $order_data->item_variation->item->category->name;
+                  $cat_id = $order_data->item_variation->item->category->id;
+                  $category_arr[$cat_id] = $cat_name;
+                }
+              }
+
+              foreach ($category_arr as $cat_key => $cat_value) {
+                foreach ($orders_details_data as $order_data) {
+                    foreach ($order_data->order_details as $data) {
+                        $order_category_id = $data->item_variation->item->category_id;
+                        if($cat_key == $order_category_id)
+                        {
+                          $category[$cat_key][] = $data;
+                        }
+                    }
+                }
+              }
+
+              foreach ($category as $key => $value) {
+                $order_details[] = ['category_name'=>$category_arr[$key],'category'=>$value];
+              }
+
+              $comboData =[];
+              $comboData = $this->Orders->OrderDetails->find()
+                ->innerJoinWith('ComboOffers')
+                ->where(['order_id' => $order_id])
+                ->contain(['ComboOffers'=>['ComboOfferDetails']])
+                ->group('OrderDetails.combo_offer_id')->autoFields(true)->toArray();
+
+              if(empty($comboData)) { $comboData = []; }
+            //  pr($comboData);exit;
+              foreach($orders_details_data as $order_data) {
+                $order_data->comboData = $comboData;
+                $order_data->order_details = $order_details;
+                $orders_details_data = $order_data;
+                $grand_total1 += $order_data->total_amount;
+              }
+
+			 // pr($orders_details_data);exit; array_replace($order_data->order_details,$order_details)
+
+          			$grand_total=number_format(round($grand_total1), 2);
+          			$payableAmount = $payableAmount + $grand_total1;
+
+                $delivery_charges=$this->Orders->DeliveryCharges->find()->where(['city_id'=>$city_id]);
+          			if(!empty($delivery_charges->toArray()))
+          			{
+      						foreach ($delivery_charges as $delivery_charge) {
+      							if($delivery_charge->amount >= $grand_total)
+      							{
+      								 $delivery_charge_amount = "$delivery_charge->charge";
+      								 $payableAmount = $payableAmount + $delivery_charge->charge;
+      							}else
+      							{
+      								$delivery_charge_amount = "free";
+      							}
+      						}
+          			}
+          			$payableAmount = number_format($payableAmount,2);
+
+         }
+          $success = true;
+          $message = 'data found successfully';
+
+        }else{
+          $success = false;
+          $message = 'No data found';
+          $orders_details_data = [];
+          $customer_addresses = [];
+        }
+        $cancellation_reasons=$this->Orders->CancelReasons->find();
+        $this->set(compact('success', 'message','grand_total','delivery_charge_amount','payableAmount','orders_details_data','customer_addresses','cancellation_reasons'));
+        $this->set('_serialize', ['success', 'message','grand_total','delivery_charge_amount','payableAmount','orders_details_data','customer_addresses','cancellation_reasons']);
+    }	
+	
+	
+	
+	
+	
+	
+	
+	
 }
  

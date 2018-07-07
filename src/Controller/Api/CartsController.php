@@ -298,7 +298,9 @@ class CartsController extends AppController
 								}
 							}
 
-							$item_in_cart = $this->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])->count();
+							$item_in_cart = $this->Carts->find('All')->where(['Carts.customer_id'=>$customer_id])
+							->where(['Carts.city_id' =>$city_id])
+							->count();
 							$address_availablity = $this->Carts->Customers->CustomerAddresses->find()
 							->where(['CustomerAddresses.customer_id'=>$customer_id]);
 							if(empty($address_availablity->toArray()))
@@ -311,11 +313,13 @@ class CartsController extends AppController
 							}
 
 							$categories = $this->Carts->find()
-							->where(['customer_id' => $customer_id])
+							->where(['Carts.customer_id' => $customer_id])
+							->where(['Carts.city_id' =>$city_id])
 							->contain(['ItemVariations'=>['ItemVariationMasters','Items'=>['Categories']]]);
 
 							$comboData = $this->Carts->find()
-							->where(['customer_id' => $customer_id])
+							->where(['Carts.customer_id' => $customer_id])
+							->where(['Carts.city_id' =>$city_id])
 							->contain(['ComboOffers'=>['ComboOfferDetails']])
 							->group('Carts.combo_offer_id')->autoFields(true)->toArray();
 
@@ -337,7 +341,8 @@ class CartsController extends AppController
 									}
 
 									$carts_data=$this->Carts->find()
-									->where(['customer_id' => $customer_id])
+									->where(['Carts.customer_id' => $customer_id])
+									->where(['Carts.city_id' =>$city_id])
 									->contain(['ItemVariations'=>['ItemVariationMasters','Items' =>['GstFigures'] ,'UnitVariations'=>['Units']]])
 									->group('Carts.item_variation_id')->autoFields(true)->toArray();
 									
@@ -594,11 +599,13 @@ class CartsController extends AppController
 			$customer_id = $this->request->query('customer_id');
 			$city_id = $this->request->query('city_id');
 			$categories = $this->Carts->find()
-			->where(['customer_id' => $customer_id])
+			->where(['Carts.customer_id' => $customer_id])
+			->where(['Carts.city_id' =>$city_id])
 			->contain(['ItemVariations'=>['ItemVariationMasters','Items'=>['Categories']]]);
 
 			$comboData = $this->Carts->find()
-			->where(['customer_id' => $customer_id])
+			->where(['Carts.city_id' =>$city_id])
+			->where(['Carts.customer_id' => $customer_id])
 			->contain(['ComboOffers'=>['ComboOfferDetails']])
 			->group('Carts.combo_offer_id')->autoFields(true)->toArray();
 
@@ -607,7 +614,8 @@ class CartsController extends AppController
 			if(!empty($categories->toArray()))
 			{
 					$comboData = $this->Carts->find()
-						->where(['customer_id' => $customer_id])
+						->where(['Carts.city_id' =>$city_id])
+						->where(['Carts.customer_id' => $customer_id])
 						->contain(['ComboOffers'=>['ComboOfferDetails']])
 						->group('Carts.combo_offer_id')->autoFields(true)->toArray();
 
@@ -622,7 +630,8 @@ class CartsController extends AppController
 					}
 
 					$carts_data=$this->Carts->find()
-					->where(['customer_id' => $customer_id])
+					->where(['Carts.city_id' =>$city_id])
+					->where(['Carts.customer_id' => $customer_id])
 					->contain(['ItemVariations'=>['ItemVariationMasters','Items','UnitVariations'=>['Units']]])
 					->group('Carts.item_variation_id')->autoFields(true)->toArray();
 
@@ -721,6 +730,7 @@ class CartsController extends AppController
 			//$generate_order_no=uniqid();
 			$customer_addresses=$this->Carts->Customers->CustomerAddresses->find()
 			->contain(['Cities'])
+			->where(['city_id' =>$city_id])
 			->where(['CustomerAddresses.customer_id' => $customer_id, 'CustomerAddresses.default_address'=>'1'])->first();
 
 			$Customers = $this->Carts->Customers->get($customer_id, [

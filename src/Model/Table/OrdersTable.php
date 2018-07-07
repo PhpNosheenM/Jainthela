@@ -220,7 +220,7 @@ class OrdersTable extends Table
         /* $rules->add($rules->existsIn(['location_id'], 'Locations'));
         
         $rules->add($rules->existsIn(['driver_id'], 'Drivers'));
-        ///$rules->add($rules->existsIn(['customer_address_id'], 'CustomerAddresses'));
+        $rules->add($rules->existsIn(['customer_address_id'], 'CustomerAddresses'));
         $rules->add($rules->existsIn(['promotion_detail_id'], 'PromotionDetails'));
         $rules->add($rules->existsIn(['delivery_charge_id'], 'DeliveryCharges'));
         $rules->add($rules->existsIn(['delivery_time_id'], 'DeliveryTimes'));

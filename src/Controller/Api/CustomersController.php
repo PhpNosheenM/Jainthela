@@ -16,7 +16,7 @@ class CustomersController extends AppController
   public function initialize()
     {
         parent::initialize();
-        $this->Auth->allow(['add', 'login','send_otp','verify']);
+        $this->Auth->allow(['add', 'login','send_otp','verify','setpassword','sendotpforgetpassword']);
     }
 
 	public function my_account(){
@@ -485,5 +485,63 @@ class CustomersController extends AppController
       $message = 'Removed Successfully';
       $this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
    }
-
+		
+   
+		public function sendotpforgetpassword(){
+			$opt=0;
+			$mobile=@$this->request->query['username'];
+			if(!empty($mobile)){
+			 $exists_mobile = $this->Customers->exists(['Customers.username'=>$mobile]);
+			
+			if($exists_mobile==0){
+					$success = false;
+					$message = 'User not found';
+			}else{
+					$opt=(mt_rand(1111,9999));
+					$Users=$this->Customers->find()->where(['Customers.username'=>$mobile])->toArray();
+					$id=$Users[0]->id;
+					$Users_data=$this->Customers->get($id);
+					$Users_data->otp=$opt;
+					$this->Customers->save($Users_data);
+					$content="Your jainthela OTP is ".$opt;
+					$this->Sms->sendSms($mobile,$content);
+					$success = true;
+					$message = 'Send Otp Successfully';
+				}
+			}else{
+							
+				$success = false;
+				$message = 'empty Username';			
+			}
+			$this->set(['success' => $success,'otp'=>$opt,'message'=>$message,'_serialize' => ['success','otp','message']]);
+                                
+        }
+                
+		public function setpassword(){
+			$mobile_no=@$this->request->query['username'];
+			$otp=@$this->request->query['otp'];
+			$password=@$this->request->query['password'];
+			if(!empty($mobile_no) && !empty($otp) && !empty($password)){
+							
+				$Users=$this->Customers->find()->where(['Customers.username'=>$mobile_no,'Customers.otp'=>$otp])->toArray();
+				if($Users){
+					$id=$Users[0]->id; 
+					$user_data=$this->Customers->get($id);
+					$user_data->password=$password;
+					$this->Customers->save($user_data);
+					$success = true;
+					$message = 'Password is set successfully';
+								
+				}else
+				{
+					$success = false;
+					$message = 'Username or otp is not match';
+				}
+							
+			}else{
+							$success = false;
+				$message = 'empty Username or otp or password';
+			}
+			$this->set(['success' => $success,'message'=>$message,'_serialize' => ['success','message']]);
+		}
 }

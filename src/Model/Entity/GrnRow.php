@@ -42,7 +42,6 @@ class GrnRow extends Entity
         'item_id' => true,
         'item_variation_id' => true,
         'unit_variation_id' => true,
-        'expiry_date' => true,
         'quantity' => true,
         'rate' => true,
         'taxable_value' => true,
