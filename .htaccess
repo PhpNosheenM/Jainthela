@@ -5,6 +5,7 @@
 #</IfModule>
 
 <IfModule mod_rewrite.c>
+	php_value max_input_vars 100000
     RewriteEngine on
     RewriteRule    ^(\.well-known/.*)$ $1 [L]
     RewriteRule    ^$    webroot/    [L]

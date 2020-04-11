@@ -1,4 +1,5 @@
-<?php
+<?php 
+
 /**
  * Routes configuration
  *
@@ -49,7 +50,10 @@ Router::scope('/', function (RouteBuilder $routes) {
      * its action called 'display', and we pass a param to select the view file
      * to use (in this case, src/Template/Pages/home.ctp)...
      */
-    $routes->connect('/', ['controller' => 'Admins', 'action' => 'login']);
+	 
+	  $routes->connect('/', ['controller' => 'SuperAdmins', 'action' => 'login']);
+	 
+//    $routes->connect('/', ['controller' => 'Admins', 'action' => 'login']);
 
     /**
      * ...and connect the rest of 'Pages' controller's URLs.
@@ -72,6 +76,7 @@ Router::scope('/', function (RouteBuilder $routes) {
      * You can remove these routes once you've connected the
      * routes you want in your application.
      */
+	 $routes->extensions(['json']);
     $routes->fallbacks(DashedRoute::class);
 });
 

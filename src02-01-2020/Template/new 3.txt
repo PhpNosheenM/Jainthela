@@ -1,0 +1,57 @@
+<style>
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+    border-color: transparent;
+    padding: 8px 8px !important; 
+    background: #F0F4F9;
+    color: #656C78;
+    font-size: 13px;
+}
+</style>
+<?php $this->set('title', 'Purchase Detail'); ?>
+<div class="page-content-wrap">
+
+	<div class="row">
+		<div class="col-md-12">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title"><strong>Fruit & Vegetables Purchase Detail</strong></h3>
+					<div class="pull-right">
+						<div class="pull-left">
+								
+						</div> 
+					</div> 	
+				</div>
+				<div class="panel-body">    
+					<div class="table-responsive">
+						<table class="table table-bordered">
+							<thead>
+								<tr>
+									<th><?= ('SNo.') ?></th>
+									<th><?= ('Item.') ?></th>
+									<th><?= ('Order Quantity') ?></th>
+									<th><?= ('No. Of Order') ?></th>
+									
+								</tr>
+							</thead>
+							<tbody>
+								
+								  <?php $i=0; foreach ($ItemData as $data) {?>
+								  
+								<tr>
+									<td><?= $this->Number->format(++$i) ?></td>
+									<td><?= h($data['name']) ?> (<?php echo $data['unit']; ?>)</td>
+									<td><?= h($data['qt']) ?></td>
+									<td><?= h($data['order']) ?></td>
+									
+								</tr>
+								  <?php } ?>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				
+			</div>
+			
+		</div>
+	</div>
+</div>

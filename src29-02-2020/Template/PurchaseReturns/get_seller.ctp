@@ -1,0 +1,2 @@
+
+<?php echo $this->Form->input('purchase_invoice_id', ['empty'=>'---Select---','options'=>$items,'label' => false,'class' => 'form-control input-medium purchase_invoice_id select','required'=>'required']); ?>
