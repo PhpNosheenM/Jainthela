@@ -1,0 +1,1 @@
+<?= $this->BulkPerforma->categoryItems($categories) ?>

@@ -14,7 +14,7 @@
 		<div class="col-md-12">
 			<div class="panel panel-default">
 				<div class="panel-heading">
-					<h3 class="panel-title"><strong>Account Statement</strong></h3>
+					<h3 class="panel-title"><strong>Account Statement<?php if($Ledger){ echo " For ";?> <u><?php  echo $Ledger->name; } ?></strong></h3>
 					<div class="pull-right">
 						<div class="pull-left">
 						</div> 
@@ -27,7 +27,7 @@
 								<div class="col-md-4 col-xs-12">
 									<div class="input-group">
 									<span class="input-group-addon add-on"> Ledger </span>
-										<?php echo $this->Form->select('ledger_id',$Ledgers, ['empty'=>'--Select--','label' => false,'class' => 'form-control input-sm ledger select','required'=>'required', 'data-live-search'=>true,'value'=>$ledger_id]); ?>
+										<?php echo $this->Form->select('ledger_id',$queryLedgers, ['empty'=>'--Select Ledger--','label' => false,'class' => 'form-control input-sm ledger select', 'data-live-search'=>true,'value'=>@$ledger_id]); ?>
 										</div>
 								</div>
 								
@@ -82,6 +82,21 @@
 							</tr>
 						</thead>
 						<tbody>
+						<?php if(!empty($Invoices)){ 
+							foreach($Invoices as $Invoice){  
+							$voucher_no = $Invoice->invoice_no;
+							$order_id = $EncryptingDecrypting->encryptData($Invoice->id);
+							@$url_link=$this->Html->link($voucher_no,['controller'=>'Invoices','action' => 'pdfView', $order_id, 'print'],['target'=>'_blank']);
+
+							?>
+							<tr>
+								<td style="text-align:left";><?php echo date("d-m-Y",strtotime($Invoice->transaction_date)); ?></td>
+								<td style="text-align:left";><?php echo "Invoice (CASH)"; ?></td>
+								<td style="text-align:left";><?php echo $url_link; ?></td>
+								<td style="text-align:right";><?php echo $Invoice->grand_total; ?></td>
+								<td style="text-align:right";></td>
+						
+						<?php } } ?>
 						<?php
 						if(!empty($AccountingLedgers))
 						{
@@ -130,10 +145,11 @@
 									@$voucher_no=$AccountingLedger->sales_voucher->voucher_no;
 									@$url_link=$this->Html->link($voucher_no,['controller'=>'SalesVouchers','action' => 'view', $AccountingLedger->sales_voucher_id],['target'=>'_blank']);
 								}
-								else if(!empty($AccountingLedger->journal_voucher_id)){
+								else if(!empty($AccountingLedger->journal_voucher_id)){ 
 									echo 'Journal Vouchers';
+									 $journal_voucher_id = $EncryptingDecrypting->encryptData($AccountingLedger->journal_voucher_id);
 									@$voucher_no=$AccountingLedger->journal_voucher->voucher_no;
-									@$url_link=$this->Html->link($voucher_no,['controller'=>'JournalVouchers','action' => 'view', $AccountingLedger->journal_voucher_id],['target'=>'_blank']);
+									@$url_link=$this->Html->link($voucher_no,['controller'=>'JournalVouchers','action' => 'view', $journal_voucher_id],['target'=>'_blank']);
 								}
 								else if(!empty($AccountingLedger->contra_voucher_id)){
 									echo 'Contra Vouchers';
@@ -142,8 +158,9 @@
 								}
 								else if(!empty($AccountingLedger->receipt_id)){
 									echo 'Receipt Vouchers';
+									 $receipt_id = $EncryptingDecrypting->encryptData($AccountingLedger->receipt_id);
 									@$voucher_no=$AccountingLedger->receipt->voucher_no;
-									@$url_link=$this->Html->link($voucher_no,['controller'=>'Receipts','action' => 'view', $AccountingLedger->receipt_id],['target'=>'_blank']);
+									@$url_link=$this->Html->link($voucher_no,['controller'=>'Receipts','action' => 'view', $receipt_id],['target'=>'_blank']);
 								}
 								else if(!empty($AccountingLedger->payment_id)){
 									echo 'Payment Vouchers';
@@ -163,6 +180,13 @@
 									echo 'Orders'; //pr($AccountingLedger); exit;
 									@$voucher_no=$AccountingLedger->order->order_no;
 									@$url_link=$this->Html->link($voucher_no,['controller'=>'Orders','action' => 'view', $AccountingLedger->order_id],['target'=>'_blank']);
+								}else if(!empty($AccountingLedger->invoice_id)){
+									echo 'Invoices'; //pr($AccountingLedger->invoice->invoice_no); exit;
+									@$voucher_no=$AccountingLedger->invoice->invoice_no;
+									
+									
+									$order_id = $EncryptingDecrypting->encryptData($AccountingLedger->invoice->id);
+									@$url_link=$this->Html->link($voucher_no,['controller'=>'Invoices','action' => 'pdfView', $order_id, 'print'],['target'=>'_blank']);
 								}
 								?>
 								</td>
@@ -206,7 +230,7 @@
 								<td scope="col" colspan="4" style="text-align:right";><b>Closing Balance</b></td>
 								<td scope="col" style="text-align:right";><b>
 								<?php
-									if($opening_balance_type='Dr'){
+									if($opening_balance_type=='Dr'){
 									@$closingBalance= $opening_balance+$total_debit-$total_credit;
 									}
 									else{
@@ -214,10 +238,10 @@
 									}
 									if($closingBalance>0)
 									{
-									@$closing_bal_type='Dr';
+									@$closing_bal_type='Cr';
 									}
 									else if($closingBalance<0){
-									@$closing_bal_type='Cr';	
+									@$closing_bal_type='Dr';	
 									}
 									else{
 									@$closing_bal_type='';	
@@ -241,3 +265,39 @@
 </div>
 <?= $this->Html->script('plugins/bootstrap/bootstrap-datepicker.js',['block'=>'jsDatePicker']) ?>
 <?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
+
+<?= $this->Html->script('plugins/fileinput/fileinput.min.js',['block'=>'jsFileInput']) ?>
+<?= $this->Html->script('plugins/bootstrap/bootstrap-datepicker.js',['block'=>'jsDatePicker']) ?>
+<?= $this->Html->script('plugins/bootstrap/bootstrap-select.js',['block'=>'jsSelect']) ?>
+<?= $this->Html->script('plugins/jquery-validation/jquery.validate.js',['block'=>'jsValidate']) ?>
+
+<script type="text/javascript">
+		//var url='<?php echo $this->Url->build(['controller'=>'AccountingEntries','action'=>'getLedgerList']); ?>';
+		 
+		/*  $(".itemName").select2({
+            allowClear: true,
+            theme: "classic",
+            tags:true,
+            placeholder : 'Select Ledgers',
+            minimumInputLength: 1,
+            ajax: {
+                url: '<?php echo $this->Url->build(['controller'=>'AccountingEntries','action'=>'getLedgerList']); ?>',
+                dataType: 'json',
+                delay: 250,
+                type : 'GET',
+                data: function(params) {
+                    return {
+                        con_id:params.term,
+                    };
+                },
+                processResults: function (data) {
+					return { 
+					  results: data
+					};
+					
+				  },
+                
+            }
+        }); */
+     
+</script>

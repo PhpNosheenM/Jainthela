@@ -94,6 +94,47 @@ class AccountingEntriesController extends AppController
      * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Network\Exception\NotFoundException When record not found.
      */
+    public function getLedgerList($q = null){
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
+		$isget = $this->request->is('get');
+		$state=$this->request->query('con_id');
+		//$accountingEntry = $this->AccountingEntries->Ledgers->find();
+		$query = $this->AccountingEntries->Ledgers->find('all', [
+			'conditions' => ['Ledgers.name LIKE' => '%'.$state . '%','city_id' =>$city_id]
+		]);
+		$json = [];
+		foreach($query as $data){
+			$json[] = ['id'=>$data->id, 'text'=>$data->name];
+		}
+		//pr($this->request->data);
+		echo json_encode($json);
+		///echo $isget;
+		exit;
+	}
+	
+    public function getCustomerList($q = null){
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
+		$isget = $this->request->is('get');
+		$state=$this->request->query('con_id');
+		//$accountingEntry = $this->AccountingEntries->Ledgers->find();
+		$query = $this->AccountingEntries->Ledgers->Customers->find('all', [
+			'conditions' => ['Customers.name LIKE' => '%'.$state . '%','Customers.city_id' =>$city_id]
+		]);
+		$json = [];
+		foreach($query as $data){
+			$merge=$data->name.'('.$data->username.')';
+			$json[] = ['id'=>$data->id, 'text'=>$merge];
+		}
+		//pr($this->request->data);
+		echo json_encode($json);
+		///echo $isget;
+		exit;
+	}
+
     public function edit($id = null)
     {
         $accountingEntry = $this->AccountingEntries->get($id, [
@@ -197,12 +238,13 @@ class AccountingEntriesController extends AppController
 		$query->matching('Ledgers', function ($q) use($AllGroups){
 			return $q->where(['Ledgers.accounting_group_id IN' => $AllGroups]);
 		});
-		//pr($query->toArray()); exit;
+		
 		$balanceOfLedgers=$query;
+		
 		$groupForPrint=[]; $d=[]; $c=[]; 
 		foreach($balanceOfLedgers as $balanceOfLedger){
-			foreach($Groups as $primaryGroup=>$Group){
-				if(in_array($balanceOfLedger->ledger->accounting_group_id,$Group['ids'])){
+			foreach($Groups as $primaryGroup=>$Group){ 
+				if(in_array($balanceOfLedger->ledger->accounting_group_id,$Group['ids'])){ 
 					@$groupForPrint[$primaryGroup]['balance']+=$balanceOfLedger->totalDebit-abs($balanceOfLedger->totalCredit);
 					
 				}else{
@@ -212,7 +254,7 @@ class AccountingEntriesController extends AppController
 				@$groupForPrint[$primaryGroup]['nature']=$Group['nature'];
 			}
 		}
-		//pr($city_id); exit;
+		//pr($groupForPrint); exit;
 		$GrossProfit= $this->GrossProfit($from_date,$to_date,$city_id,$location_id);
 		$closingValue= $this->stockReportApp($city_id,$from_date,$to_date); 
 		$differenceInOpeningBalance= $this->differenceInOpeningBalance($city_id,$location_id);
@@ -246,13 +288,14 @@ class AccountingEntriesController extends AppController
 				$Groups[$AccountingGroup->id]['ids'][]=$accountingChildGroup->id;
 			}
 		}
+	//pr($Groups); exit;
 		$AllGroups=[];
 		foreach($Groups as $mainGroups){
 			foreach($mainGroups['ids'] as $subGroup){
 				$AllGroups[]=$subGroup;
 			}
 		}
-		
+		//pr($AllGroups); exit;
 		$query=$this->AccountingEntries->find();
 		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
 				->group('AccountingEntries.ledger_id')
@@ -279,12 +322,60 @@ class AccountingEntriesController extends AppController
 			}
 		}
 		//pr($groupForPrint); exit;
-		$openingValue= 0;
+		$openingValue= $this->openingStock($city_id,$from_date,$to_date);
 		$closingValue= $this->stockReportApp($city_id,$from_date,$to_date);
 		//$closingValue= 0;
 		$this->set(compact('from_date','to_date', 'groupForPrint', 'closingValue', 'openingValue'));
 		
 	}
+	public function CustomerHistory()
+    {
+		$user_id=$this->Auth->User('id');
+		$city_id=$this->Auth->User('city_id'); 
+		$location_id=$this->Auth->User('location_id'); 
+		$this->viewBuilder()->layout('super_admin_layout');
+		$ledger_id = $this->request->query('ledger_id');
+		$from_date = $this->request->query('from_date');
+		$to_date   = $this->request->query('to_date');
+		if(empty($from_date) || empty($to_date))
+		{
+			$from_date = date("Y-m-01");
+			$to_date   = date("Y-m-d");
+		}else{
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$to_date= date("Y-m-d",strtotime($to_date));
+		}
+		
+		if(!empty($from_date))
+		{
+			$from_date = date("Y-m-d",strtotime($from_date));
+			$where['Invoices.transaction_date >=']=$from_date;
+		}
+		if(!empty($to_date))
+		{
+			$to_date   = date("Y-m-d",strtotime($to_date));
+			$where['Invoices.transaction_date <=']=$to_date;
+		}
+		
+		if(!empty($ledger_id))
+		{
+			$where['Invoices.customer_id']=$ledger_id;
+			$Customer=$this->AccountingEntries->Invoices->Customers->get($ledger_id);
+			$Invoices=$this->AccountingEntries->Invoices->find()->where($where)->order(['Invoices.voucher_no'=>'ASC'])->autoFields(true);
+		}
+		
+		
+		
+		
+		/* $AmountHistory=[];
+		foreach($Invoices as $data){
+			@$AmountHistory[$data->order_type]+=$data->pay_amount;
+		} */
+		//pr($AmountHistory);exit;
+		$this->set(compact('from_date','to_date', 'Invoices','Customer'));
+	}
+		
+	
 	public function AccountStatement()
     {
 		$user_id=$this->Auth->User('id');
@@ -319,7 +410,20 @@ class AccountingEntriesController extends AppController
 			$where['AccountingEntries.ledger_id']=$ledger_id;
 		}
 		
-		if(!empty($ledger_id)){
+		
+		
+		
+		
+		$Ledger='';
+		 if(!empty($ledger_id)){
+			 $LedgerData=$this->AccountingEntries->Ledgers->get($ledger_id);
+			 $AccountingLedgers=[];
+			if($LedgerData->customer_id > 0){
+				$Invoices = $this->AccountingEntries->Invoices->find()->where(['Invoices.customer_id'=>$LedgerData->customer_id,'Invoices.party_ledger_id'=>32,'Invoices.transaction_date >='=>$from_date,'Invoices.transaction_date <='=>$to_date,'Invoices.order_status'=>'Delivered']);
+				//pr($Invoices->toArray()); exit; 
+			}
+			 
+			$Ledger=$this->AccountingEntries->Ledgers->get($ledger_id);
 			$query = $this->AccountingEntries->find()->where(['AccountingEntries.ledger_id'=>$ledger_id]);
 			
 			$CaseCreditOpeningBalance = $query->newExpr()
@@ -362,15 +466,17 @@ class AccountingEntriesController extends AppController
 				@$opening_balance_type='';	
 				}
 			$opening_balance=round($opening_balance,2);
-			//pr($opening_balance); exit;
-			 $AccountingLedgers=$this->AccountingEntries->find()->select(['total_credit_sum'=>'SUM(AccountingEntries.credit)','total_debit_sum'=>'SUM(AccountingEntries.debit)'])->contain(['Ledgers','PurchaseInvoices','Payments','Orders','Receipts'])->where($where)->group(['AccountingEntries.payment_id','AccountingEntries.purchase_invoice_id','AccountingEntries.payment_id','AccountingEntries.order_id'])->autoFields(true); 
+		//pr($Ledger); exit;
+			 $AccountingLedgers=$this->AccountingEntries->find()->select(['total_credit_sum'=>'SUM(AccountingEntries.credit)','total_debit_sum'=>'SUM(AccountingEntries.debit)'])->contain(['Ledgers','PurchaseInvoices','Payments','Orders','Receipts','Invoices','JournalVouchers'])->where($where)->group(['AccountingEntries.payment_id','AccountingEntries.purchase_invoice_id','AccountingEntries.receipt_id','AccountingEntries.order_id','AccountingEntries.invoice_id','AccountingEntries.journal_voucher_id'])->autoFields(true); 
 			}
+			
+			$queryLedgers=$this->AccountingEntries->Ledgers->find('list')->where(['city_id' =>$city_id]);
 			
 			
 			//pr($AccountingLedgers->toArray()); exit;	
-			$Ledgers=$this->AccountingEntries->Ledgers->find('List')->where(['city_id'=>$city_id]);
 			
-			$this->set(compact('from_date','to_date', 'groupForPrint', 'closingValue', 'openingValue','Ledgers','AccountingLedgers','ledger_id','opening_balance','opening_balance_type'));
+			
+			$this->set(compact('from_date','to_date', 'groupForPrint', 'closingValue', 'openingValue','Ledger','AccountingLedgers','ledger_id','opening_balance','opening_balance_type','Invoices','queryLedgers'));
 	}
 	
 	public function gstReport()
@@ -414,9 +520,25 @@ class AccountingEntriesController extends AppController
 			}
 		} 
 		
+		$query=$this->AccountingEntries->Invoices->find()->where(['Invoices.invoice_status'=>'Done','Invoices.city_id'=>$city_id,'Invoices.transaction_date >='=>$from_date, 'Invoices.transaction_date <='=>$to_date])->contain(['Customers'=>['Cities'=>function($q){
+					return $q->where(['Cities.state_id'=>1]);
+				}]]);
+		$query->contain(['Customers'=>['Cities'],'InvoiceRows'=>function($q){
+					return $q->select(['invoice_id','gst_figure_id','totalTaxable' => $q->func()->sum('InvoiceRows.taxable_value'),'gst_value' => $q->func()->sum('InvoiceRows.gst_value')])
+					->group('InvoiceRows.gst_figure_id');
+				}]);
 		
+		$taxable_gst_wise=[];
+		
+		foreach($query->toArray() as $data){  
+			foreach($data->invoice_rows as $invoice_row){ 
+					$taxable_gst_wise[$invoice_row->gst_figure_id]=$invoice_row->totalTaxable;
+			}
+		}
+		
+	//	pr($taxable_gst_wise); exit;
 		//OutPut IGST Code
-		$AccountingGroupOutputGst=$this->AccountingEntries->Ledgers->AccountingGroups->find()
+		 $AccountingGroupOutputGst=$this->AccountingEntries->Ledgers->AccountingGroups->find()
 		->where(['AccountingGroups.input_output_gst'=>'Output','AccountingGroups.city_id'=>$city_id])->first();
 		$query=$this->AccountingEntries->find();
 		$query->select(['ledger_id','totalDebit' => $query->func()->sum('AccountingEntries.debit'),'totalCredit' => $query->func()->sum('AccountingEntries.credit')])
@@ -435,6 +557,22 @@ class AccountingEntriesController extends AppController
 				@$outputIgst[@$balanceOfLedger->ledger->gst_figure_id]+=@$balanceOfLedger->totalCredit;
 			}
 		} 
+		
+		$query=$this->AccountingEntries->Invoices->find()->where(['Invoices.invoice_status'=>'Done','Invoices.city_id'=>$city_id,'Invoices.transaction_date >='=>$from_date, 'Invoices.transaction_date <='=>$to_date])->contain(['Customers'=>['Cities'=>function($q){
+					return $q->where(['Cities.state_id != '=>1]);
+				}]]);
+		$query->contain(['Customers'=>['Cities'],'InvoiceRows'=>function($q){
+					return $q->select(['invoice_id','gst_figure_id','totalTaxable' => $q->func()->sum('InvoiceRows.taxable_value'),'gst_value' => $q->func()->sum('InvoiceRows.gst_value')])
+					->group('InvoiceRows.gst_figure_id');
+				}]);
+		
+		$taxable_igst_wise=[];
+		foreach($query->toArray() as $data){  
+			foreach($data->invoice_rows as $invoice_row){ 
+					$taxable_igst_wise[$invoice_row->gst_figure_id]=$invoice_row->totalTaxable;
+			}
+		}
+		
 		
 		
 		// InPut GST Code
@@ -458,6 +596,21 @@ class AccountingEntriesController extends AppController
 				@$inputgst[@$balanceOfLedger->ledger->gst_figure_id]+=@$balanceOfLedger->totalDebit;
 			}
 		} 
+		
+		$query=$this->AccountingEntries->PurchaseInvoices->find()->where(['PurchaseInvoices.city_id'=>$city_id,'PurchaseInvoices.transaction_date >='=>$from_date, 'PurchaseInvoices.transaction_date <='=>$to_date]);
+		$query->contain(['PurchaseInvoiceRows'=>function($q){
+					return $q->select(['purchase_invoice_id','gst_figure_id','totalTaxable' => $q->func()->sum('PurchaseInvoiceRows.taxable_value'),'gst_value' => $q->func()->sum('PurchaseInvoiceRows.gst_value')])
+					->group('PurchaseInvoiceRows.gst_figure_id');
+				}]);
+		
+		$input_taxable_gst_wise=[];
+		foreach($query->toArray() as $data){ 
+			foreach($data->purchase_invoice_rows as $invoice_row){ 
+				$input_taxable_gst_wise[$invoice_row->gst_figure_id]=$invoice_row->totalTaxable;
+			} 
+		} 
+		//pr($input_taxable_gst_wise); exit; taxable_gst_wise outputIgst
+		
 		
 		//InPut IGST Code
 		$AccountingGroupOutputGst=$this->AccountingEntries->Ledgers->AccountingGroups->find()
@@ -484,6 +637,6 @@ class AccountingEntriesController extends AppController
 		
 		
 		$GstFigures=$this->AccountingEntries->Ledgers->GstFigures->find()->where(['city_id'=>$city_id]);
-		$this->set(compact('GstFigures','outputgst','outputIgst','inputgst','inputIgst','from_date','to_date'));
+		$this->set(compact('GstFigures','outputgst','outputIgst','inputgst','inputIgst','from_date','to_date','taxable_gst_wise','input_taxable_gst_wise','taxable_igst_wise'));
 	}
 }
